@@ -1,0 +1,41 @@
+The results demonstrate that continuous Gaussian HMMs trained via Baum-Welch achieve high distributional fidelity across all state resolutions tested, with KS pass rates improving monotonically from 87\% ($K = 3$) to 95\% ($K = 13$).
+The following paragraphs interpret the key findings, compare against the discrete framework, and identify limitations.
+
+\paragraph{Continuous vs.\ Discrete Emissions.}
+The primary methodological difference from \citet{alswaidan2026hybrid} is the replacement of Laplace quantile binning with continuous Gaussian emissions learned via Baum-Welch.
+This eliminates discretization artifacts but introduces a kurtosis gap: the Gaussian emission assumption cannot reproduce the heavy tails of equity returns as effectively as the Student-$t(\nu = 5)$ emissions used in the discrete model.
+The observed excess kurtosis of SPY is 7.7, but the continuous model produces simulated kurtosis of approximately 4.2 at $K = 13$---a 45\% underestimation.
+This gap is inherent to the Gaussian assumption and motivates the development of heavy-tailed emission variants within the Baum-Welch framework, such as Student-$t$ or generalized hyperbolic distributions.
+
+Despite the kurtosis gap, the continuous model achieves competitive KS pass rates (91--95\%) because the KS test is sensitive to the overall distribution shape, not just tail behavior.
+The Gaussian emissions, combined with the regime-switching structure, produce a mixture distribution that captures the central concentration and moderate tail behavior of equity returns, even if the extreme tails are attenuated.
+
+\paragraph{State Resolution and Model Complexity.}
+The state resolution analysis (Table~\ref{tab:sensitivity}) reveals that $K = 13$ provides the best distributional fidelity (94.6\% KS), but the improvement over $K = 6$ (92.0\%) is modest.
+ACF-MAE is effectively constant across all $K$ values, confirming that the jump mechanism operates independently of state granularity.
+This stability suggests that practitioners can choose $K$ based on interpretability requirements: fewer states for coarse regime labeling (e.g., crash/neutral/bull), more states for fine-grained distribution matching.
+
+The Baum-Welch algorithm scales as $O(TK^2)$ per iteration, making $K = 13$ computationally practical for the $T = 2{,}766$ observation sequence used here.
+For larger $K$ values, the computational cost increases quadratically, but the marginal improvement in distributional fidelity diminishes beyond $K \approx 13$.
+
+\paragraph{Jump Mechanism Effectiveness.}
+The jump mechanism's impact on the continuous model is more nuanced than in the discrete case.
+For SPY at $K = 13$, CHMM-WJ achieved slightly lower KS pass rates than CHMM-NJ (91.5\% vs.\ 94.6\%) with comparable ACF-MAE (0.048 vs.\ 0.048), suggesting that the jump mechanism's tail-forcing behavior occasionally distorts the learned emission structure.
+This contrasts with the discrete model, where the jump mechanism strictly improved temporal fidelity without degrading distributional accuracy.
+
+The discrepancy likely arises because the continuous model's emission distributions are learned from the \emph{entire} observation sequence (including tail events), while the discrete model's within-bin distributions are estimated from pre-assigned state memberships.
+When the jump mechanism forces the continuous model into tail states, it samples from Gaussian distributions that were fitted to the global data rather than specifically to tail observations, potentially producing returns that are inconsistent with the tail state's learned parameters.
+
+\paragraph{Cross-Asset Generalization.}
+The framework generalized well to individual equities (Table~\ref{tab:cross_asset}), with CHMM-NJ achieving IS KS pass rates above 98\% for NVDA, JNJ, and JPM.
+The CHMM-WJ results showed more variable performance, with significant KS degradation for JNJ (0\% IS KS).
+This suggests that the jump mechanism's fixed tail-state selection rule ($N_{\text{tail}} = 3$) may not be appropriate for all assets; future work should explore asset-specific tail configurations.
+
+\paragraph{Limitations.}
+Several limitations qualify these conclusions.
+First, the Gaussian emission assumption systematically underestimates excess kurtosis, limiting the model's ability to reproduce extreme tail events.
+Second, the model assumes stationarity of the transition matrix and jump hyperparameters across the full in-sample window; structural breaks (e.g., the March 2020 COVID-19 crash) may not be adequately captured.
+Third, the jump mechanism's fixed parameters ($N_{\text{tail}} = 3$, $p_{\text{neg}} = 0.52$) were inherited from the discrete model without re-optimization for the continuous setting.
+Fourth, the out-of-sample evaluation covers a single 219-day window, which limits statistical power; a rolling evaluation would provide more robust generalization assessment.
+Finally, the two-sample KS test assumes i.i.d.\ observations, but each simulated path exhibits temporal dependence by construction.
+Volatility clustering inflates pass rates slightly relative to a block-bootstrap calibration \citep{alswaidan2026hybrid}.

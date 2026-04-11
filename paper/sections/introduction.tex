@@ -1,0 +1,21 @@
+Generating synthetic financial time series that faithfully preserve the statistical properties of real market data is a central challenge in quantitative finance.
+High-fidelity synthetic data are essential for stress testing risk models against plausible but unobserved market scenarios, validating portfolio optimization algorithms, and augmenting limited training sets for machine learning pipelines \citep{assefa2020generating, jordon2022synthetic}.
+Empirical equity excess growth rates exhibit three well-documented statistical regularities---heavy-tailed (leptokurtic) distributions, negligible linear autocorrelation in raw returns, and persistent volatility clustering---that any generative framework must simultaneously reproduce to be considered statistically faithful \citep{cont2001empirical, mandelbrot1963variation}.
+
+\citet{alswaidan2026hybrid} addressed this challenge with a discrete hidden Markov model (HMM) that partitioned continuous excess growth rates into Laplace quantile-defined states and estimated transitions by direct frequency counting.
+A Poisson jump-duration mechanism forced the model to dwell in high-volatility tail states for empirically realistic durations, partially reproducing volatility clustering.
+That framework achieved high distributional pass rates and scaled to a 424-asset pipeline, but the discretization step introduced quantization error: continuous observations were binned into categorical states, and the emission model sampled from within-bin Student-$t$ distributions rather than learning the emission parameters jointly with the transition structure.
+
+In this study, we extend that framework to \emph{continuous Gaussian emissions} learned via the Baum-Welch (Expectation-Maximization) algorithm \citep{baum1970maximization, rabiner1986introduction}.
+Each hidden state emits from a Normal distribution $\mathcal{N}(\mu_k, \sigma_k)$ whose parameters are estimated iteratively alongside the transition matrix, eliminating the need for quantile binning and enabling the model to capture fine-grained regime dynamics directly from the data.
+The Poisson jump-duration mechanism is preserved, operating on the continuous model's state space to enforce tail-state persistence.
+
+The key contributions of this work are:
+\begin{enumerate}
+    \item \textbf{Baum-Welch training} of emission means, variances, and transition probabilities directly from continuous observations, with a quantile-based initialization strategy that avoids degenerate local optima.
+    \item \textbf{State resolution analysis} across $K \in \{3, 6, 9, 11, 13\}$ hidden states, demonstrating that distributional fidelity improves monotonically with $K$ while temporal structure (ACF-MAE) remains stable.
+    \item \textbf{Comprehensive validation} using five complementary metrics---Kolmogorov-Smirnov (KS) pass rates, excess kurtosis matching, autocorrelation mean absolute error (ACF-MAE), Wasserstein-1 distance, and Hellinger distance---on both in-sample (2014--2024) and out-of-sample (2025) data.
+    \item \textbf{Cross-asset generalization} to NVDA, JNJ, and JPM, confirming that the framework adapts to diverse risk profiles without modification.
+\end{enumerate}
+
+The continuous emission structure also provides a natural foundation for future extensions incorporating stochastic volatility dynamics within the regime-switching framework---a direction that the discrete quantile-binning approach cannot support.

@@ -1,0 +1,121 @@
+\subsection{Data}
+
+The empirical foundation of this study is a dataset of 424 United States-listed equities and exchange-traded funds spanning ten years (2014--2024).
+We focus our single-asset analysis on the SPDR S\&P~500 ETF Trust (SPY), which tracks the S\&P~500 index.
+The data include daily open, high, low, and close prices along with volume-weighted average price (VWAP) metrics.
+The in-sample dataset comprises $T = 2{,}766$ trading days (January~3, 2014 to December~31, 2024).
+A subsequent 219 trading days in 2025 are reserved for out-of-sample testing.
+
+\subsection{Excess Growth Rate Calculation}
+
+We compute the excess growth rate $G_{i,j}$ for ticker $i$ between time periods $j-1 \to j$ given the equity price series $P_{i,j}$:
+\begin{equation}
+    G_{i,j} \equiv \frac{1}{\Delta t} \cdot \ln\left(\frac{P_{i,j}}{P_{i,j-1}}\right) - r_f
+    \label{eq:growth_rate}
+\end{equation}
+where $\Delta t = 1/252$ (one trading day in years) and $r_f$ is a constant risk-free rate.
+The excess growth rate has units of year$^{-1}$ and is time-additive under continuous compounding.
+
+\subsection{Continuous Hidden Markov Model}
+
+We define the hidden Markov model as the tuple $\mathcal{M} = (\mathcal{S}, \mathcal{O}, \mathbf{T}, \mathbf{E}, \bar{\pi})$ \citep{rabiner1986introduction}, where:
+\begin{itemize}
+    \item $S_t \in \mathcal{S} = \{1, \ldots, K\}$ are the hidden states representing market regimes,
+    \item $\mathcal{O} \subset \mathbb{R}$ is the continuous observation space of excess growth rates,
+    \item $\mathbf{T} \in \mathbb{R}^{K \times K}$ is the state transition matrix with $T_{ij} = \Prob(S_{t+1} = j \mid S_t = i)$,
+    \item $\mathbf{E} = \{(\mu_k, \sigma_k)\}_{k=1}^{K}$ specifies the Gaussian emission distributions $G_t \mid S_t = k \sim \mathcal{N}(\mu_k, \sigma_k^2)$,
+    \item $\bar{\pi}$ is the stationary distribution satisfying $\bar{\pi} = \bar{\pi}\mathbf{T}$.
+\end{itemize}
+
+Unlike the discrete approach of \citet{alswaidan2026hybrid}, which discretizes observations into Laplace quantile bins and estimates $\mathbf{T}$ by frequency counting, we learn $\mathbf{T}$, $\{\mu_k\}$, $\{\sigma_k\}$, and $\bar{\pi}$ jointly from the continuous observations via the Baum-Welch algorithm.
+
+\subsection{Baum-Welch (EM) Algorithm}
+\label{sec:baum_welch}
+
+The Baum-Welch algorithm \citep{baum1970maximization} iterates between two steps until convergence.
+
+\paragraph{E-Step.}
+Compute the forward variables $\alpha_t(k) = \Prob(O_1, \ldots, O_t, S_t = k \mid \mathcal{M})$ and backward variables $\beta_t(k) = \Prob(O_{t+1}, \ldots, O_T \mid S_t = k, \mathcal{M})$ via:
+\begin{align}
+    \log \alpha_t(j) &= \text{logsumexp}\left(\log \alpha_{t-1}(\cdot) + \log T_{\cdot,j}\right) + \log b_j(O_t) \label{eq:forward} \\
+    \log \beta_t(i) &= \text{logsumexp}\left(\log T_{i,\cdot} + \log b_{\cdot}(O_{t+1}) + \log \beta_{t+1}(\cdot)\right) \label{eq:backward}
+\end{align}
+where $b_k(O_t) = \phi(O_t; \mu_k, \sigma_k)$ is the Gaussian emission density.
+All computations are performed in log-space to prevent numerical underflow for long sequences \citep{bilmes1998gentle}.
+
+The posterior state probability is:
+\begin{equation}
+    \gamma_t(k) = \Prob(S_t = k \mid O_{1:T}, \mathcal{M}) = \frac{\alpha_t(k) \beta_t(k)}{\sum_{j=1}^{K} \alpha_t(j) \beta_t(j)}
+    \label{eq:gamma}
+\end{equation}
+
+\paragraph{M-Step.}
+Re-estimate parameters using the posterior probabilities:
+\begin{align}
+    \mu_k^{\text{new}} &= \frac{\sum_{t=1}^{T} \gamma_t(k) \cdot O_t}{\sum_{t=1}^{T} \gamma_t(k)} \label{eq:mu_update} \\
+    (\sigma_k^{\text{new}})^2 &= \frac{\sum_{t=1}^{T} \gamma_t(k) \cdot (O_t - \mu_k^{\text{new}})^2}{\sum_{t=1}^{T} \gamma_t(k)} \label{eq:sigma_update} \\
+    T_{ij}^{\text{new}} &= \frac{\sum_{t=1}^{T-1} \xi_t(i,j)}{\sum_{t=1}^{T-1} \gamma_t(i)} \label{eq:T_update}
+\end{align}
+where $\xi_t(i,j) = \Prob(S_t = i, S_{t+1} = j \mid O_{1:T}, \mathcal{M})$.
+
+\paragraph{Initialization.}
+EM is sensitive to starting values.
+We use a quantile-based initialization: observations are sorted and partitioned into $K$ equal-sized chunks, and each chunk's sample mean and standard deviation seed the corresponding state's emission parameters.
+The transition matrix $\mathbf{T}$ and initial distribution $\pi$ are initialized uniformly.
+This strategy prevents the common failure mode where all states collapse to the global mean.
+
+\paragraph{Convergence.}
+The algorithm terminates when the change in log-likelihood $\mathcal{L} = \text{logsumexp}(\log \alpha_T(\cdot))$ falls below $\text{tol} = 10^{-4}$ or after \texttt{max\_iter} iterations.
+
+\subsection{Poisson Jump-Duration Mechanism}
+
+To address the volatility-clustering limitation of standard HMMs \citep{ryden1998stylized, bulla2006stylized}, we augment the continuous HMM with the same Poisson jump-duration mechanism introduced by \citet{alswaidan2026hybrid}.
+At each time step, with probability $\epsilon$, a jump event is triggered:
+\begin{enumerate}
+    \item A jump duration $D \sim \text{Poisson}(\lambda)$ is sampled.
+    \item For each of the $D$ subsequent steps, the standard Markov transition is overridden.
+    \item A coin flip with bias $p_{\text{neg}} = 0.52$ selects the target pool:
+    \begin{itemize}
+        \item \textbf{Crash states:} $\mathcal{S}^{-} = \{1, \ldots, N_{\text{tail}}\}$ (lowest-return regimes)
+        \item \textbf{Boom states:} $\mathcal{S}^{+} = \{K - N_{\text{tail}} + 1, \ldots, K\}$ (highest-return regimes)
+    \end{itemize}
+    \item A state is drawn uniformly from the selected tail set.
+\end{enumerate}
+
+The coin flip occurs \emph{inside} the duration loop, so each jump step independently selects crash or boom.
+This produces high volatility (magnitude) without directional trends, matching the empirical observation that large moves cluster regardless of sign \citep{mandelbrot1963variation, cont2001empirical}.
+
+We denote the model without jumps as CHMM-NJ and the model with jumps as CHMM-WJ.
+
+\subsection{Hyperparameter Optimization}
+
+The jump parameters $\epsilon$ (tail-entry probability) and $\lambda$ (mean jump duration) are selected via a grid search that minimizes:
+\begin{equation}
+    J(\epsilon, \lambda) = \sum_{\tau=1}^{L} \left[\text{ACF}_{\text{obs}}^{|G|}(\tau) - \text{ACF}_{\text{sim}}^{|G|}(\tau)\right]^2 + w_K \left[K_{\text{obs}} - K_{\text{sim}}\right]^2
+    \label{eq:objective}
+\end{equation}
+where $\text{ACF}^{|G|}(\tau)$ is the autocorrelation of absolute excess growth rates at lag $\tau$, $K_{\text{obs}}$ and $K_{\text{sim}}$ are the observed and simulated excess kurtosis, $L = 252$ trading days, and $w_K = 0.20$.
+Simulated quantities are averaged over 200 independent paths per grid point.
+The grid searches $\epsilon \in \{10^{-4}, 5 \times 10^{-4}, 10^{-3}, 5 \times 10^{-3}, 10^{-2}, 2.5 \times 10^{-2}\}$ and $\lambda \in \{10, 30, 55, 70, 85, 100, 130, 160\}$.
+
+\subsection{Validation Metrics}
+
+We evaluate synthetic data quality using five complementary metrics, following the framework of \citet{alswaidan2026hybrid} and \citet{stenger2024thinking}:
+
+\begin{enumerate}
+    \item \textbf{KS pass rate (\%):} Proportion of 1{,}000 simulated paths for which the two-sample Kolmogorov-Smirnov test \citep{kolmogorov1933, smirnov1948} fails to reject distributional equivalence at $\alpha = 0.05$.
+
+    \item \textbf{Excess kurtosis:} Simulated excess kurtosis averaged across paths, compared to the observed value.
+    Closer matching indicates better tail reproduction.
+
+    \item \textbf{ACF-MAE:} Mean absolute error between the observed and simulated autocorrelation functions of absolute excess growth rates:
+    \begin{equation}
+        \text{ACF-MAE} = \frac{1}{L} \sum_{\tau=1}^{L} \left|\hat{\rho}^{\text{obs}}_{|G|}(\tau) - \hat{\rho}^{\text{sim}}_{|G|}(\tau)\right|
+        \label{eq:acf_mae}
+    \end{equation}
+    Lower values indicate better reproduction of volatility clustering.
+
+    \item \textbf{Wasserstein-1 distance ($W_1$):} Mean absolute difference of sorted empirical quantiles \citep{glasserman2003monte}.
+
+    \item \textbf{Hellinger distance ($H$):} Histogram-based distributional overlap distance in $[0, 1]$; $H = 0$ indicates identical distributions.
+\end{enumerate}

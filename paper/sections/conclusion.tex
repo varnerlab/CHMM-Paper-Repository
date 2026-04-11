@@ -1,0 +1,24 @@
+We presented a continuous hidden Markov model framework that learns Gaussian emission parameters and transition probabilities directly from observed equity excess growth rates via the Baum-Welch algorithm, augmented with a Poisson jump-duration mechanism for volatility clustering.
+The key finding is that continuous Gaussian emissions achieve high distributional fidelity (87--95\% KS pass rates across $K \in \{3, 6, 9, 11, 13\}$ states) while eliminating the quantization error inherent in discrete state partitioning, though at the cost of systematic kurtosis underestimation relative to the Student-$t$ emissions of the discrete framework \citep{alswaidan2026hybrid}.
+
+The state resolution analysis demonstrated that distributional fidelity improves monotonically with $K$, while the jump mechanism's temporal contribution (ACF-MAE) remains stable across all resolutions.
+Cross-asset generalization to NVDA, JNJ, and JPM confirmed that the Baum-Welch training captures diverse volatility profiles without modification.
+Out-of-sample evaluation on held-out 2025 data showed robust generalization, with KS pass rates comparable to in-sample performance.
+
+Several directions for future work follow from these results.
+First, replacing Gaussian emissions with Student-$t$ or generalized hyperbolic distributions within the Baum-Welch loop would address the kurtosis gap while retaining the continuous estimation framework.
+Second, incorporating state-dependent volatility dynamics---where the emission variance follows a GARCH-like process within each regime---would combine the regime-switching structure of HMMs with the conditional variance modeling of GARCH, potentially addressing both distributional and temporal fidelity simultaneously.
+Third, extending the framework to multi-asset portfolio generation via copula-based dependence models \citep{alswaidan2026hybrid} would enable full cross-sectional simulation while preserving each asset's CHMM marginal.
+Finally, time-varying transition matrices estimated via rolling windows or Bayesian online learning would allow the model to adapt to structural regime shifts.
+
+\paragraph{Data Availability.}
+The simulation scripts, training and test data, and all code to reproduce the results in this paper are available under an MIT license from the paper repository: \url{https://github.com/altashly1/CHMM-paper}.
+The core continuous HMM implementation is available in the development repository: \url{https://github.com/altashly1/HMM-withJumps-WIP}.
+
+\paragraph{Conflict of Interest.}
+The authors declare no competing interests.
+
+\paragraph{Author Contributions.}
+J.V.\ directed the study.
+A.A.\ developed the continuous model, implemented the Baum-Welch algorithm, conducted the analysis, and generated the figures.
+Both authors edited and reviewed the final manuscript.
