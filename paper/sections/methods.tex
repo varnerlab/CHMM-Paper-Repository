@@ -1,10 +1,14 @@
 \subsection{Data}
 
 The empirical foundation of this study is a dataset of 424 United States-listed equities and exchange-traded funds spanning ten years (2014--2024).
-We focus our single-asset analysis on the SPDR S\&P~500 ETF Trust (SPY), which tracks the S\&P~500 index.
+We focus our single-asset equity analysis on the SPDR S\&P~500 ETF Trust (SPY), which tracks the S\&P~500 index.
 The data include daily open, high, low, and close prices along with volume-weighted average price (VWAP) metrics.
 The in-sample dataset comprises $T = 2{,}766$ trading days (January~3, 2014 to December~31, 2024).
 A subsequent 219 trading days in 2025 are reserved for out-of-sample testing.
+
+To extend the framework beyond equity returns, we additionally apply it to the CBOE Volatility Index (VIX), which measures 30-day implied volatility of S\&P~500 options and is widely regarded as the market's ``fear gauge.''
+Daily VIX close prices spanning April~2006 to December~2024 ($T = 4{,}713$ trading days) constitute the in-sample dataset, with January~2025 to April~2026 ($T = 317$ days) reserved for out-of-sample testing.
+VIX log returns exhibit statistical properties that differ markedly from equity returns---positive skewness (reflecting asymmetric volatility spikes), pronounced mean reversion, and extreme excess kurtosis---making it a challenging test case that probes the generality of the CHMM framework across asset classes.
 
 \subsection{Excess Growth Rate Calculation}
 

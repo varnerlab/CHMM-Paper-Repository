@@ -20,7 +20,7 @@ HMMs have since become a standard tool for latent-state modeling of financial ti
 
 The discrete HMM framework of \citet{alswaidan2026hybrid} addressed the volatility-clustering limitation by adding a Poisson jump-duration mechanism that forced the model to dwell in tail states for empirically realistic durations.
 That framework used Laplace quantile binning and direct frequency counting, bypassing the Baum-Welch algorithm entirely.
-The present work replaces the discretization step with continuous Gaussian emissions learned via Baum-Welch, preserving the jump mechanism while eliminating quantization error.
+The present work replaces the discretization step with continuous Gaussian emissions learned via Baum-Welch, preserving the jump mechanism while eliminating quantization error, and extends the framework to volatility indices (VIX) whose statistical properties---positive skewness, mean reversion, extreme kurtosis---differ markedly from equity returns.
 
 \subsection{The Baum-Welch Algorithm}
 

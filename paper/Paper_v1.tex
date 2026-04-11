@@ -35,6 +35,8 @@
 \author{
     Abdulrahman Alswaidan\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA.}
     \and
+    Cade Jin\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA.}
+    \and
     Jeffrey D.\ Varner\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA. Email: \texttt{jdv27@cornell.edu}.}
 }
 
@@ -46,16 +48,18 @@
 
 % ========================================================================================= %
 \begin{abstract}
-We present a continuous hidden Markov model (CHMM) framework for generating synthetic equity excess growth rate paths that preserve the stylized facts of financial returns.
-Unlike the discrete-state approach of \citet{alswaidan2026hybrid}, which discretizes observations into Laplace quantile bins and estimates transitions by frequency counting, we learn Gaussian emission parameters and transition probabilities directly from continuous observations via the Baum-Welch (Expectation-Maximization) algorithm, eliminating quantization error.
-The Poisson jump-duration mechanism is preserved to enforce realistic tail-state persistence and partially reproduce volatility clustering.
+We present a continuous hidden Markov model (CHMM) framework for generating synthetic financial time series that preserve the stylized facts of asset returns.
+Building on the discrete-state approach of \citet{alswaidan2026hybrid}, we learn Gaussian emission parameters and transition probabilities directly from continuous observations via the Baum-Welch (Expectation-Maximization) algorithm, eliminating the quantization error inherent in Laplace quantile binning while retaining the Poisson jump-duration mechanism for volatility clustering.
 Applied to ten years of daily SPDR S\&P~500 ETF (SPY) data, the framework achieves KS pass rates above 87\% across all state resolutions ($K \in \{3, 6, 9, 11, 13\}$) both in-sample and out-of-sample, with distributional fidelity improving monotonically with $K$.
 Baseline comparisons confirm that Gaussian i.i.d.\ generators fail entirely (0\% KS), while the CHMM variants consistently outperform Laplace i.i.d.\ generators and match or exceed bootstrap resampling on distributional metrics.
-Cross-asset generalization to NVDA, JNJ, and JPM confirms that the framework adapts to diverse volatility profiles.
-The continuous emission structure offers a natural foundation for future extensions incorporating stochastic volatility dynamics within the HMM regime-switching framework.
+Cross-asset generalization to NVDA, JNJ, and JPM confirms that the framework adapts to diverse equity risk profiles.
+
+We further extend the framework to \emph{volatility indices} by applying it to CBOE VIX log returns---an asset class exhibiting distinct statistical properties including stronger mean reversion, positive skewness, and pronounced volatility clustering.
+The VIX analysis achieves KS pass rates above 99\% at higher state resolutions ($K \geq 9$), with the jump mechanism becoming essential as $K$ increases: the base CHMM-NJ model already captures volatility clustering effectively at small $K$, but at larger $K$ the learned transition matrix produces insufficient tail-state residence times, necessitating the Poisson jump-duration extension.
+The continuous emission structure provides a natural foundation for downstream stochastic volatility applications; we outline how the learned regime-dependent emission variances can parameterize the mean-reversion target in a modified Heston model, enabling closed-form implied volatility generation for option pricing.
 
 \bigskip\noindent
-\textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch Algorithm, Jump-Diffusion, Volatility Clustering, Synthetic Financial Data, Regime-Switching
+\textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch Algorithm, Jump-Diffusion, Volatility Clustering, Synthetic Financial Data, Regime-Switching, VIX, Implied Volatility
 \end{abstract}
 
 % ========================================================================================= %

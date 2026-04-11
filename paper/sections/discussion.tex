@@ -31,6 +31,32 @@ The framework generalized well to individual equities (Table~\ref{tab:cross_asse
 The CHMM-WJ results showed more variable performance, with significant KS degradation for JNJ (0\% IS KS).
 This suggests that the jump mechanism's fixed tail-state selection rule ($N_{\text{tail}} = 3$) may not be appropriate for all assets; future work should explore asset-specific tail configurations.
 
+\paragraph{Extension to Volatility Indices.}
+The VIX results (Section~\ref{sec:vix_results}) substantially broaden the scope of the framework.
+VIX log returns exhibit positive skewness ($+1.10$, vs.\ SPY's $-0.75$), reflecting the asymmetric nature of volatility spikes, yet the CHMM framework achieves 99.7\% IS KS pass rate at $K = 13$---higher than the corresponding SPY result (94.6\%).
+This likely reflects the fact that VIX log returns, despite their extreme kurtosis, have a more symmetric central body that Gaussian mixtures can approximate effectively.
+
+The VIX analysis also clarifies the role of the jump mechanism.
+For SPY, the jump mechanism produced a nuanced distributional-temporal tradeoff (Section~\ref{sec:discussion}).
+For VIX, the pattern is cleaner: at small $K$ ($\leq 3$), the base model already captures volatility clustering because the few states have naturally broad emissions and long residence times.
+As $K$ increases beyond 6, the state space fragments and the learned transition matrix produces shorter tail-state dwell times.
+The Poisson jump extension compensates for this fragmentation, but only when calibrated conservatively ($\epsilon^* \sim 10^{-4}$).
+The $K = 6$ collapse (0.2\% WJ KS with $\epsilon^* = 0.025$, $\lambda^* = 160$) demonstrates that aggressive jump parameters are counterproductive when the asset's native dynamics already exhibit strong tail behavior.
+This finding suggests that the jump mechanism should be understood as a \emph{structural complement} that preserves tail persistence as the state space becomes more granular, not as a correction for model misspecification.
+
+\paragraph{Pathway to Implied Volatility Modeling.}
+The VIX application opens a direct pathway to option pricing.
+The CHMM learns a set of regime-dependent emission distributions $\{(\mu_k, \sigma_k)\}_{k=1}^{K}$, where each $\sigma_k$ characterizes the volatility of VIX returns in regime $k$.
+These parameters provide a natural, data-driven parameterization for the mean-reversion target $\theta(S_t)$ in a modified Heston stochastic volatility model \citep{heston1993closed}:
+\begin{equation}
+    dv_t = \kappa\left(\theta(S_t) - v_t\right)dt + \sigma_v \sqrt{v_t}\, dW_t^v
+    \label{eq:heston_regime}
+\end{equation}
+where $\theta(S_t) = \theta_{S_t}$ is the long-run variance level for the current HMM regime, and $S_t$ follows the CHMM's learned Markov dynamics (augmented with jumps).
+This construction makes implied volatility an \emph{output} of a structural model rather than requiring it as an exogenous input---breaking the circularity that plagues synthetic option pricing pipelines.
+The regime-driven $\theta$ produces realistic IV dynamics: volatility spikes when the HMM transitions to tail states, mean-reverts during calm regimes, and clusters when the Poisson jump mechanism forces sustained tail-state episodes.
+A full development of this integration is deferred to future work.
+
 \paragraph{Limitations.}
 Several limitations qualify these conclusions.
 First, the Gaussian emission assumption systematically underestimates excess kurtosis, limiting the model's ability to reproduce extreme tail events.
