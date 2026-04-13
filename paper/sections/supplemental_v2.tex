@@ -1,0 +1,259 @@
+\subsection{Baum-Welch Convergence}
+\label{sec:convergence}
+
+Figure~\ref{fig:convergence_all} shows the Baum-Welch convergence curves for all five state resolutions.
+All models converged within the 60-iteration budget, with the log-likelihood monotonically increasing (as guaranteed by the EM algorithm).
+Lower $K$ values typically converged faster (15--25 iterations), while higher $K$ values required 25--40 iterations to reach the convergence tolerance of $|\Delta\mathcal{L}| < 10^{-4}$.
+The monotonic increase confirms that the quantile-based initialization provided a valid starting point from which the EM algorithm could improve without encountering degenerate solutions.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Convergence-K3.pdf}
+    \caption{$K = 3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Convergence-K9.pdf}
+    \caption{$K = 9$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Convergence-K13.pdf}
+    \caption{$K = 13$}
+\end{subfigure}
+\caption{Baum-Welch convergence for selected state resolutions. Log-likelihood is monotonically increasing (EM guarantee) and plateaus well before $\texttt{max\_iter} = 60$.}
+\label{fig:convergence_all}
+\end{figure}
+
+\subsection{Emission Distributions Across State Resolutions}
+
+Since the CHMM eliminates the jump mechanism and grid search, the key structural variable is the number of hidden states $K$.
+Figure~\ref{fig:emissions_all} compares the learned emission distributions for $K = 3$, $K = 6$, and $K = 13$, illustrating how increasing state resolution refines the decomposition of the observed return distribution.
+
+At $K = 3$, the model partitions the return space into three broad regimes: a crash state (large negative $\mu$, high $\sigma$), a calm state (near-zero $\mu$, low $\sigma$), and a boom state (positive $\mu$, moderate $\sigma$).
+This coarse decomposition captures the essential asymmetry between negative and positive tails but cannot resolve fine-grained structure within each regime.
+
+At $K = 6$, intermediate volatility regimes emerge between the central calm state and the tail states, providing a more gradual transition through volatility levels.
+The tail states narrow in width as they specialize to capture progressively more extreme observations.
+
+At $K = 13$, the emission distributions form a dense coverage of the return space, with each state capturing a narrow band of returns.
+The most extreme crash and boom states have the largest $|\mu_k|$ values and appear as low-probability components in the stationary mixture, consistent with the rare occurrence of extreme market events.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Emission-PDFs-K3.pdf}
+    \caption{$K = 3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Emission-PDFs-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Emission-PDFs-K13.pdf}
+    \caption{$K = 13$}
+\end{subfigure}
+\caption{Learned Gaussian emission distributions across state resolutions, overlaid on the observed SPY return histogram. Higher $K$ values produce finer decomposition with dedicated states capturing tail behavior.}
+\label{fig:emissions_all}
+\end{figure}
+
+\subsection{Transition Matrix Structure}
+
+Figure~\ref{fig:transition_all} shows the learned transition matrices for $K = 6$ and $K = 13$ in log$_{10}$ color scale.
+Both matrices exhibit a dominant near-diagonal band, reflecting the tendency of the market to remain in its current regime.
+Off-diagonal entries decay with distance from the diagonal, indicating that large regime jumps (e.g., from a deep crash state directly to a boom state) are rare but nonzero.
+
+The diagonal dominance is critical for the ACF-MAE result discussed in Section~\ref{sec:discussion}: the self-transition probabilities $T_{kk}$ for central states are typically 0.7--0.95, producing mean sojourn times of 3--20 days.
+The mixture of these geometric sojourn times across states produces the sum-of-exponentials ACF profile that approximates the observed slow decay.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Transition-Matrix-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Transition-Matrix-K13.pdf}
+    \caption{$K = 13$}
+\end{subfigure}
+\caption{Learned transition matrices in log$_{10}$ color scale. The near-diagonal band reflects regime persistence; off-diagonal entries decay with distance, indicating that large regime transitions are rare.}
+\label{fig:transition_all}
+\end{figure}
+
+\subsection{Stationary Distributions}
+
+Figure~\ref{fig:stationary_all} shows the stationary distributions $\bar{\boldsymbol{\pi}}$ for $K = 6$ and $K = 13$.
+In both cases, the central states (those with $\mu_k$ near zero and moderate $\sigma_k$) receive the highest stationary probability, consistent with the empirical concentration of returns near zero.
+Tail states (crash and boom) receive low stationary probability, consistent with the rarity of extreme events.
+
+The stationary distribution determines the marginal mixture weights in equation~\eqref{eq:mixture}: states with higher $\bar{\pi}_k$ contribute more to the central body of the mixture distribution, while tail states contribute to the tails despite their low weight.
+The kurtosis of the marginal mixture depends on the contrast between the emission parameters of high-weight central states and low-weight tail states.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Stationary-Distribution-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Stationary-Distribution-K13.pdf}
+    \caption{$K = 13$}
+\end{subfigure}
+\caption{Stationary distributions $\bar{\boldsymbol{\pi}}$ for $K = 6$ and $K = 13$. Central states receive the highest stationary probability, consistent with the concentration of returns near zero.}
+\label{fig:stationary_all}
+\end{figure}
+
+\subsection{Residence Times}
+
+Figure~\ref{fig:residence_all} shows the natural residence times $\tau_k = 1/(1 - T_{kk})$ per state for $K = 6$ and $K = 13$.
+Under pure Markov dynamics (no jump mechanism), the expected duration in state $k$ before transitioning is $\tau_k$ steps.
+
+Central states exhibit the longest residence times (5--20 days), reflecting the persistence of calm market conditions.
+Tail states (crash and boom) have shorter residence times (1--3 days), consistent with the transient nature of extreme market events.
+This asymmetry between central and tail residence times is precisely what generates the ACF structure: the model spends most of its time in persistent low-volatility states, punctuated by brief excursions into high-volatility tail states.
+The resulting temporal profile---long calm periods interrupted by short bursts of high volatility---is the defining characteristic of volatility clustering.
+
+Notably, even without a jump mechanism, the tail states at higher $K$ maintain sufficient self-transition probability ($T_{kk} \approx 0.3$--$0.5$) to produce multi-day tail episodes.
+This contrasts with the discrete model of \citet{alswaidan2026hybrid}, where tail-state residence times were too short to sustain clustering without the Poisson jump extension.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Residence-Times-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Residence-Times-K13.pdf}
+    \caption{$K = 13$}
+\end{subfigure}
+\caption{Natural residence times $\tau_k = 1/(1 - T_{kk})$ per state. Central states have the longest residence times (5--20 days), while tail states are shorter-lived (1--3 days). This asymmetry drives volatility clustering.}
+\label{fig:residence_all}
+\end{figure}
+
+\subsection{ACF Comparison Across State Resolutions}
+
+Figure~\ref{fig:acf_all} shows the ACF of $|G_t|$ for the CHMM at $K = 3$ and $K = 13$, compared to the observed ACF.
+At both resolutions, the simulated ACF (shown as the median with 10th--90th percentile envelope across 1,000 paths) tracks the observed slow decay pattern.
+The CHMM does not perfectly match the observed ACF at all lags---the simulated ACF tends to decay slightly faster at very long lags ($\tau > 150$)---but the overall pattern of slow decay from an initial positive value is reproduced, in contrast to the rapid exponential decay that \citet{ryden1998stylized} reported for low-$K$ HMMs.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K3.pdf}
+    \caption{$K = 3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K13.pdf}
+    \caption{$K = 13$}
+\end{subfigure}
+\caption{ACF of $|G_t|$ for the CHMM at $K = 3$ and $K = 13$. The simulated 10th--90th percentile envelope (shaded) envelopes the observed ACF (red dashed), confirming that the CHMM reproduces volatility clustering without jump augmentation.}
+\label{fig:acf_all}
+\end{figure}
+
+\subsection{In-Sample Comparison at All State Resolutions}
+
+Figures~\ref{fig:is_k3}--\ref{fig:is_k13} show the in-sample model comparison panels for $K = 3, 6, 9$, and $13$, complementing the $K = 11$ comparison shown in Figure~\ref{fig:is_comparison} in the main text.
+Across all resolutions, the CHMM's simulated density closely overlays the observed density, and the ACF of absolute returns tracks the slow decay pattern.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K3.pdf}
+    \caption{$K = 3$}
+    \label{fig:is_k3}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K6.pdf}
+    \caption{$K = 6$}
+    \label{fig:is_k6}
+\end{subfigure}
+
+\vspace{0.5cm}
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K9.pdf}
+    \caption{$K = 9$}
+    \label{fig:is_k9}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K13.pdf}
+    \caption{$K = 13$}
+    \label{fig:is_k13}
+\end{subfigure}
+\caption{In-sample model comparison at $K = 3, 6, 9, 13$. At all resolutions, the CHMM's simulated density matches the observed distribution and the ACF of absolute returns reproduces the slow decay pattern.}
+\label{fig:is_all_k}
+\end{figure}
+
+\subsection{Out-of-Sample Comparison at All State Resolutions}
+
+Figures~\ref{fig:oos_k3}--\ref{fig:oos_k13} show the out-of-sample validation panels for $K = 3, 6, 9$, and $13$.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K3.pdf}
+    \caption{$K = 3$}
+    \label{fig:oos_k3}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K6.pdf}
+    \caption{$K = 6$}
+    \label{fig:oos_k6}
+\end{subfigure}
+
+\vspace{0.5cm}
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K9.pdf}
+    \caption{$K = 9$}
+    \label{fig:oos_k9}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K13.pdf}
+    \caption{$K = 13$}
+    \label{fig:oos_k13}
+\end{subfigure}
+\caption{Out-of-sample validation at $K = 3, 6, 9, 13$. KS pass rates remain above 91\% at all resolutions, confirming robust generalization to the held-out 2025 data.}
+\label{fig:oos_all_k}
+\end{figure}
+
+\subsection{Example Simulated Trajectories}
+
+Figure~\ref{fig:trajectories} shows example simulated return trajectories for $K = 6$ and $K = 13$, illustrating the qualitative dynamics produced by the CHMM.
+Both trajectories exhibit the characteristic pattern of financial returns: extended periods of low volatility punctuated by clusters of large-magnitude events.
+The color coding indicates the hidden state at each time step, showing how regime transitions drive the alternation between calm and volatile periods.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Trajectory-Example-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Trajectory-Example-K13.pdf}
+    \caption{$K = 13$}
+\end{subfigure}
+\caption{Example simulated return trajectories for $K = 6$ and $K = 13$. Colors indicate the hidden state at each time step. The alternation between calm (central states) and volatile (tail states) periods produces the volatility clustering characteristic of empirical financial returns.}
+\label{fig:trajectories}
+\end{figure}
+
+\subsection{VIX Results Detail}
+
+The CHMM framework was applied to VIX daily log returns to test generalization beyond equity returns.
+VIX returns exhibit positive skewness (reflecting asymmetric volatility spikes), pronounced mean reversion, and extreme excess kurtosis---properties that differ fundamentally from equity returns.
+
+The CHMM captured these properties effectively: at higher state resolutions ($K \geq 9$), the model achieved IS KS pass rates above 99\%, demonstrating that the Gaussian mixture mechanism can approximate even the positively skewed, heavy-tailed marginal distribution of VIX returns.
+The regime decomposition provided by the Viterbi algorithm aligned with known market events, assigning high-volatility states to crisis episodes and low-volatility states to calm market periods.
+
+The VIX extension demonstrates that the CHMM framework is not limited to equity returns but applies more broadly to financial time series with regime-switching dynamics.
+The decoded regimes and their associated median VIX levels provide the volatility map described in Section~\ref{sec:vix_methods}, linking the statistical model to the option pricing pathway.

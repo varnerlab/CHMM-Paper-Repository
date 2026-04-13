@@ -1,0 +1,48 @@
+Generating synthetic financial time series that faithfully preserve the statistical properties of real market data is a central challenge in quantitative finance.
+High-fidelity synthetic data are essential for stress testing risk models against plausible but unobserved market scenarios, validating portfolio optimization algorithms, and augmenting limited training sets for machine learning pipelines \citep{assefa2020generating, jordon2022synthetic}.
+Empirical equity excess growth rates exhibit three well-documented statistical regularities---heavy-tailed (leptokurtic) distributions, negligible linear autocorrelation in raw returns, and persistent volatility clustering---that any generative framework must simultaneously reproduce to be considered statistically faithful \citep{cont2001empirical, mandelbrot1963variation}.
+
+Parametric approaches to synthetic data generation face a fundamental tension between distributional accuracy and temporal fidelity.
+GARCH models \citep{engle1982autoregressive, bollerslev1986generalized} excel at reproducing the slow decay of the autocorrelation function (ACF) of absolute returns---the hallmark of volatility clustering---but their unimodal innovation distribution cannot represent the multi-regime structure of equity markets, leading to poor distributional fit.
+Conversely, i.i.d.\ generators that match the marginal distribution (e.g., Laplace sampling) achieve high distributional pass rates but produce flat ACF profiles by construction.
+Hidden Markov models (HMMs) offer a middle path: the latent regime structure can simultaneously generate heavy-tailed mixtures and temporal persistence through the transition dynamics.
+
+However, the application of HMMs to financial stylized facts has been constrained by an influential negative result.
+\citet{ryden1998stylized} systematically evaluated Gaussian-emission HMMs with $K = 2$--$3$ states against the canonical stylized facts and concluded that while HMMs reproduce heavy tails and negligible return autocorrelation, they \emph{fail} to capture the slow decay of the ACF of absolute returns.
+The mechanism is clear: with few states, the geometric sojourn-time distribution of a standard Markov chain produces exponentially fast ACF decay, insufficient to match the hyperbolic-like persistence observed empirically.
+\citet{bulla2006stylized} subsequently showed that hidden semi-Markov models (HSMMs), which replace the geometric sojourn distribution with flexible alternatives, restore ACF fidelity---but at the cost of substantially increased model complexity.
+
+\citet{alswaidan2026hybrid} proposed an alternative solution within the discrete HMM framework: a Poisson jump-duration mechanism that forces the model to dwell in tail states for empirically calibrated durations.
+That approach achieved 91--95\% Kolmogorov--Smirnov (KS) pass rates across 424 US equities and partially reproduced volatility clustering.
+However, the discrete framework introduced three sources of complexity: (i)~Laplace quantile binning, which discretizes continuous observations and introduces quantization error; (ii)~two additional hyperparameters ($\epsilon$ for jump probability and $\lambda$ for mean jump duration) requiring grid search calibration; and (iii)~within-bin Student-$t$ emission models whose parameters are estimated separately from the transition structure.
+
+In this paper, we show that these complexities are unnecessary.
+A continuous Gaussian HMM (CHMM) trained via the Baum-Welch algorithm \citep{baum1970maximization, rabiner1986introduction} with quantile-based initialization reproduces all three canonical stylized facts at moderate state resolution ($K = 6$--$13$) \emph{without} requiring jump augmentation, discretization, or separate emission fitting.
+The key insight is that the negative result of \citet{ryden1998stylized} is an artifact of insufficient state resolution: at $K \geq 3$ with proper initialization, the Baum-Welch algorithm learns a transition matrix with sufficient diagonal dominance in high-volatility states to generate slow ACF decay, effectively approximating the flexible sojourn-time distributions of HSMMs through a mixture of geometric distributions.
+
+The contributions of this work are:
+\begin{enumerate}
+    \item \textbf{Baum-Welch training without jump augmentation.}
+    We train continuous Gaussian emission parameters $(\mu_k, \sigma_k)$ and the transition matrix $\mathbf{T}$ jointly from raw observations via the Baum-Welch algorithm with quantile-based initialization.
+    The resulting CHMM achieves 90--94\% KS pass rates and ACF-MAE of 0.046--0.049 on absolute returns---comparable to GARCH(1,1) (ACF-MAE $= 0.047$)---without any jump mechanism, eliminating two hyperparameters ($\epsilon$, $\lambda$) and the discretization step.
+
+    \item \textbf{Contradiction of the Ryd\'{e}n et al.\ (1998) consensus.}
+    We demonstrate that the widely cited limitation of Gaussian HMMs---inability to reproduce volatility clustering---is a consequence of testing only $K = 2$--$3$ states.
+    At moderate $K$, the learned transition matrix develops sufficient persistence in high-volatility states to achieve ACF-MAE comparable to GARCH, which we show is effectively an approximation to the HSMM solution of \citet{bulla2006stylized}.
+
+    \item \textbf{Comprehensive five-model benchmark.}
+    We evaluate the CHMM against bootstrap resampling, Gaussian and Laplace i.i.d.\ generators, and GARCH(1,1) using seven complementary metrics---KS and Anderson--Darling (AD) pass rates, excess kurtosis, ACF-MAE, Wasserstein-1 and Hellinger distances, and quantile coverage---on 1,000 simulated paths in both in-sample (2014--2024) and out-of-sample (2025) windows.
+
+    \item \textbf{State resolution analysis.}
+    We systematically vary $K \in \{3, 6, 9, 11, 13\}$ and show that distributional fidelity improves with $K$ while ACF-MAE remains remarkably stable, and quantile coverage is 100\% at all resolutions.
+
+    \item \textbf{Cross-asset and volatility index generalization.}
+    We confirm robustness across NVDA, JNJ, and JPM (97--100\% IS KS), and extend the framework to CBOE VIX and VXX log returns, demonstrating that the CHMM captures the distinct statistical properties of volatility indices and provides a natural bridge to regime-switching option pricing.
+\end{enumerate}
+
+The remainder of this paper is organized as follows.
+Section~\ref{sec:related} reviews the relevant literature on stylized facts, parametric models, HMMs, and deep generative approaches.
+Section~\ref{sec:methods} describes the data, the CHMM specification, the Baum-Welch training procedure, the benchmark models, and the validation metrics.
+Section~\ref{sec:results} presents the empirical results: descriptive statistics, five-model comparison, state resolution sensitivity, out-of-sample evaluation, cross-asset generalization, and the VIX/VXX extension.
+Section~\ref{sec:discussion} interprets the findings---particularly the ACF-MAE result and its implications for the Ryd\'{e}n et al.\ consensus---and identifies limitations.
+Section~\ref{sec:conclusion} summarizes the contributions and outlines future directions.

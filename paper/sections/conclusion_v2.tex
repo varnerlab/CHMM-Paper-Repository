@@ -1,0 +1,44 @@
+We presented a continuous hidden Markov model (CHMM) with Gaussian emissions trained via the Baum-Welch algorithm for generating synthetic financial time series.
+The central finding is that the CHMM reproduces all three canonical stylized facts of equity returns---heavy-tailed distributions, negligible linear autocorrelation, and persistent volatility clustering---at moderate state resolution ($K = 6$--$13$) \emph{without} requiring jump augmentation, discretization, or any mechanism beyond the standard HMM framework.
+
+This result directly challenges the influential conclusion of \citet{ryden1998stylized} that Gaussian HMMs cannot reproduce the slow decay of the autocorrelation function of absolute returns.
+We demonstrated that this limitation is an artifact of insufficient state resolution: \citet{ryden1998stylized} tested only $K = 2$--$3$ states, where the geometric sojourn-time distribution cannot approximate slow ACF decay.
+At $K \geq 3$ with quantile-based initialization, the Baum-Welch algorithm learns a transition matrix with sufficient diagonal dominance in high-volatility states to sustain persistence, achieving ACF-MAE of 0.046--0.049---comparable to GARCH(1,1) (0.047)---through a sum-of-exponentials approximation that effectively mimics the flexible sojourn-time distributions of hidden semi-Markov models \citep{bulla2006stylized}.
+
+The elimination of the jump mechanism relative to the discrete framework of \citet{alswaidan2026hybrid} removes two hyperparameters ($\epsilon$ for jump probability, $\lambda$ for mean jump duration) and the associated grid search, reducing computational cost and model complexity.
+The joint optimization of emission parameters and transition probabilities via Baum-Welch allows the model to learn tail-state persistence directly from data, making the external jump forcing unnecessary.
+
+The five-model benchmark confirmed that no single generator dominates all seven evaluation metrics, but the CHMM achieves the most balanced performance: 94.4\% KS pass rate (vs.\ GARCH's 13\%), ACF-MAE of 0.048 (vs.\ GARCH's 0.047), Wasserstein-1 of 0.11 (vs.\ Laplace's 0.12), and 100\% quantile coverage.
+Cross-asset generalization to NVDA (97.4\% IS KS), JNJ (99.8\%), and JPM (98.6\%) confirmed adaptability to diverse equity risk profiles, and out-of-sample evaluation on held-out 2025 data showed robust generalization with KS pass rates above 91\% at all state resolutions.
+
+Extension of the framework to VIX log returns demonstrated that the CHMM captures the distinct statistical properties of volatility indices---positive skewness, mean reversion, and extreme kurtosis---and provides a natural bridge to option pricing through regime-switching geometric Brownian motion parameterized by CHMM-decoded volatility levels.
+
+Several directions for future work follow from these results:
+\begin{enumerate}
+    \item \textit{Heavy-tailed emissions.}
+    Replacing Gaussian emissions with Student-$t$ or generalized hyperbolic distributions within the Baum-Welch framework would address the kurtosis gap (7.71 observed vs.\ 3.7--5.1 simulated) while retaining joint optimization of emissions and transitions.
+
+    \item \textit{Time-varying transition dynamics.}
+    Estimating the transition matrix via rolling windows or Bayesian online learning would relax the stationarity assumption and potentially improve OoS performance for assets with non-stationary regime structures.
+
+    \item \textit{Multi-asset generation via copulas.}
+    Combining asset-specific CHMM marginals with copula-based dependence models \citep{alswaidan2026hybrid} would enable full cross-sectional portfolio simulation while preserving each asset's learned regime dynamics.
+
+    \item \textit{Formal option pricing.}
+    The VIX regime decomposition provides a data-driven parameterization for the mean-reversion target in a modified Heston stochastic volatility model \citep{heston1993closed}, enabling a fully structural pipeline from observed prices through regime identification to implied volatility surfaces without circular dependence on market option data.
+
+    \item \textit{Model selection.}
+    Applying information-theoretic criteria (AIC, BIC) or cross-validation to select $K$ would provide principled guidance on state resolution, complementing the sensitivity analysis presented here.
+\end{enumerate}
+
+\paragraph{Data and Code Availability.}
+The simulation scripts, training and test data, and all code to reproduce the results in this paper are available under an MIT license from the paper repository: \url{https://github.com/altashly1/CHMM-paper}.
+The core continuous HMM implementation is available in the development repository: \url{https://github.com/altashly1/HMM-withJumps-WIP}.
+
+\paragraph{Conflict of Interest.}
+The authors declare no competing interests.
+
+\paragraph{Author Contributions.}
+J.V.\ directed the study.
+A.A.\ developed the continuous model, implemented the Baum-Welch algorithm, conducted the empirical analysis, and generated all figures and tables.
+All authors edited and reviewed the final manuscript.
