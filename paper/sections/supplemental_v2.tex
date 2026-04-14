@@ -257,3 +257,283 @@ The regime decomposition provided by the Viterbi algorithm aligned with known ma
 
 The VIX extension demonstrates that the CHMM framework is not limited to equity returns but applies more broadly to financial time series with regime-switching dynamics.
 The decoded regimes and their associated median VIX levels provide the volatility map described in Section~\ref{sec:vix_methods}, linking the statistical model to the option pricing pathway.
+
+\subsection{Algorithm Descriptions}
+\label{sec:algorithms}
+
+This section provides detailed pseudocode for all algorithms used in this study.
+Algorithm~\ref{alg:baum_welch} describes the Baum-Welch (EM) procedure for learning CHMM parameters from continuous observations.
+Algorithm~\ref{alg:viterbi} presents the Viterbi algorithm for decoding the most likely hidden state sequence.
+Algorithm~\ref{alg:chmm_simulate} describes the CHMM simulation procedure for generating synthetic return paths.
+Algorithm~\ref{alg:garch_fit} details the GARCH(1,1) fitting procedure via grid-initialized Nelder-Mead optimization.
+Algorithm~\ref{alg:chmm_pricing} describes the regime-switching Monte Carlo option pricing pathway.
+Algorithm~\ref{alg:implied_vol} presents the implied volatility inversion via bisection.
+
+% ========================================================================================= %
+% Algorithm 1: Baum-Welch (EM) for Continuous Gaussian HMM
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{Baum-Welch (EM) algorithm for continuous Gaussian HMM parameter estimation}
+\label{alg:baum_welch}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Observations $O_{1:T}$, Number of states $K$, Tolerance $\text{tol}$, Max iterations $\texttt{max\_iter}$
+\ENSURE Transition matrix $\mathbf{T}$, Emission parameters $\{\mu_k, \sigma_k\}_{k=1}^K$, Initial distribution $\boldsymbol{\pi}$, Log-likelihood history
+
+\STATE \textbf{--- Quantile-Based Initialization ---}
+\STATE Sort observations: $O^{(\text{sort})} \leftarrow \text{sort}(O_{1:T})$.
+\STATE Partition $O^{(\text{sort})}$ into $K$ equal-sized chunks $\{C_1, \ldots, C_K\}$.
+\FOR{$k = 1$ to $K$}
+    \STATE $\mu_k \leftarrow \text{mean}(C_k)$, \quad $\sigma_k \leftarrow \max(\text{std}(C_k),\; 10^{-6})$.
+\ENDFOR
+\STATE $T_{ij} \leftarrow 1/K$ for all $i, j$; \quad $\pi_k \leftarrow 1/K$ for all $k$.
+\STATE $\mathcal{L}_{\text{prev}} \leftarrow -\infty$.
+
+\STATE \textbf{--- EM Loop ---}
+\FOR{$n = 1$ to $\texttt{max\_iter}$}
+
+    \STATE \textbf{E-Step:} Compute emission log-likelihoods $\log B_{t,k} = \log \mathcal{N}(O_t \mid \mu_k, \sigma_k^2)$ for all $t, k$.
+
+    \STATE \textit{Forward pass:}
+    \STATE $\log \alpha_1(k) \leftarrow \log \pi_k + \log B_{1,k}$ for all $k$.
+    \FOR{$t = 2$ to $T$}
+        \FOR{$j = 1$ to $K$}
+            \STATE $\log \alpha_t(j) \leftarrow \underset{i}{\text{logsumexp}}\!\left(\log \alpha_{t-1}(i) + \log T_{ij}\right) + \log B_{t,j}$
+        \ENDFOR
+    \ENDFOR
+
+    \STATE \textit{Backward pass:}
+    \STATE $\log \beta_T(k) \leftarrow 0$ for all $k$.
+    \FOR{$t = T-1$ down to $1$}
+        \FOR{$i = 1$ to $K$}
+            \STATE $\log \beta_t(i) \leftarrow \underset{j}{\text{logsumexp}}\!\left(\log T_{ij} + \log B_{t+1,j} + \log \beta_{t+1}(j)\right)$
+        \ENDFOR
+    \ENDFOR
+
+    \STATE \textit{Posterior quantities:}
+    \FOR{$t = 1$ to $T$}
+        \STATE $\gamma_t(k) \leftarrow \exp\!\left(\log \alpha_t(k) + \log \beta_t(k) - \underset{j}{\text{logsumexp}}(\log \alpha_t(j) + \log \beta_t(j))\right)$ for all $k$.
+    \ENDFOR
+    \FOR{$t = 1$ to $T-1$}
+        \FOR{$i = 1$ to $K$}
+            \FOR{$j = 1$ to $K$}
+                \STATE $\xi_t(i,j) \leftarrow \exp\!\left(\log \alpha_t(i) + \log T_{ij} + \log B_{t+1,j} + \log \beta_{t+1}(j) - \text{norm}\right)$
+            \ENDFOR
+        \ENDFOR
+    \ENDFOR
+
+    \STATE \textbf{M-Step:} Re-estimate parameters.
+    \STATE $\pi_k \leftarrow \gamma_1(k)$ for all $k$.
+    \FOR{$k = 1$ to $K$}
+        \STATE $\mu_k \leftarrow \sum_{t=1}^T \gamma_t(k) \cdot O_t \;/\; \sum_{t=1}^T \gamma_t(k)$
+        \STATE $\sigma_k \leftarrow \max\!\left(\sqrt{\sum_{t=1}^T \gamma_t(k) \cdot (O_t - \mu_k)^2 \;/\; \sum_{t=1}^T \gamma_t(k)},\; 10^{-6}\right)$
+    \ENDFOR
+    \FOR{$i = 1$ to $K$}
+        \STATE $T_{i,j} \leftarrow \sum_{t=1}^{T-1} \xi_t(i,j) \;/\; \sum_{t=1}^{T-1} \gamma_t(i)$ for all $j$.
+    \ENDFOR
+
+    \STATE \textbf{Convergence check:}
+    \STATE $\mathcal{L}^{(n)} \leftarrow \underset{k}{\text{logsumexp}}(\log \alpha_T(k))$.
+    \IF{$|\mathcal{L}^{(n)} - \mathcal{L}_{\text{prev}}| < \text{tol}$}
+        \STATE \textbf{break}
+    \ENDIF
+    \STATE $\mathcal{L}_{\text{prev}} \leftarrow \mathcal{L}^{(n)}$.
+\ENDFOR
+
+\RETURN $\mathbf{T}, \{\mu_k, \sigma_k\}_{k=1}^K, \boldsymbol{\pi}$
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 2: Viterbi Decoding
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{Viterbi decoding for the most likely hidden state sequence}
+\label{alg:viterbi}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Observations $O_{1:T}$, Trained CHMM $\mathcal{M} = (\mathbf{T}, \{\mu_k, \sigma_k\}, \boldsymbol{\pi})$
+\ENSURE Most probable state sequence $S_{1:T}^*$
+
+\STATE \textbf{--- Initialization ---}
+\FOR{$k = 1$ to $K$}
+    \STATE $\log \delta_1(k) \leftarrow \log(1/K) + \log \mathcal{N}(O_1 \mid \mu_k, \sigma_k^2)$.
+\ENDFOR
+
+\STATE \textbf{--- Forward Recursion ---}
+\FOR{$t = 2$ to $T$}
+    \FOR{$j = 1$ to $K$}
+        \STATE $\text{vals}(i) \leftarrow \log \delta_{t-1}(i) + \log T_{ij}$ for all $i$.
+        \STATE $\log \delta_t(j) \leftarrow \max_i \text{vals}(i) + \log \mathcal{N}(O_t \mid \mu_j, \sigma_j^2)$.
+        \STATE $\psi_t(j) \leftarrow \arg\max_i \text{vals}(i)$.
+    \ENDFOR
+\ENDFOR
+
+\STATE \textbf{--- Backtracking ---}
+\STATE $S_T^* \leftarrow \arg\max_k \log \delta_T(k)$.
+\FOR{$t = T-1$ down to $1$}
+    \STATE $S_t^* \leftarrow \psi_{t+1}(S_{t+1}^*)$.
+\ENDFOR
+
+\RETURN $S_{1:T}^*$
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 3: CHMM Simulation
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{CHMM simulation of synthetic excess growth rate paths}
+\label{alg:chmm_simulate}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Trained CHMM $\mathcal{M} = (\mathbf{T}, \{\mu_k, \sigma_k\}, \boldsymbol{\pi})$, Number of steps $M$, Number of paths $P$
+\ENSURE Simulated return paths $\{\hat{G}^{(p)}_{1:M}\}_{p=1}^{P}$
+
+\FOR{$p = 1$ to $P$}
+    \STATE Sample initial state $S_1 \sim \text{Categorical}(\boldsymbol{\pi})$.
+    \FOR{$t = 1$ to $M$}
+        \STATE Emit observation $\hat{G}_t^{(p)} \sim \mathcal{N}(\mu_{S_t}, \sigma_{S_t}^2)$.
+        \IF{$t < M$}
+            \STATE Transition to next state $S_{t+1} \sim \text{Categorical}(\mathbf{T}_{S_t, \cdot})$.
+        \ENDIF
+    \ENDFOR
+\ENDFOR
+
+\RETURN $\{\hat{G}^{(p)}_{1:M}\}_{p=1}^{P}$
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 4: GARCH(1,1) MLE via Grid-Initialized Nelder-Mead
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{GARCH(1,1) maximum likelihood estimation via grid-initialized Nelder-Mead}
+\label{alg:garch_fit}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Observations $G_{1:T}$
+\ENSURE Fitted parameters $(\omega^*, \alpha^*, \beta^*, \mu^*)$, Conditional variance history $\sigma^2_{1:T}$
+
+\STATE \textbf{--- Grid Search Initialization ---}
+\STATE Set $\mu_{\text{init}} \leftarrow \text{mean}(G_{1:T})$, \quad $\hat{\sigma}^2 \leftarrow \text{var}(G_{1:T})$.
+\STATE Define grids: $\alpha \in \{0.02, 0.05, 0.10, 0.15\}$, \quad $\beta \in \{0.70, 0.80, 0.85, 0.90\}$.
+\STATE $\text{NLL}_{\min} \leftarrow \infty$.
+\FOR{each $(\alpha, \beta)$ with $\alpha + \beta < 0.999$}
+    \STATE $\omega \leftarrow \hat{\sigma}^2 (1 - \alpha - \beta)$.
+    \STATE Evaluate $\text{NLL}(\omega, \alpha, \beta, \mu_{\text{init}})$:
+    \STATE \quad $\sigma_1^2 \leftarrow \omega / (1 - \alpha - \beta)$.
+    \FOR{$t = 1$ to $T$}
+        \STATE $\text{NLL} \mathrel{-}= -\tfrac{1}{2}\left[\log(2\pi) + \log(\sigma_t^2) + (G_t - \mu)^2 / \sigma_t^2\right]$
+        \IF{$t < T$}
+            \STATE $\sigma_{t+1}^2 \leftarrow \omega + \alpha (G_t - \mu)^2 + \beta \sigma_t^2$
+        \ENDIF
+    \ENDFOR
+    \IF{$\text{NLL} < \text{NLL}_{\min}$}
+        \STATE $\text{NLL}_{\min} \leftarrow \text{NLL}$; \quad store $(\omega, \alpha, \beta, \mu_{\text{init}})$ as best.
+    \ENDIF
+\ENDFOR
+
+\STATE \textbf{--- Nelder-Mead Optimization ---}
+\STATE Initialize simplex from best grid point with 20\% perturbation per dimension.
+\FOR{$\text{iter} = 1$ to $2000$}
+    \STATE Evaluate NLL at all simplex vertices; sort by ascending NLL.
+    \IF{$|\text{NLL}_{\text{worst}} - \text{NLL}_{\text{best}}| < 10^{-8}$}
+        \STATE \textbf{break} \COMMENT{Converged}
+    \ENDIF
+    \STATE Compute centroid of all vertices except worst.
+    \STATE \textit{Reflection:} $\mathbf{x}_r \leftarrow \mathbf{c} + (\mathbf{c} - \mathbf{x}_{\text{worst}})$.
+    \IF{$f(\mathbf{x}_r) < f(\mathbf{x}_{\text{best}})$}
+        \STATE \textit{Expansion:} $\mathbf{x}_e \leftarrow \mathbf{c} + 2(\mathbf{x}_r - \mathbf{c})$. Replace worst with better of $\mathbf{x}_r, \mathbf{x}_e$.
+    \ELSIF{$f(\mathbf{x}_r) < f(\mathbf{x}_{\text{2nd worst}})$}
+        \STATE Replace worst with $\mathbf{x}_r$.
+    \ELSE
+        \STATE \textit{Contraction:} $\mathbf{x}_c \leftarrow \mathbf{c} + 0.5(\mathbf{x}_{\text{worst}} - \mathbf{c})$.
+        \IF{$f(\mathbf{x}_c) < f(\mathbf{x}_{\text{worst}})$}
+            \STATE Replace worst with $\mathbf{x}_c$.
+        \ELSE
+            \STATE \textit{Shrink:} $\mathbf{x}_i \leftarrow \mathbf{x}_{\text{best}} + 0.5(\mathbf{x}_i - \mathbf{x}_{\text{best}})$ for all $i \neq \text{best}$.
+        \ENDIF
+    \ENDIF
+\ENDFOR
+
+\STATE \textbf{--- Variance Reconstruction ---}
+\STATE Extract $(\omega^*, \alpha^*, \beta^*, \mu^*)$ from best vertex.
+\STATE $\sigma_1^2 \leftarrow \omega^* / (1 - \alpha^* - \beta^*)$.
+\FOR{$t = 2$ to $T$}
+    \STATE $\sigma_t^2 \leftarrow \omega^* + \alpha^* (G_{t-1} - \mu^*)^2 + \beta^* \sigma_{t-1}^2$.
+\ENDFOR
+
+\RETURN $(\omega^*, \alpha^*, \beta^*, \mu^*)$, $\sigma^2_{1:T}$
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 5: CHMM Regime-Switching Monte Carlo Option Pricing
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{CHMM regime-switching Monte Carlo option pricing}
+\label{alg:chmm_pricing}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Trained CHMM $\mathcal{M}$ on VIX returns, VIX price series, Contract $(S_0, K, T, r)$, Number of paths $P$
+\ENSURE Option price $\hat{C}$ (or $\hat{P}$), Standard error
+
+\STATE \textbf{--- Volatility Map Construction ---}
+\STATE Decode VIX state sequence: $S_{1:T}^* \leftarrow \text{Viterbi}(O_{1:T}^{\text{VIX}}, \mathcal{M})$.
+\FOR{$k = 1$ to $K$}
+    \STATE $\bar{V}_k \leftarrow \text{median}(\{\text{VIX}_t : S_t^* = k\}) \;/\; 100$ \COMMENT{Map state to equity volatility}
+\ENDFOR
+
+\STATE \textbf{--- Stationary Distribution ---}
+\STATE Compute $\bar{\boldsymbol{\pi}} = \lim_{n \to \infty} \boldsymbol{\pi} \mathbf{T}^n$ via matrix power iteration.
+
+\STATE \textbf{--- Monte Carlo Simulation ---}
+\STATE Set $n_{\text{steps}} \leftarrow \lceil T \times 252 \rceil$, \quad $\Delta t \leftarrow T / n_{\text{steps}}$.
+\FOR{$p = 1$ to $P$}
+    \STATE Sample initial state $s_0 \sim \text{Categorical}(\bar{\boldsymbol{\pi}})$.
+    \STATE Simulate state path: $(S_1, \ldots, S_{n_{\text{steps}}}) \leftarrow \mathcal{M}(s_0,\; n_{\text{steps}})$.
+    \STATE $S \leftarrow S_0$.
+    \FOR{$t = 1$ to $n_{\text{steps}}$}
+        \STATE $\sigma_t \leftarrow \bar{V}_{S_t}$.
+        \STATE $Z \sim \mathcal{N}(0,1)$.
+        \STATE $S \leftarrow S \cdot \exp\!\left((r - \sigma_t^2 / 2)\Delta t + \sigma_t \sqrt{\Delta t}\; Z\right)$.
+    \ENDFOR
+    \STATE $\text{payoff}_p \leftarrow \max(S - K, 0)$ for calls, or $\max(K - S, 0)$ for puts.
+\ENDFOR
+
+\STATE $\hat{C} \leftarrow e^{-rT} \cdot \frac{1}{P}\sum_{p=1}^{P} \text{payoff}_p$.
+\STATE $\text{SE} \leftarrow \text{std}(e^{-rT} \cdot \text{payoffs}) \;/\; \sqrt{P}$.
+
+\RETURN $\hat{C}$, SE
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 6: Implied Volatility Inversion via Bisection
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{Implied volatility inversion via bisection}
+\label{alg:implied_vol}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Contract $(S_0, K, T, r)$, Market price $V_{\text{mkt}}$, Tolerance $\text{tol}$, Max iterations $N_{\max}$
+\ENSURE Implied volatility $\sigma_{\text{IV}}$
+
+\STATE $\sigma_{\text{lo}} \leftarrow 10^{-4}$, \quad $\sigma_{\text{hi}} \leftarrow 5.0$.
+\FOR{$n = 1$ to $N_{\max}$}
+    \STATE $\sigma_{\text{mid}} \leftarrow (\sigma_{\text{lo}} + \sigma_{\text{hi}}) / 2$.
+    \STATE $V_{\text{BS}} \leftarrow \text{BlackScholes}(S_0, K, T, r, \sigma_{\text{mid}})$.
+    \STATE $\text{err} \leftarrow V_{\text{BS}} - V_{\text{mkt}}$.
+    \IF{$|\text{err}| < \text{tol}$}
+        \RETURN $\sigma_{\text{mid}}$
+    \ELSIF{$\text{err} > 0$}
+        \STATE $\sigma_{\text{hi}} \leftarrow \sigma_{\text{mid}}$.
+    \ELSE
+        \STATE $\sigma_{\text{lo}} \leftarrow \sigma_{\text{mid}}$.
+    \ENDIF
+\ENDFOR
+
+\RETURN $(\sigma_{\text{lo}} + \sigma_{\text{hi}}) / 2$
+\end{algorithmic}
+\end{algorithm}
