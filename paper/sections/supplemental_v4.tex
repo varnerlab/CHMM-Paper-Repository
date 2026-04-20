@@ -1,0 +1,561 @@
+\subsection{Full State-Resolution Sensitivity Table}
+\label{sec:sensitivity_table}
+
+Table~\ref{tab:sensitivity} reports the full sweep summarized by Figure~\ref{fig:k_sweep_summary} in the main text.
+Observed excess kurtosis is 7.71 IS and 6.24 OoS at all $K$.
+
+\begin{table}[H]
+\centering
+\caption{State resolution sensitivity for SPY CHMM (1{,}000 paths, $\alpha = 0.05$). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison} in the main text. Coverage was 100\% at every $K$ in both IS and OoS windows.}
+\label{tab:sensitivity}
+\small
+\begin{tabular}{c cc cc cc c c c c}
+\toprule
+& \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & \multicolumn{2}{c}{Kurtosis} & & & & \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+$K$ & IS & OoS & IS & OoS & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov (\%) \\
+\midrule
+3  & 89.7 & 92.3 & 81.4 & 83.2 & 7.71 & 3.94 & 0.0458 & 0.119 & 0.0790 & 100.0 \\
+6  & 93.4 & 92.5 & 87.1 & 84.3 & 7.71 & 5.06 & 0.0490 & 0.106 & 0.0782 & 100.0 \\
+9  & 92.9 & 91.9 & 83.3 & 84.1 & 7.71 & 3.70 & 0.0468 & 0.114 & 0.0779 & 100.0 \\
+12 & 94.5 & 93.8 & 86.1 & 86.0 & 7.71 & 4.18 & 0.0479 & 0.109 & 0.0767 & 100.0 \\
+15 & 94.2 & 93.4 & 88.5 & 85.8 & 7.71 & 4.52 & 0.0490 & 0.106 & 0.0766 & 100.0 \\
+\textbf{18} & \textbf{95.2} & \textbf{95.6} & \textbf{88.4} & \textbf{90.0} & 7.71 & \textbf{5.11} & 0.0502 & \textbf{0.102} & 0.0771 & 100.0 \\
+21 & 94.7 & 95.4 & 88.3 & 88.1 & 7.71 & 4.71 & 0.0505 & 0.103 & 0.0774 & 100.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Baum-Welch Convergence}
+\label{sec:convergence}
+
+Figure~\ref{fig:convergence_all} shows the Baum-Welch convergence curves for representative state resolutions.
+All models converged within the 60-iteration budget, with the log-likelihood monotonically increasing (as guaranteed by the EM algorithm).
+Lower $K$ values typically converged faster (15--25 iterations), while higher $K$ values required 25--40 iterations to reach the convergence tolerance of $|\Delta\mathcal{L}| < 10^{-4}$.
+The monotonic increase confirms that the quantile-based initialization provided a valid starting point from which the EM algorithm could improve without encountering degenerate solutions.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Convergence-K3.pdf}
+    \caption{$K = 3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Convergence-K12.pdf}
+    \caption{$K = 12$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Convergence-K18.pdf}
+    \caption{$K = 18$ (selected)}
+\end{subfigure}
+\caption{Baum-Welch convergence for selected state resolutions. Log-likelihood is monotonically increasing (EM guarantee) and plateaus well before $\texttt{max\_iter} = 60$.}
+\label{fig:convergence_all}
+\end{figure}
+
+\subsection{Emission Distributions Across State Resolutions}
+
+Since the CHMM eliminates the jump mechanism and grid search, the key structural variable is the number of hidden states $K$.
+Figure~\ref{fig:emissions_all} compares the learned emission distributions for $K \in \{3, 6, 12, 18\}$, illustrating how increasing state resolution refines the decomposition of the observed return distribution.
+
+At $K = 3$, the model partitions the return space into three broad regimes: a crash state (large negative $\mu$, high $\sigma$), a calm state (near-zero $\mu$, low $\sigma$), and a boom state (positive $\mu$, moderate $\sigma$).
+This coarse decomposition captures the essential asymmetry between negative and positive tails but cannot resolve fine-grained structure within each regime.
+
+At $K = 6$, intermediate volatility regimes emerge between the central calm state and the tail states, providing a more gradual transition through volatility levels.
+
+At $K = 12$--$18$, the emission distributions form a dense coverage of the return space, with each state capturing a narrow band of returns.
+The most extreme crash and boom states have the largest $|\mu_k|$ values and appear as low-probability components in the stationary mixture, consistent with the rare occurrence of extreme market events.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Emission-PDFs-K3.pdf}
+    \caption{$K = 3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Emission-PDFs-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Emission-PDFs-K12.pdf}
+    \caption{$K = 12$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Emission-PDFs-K18.pdf}
+    \caption{$K = 18$ (selected)}
+\end{subfigure}
+\caption{Learned Gaussian emission distributions across state resolutions, overlaid on the observed SPY return histogram. Higher $K$ values produce finer decomposition with dedicated states capturing tail behavior.}
+\label{fig:emissions_all}
+\end{figure}
+
+\subsection{Transition Matrix Structure}
+
+Figure~\ref{fig:transition_all} shows the learned transition matrices for $K = 6$ and $K = 18$ in log$_{10}$ color scale.
+Both matrices exhibit a dominant near-diagonal band, reflecting the tendency of the market to remain in its current regime.
+Off-diagonal entries decay with distance from the diagonal, indicating that large regime jumps (for example, from a deep crash state directly to a boom state) are rare but nonzero.
+
+The diagonal dominance is critical for the ACF-MAE result discussed in Section~\ref{sec:discussion}: the self-transition probabilities $T_{kk}$ for central states are typically 0.7--0.95, producing mean sojourn times of 3--20 days.
+The mixture of these geometric sojourn times across states produces the sum-of-exponentials ACF profile that approximates the observed slow decay.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Transition-Matrix-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Transition-Matrix-K18.pdf}
+    \caption{$K = 18$ (selected)}
+\end{subfigure}
+\caption{Learned transition matrices in log$_{10}$ color scale. The near-diagonal band reflects regime persistence; off-diagonal entries decay with distance, indicating that large regime transitions are rare.}
+\label{fig:transition_all}
+\end{figure}
+
+\subsection{Stationary Distributions and Residence Times}
+
+Figure~\ref{fig:stationary_all} shows the stationary distributions $\bar{\boldsymbol{\pi}}$ for $K = 6$ and $K = 18$.
+In both cases, the central states (those with $\mu_k$ near zero and moderate $\sigma_k$) receive the highest stationary probability, consistent with the empirical concentration of returns near zero.
+Tail states (crash and boom) receive low stationary probability, consistent with the rarity of extreme events.
+
+Figure~\ref{fig:residence_all} shows the natural residence times $\tau_k = 1/(1 - T_{kk})$ per state for $K = 6$ and $K = 18$.
+Under pure Markov dynamics (no jump mechanism), the expected duration in state $k$ before transitioning is $\tau_k$ steps.
+Central states exhibit the longest residence times (5--20 days), while tail states have shorter residence times (1--3 days), consistent with the transient nature of extreme market events.
+Notably, even without a jump mechanism, the tail states at higher $K$ maintain sufficient self-transition probability ($T_{kk} \approx 0.3$--$0.5$) to produce multi-day tail episodes.
+This contrasts with the discrete model of \citet{alswaidan2026hybrid}, where tail-state residence times were too short to sustain clustering without the Poisson jump extension.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Stationary-Distribution-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Stationary-Distribution-K18.pdf}
+    \caption{$K = 18$}
+\end{subfigure}
+\caption{Stationary distributions $\bar{\boldsymbol{\pi}}$ for $K = 6$ and $K = 18$. Central states receive the highest stationary probability, consistent with the concentration of returns near zero.}
+\label{fig:stationary_all}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Residence-Times-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Residence-Times-K18.pdf}
+    \caption{$K = 18$}
+\end{subfigure}
+\caption{Natural residence times $\tau_k = 1/(1 - T_{kk})$ per state. Central states have the longest residence times (5--20 days), while tail states are shorter-lived (1--3 days). This asymmetry drives volatility clustering.}
+\label{fig:residence_all}
+\end{figure}
+
+\subsection{In-Sample Comparison at Non-Selected State Resolutions}
+\label{sec:k_sweep_panels}
+
+Figure~\ref{fig:k_sweep_panels_is} shows the in-sample model comparison panels for $K \in \{3, 6, 9, 12, 15, 21\}$, complementing the $K = 18$ comparison in Figure~\ref{fig:is_comparison} of the main text.
+Across all resolutions, the CHMM's simulated density closely overlays the observed density, and the ACF of absolute returns tracks the slow decay pattern.
+The visible improvement from $K = 3$ to $K = 18$ is concentrated in the tails of the Q-Q panel and the steady-state level of the ACF panel.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K3.pdf}
+    \caption{$K = 3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K9.pdf}
+    \caption{$K = 9$}
+\end{subfigure}
+
+\vspace{0.4cm}
+
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K12.pdf}
+    \caption{$K = 12$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K15.pdf}
+    \caption{$K = 15$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K21.pdf}
+    \caption{$K = 21$}
+\end{subfigure}
+\caption{In-sample CHMM comparison panels at the non-selected state resolutions. Panel $K = 18$ is reproduced in Figure~\ref{fig:is_comparison} of the main text.}
+\label{fig:k_sweep_panels_is}
+\end{figure}
+
+\subsection{Out-of-Sample Validation at Non-Selected State Resolutions}
+
+Figure~\ref{fig:k_sweep_panels_oos} shows the out-of-sample validation panels for $K \in \{3, 6, 9, 12, 15, 21\}$.
+KS pass rates remain above 91\% at all resolutions; the $K = 18$ panel is reproduced in Figure~\ref{fig:oos_validation} of the main text.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K3.pdf}
+    \caption{$K = 3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K9.pdf}
+    \caption{$K = 9$}
+\end{subfigure}
+
+\vspace{0.4cm}
+
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K12.pdf}
+    \caption{$K = 12$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K15.pdf}
+    \caption{$K = 15$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K21.pdf}
+    \caption{$K = 21$}
+\end{subfigure}
+\caption{Out-of-sample CHMM validation panels at the non-selected state resolutions.}
+\label{fig:k_sweep_panels_oos}
+\end{figure}
+
+\subsection{ACF Comparison Across State Resolutions}
+
+Figure~\ref{fig:acf_all} shows the ACF of $|G_t|$ for the CHMM at $K = 3$, $K = 12$, and $K = 18$, compared to the observed ACF.
+At all resolutions, the simulated ACF (shown as the median with 10th--90th percentile envelope across 1{,}000 paths) tracks the observed slow decay pattern.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K3.pdf}
+    \caption{$K = 3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K12.pdf}
+    \caption{$K = 12$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K18.pdf}
+    \caption{$K = 18$ (selected)}
+\end{subfigure}
+\caption{ACF of $|G_t|$ for the CHMM at $K = 3$, $K = 12$, and $K = 18$. The simulated 10th--90th percentile envelope (shaded) envelopes the observed ACF (red dashed), confirming that the CHMM reproduces volatility clustering without jump augmentation across the entire sweep.}
+\label{fig:acf_all}
+\end{figure}
+
+\subsection{Example Simulated Trajectories}
+
+Figure~\ref{fig:trajectories} shows example simulated return trajectories for $K = 6$ and $K = 18$, illustrating the qualitative dynamics produced by the CHMM.
+Both trajectories exhibit the characteristic pattern of financial returns: extended periods of low volatility punctuated by clusters of large-magnitude events.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Trajectory-Example-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Trajectory-Example-K18.pdf}
+    \caption{$K = 18$}
+\end{subfigure}
+\caption{Example simulated return trajectories. The alternation between calm (central states) and volatile (tail states) periods produces the volatility clustering characteristic of empirical financial returns.}
+\label{fig:trajectories}
+\end{figure}
+
+\subsection{Cross-Asset Dependence Models: Derivations and Diagnostics}
+\label{sec:cross_asset_supp}
+
+This appendix provides the technical background for the SIM and copula constructions used in Section~\ref{sec:cross_asset} of the main text.
+
+\paragraph{Sklar's theorem and the rank-reordering simulator.}
+Sklar's theorem \cite{sklar1959fonctions, nelsen2006introduction} states that any $d$-dimensional joint CDF $H(g_1, \dots, g_d)$ with continuous marginals $F_1, \dots, F_d$ can be written as $H = C(F_1, \dots, F_d)$ for a unique copula $C$.
+The rank-reordering simulator exploits this uniqueness.
+If $\tilde{\mathbf{G}}$ is a matrix whose $j$-th column is an i.i.d.\ sample from $F_j$, and $\mathbf{U}$ is an independent sample from $C$, then reordering each column of $\tilde{\mathbf{G}}$ so that its ranks match $\mathbf{U}$'s produces a sample from $H$, up to discrete approximation error in the empirical ranks.
+Crucially, reordering never creates new values: each column of the output is a permutation of the corresponding column of $\tilde{\mathbf{G}}$, so marginal distributions are preserved exactly \cite{iman1982distribution}.
+
+\paragraph{Kendall's $\tau$ inversion.}
+Given in-sample returns $\mathbf{R} \in \mathbb{R}^{T \times d}$, we estimate the pairwise Kendall's $\tau_{ij}$ from concordant/discordant pair counts and invert to the correlation scale via the analytic relationship $\rho_{ij} = \sin(\pi \tau_{ij} / 2)$, which holds exactly for the Gaussian copula family and is commonly used as a robust correlation estimator for the Student-t copula \cite{embrechts2002correlation, mcneil2015quantitative}.
+The resulting matrix $\hat{\Sigma}$ is symmetric but not guaranteed positive semi-definite; we project to the nearest PSD matrix by clipping negative eigenvalues to $10^{-8}$ and rescaling the diagonal to unity.
+
+\paragraph{Profile MLE for $\nu$.}
+The Student-t copula log-density at a single pseudo-uniform observation $\mathbf{u} \in [0,1]^d$ is
+\begin{equation}
+  \log c_t(\mathbf{u}; \Sigma, \nu) \;=\; \log \Gamma\!\left(\tfrac{\nu+d}{2}\right) + (d-1)\log \Gamma\!\left(\tfrac{\nu}{2}\right) - d \log \Gamma\!\left(\tfrac{\nu+1}{2}\right) - \tfrac{1}{2} \log |\Sigma|
+  - \tfrac{\nu+d}{2} \log\!\left(1 + \tfrac{\mathbf{x}^\top \Sigma^{-1} \mathbf{x}}{\nu}\right) + \sum_{j=1}^d \tfrac{\nu+1}{2} \log\!\left(1 + \tfrac{x_j^2}{\nu}\right),
+  \label{eq:tcop_ll}
+\end{equation}
+where $x_j = t_\nu^{-1}(u_j)$.
+Summing over $t = 1, \dots, T$ pseudo-observations yields the profile log-likelihood as a function of $\nu$ with $\Sigma$ held fixed at the Kendall's-$\tau$ estimate.
+We evaluate equation~\eqref{eq:tcop_ll} on the discrete grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ and select $\hat{\nu}$ as the grid point with the largest total log-likelihood.
+In Section~\ref{sec:cross_asset} the selected value was $\hat{\nu} = 6$ on the six-asset universe.
+
+\paragraph{Sampling the copula.}
+To sample $T$ rows from the $d$-dimensional Gaussian copula with correlation $\Sigma$, we (i) compute the Cholesky factor $\Sigma = L L^\top$, (ii) draw $Z \sim \mathcal{N}(0, I_d)$ i.i.d.\ and form $Y = L Z$, and (iii) return $U = \Phi(Y)$ componentwise.
+For the Student-t copula with degrees of freedom $\nu$, we draw $W \sim \chi^2_\nu / \nu$ independent of $Y$ and form the multivariate-$t$ variate $X = Y / \sqrt{W}$, then return $U = t_\nu(X)$ componentwise.
+
+\paragraph{SIM regression summary.}
+Table~\ref{tab:sim_regression} reports the fitted SIM regression coefficients and goodness-of-fit statistics for the non-market assets in Section~\ref{sec:cross_asset}.
+QQQ's high $R^2 = 0.841$ reflects that the Nasdaq-100 ETF is essentially a linear combination of large-cap technology names that also drive the S\&P~500 index, while JNJ's lower $R^2 = 0.225$ reflects the limited systematic exposure of low-beta healthcare stocks.
+These factor loadings and residual magnitudes are what the SIM simulation in equation~\eqref{eq:sim_sim} re-injects at simulation time, and they explain the uneven per-asset KS pass rates reported in Table~\ref{tab:cross_asset_sim_copula}.
+
+\begin{table}[H]
+\centering
+\caption{SIM regression $\hat{G}_{j,t} = \hat{\alpha}_j + \hat{\beta}_j G_{\text{SPY},t} + \hat{\eta}_{j,t}$ for the five non-market assets, fitted on the 2014--2024 in-sample window ($T = 2{,}766$). Coefficients $\hat{\alpha}, \hat{\beta}$ and $R^2$ are reported for the factor equation used in equation~\eqref{eq:sim_sim}.}
+\label{tab:sim_regression}
+\small
+\begin{tabular}{l ccc}
+\toprule
+Ticker & $\hat{\alpha}$ & $\hat{\beta}$ & $R^2$ \\
+\midrule
+NVDA & $0.347$   & $1.749$ & $0.370$ \\
+JNJ  & $-0.016$  & $0.539$ & $0.225$ \\
+JPM  & $0.001$   & $1.204$ & $0.483$ \\
+AAPL & $0.106$   & $1.194$ & $0.474$ \\
+QQQ  & $0.041$   & $1.134$ & $0.841$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{VIX Results Detail}
+
+The CHMM framework was applied to VIX daily log returns to test generalization beyond equity returns.
+VIX returns exhibit positive skewness (reflecting asymmetric volatility spikes), pronounced mean reversion, and extreme excess kurtosis, properties that differ fundamentally from equity returns.
+
+The CHMM captured these properties effectively: at higher state resolutions ($K \geq 9$), the model achieved IS KS pass rates above 99\%, demonstrating that the Gaussian mixture mechanism can approximate even the positively skewed, heavy-tailed marginal distribution of VIX returns.
+The regime decomposition provided by the Viterbi algorithm aligned with known market events, assigning high-volatility states to crisis episodes and low-volatility states to calm market periods.
+
+The VIX extension demonstrates that the CHMM framework is not limited to equity returns but applies more broadly to financial time series with regime-switching dynamics.
+The decoded regimes and their associated median VIX levels provide the volatility map described in Section~\ref{sec:vix_methods}, linking the statistical model to the regime-switching GBM simulation.
+
+\subsection{Algorithm Descriptions}
+\label{sec:algorithms}
+
+This section provides detailed pseudocode for the main algorithms used in this study.
+Algorithm~\ref{alg:baum_welch} describes the Baum-Welch (EM) procedure for learning CHMM parameters from continuous observations.
+Algorithm~\ref{alg:viterbi} presents the Viterbi algorithm for decoding the most likely hidden state sequence.
+Algorithm~\ref{alg:chmm_simulate} describes the CHMM simulation procedure for generating synthetic return paths.
+Algorithm~\ref{alg:copula_sim} describes the cross-asset rank-reordering simulator for copula-based multi-asset synthesis.
+Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline.
+
+% ========================================================================================= %
+% Algorithm 1: Baum-Welch (EM) for Continuous Gaussian HMM
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{Baum-Welch (EM) algorithm for continuous Gaussian HMM parameter estimation}
+\label{alg:baum_welch}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Observations $O_{1:T}$, Number of states $K$, Tolerance $\text{tol}$, Max iterations $\texttt{max\_iter}$
+\ENSURE Transition matrix $\mathbf{T}$, Emission parameters $\{\mu_k, \sigma_k\}_{k=1}^K$, Initial distribution $\boldsymbol{\pi}$, Log-likelihood history
+
+\STATE \textbf{Quantile-Based Initialization.}
+\STATE Sort observations: $O^{(\text{sort})} \leftarrow \text{sort}(O_{1:T})$.
+\STATE Partition $O^{(\text{sort})}$ into $K$ equal-sized chunks $\{C_1, \ldots, C_K\}$.
+\FOR{$k = 1$ to $K$}
+    \STATE $\mu_k \leftarrow \text{mean}(C_k)$, \quad $\sigma_k \leftarrow \max(\text{std}(C_k),\; 10^{-6})$.
+\ENDFOR
+\STATE $T_{ij} \leftarrow 1/K$ for all $i, j$; \quad $\pi_k \leftarrow 1/K$ for all $k$.
+\STATE $\mathcal{L}_{\text{prev}} \leftarrow -\infty$.
+
+\STATE \textbf{EM Loop.}
+\FOR{$n = 1$ to $\texttt{max\_iter}$}
+
+    \STATE \textbf{E-Step:} Compute emission log-likelihoods $\log B_{t,k} = \log \mathcal{N}(O_t \mid \mu_k, \sigma_k^2)$ for all $t, k$.
+
+    \STATE \textit{Forward pass:}
+    \STATE $\log \alpha_1(k) \leftarrow \log \pi_k + \log B_{1,k}$ for all $k$.
+    \FOR{$t = 2$ to $T$}
+        \FOR{$j = 1$ to $K$}
+            \STATE $\log \alpha_t(j) \leftarrow \underset{i}{\text{logsumexp}}\!\left(\log \alpha_{t-1}(i) + \log T_{ij}\right) + \log B_{t,j}$
+        \ENDFOR
+    \ENDFOR
+
+    \STATE \textit{Backward pass:}
+    \STATE $\log \beta_T(k) \leftarrow 0$ for all $k$.
+    \FOR{$t = T-1$ down to $1$}
+        \FOR{$i = 1$ to $K$}
+            \STATE $\log \beta_t(i) \leftarrow \underset{j}{\text{logsumexp}}\!\left(\log T_{ij} + \log B_{t+1,j} + \log \beta_{t+1}(j)\right)$
+        \ENDFOR
+    \ENDFOR
+
+    \STATE \textit{Posterior quantities:}
+    \FOR{$t = 1$ to $T$}
+        \STATE $\gamma_t(k) \leftarrow \exp\!\left(\log \alpha_t(k) + \log \beta_t(k) - \underset{j}{\text{logsumexp}}(\log \alpha_t(j) + \log \beta_t(j))\right)$ for all $k$.
+    \ENDFOR
+    \FOR{$t = 1$ to $T-1$}
+        \FOR{$i = 1$ to $K$}
+            \FOR{$j = 1$ to $K$}
+                \STATE $\xi_t(i,j) \leftarrow \exp\!\left(\log \alpha_t(i) + \log T_{ij} + \log B_{t+1,j} + \log \beta_{t+1}(j) - \text{norm}\right)$
+            \ENDFOR
+        \ENDFOR
+    \ENDFOR
+
+    \STATE \textbf{M-Step:} Re-estimate parameters.
+    \STATE $\pi_k \leftarrow \gamma_1(k)$ for all $k$.
+    \FOR{$k = 1$ to $K$}
+        \STATE $\mu_k \leftarrow \sum_{t=1}^T \gamma_t(k) \cdot O_t \;/\; \sum_{t=1}^T \gamma_t(k)$
+        \STATE $\sigma_k \leftarrow \max\!\left(\sqrt{\sum_{t=1}^T \gamma_t(k) \cdot (O_t - \mu_k)^2 \;/\; \sum_{t=1}^T \gamma_t(k)},\; 10^{-6}\right)$
+    \ENDFOR
+    \FOR{$i = 1$ to $K$}
+        \STATE $T_{i,j} \leftarrow \sum_{t=1}^{T-1} \xi_t(i,j) \;/\; \sum_{t=1}^{T-1} \gamma_t(i)$ for all $j$.
+    \ENDFOR
+
+    \STATE \textbf{Convergence check.}
+    \STATE $\mathcal{L}^{(n)} \leftarrow \underset{k}{\text{logsumexp}}(\log \alpha_T(k))$.
+    \IF{$|\mathcal{L}^{(n)} - \mathcal{L}_{\text{prev}}| < \text{tol}$}
+        \STATE \textbf{break}
+    \ENDIF
+    \STATE $\mathcal{L}_{\text{prev}} \leftarrow \mathcal{L}^{(n)}$.
+\ENDFOR
+
+\RETURN $\mathbf{T}, \{\mu_k, \sigma_k\}_{k=1}^K, \boldsymbol{\pi}$
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 2: Viterbi Decoding
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{Viterbi decoding for the most likely hidden state sequence}
+\label{alg:viterbi}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Observations $O_{1:T}$, Trained CHMM $\mathcal{M} = (\mathbf{T}, \{\mu_k, \sigma_k\}, \boldsymbol{\pi})$
+\ENSURE Most probable state sequence $S_{1:T}^*$
+
+\FOR{$k = 1$ to $K$}
+    \STATE $\log \delta_1(k) \leftarrow \log(1/K) + \log \mathcal{N}(O_1 \mid \mu_k, \sigma_k^2)$.
+\ENDFOR
+
+\FOR{$t = 2$ to $T$}
+    \FOR{$j = 1$ to $K$}
+        \STATE $\text{vals}(i) \leftarrow \log \delta_{t-1}(i) + \log T_{ij}$ for all $i$.
+        \STATE $\log \delta_t(j) \leftarrow \max_i \text{vals}(i) + \log \mathcal{N}(O_t \mid \mu_j, \sigma_j^2)$.
+        \STATE $\psi_t(j) \leftarrow \arg\max_i \text{vals}(i)$.
+    \ENDFOR
+\ENDFOR
+
+\STATE $S_T^* \leftarrow \arg\max_k \log \delta_T(k)$.
+\FOR{$t = T-1$ down to $1$}
+    \STATE $S_t^* \leftarrow \psi_{t+1}(S_{t+1}^*)$.
+\ENDFOR
+
+\RETURN $S_{1:T}^*$
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 3: CHMM Simulation
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{CHMM simulation of synthetic excess growth rate paths}
+\label{alg:chmm_simulate}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Trained CHMM $\mathcal{M} = (\mathbf{T}, \{\mu_k, \sigma_k\}, \boldsymbol{\pi})$, Number of steps $M$, Number of paths $P$
+\ENSURE Simulated return paths $\{\hat{G}^{(p)}_{1:M}\}_{p=1}^{P}$
+
+\FOR{$p = 1$ to $P$}
+    \STATE Sample initial state $S_1 \sim \text{Categorical}(\boldsymbol{\pi})$.
+    \FOR{$t = 1$ to $M$}
+        \STATE Emit observation $\hat{G}_t^{(p)} \sim \mathcal{N}(\mu_{S_t}, \sigma_{S_t}^2)$.
+        \IF{$t < M$}
+            \STATE Transition to next state $S_{t+1} \sim \text{Categorical}(\mathbf{T}_{S_t, \cdot})$.
+        \ENDIF
+    \ENDFOR
+\ENDFOR
+
+\RETURN $\{\hat{G}^{(p)}_{1:M}\}_{p=1}^{P}$
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 4: Cross-Asset Copula Rank Reordering Simulation
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{Cross-asset copula simulation via rank reordering}
+\label{alg:copula_sim}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Fitted per-asset CHMMs $\{\mathcal{M}_j\}_{j=1}^d$, correlation matrix $\Sigma$ (PSD, unit diagonal), copula family $\mathcal{C} \in \{\text{Gaussian}, t_\nu\}$, path length $T$, number of paths $P$
+\ENSURE Cross-asset path tensor $\{\hat{G}^{(p)}_{j,t}\}$ of shape $T \times d \times P$
+
+\FOR{$p = 1$ to $P$}
+
+    \STATE Draw copula sample $\mathbf{U}^{(p)} \in [0,1]^{T \times d}$ from $\mathcal{C}(\Sigma)$:
+    \STATE \quad $L \leftarrow \text{Cholesky}(\Sigma)$, \; $Z \in \mathbb{R}^{T \times d} \sim \mathcal{N}(0, I_d)$ i.i.d.
+    \STATE \quad $Y \leftarrow Z L^\top$
+    \IF{$\mathcal{C} = $ Gaussian}
+        \STATE \quad $\mathbf{U}^{(p)} \leftarrow \Phi(Y)$ componentwise
+    \ELSE
+        \STATE \quad Draw $W \sim \chi^2_\nu / \nu$ i.i.d. for $t = 1, \dots, T$; \; $X_{t,\cdot} \leftarrow Y_{t,\cdot} / \sqrt{W_t}$
+        \STATE \quad $\mathbf{U}^{(p)} \leftarrow t_\nu(X)$ componentwise
+    \ENDIF
+
+    \FOR{$j = 1$ to $d$}
+        \STATE Simulate $\tilde{g}_{j,1:T}^{(p)}$ from $\mathcal{M}_j$ via Algorithm~\ref{alg:chmm_simulate}.
+        \STATE Compute order statistics $\tilde{g}_{j,(1)}^{(p)} \leq \cdots \leq \tilde{g}_{j,(T)}^{(p)}$.
+        \STATE Compute ranks $r_{j,t}^{(p)} \leftarrow \text{rank}(U_{j,t}^{(p)})$ for $t = 1, \dots, T$.
+        \STATE $\hat{G}_{j,t}^{(p)} \leftarrow \tilde{g}_{j,(r_{j,t}^{(p)})}^{(p)}$ for $t = 1, \dots, T$.
+    \ENDFOR
+\ENDFOR
+
+\RETURN $\{\hat{G}^{(p)}_{j,t}\}$
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 5: SIM fit and simulate
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{Single Index Model (SIM) construction and simulation}
+\label{alg:sim_build}
+\small
+\begin{algorithmic}[1]
+\REQUIRE In-sample return matrix $\mathbf{R} \in \mathbb{R}^{T \times d}$, market-column index $m$, market CHMM $\mathcal{M}_m$, path length $T$, number of paths $P$
+\ENSURE Cross-asset path tensor $\{\hat{G}^{(p)}_{j,t}\}$ of shape $T \times d \times P$
+
+\STATE \textbf{OLS fit.} For $j \neq m$:
+\STATE \quad $\hat{\beta}_j \leftarrow \text{Cov}(\mathbf{R}_{:,j}, \mathbf{R}_{:,m}) / \text{Var}(\mathbf{R}_{:,m})$
+\STATE \quad $\hat{\alpha}_j \leftarrow \overline{\mathbf{R}_{:,j}} - \hat{\beta}_j \overline{\mathbf{R}_{:,m}}$
+\STATE \quad $\hat{\eta}_{j,t} \leftarrow R_{t,j} - \hat{\alpha}_j - \hat{\beta}_j R_{t,m}$, \; $R^2_j \leftarrow 1 - \sum_t \hat{\eta}_{j,t}^2 / \sum_t (R_{t,j} - \overline{\mathbf{R}_{:,j}})^2$
+
+\FOR{$p = 1$ to $P$}
+    \STATE Simulate market path $G_{m,1:T}^{(p)}$ from $\mathcal{M}_m$ via Algorithm~\ref{alg:chmm_simulate}.
+    \STATE $\hat{G}_{m,t}^{(p)} \leftarrow G_{m,t}^{(p)}$.
+    \FOR{$j \neq m$}
+        \STATE Draw residual indices $\{\iota_t\}_{t=1}^T \sim \text{Uniform}(\{1, \dots, T\})$.
+        \STATE $\hat{G}_{j,t}^{(p)} \leftarrow \hat{\alpha}_j + \hat{\beta}_j G_{m,t}^{(p)} + \hat{\eta}_{j,\iota_t}$.
+    \ENDFOR
+\ENDFOR
+
+\RETURN $\{\hat{G}^{(p)}_{j,t}\}$
+\end{algorithmic}
+\end{algorithm}

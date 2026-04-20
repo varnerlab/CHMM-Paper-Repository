@@ -1,0 +1,103 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[margin=1in]{geometry}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{float}
+
+% --- Hyperref setup ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% --- Custom commands ---
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+
+\title{Continuous Gaussian Hidden Markov Models for Equity and Volatility Index Dynamics:\\A Baum-Welch Approach Without Jump Augmentation, with Cross-Asset SIM and Copula Extensions}
+
+\author{
+    Abdulrahman Alswaidan\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA.}
+    \and
+    Jeffrey D.\ Varner\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA. Email: \texttt{jdv27@cornell.edu}.}
+}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% ========================================================================================= %
+\begin{abstract}
+We present a continuous hidden Markov model (CHMM) with Gaussian emissions trained via the Baum-Welch (Expectation-Maximization) algorithm for generating synthetic financial time series that preserve the canonical stylized facts of asset returns.
+Unlike the discrete-state framework of \citet{alswaidan2026hybrid}, which requires Laplace quantile binning and a Poisson jump-duration mechanism to achieve volatility clustering, we show that the continuous model at a single moderate state resolution ($K = 18$, selected from a sweep over $K \in \{3, 6, 9, 12, 15, 18, 21\}$) reproduces all three stylized facts (heavy tails, negligible linear autocorrelation, and persistent volatility clustering) without jump augmentation, thereby eliminating two tunable hyperparameters ($\epsilon$, $\lambda$) and the discretization step entirely.
+
+We benchmark the CHMM against six alternative generators on ten years of daily S\&P~500 ETF (SPY) data: bootstrap resampling, Gaussian and Laplace i.i.d.\ generators, the \emph{discrete} HMM of \citet{alswaidan2026hybrid} in both no-jump (NJ) and Poisson-jump (WJ, $\epsilon = 0.01$, $\lambda = 3$) variants, and GARCH(1,1).
+Evaluation uses seven complementary metrics (Kolmogorov--Smirnov and Anderson--Darling pass rates, excess kurtosis, autocorrelation function mean absolute error, Wasserstein-1 and Hellinger distances, and quantile coverage) applied to 1{,}000 simulated paths in both in-sample (2014--2024) and out-of-sample (2025) windows.
+Cross-asset generalization to NVDA, JNJ, JPM, AAPL, and QQQ confirms adaptability to diverse risk profiles.
+
+To move from univariate to multi-asset generation we extend the framework with two cross-asset dependence models that preserve each asset's fitted CHMM marginal: a Single Index Model (SIM) factor construction with SPY as the market engine, and Gaussian / Student-t copulas fitted to rank-based correlation and simulated via rank reordering.
+On six SPY-member assets the copula-based dependence models substantially outperform the SIM factor baseline on per-asset distributional accuracy (median in-sample KS pass rate 98.0\% for both copulas versus 83.8\% for SIM) while also delivering closer correlation-matrix reproduction (off-diagonal MAE 0.027 for Student-t, 0.031 for Gaussian, and 0.078 for SIM).
+The Student-t copula's profile MLE selected $\nu^{*} = 6$ degrees of freedom, indicating economically meaningful joint tail dependence.
+
+We further extend the framework to CBOE Volatility Index (VIX) and VXX log returns, demonstrating that the CHMM captures the distinct statistical properties of volatility indices (including stronger mean reversion, positive skewness, and pronounced regime structure).
+The VIX regime decomposition provides a natural bridge to option pricing: median VIX levels per decoded regime define a volatility map that drives regime-switching geometric Brownian motion paths.
+A parametric stochastic-volatility comparison against the resulting implied volatility surface is the subject of companion work and is deliberately outside the scope of this paper.
+
+\bigskip\noindent
+\textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch Algorithm, Stylized Facts, Volatility Clustering, Regime-Switching, Synthetic Financial Data, Single Index Model, Copula Dependence, Cross-Asset Simulation, VIX.
+\end{abstract}
+
+% ========================================================================================= %
+\section{Introduction}
+\label{sec:introduction}
+\input{sections/introduction_v4}
+
+\section{Related Work}
+\label{sec:related}
+\input{sections/related_v4}
+
+\section{Methods}
+\label{sec:methods}
+\input{sections/methods_v4}
+
+\section{Empirical Study}
+\label{sec:results}
+\input{sections/results_v4}
+
+\section{Discussion}
+\label{sec:discussion}
+\input{sections/discussion_v4}
+
+\section{Conclusion}
+\label{sec:conclusion}
+\input{sections/conclusion_v4}
+
+% ========================================================================================= %
+\bibliographystyle{unsrtnat}
+\bibliography{References_v4}
+
+% ========================================================================================= %
+\appendix
+\section{Supplementary Material}
+\label{sec:supplemental}
+\input{sections/supplemental_v4}
+
+\end{document}
