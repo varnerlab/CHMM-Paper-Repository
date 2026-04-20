@@ -45,7 +45,7 @@ All models converged within the iteration budget, with log-likelihood plateauing
 The full sensitivity table is reproduced in Appendix~\ref{sec:supplemental} (Table~\ref{tab:sensitivity}); Figure~\ref{fig:k_sweep_summary} summarizes the distributional pass rates and ACF-MAE as a function of $K$.
 
 Three patterns emerge.
-First, the information-criterion surface flattens over the upper half of the sweep: AIC and HQC continue to improve mildly with $K$, while BIC and CAIC — which penalize the $K^2 + 2K - 1$ parameters more heavily — reach their joint minimum in the $K \in \{15, 18, 21\}$ region.
+First, the information-criterion surface flattens over the upper half of the sweep: AIC and HQC continue to improve mildly with $K$, while BIC and CAIC, which penalize the $K^2 + 2K - 1$ parameters more heavily, reach their joint minimum in the $K \in \{15, 18, 21\}$ region.
 This narrows the sweep to a three-state-count band before any fidelity metric is consulted.
 Second, distributional fidelity is monotonically improving in $K$ up to $K = 18$ and flat thereafter: IS KS rises from 89.7\% ($K=3$) to 95.2\% ($K=18$), IS AD from 81.4\% to 88.4\%, OoS KS from 92.3\% to 95.6\%, and OoS AD from 83.2\% to 90.0\%.
 Third, ACF-MAE is remarkably stable across the sweep (0.046--0.051) and is actually lowest at $K=3$.
