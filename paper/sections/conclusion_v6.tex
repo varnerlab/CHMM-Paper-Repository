@@ -7,12 +7,12 @@ This result directly challenges the influential conclusion of \citet{ryden1998st
 We demonstrated that this limitation is an artifact of insufficient state resolution: \citet{ryden1998stylized} tested only $K = 2$--$3$ states, where the geometric sojourn-time distribution cannot approximate slow ACF decay.
 At $K \geq 3$ with quantile-based initialization, the Baum-Welch algorithm learns a transition matrix with sufficient diagonal dominance in high-volatility states to sustain persistence, achieving ACF-MAE of 0.046--0.051 (comparable to GARCH(1,1) at 0.047) through a sum-of-exponentials approximation that effectively mimics the flexible sojourn-time distributions of hidden semi-Markov models \cite{bulla2006stylized}.
 
-The direct head-to-head against the discrete framework of \citet{alswaidan2026hybrid}, reproduced as the Discrete NJ and Discrete WJ rows of Table~\ref{tab:model_comparison}, reveals a 96.8-percentage-point swing in IS KS pass rate (0\% for either discrete variant $\to$ 96.8\% for the CHMM).
+The direct head-to-head against the discrete framework of \citet{alswaidan2026hybrid}, reproduced as the Discrete NJ and Discrete WJ rows of Table~\ref{tab:model_comparison}, reveals a 95.9-percentage-point swing in IS KS pass rate (0\% for either discrete variant $\to$ 95.9\% for the CHMM).
 The swing is attributable to the move from bin-centroid emissions to continuous Gaussian emissions: once the simulated return series carries continuous-valued information, standard distributional tests on the return series pass; once it is quantized to 13 centroids, they fail by construction.
 The elimination of the jump mechanism further removes two hyperparameters ($\epsilon$ for jump probability, $\lambda$ for mean jump duration) and the associated grid search, reducing computational cost and model complexity.
 
-The seven-model benchmark confirmed that no single generator dominates all metrics, but the CHMM at $K = 18$ achieves the most balanced performance: 96.8\% IS KS (vs.\ 11.5\% GARCH and 0.0\% for either discrete variant), ACF-MAE of 0.051 (vs.\ 0.047 GARCH), Wasserstein-1 of 0.099 (the smallest of any parametric model), and 100\% quantile coverage.
-Cross-asset univariate generalization to NVDA (99.0\% IS KS), JNJ (99.7\%), JPM (98.4\%), AAPL (99.6\%), and QQQ (95.4\%) confirmed adaptability to diverse equity risk profiles, and out-of-sample evaluation on held-out 2025 data showed robust generalization on SPY/NVDA/AAPL/QQQ but a sector-specific 24-percentage-point OoS KS drop on defensives (JNJ, JPM) that is invariant to the choice of $K$ and therefore attributable to the stationarity assumption rather than model selection.
+The seven-model benchmark confirmed that no single generator dominates all metrics, but the CHMM at $K = 18$ achieves the most balanced performance: 95.9--96.0\% IS KS across the three emission families (vs.\ 11.7\% GARCH and 0.0\% for either discrete variant), ACF-MAE of 0.0499 under CHMM-N (vs.\ 0.0470 GARCH), Wasserstein-1 of 0.091 under CHMM-t (the smallest of any parametric model), and 100\% quantile coverage.
+Cross-asset univariate generalization to NVDA (99.1\% IS KS), JNJ (99.4\%), JPM (98.0\%), AAPL (99.4\%), and QQQ (94.5\%) confirmed adaptability to diverse equity risk profiles, and out-of-sample evaluation on held-out 2025 data showed robust generalization on SPY/NVDA/AAPL/QQQ but a sector-specific $\sim$30-percentage-point OoS KS drop on defensives (JNJ, JPM) that is invariant to the choice of $K$ and therefore attributable to the stationarity assumption rather than model selection.
 
 The cross-asset extensions then showed that the CHMM marginals compose cleanly with standard cross-sectional dependence models.
 On the six-asset universe, both the Gaussian and Student-t copulas substantially outperformed the Single Index Model factor baseline: copulas achieved a median in-sample KS pass rate of 97.8\%/99.0\% versus 83.8\% for SIM, and an off-diagonal correlation MAE of 0.031 (Gaussian) and 0.027 (Student-t) versus 0.078 for SIM.
@@ -40,7 +40,7 @@ Several directions for future work follow from these results:
 
 \paragraph{Data and Code Availability.}
 The simulation scripts, training and test data, and all code to reproduce the results in this paper are available under an MIT license from the paper repository: \url{https://github.com/altashly1/CHMM-paper}.
-The core continuous HMM implementation, the SIM module, and the Gaussian / Student-t copula modules are available in the development repository: \url{https://github.com/altashly1/HMM-withJumps-WIP}.
+The core continuous HMM implementation (all three emission families, SIM, and Gaussian / Student-t copula modules) is available in the code repository: \url{https://github.com/altashly1/CHMM-Model}.
 
 \paragraph{Conflict of Interest.}
 The authors declare no competing interests.

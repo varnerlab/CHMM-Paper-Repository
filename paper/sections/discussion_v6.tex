@@ -1,5 +1,5 @@
-The results demonstrate that a continuous Gaussian HMM trained via Baum-Welch at a single operating point ($K = 18$) achieves strong distributional fidelity (96.8\% IS KS, 95.0\% OoS KS, 100\% quantile coverage) while retaining competitive temporal fidelity (ACF-MAE of 0.051), without requiring jump augmentation.
-The direct comparison against the discrete HMM of \citet{alswaidan2026hybrid}, reproduced in both no-jump and Poisson-jump variants within our pipeline, shows a two-orders-of-magnitude swing in IS KS pass rate (0\% $\to$ 96.8\%) attributable purely to the move from quantized to continuous emissions.
+The results demonstrate that a continuous Gaussian HMM trained via Baum-Welch at a single operating point ($K = 18$) achieves strong distributional fidelity (95.9\% IS KS, 94.7\% OoS KS, 100\% quantile coverage) while retaining competitive temporal fidelity (ACF-MAE of 0.0499), without requiring jump augmentation.
+The direct comparison against the discrete HMM of \citet{alswaidan2026hybrid}, reproduced in both no-jump and Poisson-jump variants within our pipeline, shows a two-orders-of-magnitude swing in IS KS pass rate (0\% $\to$ 95.9\%) attributable purely to the move from quantized to continuous emissions.
 The cross-asset extension then shows that the univariate CHMM composes cleanly with rank-based copula dependence to produce multi-asset paths that preserve every per-asset marginal while outperforming a classical factor baseline on correlation reproduction.
 The following paragraphs interpret the key findings, address the Ryd\'{e}n et al.\ consensus, unpack why the discrete baseline collapses on distributional metrics, discuss the dependence-model ordering, and identify limitations.
 
@@ -42,14 +42,14 @@ What our comparison crystallizes is that, once the pipeline insists on continuou
 
 \paragraph{The Temporal-Distributional Tradeoff.}
 The seven-model comparison reveals that no single model dominates all seven metrics, confirming the temporal-distributional tradeoff identified in the discrete framework of \citet{alswaidan2026hybrid}.
-GARCH(1,1) achieves the best ACF-MAE (0.047) among parametric models but catastrophically fails KS (11.5\%), while the bootstrap achieves perfect KS (100.0\%) but the worst ACF-MAE (0.062).
+GARCH(1,1) achieves the best ACF-MAE (0.047) among parametric models but catastrophically fails KS (11.7\%), while the bootstrap achieves perfect KS (100.0\%) but the worst ACF-MAE (0.062).
 
-The CHMM at $K = 18$ occupies a distinctive position in this tradeoff: it achieves IS KS of 96.8\% and IS AD of 90.1\% --- close to the non-parametric bootstrap --- while simultaneously matching GARCH's ACF-MAE to within 0.003.
-It also achieves the smallest Wasserstein-1 (0.099) of any parametric model, competitive Hellinger (0.077), and 100\% quantile coverage.
+The CHMM at $K = 18$ occupies a distinctive position in this tradeoff: it achieves IS KS of 95.9\% (CHMM-N) to 96.0\% (CHMM-t) and IS AD of 88.9\%--91.7\% --- close to the non-parametric bootstrap --- while simultaneously matching GARCH's ACF-MAE to within 0.003--0.008.
+It also achieves the smallest Wasserstein-1 (0.091 under CHMM-t) of any parametric model, competitive Hellinger (0.072--0.077), and 100\% quantile coverage.
 No other model in the comparison achieves this combination of distributional and temporal fidelity.
 
 \paragraph{Closing the Kurtosis Gap with Heavy-Tailed Emissions.}
-The Gaussian CHMM-N at $K = 18$ produces simulated excess kurtosis of 5.1 against an observed value of 7.7, a shortfall inherent to the Gaussian emission assumption: a Gaussian mixture's kurtosis is bounded by the variance of the component means relative to the component variances, and pushing tail states further out degrades the central fit.
+The Gaussian CHMM-N at $K = 18$ produces simulated excess kurtosis of 5.04 against an observed value of 7.71, a shortfall inherent to the Gaussian emission assumption: a Gaussian mixture's kurtosis is bounded by the variance of the component means relative to the component variances, and pushing tail states further out degrades the central fit.
 The CHMM-t and CHMM-L variants address this gap directly.
 CHMM-t's per-state Student-t emissions, with degrees-of-freedom updated inside the ECM M-step by one-dimensional search on the $Q$-function, produce tail states whose individual kurtosis can be arbitrarily high for $\nu_k$ close to the lower bracket, and the simulated mixture kurtosis consequently rises toward the observed value (see Section~\ref{sec:model_comparison}, Table~\ref{tab:model_comparison}).
 CHMM-L's Laplace emissions contribute per-component excess kurtosis of $3$ rather than $0$ without adding any shape parameter, and supply a parameter-efficient alternative route to heavier tails.
@@ -83,8 +83,8 @@ At all $K$ values, the Baum-Welch algorithm learns at least one high-persistence
 Additional states refine the distributional shape of the mixture but do not substantially affect the dominant eigenvalue.
 
 \paragraph{Cross-Asset Robustness and OoS Degradation on Defensives.}
-The cross-asset univariate results confirm that the CHMM generalizes to equities with diverse risk profiles (NVDA: 99.0\% IS KS; AAPL: 99.6\%; QQQ: 95.4\%).
-At $K = 18$ the OoS degradation concentrates on JNJ (71.9\%) and JPM (74.5\%), reflecting the stationarity assumption: the CHMM's transition matrix and emission parameters are fixed at their IS-estimated values, so regime shifts between the training and test periods, which may arise from sector-specific events or macroeconomic shocks, are not captured.
+The cross-asset univariate results confirm that the CHMM generalizes to equities with diverse risk profiles (NVDA: 99.1\% IS KS; AAPL: 99.4\%; QQQ: 94.5\%).
+At $K = 18$ the OoS degradation concentrates on JNJ (68.4\%) and JPM (72.0\%), reflecting the stationarity assumption: the CHMM's transition matrix and emission parameters are fixed at their IS-estimated values, so regime shifts between the training and test periods, which may arise from sector-specific events or macroeconomic shocks, are not captured.
 This degradation is not specific to the chosen state count --- the appendix sensitivity analysis shows the same pattern at every $K$ in the sweep --- so it is not a model-selection artefact but a stationarity artefact.
 A time-varying extension, either through rolling-window re-estimation or Bayesian online learning of the transition matrix, would likely improve OoS performance for such assets and is a natural next step.
 
@@ -110,7 +110,7 @@ Our replication of that ordering with continuous CHMM marginals at $K = 18$ is e
 Several limitations qualify the conclusions of this study:
 \begin{enumerate}
     \item \textit{Residual tail gap under CHMM-N.}
-    The Gaussian variant still underestimates excess kurtosis (5.1 simulated vs.\ 7.7 observed at $K = 18$); CHMM-t and CHMM-L close most of this gap within the same EM framework (Section~\ref{sec:model_comparison}), but generalized hyperbolic or $\alpha$-stable emissions would be the next step for applications that target the most extreme quantiles.
+    The Gaussian variant still underestimates excess kurtosis (5.04 simulated vs.\ 7.71 observed at $K = 18$); CHMM-t and CHMM-L close most of this gap within the same EM framework (Section~\ref{sec:model_comparison}), but generalized hyperbolic or $\alpha$-stable emissions would be the next step for applications that target the most extreme quantiles.
 
     \item \textit{Emission symmetry.}
     Each emission in CHMM-N, CHMM-t, and CHMM-L is symmetric about its state-specific location.

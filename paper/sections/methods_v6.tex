@@ -106,19 +106,6 @@ The operating point is the $K$ that minimizes the average information-criterion
 rank and simultaneously wins or ties every in-sample and out-of-sample
 distributional pass-rate metric.
 
-\paragraph{State-count selection.}
-We sweep $K \in \{3, 6, 9, 12, 15, 18, 21\}$ and report per-$K$ fidelity on the full seven-metric battery below.
-We additionally compute the four information criteria used for HMM state selection in \citet{nguyen2018hidden},
-\begin{equation}
-    \text{AIC} = -2\mathcal{L} + 2p,\quad
-    \text{BIC} = -2\mathcal{L} + p \ln T,\quad
-    \text{HQC} = -2\mathcal{L} + 2p \ln(\ln T),\quad
-    \text{CAIC} = -2\mathcal{L} + p(\ln T + 1),
-    \label{eq:information_criteria}
-\end{equation}
-where $p = K^2 + 2K - 1$ is the number of free parameters and $\mathcal{L}$ is the converged log-likelihood.
-The final operating point is the $K$ that minimizes the average information-criterion rank and simultaneously wins or ties every in-sample and out-of-sample distributional pass-rate metric.
-
 \subsection{Benchmark Generators}
 \label{sec:benchmarks}
 

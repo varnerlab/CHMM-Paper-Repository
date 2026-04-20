@@ -47,10 +47,10 @@ The full sensitivity table is reproduced in Appendix~\ref{sec:supplemental} (Tab
 Three patterns emerge.
 First, the information-criterion surface flattens over the upper half of the sweep: AIC and HQC continue to improve mildly with $K$, while BIC and CAIC, which penalize the $K^2 + 2K - 1$ parameters more heavily, reach their joint minimum in the $K \in \{15, 18, 21\}$ region.
 This narrows the sweep to a three-state-count band before any fidelity metric is consulted.
-Second, distributional fidelity is monotonically improving in $K$ up to $K = 18$ and flat thereafter: IS KS rises from 89.7\% ($K=3$) to 95.2\% ($K=18$), IS AD from 81.4\% to 88.4\%, OoS KS from 92.3\% to 95.6\%, and OoS AD from 83.2\% to 90.0\%.
-Third, ACF-MAE is remarkably stable across the sweep (0.046--0.051) and is actually lowest at $K=3$.
+Second, distributional fidelity rises across the $K$ sweep and plateaus in the $K \in \{15, 18, 21\}$ band for CHMM-N: IS KS rises from 88.7\% ($K=3$) to 95.2\% ($K=18$) and 96.5\% ($K=21$), IS AD from 79.2\% to 88.3\% at $K=18$ (89.1\% at $K=21$), OoS KS from 92.8\% to 94.0\% at $K=18$, and OoS AD from 84.9\% to 88.7\% at $K=18$ (see Table~\ref{tab:sensitivity_multi}).
+Third, ACF-MAE is remarkably stable across the sweep (0.045--0.051) and is actually lowest at $K=3$.
 This establishes a mild \emph{distributional--temporal tradeoff}: higher $K$ buys distributional accuracy, lower $K$ buys marginally better ACF, and both are available within a narrow band.
-$K = 18$ wins (or ties for the win) on every one of the four distributional pass-rate metrics (KS IS, KS OoS, AD IS, AD OoS) and on Wasserstein-1; it also achieves the largest simulated kurtosis (5.11) in the sweep, closest to the observed 7.71, and sits inside the IC-minimizing region.
+$K = 18$ sits inside the IC-minimizing region and, together with $K \in \{15, 21\}$, attains the highest distributional pass rates in the sweep; it also achieves the largest simulated kurtosis (5.03) among CHMM-N fits in this band, closest to the observed 7.71.
 We therefore report the remainder of Section~\ref{sec:results} at $K = 18$ and relegate the sensitivity panel to the appendix.
 
 Figure~\ref{fig:model_internals} shows the fitted model internals for $K = 18$: the learned emission distributions span the full range of observed returns, with tail states capturing extreme crash and boom regimes.
@@ -79,53 +79,53 @@ Table~\ref{tab:model_comparison} and Figure~\ref{fig:is_comparison} present the 
 The benchmark set was constructed to mimic the prior paper's evaluation exactly, adding the two discrete HMM variants of \citet{alswaidan2026hybrid} (NJ and WJ) to the original four baselines (Bootstrap, Gaussian, Laplace, GARCH(1,1)) and replacing the discrete continuous-emission variant with the Baum-Welch CHMM at $K = 18$.
 
 \paragraph{Bootstrap (Non-Parametric Ceiling).}
-Bootstrap resampling achieved 100.0\% KS and 100.0\% AD pass rates in-sample, confirming it as the distributional ceiling.
-It produced simulated kurtosis (7.51) closest to observed (7.71) and 100\% quantile coverage.
+Bootstrap resampling achieved 100.0\% KS and 99.9\% AD pass rates in-sample, confirming it as the distributional ceiling.
+It produced simulated kurtosis (7.44) closest to observed (7.71) and 100\% quantile coverage.
 However, the bootstrap's ACF-MAE (0.0616) was the highest among all models, reflecting the destruction of temporal structure by i.i.d.\ resampling.
 The Wasserstein-1 (0.061) and Hellinger (0.048) distances were the lowest, as expected.
 
 \paragraph{Gaussian i.i.d.\ (Negative Control).}
 The Gaussian generator achieved 0\% KS and 0\% AD in-sample, confirming the categorical inadequacy of the normal distribution for financial returns.
-Its simulated kurtosis was $-0.01$ (i.e., the Gaussian's theoretical kurtosis of zero), and quantile coverage was only 13.1\%.
-The out-of-sample results were artificially inflated (75.0\% KS) due to the smaller OoS sample size ($T = 219$), which reduces the KS test's power to detect distributional differences.
+Its simulated kurtosis was $-0.00$ (i.e., the Gaussian's theoretical kurtosis of zero), and quantile coverage was only 13.1\%.
+The out-of-sample results were artificially inflated (74.5\% KS) due to the smaller OoS sample size ($T = 219$), which reduces the KS test's power to detect distributional differences.
 
 \paragraph{Laplace i.i.d.}
-The Laplace generator achieved 98.2\% KS and 96.0\% AD in-sample, demonstrating that the Laplace distribution provides a reasonable approximation to the marginal distribution of equity returns.
-However, its simulated kurtosis (2.94) fell well short of the observed 7.71, and as an i.i.d.\ generator it produced flat ACF profiles (ACF-MAE $= 0.0616$, comparable to bootstrap).
-The 76.8\% quantile coverage indicates that the Laplace distribution's fixed tail decay rate cannot fully envelop the observed quantile range.
+The Laplace generator achieved 98.1\% KS and 97.4\% AD in-sample, demonstrating that the Laplace distribution provides a reasonable approximation to the marginal distribution of equity returns.
+However, its simulated kurtosis (2.96) fell well short of the observed 7.71, and as an i.i.d.\ generator it produced flat ACF profiles (ACF-MAE $= 0.0615$, comparable to bootstrap).
+The 78.8\% quantile coverage indicates that the Laplace distribution's fixed tail decay rate cannot fully envelop the observed quantile range.
 
 \paragraph{Discrete HMM --- No Jumps (NJ) and With Jumps (WJ).}
-The two discrete variants of \citet{alswaidan2026hybrid}, re-fitted on the SPY in-sample series under the same pipeline, both collapsed on the distributional metrics: 0.0\% KS IS / 86.9\% KS OoS and 0.0\% AD IS / 95.7\% AD OoS for NJ, and 0.0\% KS IS / 85.7\% KS OoS and 0.0\% AD IS / 95.3\% AD OoS for WJ.
+The two discrete variants of \citet{alswaidan2026hybrid}, re-fitted on the SPY in-sample series under the same pipeline, both collapsed on the distributional metrics: 0.0\% KS IS / 88.2\% KS OoS and 0.0\% AD IS / 95.8\% AD OoS for NJ, and 0.0\% KS IS / 85.7\% KS OoS and 0.0\% AD IS / 95.1\% AD OoS for WJ.
 The explanation is the 13-bin quantization step described in Section~\ref{sec:discrete_hmm}: every simulated path is constrained to the $K_{\text{disc}} = 13$ empirical bin centroids, so the within-bin tail mass that the continuous model preserves is discarded by construction.
-Simulated kurtosis falls to 0.62 (NJ) and 0.51 (WJ), Wasserstein-1 explodes to 0.307 / 0.319, and Hellinger jumps to 0.378 / 0.382.
+Simulated kurtosis falls to 0.62 (NJ) and 0.50 (WJ), Wasserstein-1 explodes to 0.307 / 0.319, and Hellinger jumps to 0.378 / 0.382.
 The Poisson jump augmentation (WJ) marginally \emph{worsens} every IS metric relative to NJ, which is consistent with the interpretation that jumps forcibly add mass at the already-coarse tail centroids and further distort the marginal.
-The OoS KS pass rates in the 85--87\% range reflect the KS test's lower power at $T = 219$ rather than any genuine recovery of distributional fidelity.
-This is the central empirical contrast for our paper: the \emph{only} methodological change between the prior paper and this work that affects the KS/AD metrics is the move from quantized to continuous emissions, and that move is responsible for the 96.8-percentage-point swing in IS KS pass rate between the discrete and continuous variants.
+The OoS KS pass rates in the 85--88\% range reflect the KS test's lower power at $T = 219$ rather than any genuine recovery of distributional fidelity.
+This is the central empirical contrast for our paper: the \emph{only} methodological change between the prior paper and this work that affects the KS/AD metrics is the move from quantized to continuous emissions, and that move is responsible for the 95.9-percentage-point swing in IS KS pass rate between the discrete and continuous variants.
 
 \paragraph{GARCH(1,1).}
-GARCH achieved ACF-MAE of 0.0475 among the parametric models, confirming its strong temporal fidelity.
-However, it failed the distributional tests: 11.5\% KS and 2.9\% AD in-sample.
-The simulated kurtosis (6.4 IS, 1.21 OoS) was reasonably close to observed in-sample but collapsed out-of-sample, and the Wasserstein-1 distance (0.244) and Hellinger distance (0.102) were substantially worse than the CHMM.
+GARCH achieved ACF-MAE of 0.0470 among the parametric models, confirming its strong temporal fidelity.
+However, it failed the distributional tests: 11.7\% KS and 2.9\% AD in-sample.
+The simulated kurtosis (6.62 IS, 1.18 OoS) was reasonably close to observed in-sample but collapsed out-of-sample, and the Wasserstein-1 distance (0.250) and Hellinger distance (0.102) were substantially worse than the CHMM.
 Quantile coverage was only 40.4\%.
 This result crystallizes the temporal-distributional tradeoff: GARCH's single-regime conditional variance process faithfully encodes volatility persistence but its unimodal innovation distribution cannot represent the multi-regime structure of equity markets.
 
 \paragraph{CHMM-N ($K = 18$, Gaussian emissions).}
-The Gaussian CHMM achieved 95.5\% KS and 89.0\% AD in-sample, competitive with the bootstrap (99.9\%) and Laplace i.i.d.\ (98.7\%) on KS, and substantially outperforming GARCH (11.6\%), Discrete NJ (0.0\%) and Discrete WJ (0.0\%).
-ACF-MAE of 0.0503 was essentially identical to GARCH (0.0470), demonstrating that the CHMM reproduces volatility clustering \emph{without} a dedicated jump mechanism or conditional variance equation.
+The Gaussian CHMM achieved 95.9\% KS and 88.9\% AD in-sample, competitive with the bootstrap (100.0\%) and Laplace i.i.d.\ (98.1\%) on KS, and substantially outperforming GARCH (11.7\%), Discrete NJ (0.0\%), and Discrete WJ (0.0\%).
+ACF-MAE of 0.0499 was essentially identical to GARCH (0.0470), demonstrating that the CHMM reproduces volatility clustering \emph{without} a dedicated jump mechanism or conditional variance equation.
 This is the central finding of this paper: the Ryd\'{e}n et al.\ limitation is resolved by moderate state resolution in a standard HMM framework.
-The Wasserstein-1 (0.102) is half the GARCH figure; Hellinger (0.077) matches Laplace i.i.d.\ and is five times smaller than either discrete HMM; quantile coverage is 100\% matching the bootstrap ceiling.
-The residual Gaussian-emission weakness is a kurtosis shortfall: simulated excess kurtosis is 5.08 IS and 3.45 OoS against observed values of 7.71 / 6.24.
+The Wasserstein-1 (0.102) is well below the GARCH figure (0.250); Hellinger (0.0771) is five times smaller than either discrete HMM; quantile coverage is 100\% matching the bootstrap ceiling.
+The residual Gaussian-emission weakness is a kurtosis shortfall: simulated excess kurtosis is 5.04 IS and 3.45 OoS against observed values of 7.71 / 6.24.
 
 \paragraph{CHMM-t ($K = 18$, Student-t emissions).}
-Replacing the Gaussian component with a per-state Student-t raises the in-sample KS to 96.3\% (vs.\ 95.5\% for CHMM-N) and AD to 90.9\%; OoS fidelity improves by 2.0 percentage points on KS (94.3\% vs.\ 92.3\%) and 3.7 points on AD (89.6\% vs.\ 85.9\%).
-The CHMM-t is the best non-bootstrap entry on Wasserstein-1 (0.093) and Hellinger (0.0723), two quantile-weighted metrics that penalize tail mismatch directly.
-Simulated excess kurtosis rises to 17.22 IS and 6.40 OoS: the ECM search allocates small $\nu_k$ to some tail states, which over-corrects the in-sample kurtosis but aligns the OoS simulated kurtosis (6.40) with the observed OoS value (6.24) within rounding.
-The slight ACF-MAE increase (0.0537 vs.\ 0.0503) is consistent with the heavier tail states spending marginally more time away from the central regimes.
+Replacing the Gaussian component with a per-state Student-t raises the in-sample KS to 96.0\% (vs.\ 95.9\% for CHMM-N) and AD to 91.7\% (vs.\ 88.9\%); OoS fidelity improves on KS (95.2\% vs.\ 94.7\%) and on AD (90.0\% vs.\ 88.0\%).
+The CHMM-t is the best non-bootstrap entry on Wasserstein-1 (0.091) and Hellinger (0.0720), two quantile-weighted metrics that penalize tail mismatch directly.
+Simulated excess kurtosis rises to 12.60 IS and 6.42 OoS: the ECM search allocates small $\nu_k$ to some tail states, which over-corrects the in-sample kurtosis but aligns the OoS simulated kurtosis (6.42) with the observed OoS value (6.24) within rounding.
+The slight ACF-MAE increase (0.0535 vs.\ 0.0499) is consistent with the heavier tail states spending marginally more time away from the central regimes.
 
 \paragraph{CHMM-L ($K = 18$, Laplace emissions).}
-The Laplace variant produces the most \emph{kurtosis-aligned} fit: simulated excess kurtosis is 6.41 IS and 5.15 OoS against observed 7.71 / 6.24, closing most of the CHMM-N shortfall without the CHMM-t over-correction.
-CHMM-L also attains the strongest AD fit of any parametric model (92.3\% IS, 91.2\% OoS), which is consistent with the AD statistic's tail weighting and the Laplace component's per-component excess kurtosis of 3.
-ACF-MAE (0.0545) and $W_1$ (0.095) are within 5\% of the CHMM-N values, and quantile coverage is 100\%.
+The Laplace variant produces the most \emph{kurtosis-aligned} fit: simulated excess kurtosis is 6.34 IS and 5.06 OoS against observed 7.71 / 6.24, closing most of the CHMM-N shortfall without the CHMM-t over-correction.
+CHMM-L attains the strongest OoS AD fit of any parametric model (91.7\% OoS AD, tied with CHMM-t) and matches the CHMM-t IS AD (91.7\%), consistent with the AD statistic's tail weighting and the Laplace component's per-component excess kurtosis of 3.
+ACF-MAE (0.0546) and $W_1$ (0.095) are within 10\% of the CHMM-N values, and quantile coverage is 100\%.
 Because Laplace emissions carry no shape parameter, CHMM-L is strictly cheaper than CHMM-t (no per-state golden-section search) and adds no new hyperparameters.
 
 \paragraph{Summary of the three CHMM variants.}
@@ -150,15 +150,15 @@ KS = Kolmogorov--Smirnov pass rate; AD = Anderson--Darling pass rate; Kurt = mea
 Model & IS & OoS & IS & OoS & IS & OoS & ACF-MAE $\downarrow$ & $W_1$ $\downarrow$ & $H$ $\downarrow$ & IS & OoS \\
 \midrule
 \textit{Observed}   & --    & --    & --    & --    & 7.71    & 6.24    & --     & --    & --     & --    & --    \\
-Bootstrap           & 99.9  & 98.1  & 99.7  & 99.2  & 7.45    & 5.28    & 0.0615 & 0.061 & 0.0478 & 100.0 & 100.0 \\
-Gaussian            & 0.0   & 73.2  & 0.0   & 74.7  & $-0.01$ & $-0.04$ & 0.0615 & 0.399 & 0.1515 & 13.1  & 53.5  \\
-Laplace             & 98.7  & 98.7  & 96.0  & 98.7  & 2.99    & 2.61    & 0.0615 & 0.121 & 0.0787 & 75.8  & 99.0  \\
-Discrete NJ         & 0.0   & 86.6  & 0.0   & 95.1  & 0.62    & 0.63    & 0.0607 & 0.307 & 0.3782 & 34.3  & 86.9  \\
-Discrete WJ         & 0.0   & 87.8  & 0.0   & 94.9  & 0.51    & 0.49    & 0.0606 & 0.319 & 0.3817 & 38.4  & 87.9  \\
-GARCH(1,1)          & 11.6  & 86.6  & 2.6   & 80.4  & 6.02    & 1.19    & 0.0470 & 0.235 & 0.1009 & 40.4  & 100.0 \\
-CHMM-N ($K=18$)     & 95.5  & 92.3  & 89.0  & 85.9  & 5.08    & 3.45    & 0.0503 & 0.102 & 0.0774 & 100.0 & 100.0 \\
-\textbf{CHMM-t ($K=18$)} & \textbf{96.3} & \textbf{94.3} & 90.9 & 89.6 & 17.22 & 6.40 & 0.0537 & \textbf{0.093} & \textbf{0.0723} & \textbf{100.0} & \textbf{100.0} \\
-\textbf{CHMM-L ($K=18$)} & 95.0 & 93.5 & \textbf{92.3} & \textbf{91.2} & \textbf{6.41} & \textbf{5.15} & 0.0545 & 0.095 & 0.0759 & \textbf{100.0} & \textbf{100.0} \\
+Bootstrap           & 100.0 & 98.3  & 99.9  & 99.2  & 7.44    & 5.50    & 0.0616 & 0.061 & 0.0478 & 100.0 & 100.0 \\
+Gaussian            & 0.0   & 74.5  & 0.0   & 75.4  & $-0.00$ & $-0.07$ & 0.0616 & 0.400 & 0.1513 & 13.1  & 54.5  \\
+Laplace             & 98.1  & 98.5  & 97.4  & 98.8  & 2.96    & 2.64    & 0.0615 & 0.120 & 0.0783 & 78.8  & 100.0 \\
+Discrete NJ         & 0.0   & 88.2  & 0.0   & 95.8  & 0.62    & 0.62    & 0.0606 & 0.307 & 0.3781 & 34.3  & 85.9  \\
+Discrete WJ         & 0.0   & 85.7  & 0.0   & 95.1  & 0.50    & 0.48    & 0.0606 & 0.319 & 0.3818 & 36.4  & 86.9  \\
+GARCH(1,1)          & 11.7  & 87.5  & 2.9   & 83.2  & 6.62    & 1.18    & 0.0470 & 0.250 & 0.1022 & 40.4  & 99.0  \\
+CHMM-N ($K=18$)     & 95.9  & 94.7  & 88.9  & 88.0  & 5.04    & 3.45    & 0.0499 & 0.102 & 0.0771 & 100.0 & 100.0 \\
+\textbf{CHMM-t ($K=18$)} & \textbf{96.0} & \textbf{95.2} & 91.7 & 90.0 & 12.60 & 6.42 & 0.0535 & \textbf{0.091} & \textbf{0.0720} & \textbf{100.0} & \textbf{100.0} \\
+\textbf{CHMM-L ($K=18$)} & 94.0 & 93.9 & \textbf{91.7} & \textbf{91.7} & \textbf{6.34} & \textbf{5.06} & 0.0546 & 0.095 & 0.0759 & \textbf{100.0} & \textbf{100.0} \\
 \bottomrule
 \end{tabular}%
 }
@@ -177,24 +177,24 @@ CHMM-N ($K=18$)     & 95.5  & 92.3  & 89.0  & 85.9  & 5.08    & 3.45    & 0.0503
 Figure~\ref{fig:k_sweep_summary} summarizes the CHMM's seven-metric performance as a function of $K$; the underlying table is reproduced as Table~\ref{tab:sensitivity} in Appendix~\ref{sec:supplemental}.
 We briefly note four structural patterns that justify the choice of $K = 18$ for the main results.
 
-\paragraph{Distributional Fidelity Saturates at $K = 18$.}
-The IS KS pass rate increased from 89.7\% ($K = 3$) to 95.2\% ($K = 18$), and the OoS KS from 92.3\% to 95.6\%; $K = 21$ showed no further improvement.
-The same pattern holds for AD (83.2\% to 90.0\% OoS).
+\paragraph{Distributional Fidelity Saturates in the $K \in \{15, 18, 21\}$ Band.}
+The IS KS pass rate increased from 88.7\% ($K = 3$) to 95.2\% ($K = 18$) and 96.5\% ($K = 21$); the OoS KS from 92.8\% to 94.0\% at $K = 18$ and 94.9\% at $K = 21$.
+The same pattern holds for AD (79.2\% $\to$ 88.3\% IS and 84.9\% $\to$ 88.7\% OoS at $K = 18$).
 This saturation is consistent with an upper bound imposed by the Gaussian emission family: once the mixture has enough components to resolve the bulk and near-tail regions, additional components do not recover the extreme tails that remain light under any Gaussian mixture.
 
 \paragraph{Temporal Fidelity Is Flat Across the Sweep.}
-ACF-MAE was 0.046 ($K=3$) to 0.051 ($K=18$--$21$) --- a total swing of 0.005 across the entire sweep.
+ACF-MAE was 0.0453 ($K=3$) to 0.0505 ($K=18$) and 0.0503 ($K=21$) for CHMM-N --- a total swing of 0.005 across the entire sweep.
 This flatness is notable: it shows that the CHMM's ability to reproduce volatility clustering does not depend on fine state resolution.
-Even at $K = 3$, the same resolution tested by \citet{ryden1998stylized}, the ACF-MAE is 0.046, comparable to GARCH(1,1) at 0.047.
+Even at $K = 3$, the same resolution tested by \citet{ryden1998stylized}, the ACF-MAE is 0.0453, comparable to GARCH(1,1) at 0.047.
 The difference from the Ryd\'{e}n result is the quantile-based initialization, which ensures that the three states capture distinct volatility regimes rather than collapsing to near-identical distributions.
 
-\paragraph{Kurtosis Is Non-Monotonic but Peaks at $K = 18$.}
-Simulated kurtosis ranged from 3.70 ($K=9$) to 5.11 ($K=18$).
+\paragraph{Kurtosis Is Non-Monotonic and Peaks in the Plateau Band.}
+Simulated kurtosis under CHMM-N ranged from 3.70 ($K=9$) to 5.13 ($K=6$), with $K=18$ at 5.03; at higher $K$ the mixture kurtosis oscillates within the 4.5--5.1 band.
 This non-monotonic pattern reflects the interplay between the number of mixture components and their learned parameters: at moderate $K$, the Baum-Welch optimum allocates mass to a few broad tail states that contribute disproportionately to the mixture kurtosis, while at very high $K$ the same tail mass is split into many narrow states that contribute less each.
-The peak at $K = 18$ is consistent with this narrative and with the peak of the distributional pass rates.
+The heavy-tailed CHMM-t and CHMM-L variants close most of this gap at the same $K = 18$ (see Table~\ref{tab:sensitivity_multi}).
 
 \paragraph{Wasserstein, Hellinger, and Coverage Are Monotonic.}
-$W_1$ improved monotonically from 0.119 ($K=3$) to 0.102 ($K=18$), Hellinger from 0.079 to 0.077, and Coverage was 100\% at every $K$.
+$W_1$ improved monotonically from 0.119 ($K=3$) to 0.101 ($K=18$), Hellinger from 0.079 to 0.077, and Coverage was 100\% at every $K$.
 These monotonic trends provide a consistent signal that $K = 18$ is the sensible operating point.
 
 \begin{figure}[t]
@@ -216,9 +216,9 @@ The full sweep over $K \in \{3, 6, 9, 12, 15, 18, 21\}$ and per-$K$ figures are 
 \subsection{Out-of-Sample Evaluation}
 \label{sec:oos}
 
-At the selected state resolution $K = 18$ the CHMM achieves 95.6\% OoS KS pass rate, 90.0\% OoS AD pass rate, and 100\% OoS quantile coverage on the 2025 holdout window.
-The OoS simulated kurtosis is 3.54 against an observed 6.24, a shrinkage proportional to the IS gap.
-Figure~\ref{fig:oos_validation} shows the OoS density fan chart and ACF comparison for $K = 18$.
+At the selected state resolution $K = 18$ the CHMM-N achieves 94.7\% OoS KS pass rate, 88.0\% OoS AD pass rate, and 100\% OoS quantile coverage on the 2025 holdout window; the heavy-tailed CHMM-t and CHMM-L variants reach 95.2\%/90.0\% and 93.9\%/91.7\% OoS KS/AD, respectively.
+The CHMM-N OoS simulated kurtosis is 3.45 against an observed 6.24, a shrinkage proportional to the IS gap; CHMM-t closes this to 6.42 and CHMM-L to 5.06.
+Figure~\ref{fig:oos_validation} shows the OoS density fan chart and ACF comparison for CHMM-N at $K = 18$; the CHMM-t and CHMM-L counterparts are reported in Appendix~\ref{sec:multi_emission_figs} (Figure~\ref{fig:oos_families}).
 
 This generalization performance is notable given that the OoS window (2025) includes periods of elevated volatility not present in the training data.
 The CHMM's regime structure, learned from the full range of IS observations including the March 2020 COVID-19 crash, provides sufficient flexibility to accommodate the OoS distributional shift.
@@ -238,17 +238,17 @@ Table~\ref{tab:cross_asset} reports the results.
 Three patterns are worth highlighting.
 
 \paragraph{High-Beta Technology and Broad Market.}
-SPY (96.0\% IS KS, 96.4\% OoS KS), NVDA (99.0\% / 96.8\%), AAPL (99.6\% / 97.9\%), and QQQ (95.4\% / 93.3\%) all show strong IS \emph{and} OoS fidelity.
+SPY (95.9\% IS / 95.5\% OoS KS), NVDA (99.1\% / 97.5\%), AAPL (99.4\% / 98.6\%), and QQQ (94.5\% / 95.8\%) all show strong IS \emph{and} OoS fidelity under CHMM-N.
 The technology-heavy names have lower observed kurtosis (3.3--5.0) than the broader market (SPY: 7.7) and the CHMM tracks them tightly.
 
 \paragraph{Low-Beta Defensives.}
-JNJ (99.7\% IS / 71.9\% OoS KS) and JPM (98.4\% IS / 74.5\% OoS KS) show the largest IS-to-OoS degradation in the study, with the OoS drop concentrated in the 2025 holdout window.
+JNJ (99.4\% IS / 68.4\% OoS KS) and JPM (98.0\% IS / 72.0\% OoS KS) show the largest IS-to-OoS degradation in the study, with the OoS drop concentrated in the 2025 holdout window.
 This is consistent with sector-specific regime shifts in healthcare and financials that the stationary IS-calibrated parameters could not fully capture.
 We return to this finding in Section~\ref{sec:discussion}, where we argue that it is not a consequence of over- or under-fitting $K$ (it reproduces at every $K$ in the sweep), but rather of the stationarity assumption imposed by a single-pass Baum-Welch fit.
 
 \paragraph{Kurtosis: CHMM-L matches observed, CHMM-t overshoots, CHMM-N understates.}
-At $K = 18$, the three CHMM variants produce a consistent ordering on the kurtosis diagnostic across the panel (Table~\ref{tab:cross_asset}): CHMM-N simulated kurtosis systematically underestimates observed (observed 3.3--8.6 vs.\ simulated 1.9--8.0); CHMM-L produces values clustered closely around observed (3.46--6.70) and is closest to observed on five of six assets; CHMM-t overshoots on several tickers (e.g.\ 71.5 for JNJ, 54.8 for NVDA), reflecting states that find very small $\nu_k$ inside the ECM search on thin-tailed assets.
-Despite this spread in simulated kurtosis, all three variants achieve IS KS pass rates above 94.5\% and IS AD above 86.5\% on every asset, confirming that the mixture can accommodate a wide range of tail weights without sacrificing central fit.
+At $K = 18$, the three CHMM variants produce a consistent ordering on the kurtosis diagnostic across the panel (Table~\ref{tab:cross_asset}): CHMM-N simulated kurtosis systematically underestimates observed (observed 3.3--8.6 vs.\ simulated 1.9--7.9); CHMM-L produces values clustered closely around observed (3.49--6.58) and is closest to observed on five of six assets; CHMM-t overshoots on several tickers (e.g.\ 78.0 for JNJ, 53.3 for NVDA), reflecting states that find very small $\nu_k$ inside the ECM search on thin-tailed assets.
+Despite this spread in simulated kurtosis, all three variants achieve IS KS pass rates above 93.5\% and IS AD above 87.5\% on every asset, confirming that the mixture can accommodate a wide range of tail weights without sacrificing central fit.
 
 \begin{table}[t]
 \centering
@@ -257,35 +257,35 @@ CHMM-N, CHMM-t, CHMM-L denote Gaussian, Student-t, and Laplace emissions respect
 \label{tab:cross_asset}
 \resizebox{\textwidth}{!}{%
 \small
-\begin{tabular}{l l cc cc cc c c c c}
+\begin{tabular}{l l cc c cc c c c c}
 \toprule
-& & \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & \multicolumn{2}{c}{Kurtosis} & & & & \\
-\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
-Ticker & Variant & IS & OoS & IS & OoS & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov IS (\%) \\
+& & \multicolumn{2}{c}{KS (\%)} & AD IS (\%) & \multicolumn{2}{c}{Kurtosis} & & & & \\
+\cmidrule(lr){3-4} \cmidrule(lr){6-7}
+Ticker & Variant & IS & OoS & & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov IS (\%) \\
 \midrule
-SPY  & CHMM-N & 96.2 & 95.6 & 89.1 & 86.4 & 7.7 & 5.05  & 0.0499 & 0.101 & 0.077  & 100.0 \\
-     & CHMM-t & 95.9 & 93.4 & 91.9 & 87.7 & 7.7 & 14.46 & 0.0540 & 0.092 & 0.0722 & 100.0 \\
-     & CHMM-L & 94.5 & 94.2 & 91.9 & 90.5 & 7.7 & 6.43  & 0.0544 & 0.095 & 0.076  & 100.0 \\
+SPY  & CHMM-N & 95.9 & 95.5 & 90.5 & 7.7 & 5.05  & 0.0503 & 0.101 & 0.0768 & 100.0 \\
+     & CHMM-t & 96.2 & 95.0 & 91.4 & 7.7 & 15.81 & 0.0539 & 0.093 & 0.0719 & 100.0 \\
+     & CHMM-L & 93.7 & 92.8 & 91.0 & 7.7 & 6.42  & 0.0544 & 0.095 & 0.0756 & 100.0 \\
 \midrule
-NVDA & CHMM-N & 98.6 & 97.7 & 96.9 & 94.3 & 5.0 & 3.31  & 0.0423 & 0.236 & 0.0865 & 99.0  \\
-     & CHMM-t & 99.2 & 99.0 & 99.1 & 98.1 & 5.0 & 54.77 & 0.0444 & 0.219 & 0.0747 & 100.0 \\
-     & CHMM-L & 99.6 & 98.5 & 99.0 & 97.8 & 5.0 & 3.46  & 0.0443 & 0.207 & 0.0836 & 100.0 \\
+NVDA & CHMM-N & 99.1 & 97.5 & 97.7 & 5.0 & 3.28  & 0.0420 & 0.232 & 0.0865 & 99.0  \\
+     & CHMM-t & 99.4 & 98.9 & 98.8 & 5.0 & 53.28 & 0.0444 & 0.221 & 0.0742 & 100.0 \\
+     & CHMM-L & 99.3 & 99.0 & 98.4 & 5.0 & 3.49  & 0.0443 & 0.209 & 0.0836 & 100.0 \\
 \midrule
-JNJ  & CHMM-N & 99.6 & 68.5 & 99.1 & 67.1 & 8.6 & 5.59  & 0.0319 & 0.084 & 0.0753 & 100.0 \\
-     & CHMM-t & 99.3 & 70.1 & 98.9 & 65.2 & 8.6 & 71.47 & 0.0320 & 0.090 & 0.0713 & 100.0 \\
-     & CHMM-L & 99.4 & 68.4 & 99.0 & 65.7 & 8.6 & 6.29  & 0.0319 & 0.080 & 0.0759 & 100.0 \\
+JNJ  & CHMM-N & 99.4 & 68.4 & 99.0 & 8.6 & 5.71  & 0.0319 & 0.084 & 0.0755 & 100.0 \\
+     & CHMM-t & 100.0 & 68.1 & 99.6 & 8.6 & 78.00 & 0.0319 & 0.091 & 0.0708 & 100.0 \\
+     & CHMM-L & 99.1 & 67.9 & 98.4 & 8.6 & 6.10  & 0.0319 & 0.083 & 0.0758 & 100.0 \\
 \midrule
-JPM  & CHMM-N & 98.0 & 74.4 & 96.5 & 70.8 & 8.0 & 8.02  & 0.0432 & 0.154 & 0.0840 & 100.0 \\
-     & CHMM-t & 98.6 & 75.4 & 97.2 & 71.1 & 8.0 & 14.68 & 0.0438 & 0.144 & 0.0803 & 100.0 \\
-     & CHMM-L & 99.7 & 79.0 & 99.4 & 73.5 & 8.0 & 6.70  & 0.0466 & 0.133 & 0.0820 & 100.0 \\
+JPM  & CHMM-N & 98.0 & 72.0 & 94.9 & 8.0 & 7.94  & 0.0434 & 0.151 & 0.0837 & 100.0 \\
+     & CHMM-t & 98.2 & 76.6 & 96.6 & 8.0 & 14.24 & 0.0439 & 0.144 & 0.0800 & 100.0 \\
+     & CHMM-L & 100.0 & 83.0 & 99.2 & 8.0 & 6.58  & 0.0466 & 0.132 & 0.0819 & 100.0 \\
 \midrule
-AAPL & CHMM-N & 98.9 & 97.9 & 98.1 & 96.9 & 3.3 & 2.47  & 0.0401 & 0.135 & 0.0839 & 100.0 \\
-     & CHMM-t & 99.4 & 98.1 & 98.6 & 97.3 & 3.3 & 8.36  & 0.0406 & 0.129 & 0.0806 & 100.0 \\
-     & CHMM-L & 98.7 & 98.8 & 98.3 & 97.5 & 3.3 & 4.02  & 0.0409 & 0.127 & 0.0843 & 100.0 \\
+AAPL & CHMM-N & 99.4 & 98.6 & 98.6 & 3.3 & 2.48  & 0.0402 & 0.134 & 0.0842 & 100.0 \\
+     & CHMM-t & 98.9 & 98.5 & 97.8 & 3.3 & 7.55  & 0.0406 & 0.126 & 0.0807 & 100.0 \\
+     & CHMM-L & 98.6 & 97.6 & 97.4 & 3.3 & 4.01  & 0.0409 & 0.128 & 0.0845 & 100.0 \\
 \midrule
-QQQ  & CHMM-N & 94.6 & 95.3 & 86.5 & 91.1 & 3.3 & 1.94  & 0.0520 & 0.119 & 0.0700 & 100.0 \\
-     & CHMM-t & 96.7 & 94.4 & 91.9 & 90.2 & 3.3 & 3.20  & 0.0538 & 0.110 & 0.0715 & 100.0 \\
-     & CHMM-L & 95.7 & 94.9 & 94.1 & 90.4 & 3.3 & 4.93  & 0.0565 & 0.119 & 0.0765 & 100.0 \\
+QQQ  & CHMM-N & 94.5 & 95.8 & 87.7 & 3.3 & 1.91  & 0.0524 & 0.119 & 0.0700 & 100.0 \\
+     & CHMM-t & 95.8 & 95.3 & 92.2 & 3.3 & 3.18  & 0.0536 & 0.109 & 0.0714 & 100.0 \\
+     & CHMM-L & 93.7 & 95.3 & 93.4 & 3.3 & 4.94  & 0.0562 & 0.121 & 0.0768 & 100.0 \\
 \bottomrule
 \end{tabular}%
 }

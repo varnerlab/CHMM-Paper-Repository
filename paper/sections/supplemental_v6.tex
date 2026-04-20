@@ -79,6 +79,31 @@ and the closed-form M-step updates are
 \end{equation}
 The convergence criterion is $|\mathcal{L}^{(n)} - \mathcal{L}^{(n-1)}| < 10^{-4}$ with $\mathcal{L}^{(n)} = \text{logsumexp}_k \log \alpha_T^{(n)}(k)$, and simulation draws $S_1 \sim \text{Categorical}(\boldsymbol{\pi})$ and then iterates $G_t \sim \mathcal{N}(\mu_{S_t}, \sigma_{S_t}^2)$, $S_{t+1} \sim \text{Categorical}(\mathbf{T}_{S_t, \cdot})$ with no jump process.
 
+\paragraph{CHMM-t M-step (per-state ECM, closed form given $u_{t,k}$).}
+For Student-t emissions $b_k(x) = t_{\nu_k}(x; \mu_k, \sigma_k)$ the ECM formulation of \citet{peel2000robust, liu1995ml} treats the latent precision as an augmented E-step quantity,
+\begin{equation}
+    u_{t,k} = \frac{\nu_k + 1}{\nu_k + ((O_t - \mu_k)/\sigma_k)^2},
+    \label{eq:tprecision_supp}
+\end{equation}
+so that conditional on $\nu_k$ the location and scale admit closed-form weighted updates,
+\begin{equation}
+    \mu_k^{\text{new}} = \frac{\sum_t \gamma_t(k)\, u_{t,k}\, O_t}{\sum_t \gamma_t(k)\, u_{t,k}},\quad
+    \left(\sigma_k^{\text{new}}\right)^2 = \frac{\sum_t \gamma_t(k)\, u_{t,k}\, (O_t - \mu_k^{\text{new}})^2}{\sum_t \gamma_t(k)}.
+    \label{eq:tupdate_supp}
+\end{equation}
+The degrees-of-freedom parameter $\nu_k$ is then refined by a one-dimensional golden-section search on the per-state $Q$-function $Q_k(\nu) = \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k)$ over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$.
+This two-block ECM preserves the monotonicity of the standard EM guarantee.
+
+\paragraph{CHMM-L M-step (closed-form weighted Laplace MLE).}
+For Laplace emissions $b_k(x) = \tfrac{1}{2 b_k} \exp(-|x - \mu_k|/b_k)$ the weighted-MLE estimators are available in closed form:
+\begin{equation}
+    \mu_k^{\text{new}} = \text{WeightedMedian}\!\left(O_{1:T};\, \gamma_{1:T}(k)\right),\qquad
+    b_k^{\text{new}} = \frac{\sum_t \gamma_t(k)\, |O_t - \mu_k^{\text{new}}|}{\sum_t \gamma_t(k)}.
+    \label{eq:lupdate_supp}
+\end{equation}
+The weighted median is computed by cumulative-weight bracketing with linear interpolation between adjacent order statistics at the half-total weight crossing.
+The Laplace M-step carries no shape parameter, so CHMM-L is strictly cheaper per iteration than CHMM-t (which requires the per-state $Q_k$ search).
+
 \subsection{Full State-Resolution Sensitivity Table}
 \label{sec:sensitivity_table}
 
@@ -96,15 +121,66 @@ Observed excess kurtosis is 7.71 IS and 6.24 OoS at all $K$.
 \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
 $K$ & IS & OoS & IS & OoS & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov (\%) \\
 \midrule
-3  & 89.7 & 92.3 & 81.4 & 83.2 & 7.71 & 3.94 & 0.0458 & 0.119 & 0.0790 & 100.0 \\
-6  & 93.4 & 92.5 & 87.1 & 84.3 & 7.71 & 5.06 & 0.0490 & 0.106 & 0.0782 & 100.0 \\
-9  & 92.9 & 91.9 & 83.3 & 84.1 & 7.71 & 3.70 & 0.0468 & 0.114 & 0.0779 & 100.0 \\
-12 & 94.5 & 93.8 & 86.1 & 86.0 & 7.71 & 4.18 & 0.0479 & 0.109 & 0.0767 & 100.0 \\
-15 & 94.2 & 93.4 & 88.5 & 85.8 & 7.71 & 4.52 & 0.0490 & 0.106 & 0.0766 & 100.0 \\
-\textbf{18} & \textbf{95.2} & \textbf{95.6} & \textbf{88.4} & \textbf{90.0} & 7.71 & \textbf{5.11} & 0.0502 & \textbf{0.102} & 0.0771 & 100.0 \\
-21 & 94.7 & 95.4 & 88.3 & 88.1 & 7.71 & 4.71 & 0.0505 & 0.103 & 0.0774 & 100.0 \\
+3  & 88.7 & 92.8 & 79.2 & 84.9 & 7.71 & 3.91 & 0.0453 & 0.119 & 0.0793 & 100.0 \\
+6  & 90.3 & 93.8 & 83.6 & 87.0 & 7.71 & 5.13 & 0.0488 & 0.110 & 0.0786 & 100.0 \\
+9  & 91.7 & 92.4 & 83.2 & 85.3 & 7.71 & 3.70 & 0.0473 & 0.115 & 0.0779 & 100.0 \\
+12 & 95.3 & 91.9 & 87.2 & 85.0 & 7.71 & 4.19 & 0.0483 & 0.108 & 0.0767 & 100.0 \\
+15 & 93.5 & 94.0 & 86.8 & 87.0 & 7.71 & 4.46 & 0.0490 & 0.105 & 0.0765 & 100.0 \\
+\textbf{18} & 95.2 & 94.0 & 88.3 & 88.7 & 7.71 & 5.03 & 0.0505 & 0.101 & 0.0771 & 100.0 \\
+21 & \textbf{96.5} & \textbf{94.9} & \textbf{89.1} & 87.0 & 7.71 & 4.71 & 0.0503 & 0.103 & 0.0777 & 100.0 \\
 \bottomrule
 \end{tabular}
+\end{table}
+
+\subsection{Multi-Emission State-Resolution Sensitivity}
+\label{sec:multi_emission_sensitivity}
+
+Table~\ref{tab:sensitivity_multi} extends Table~\ref{tab:sensitivity} across the three emission families, confirming that the qualitative operating point $K = 18$ is stable when the Gaussian component is replaced with Student-t or Laplace emissions.
+For CHMM-t the per-state degrees of freedom $\nu_k$ are refit by ECM-plus-golden-section at every $K$; for CHMM-L the weighted-median location and weighted MAD scale are closed form and impose no additional cost.
+Three patterns extend from Table~\ref{tab:sensitivity} to the new families.
+First, the distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band for all three families: CHMM-t reaches its highest IS KS at $K = 15$ (96.3\%) and its highest OoS KS at $K = 18$ (95.6\%), and CHMM-L reaches its highest IS AD at $K = 12$ (91.1\%) and its highest OoS AD at $K = 18$ (92.6\%).
+Once a family enters the plateau the operating point is flat with respect to $K$, so we report the main-text results at the same $K = 18$ used for CHMM-N.
+Second, the ACF-MAE remains within the narrow 0.045--0.055 band observed for the Gaussian sweep, indicating that the volatility-clustering mechanism is a property of the regime structure rather than the emission family.
+Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks at 5.1, the Laplace sweep lands squarely in the 5.1--6.5 range (closest to the observed 7.71), and the Student-t sweep climbs sharply above 10 across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, over-correcting in-sample kurtosis but aligning OoS.
+
+\begin{table}[H]
+\centering
+\caption{Multi-emission state resolution sensitivity for SPY (1{,}000 paths, $\alpha = 0.05$). CHMM-N: Gaussian; CHMM-t: Student-t with per-state $\nu_k$ refit by ECM-plus-golden-section; CHMM-L: Laplace with weighted-median location and weighted-MAD scale. Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison}. Quantile coverage is 100\% at every $(K, \text{family})$ cell in both IS and OoS windows with the single exception of CHMM-L at $K = 3$ (88.9\% IS, 100.0\% OoS). Observed excess kurtosis is 7.71 IS and 6.24 OoS.}
+\label{tab:sensitivity_multi}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c cc cc c c c c}
+\toprule
+& & \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & & & & \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+Family & $K$ & IS & OoS & IS & OoS & Kurt (IS sim) & ACF-MAE & $W_1$ IS & $H$ IS \\
+\midrule
+CHMM-N & 3  & 88.7 & 92.8 & 79.2 & 84.9 & 3.91 & 0.0453 & 0.119 & 0.0793 \\
+       & 6  & 90.3 & 93.8 & 83.6 & 87.0 & 5.13 & 0.0488 & 0.110 & 0.0786 \\
+       & 9  & 91.7 & 92.4 & 83.2 & 85.3 & 3.70 & 0.0473 & 0.115 & 0.0779 \\
+       & 12 & 95.3 & 91.9 & 87.2 & 85.0 & 4.19 & 0.0483 & 0.108 & 0.0767 \\
+       & 15 & 93.5 & 94.0 & 86.8 & 87.0 & 4.46 & 0.0490 & 0.105 & 0.0765 \\
+       & \textbf{18} & 95.2 & 94.0 & 88.3 & 88.7 & 5.03 & 0.0505 & 0.101 & 0.0771 \\
+       & 21 & \textbf{96.5} & 94.9 & \textbf{89.1} & 87.0 & 4.71 & 0.0503 & 0.103 & 0.0777 \\
+\midrule
+CHMM-t & 3  & 92.0 & 93.0 & 90.3 & 88.1 & 28.28 & 0.0541 & 0.097 & 0.0722 \\
+       & 6  & 93.3 & 94.2 & 89.2 & 87.1 & 26.01 & 0.0529 & 0.097 & 0.0729 \\
+       & 9  & 94.6 & 94.4 & 89.0 & 88.2 & 17.05 & 0.0532 & 0.096 & 0.0725 \\
+       & 12 & 94.8 & 94.6 & 90.0 & 89.4 & 13.23 & 0.0532 & 0.095 & 0.0723 \\
+       & 15 & \textbf{96.3} & 95.2 & 90.9 & 90.3 & 14.33 & 0.0539 & 0.093 & 0.0721 \\
+       & \textbf{18} & 95.3 & \textbf{95.6} & 90.1 & 89.3 & 13.40 & 0.0535 & 0.094 & \textbf{0.0719} \\
+       & 21 & 96.0 & 94.7 & \textbf{91.1} & 87.5 & 12.07 & 0.0526 & \textbf{0.093} & 0.0727 \\
+\midrule
+CHMM-L & 3  & 77.0 & 90.3 & 80.1 & 86.0 & 5.11 & 0.0529 & 0.110 & 0.0822 \\
+       & 6  & 90.1 & 91.3 & 85.2 & 83.8 & 5.87 & 0.0504 & 0.105 & 0.0786 \\
+       & 9  & 91.7 & 92.8 & 86.0 & 85.5 & 6.08 & 0.0517 & 0.103 & 0.0777 \\
+       & 12 & 94.6 & 94.5 & \textbf{91.1} & 89.5 & 6.41 & 0.0533 & 0.096 & 0.0758 \\
+       & 15 & \textbf{94.7} & 95.0 & 90.1 & 90.5 & 6.36 & 0.0537 & 0.097 & 0.0760 \\
+       & \textbf{18} & 93.2 & 94.1 & 91.0 & \textbf{92.6} & \textbf{6.45} & 0.0541 & 0.096 & 0.0761 \\
+       & 21 & 93.9 & 92.7 & 89.4 & 89.5 & 5.98 & 0.0532 & 0.097 & 0.0764 \\
+\bottomrule
+\end{tabular}%
+}
 \end{table}
 
 \subsection{Baum-Welch Convergence}
@@ -370,6 +446,166 @@ Both trajectories exhibit the characteristic pattern of financial returns: exten
 \label{fig:trajectories}
 \end{figure}
 
+\subsection{Multi-Emission Figures at $K = 18$}
+\label{sec:multi_emission_figs}
+
+This appendix reproduces the standard diagnostic suite (emission PDFs, transition matrix, stationary distribution, residence times, IS comparison, OoS validation, and convergence) for the two heavy-tailed emission families (CHMM-t and CHMM-L) at the selected state resolution $K = 18$.
+The Gaussian counterparts are already shown as Figures~\ref{fig:model_internals},~\ref{fig:is_comparison},~\ref{fig:oos_validation},~\ref{fig:convergence_all},~\ref{fig:transition_all},~\ref{fig:stationary_all}, and~\ref{fig:residence_all} in the main text and above in this appendix.
+The figures confirm that the shared forward--backward scaffold produces internally-similar regime structure across the three families: the near-diagonal transition band, the $K$-component dense emission cover, the longer central-state residence times, and the monotone log-likelihood convergence are features of the CHMM framework and not of the Gaussian component specifically.
+
+\paragraph{Emission PDFs.}
+Figure~\ref{fig:emissions_families} compares the learned $K = 18$ emissions for the three families.
+The CHMM-t panel's per-state $\nu_k$ allocation is visible in the narrower modes of certain tail states; the CHMM-L panel's Laplace components have sharper peaks and slower exponential tail decay than the Gaussians.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Emission-PDFs-K18-N.pdf}
+    \caption{CHMM-N (Gaussian)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Emission-PDFs-K18-t.pdf}
+    \caption{CHMM-t (Student-t)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Emission-PDFs-K18-L.pdf}
+    \caption{CHMM-L (Laplace)}
+\end{subfigure}
+\caption{Learned emission distributions at $K = 18$ across the three emission families, overlaid on the observed SPY return histogram. Heavier-tailed emission families (t, L) give individual components more tail mass, which is what closes the kurtosis gap of the Gaussian CHMM.}
+\label{fig:emissions_families}
+\end{figure}
+
+\paragraph{Transition matrices.}
+Figure~\ref{fig:transition_families} shows the $K = 18$ transition matrices learned by each family.
+The near-diagonal band and the magnitude of self-transition probabilities are essentially unchanged across families, consistent with the ACF-MAE being stable across the family axis (Table~\ref{tab:sensitivity_multi}).
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Transition-Matrix-K18-N.pdf}
+    \caption{CHMM-N}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Transition-Matrix-K18-t.pdf}
+    \caption{CHMM-t}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Transition-Matrix-K18-L.pdf}
+    \caption{CHMM-L}
+\end{subfigure}
+\caption{Learned transition matrices at $K = 18$ in log$_{10}$ color scale. The diagonal-band structure is preserved across all three emission families.}
+\label{fig:transition_families}
+\end{figure}
+
+\paragraph{Stationary distributions and residence times.}
+Figure~\ref{fig:stationary_families} and Figure~\ref{fig:residence_families} compare the stationary distribution and natural residence times $\tau_k = 1/(1 - T_{kk})$ across families at $K = 18$.
+The mass concentration at central states and the monotone decrease of $\tau_k$ toward the tails are features of the regime structure, not the emission family.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Stationary-Distribution-K18-N.pdf}
+    \caption{CHMM-N}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Stationary-Distribution-K18-t.pdf}
+    \caption{CHMM-t}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Stationary-Distribution-K18-L.pdf}
+    \caption{CHMM-L}
+\end{subfigure}
+\caption{Stationary distributions $\bar{\boldsymbol{\pi}}$ at $K = 18$ across the three emission families.}
+\label{fig:stationary_families}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Residence-Times-K18-N.pdf}
+    \caption{CHMM-N}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Residence-Times-K18-t.pdf}
+    \caption{CHMM-t}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Residence-Times-K18-L.pdf}
+    \caption{CHMM-L}
+\end{subfigure}
+\caption{Natural residence times $\tau_k = 1/(1 - T_{kk})$ at $K = 18$ across the three emission families.}
+\label{fig:residence_families}
+\end{figure}
+
+\paragraph{In-sample comparison.}
+Figure~\ref{fig:is_families} reproduces the three-panel in-sample comparison (density, ACF of $|G_t|$, tail Q-Q) at $K = 18$ for the two heavy-tailed families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K18-t.pdf}
+    \caption{CHMM-t}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K18-L.pdf}
+    \caption{CHMM-L}
+\end{subfigure}
+\caption{In-sample model comparison at $K = 18$ for the two heavy-tailed emission families. Each panel shows (a) marginal density with KS pass rate, (b) ACF of $|G_t|$, and (c) tail Q-Q plot. The CHMM-N counterpart is Figure~\ref{fig:is_comparison}.}
+\label{fig:is_families}
+\end{figure}
+
+\paragraph{Out-of-sample validation.}
+Figure~\ref{fig:oos_families} shows the OoS validation panels for CHMM-t and CHMM-L at $K = 18$.
+The CHMM-t panel demonstrates the OoS kurtosis alignment noted in the main text (simulated 6.40 vs.\ observed 6.24), and the CHMM-L panel shows the tighter density fan produced by the heavier Laplace tails relative to the Gaussian.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K18-t.pdf}
+    \caption{CHMM-t}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K18-L.pdf}
+    \caption{CHMM-L}
+\end{subfigure}
+\caption{Out-of-sample validation at $K = 18$ for the two heavy-tailed emission families. Each panel shows (a) KS $p$-values, (b) OoS density fan, and (c) OoS ACF of $|G_t|$. The CHMM-N counterpart is Figure~\ref{fig:oos_validation}.}
+\label{fig:oos_families}
+\end{figure}
+
+\paragraph{Convergence.}
+Figure~\ref{fig:convergence_families} shows the Baum-Welch / ECM / weighted-EM log-likelihood histories at $K = 18$ for all three families.
+The CHMM-t and CHMM-L curves inherit the monotone increase of the classical EM guarantee; the CHMM-t curve has a slightly longer pre-plateau phase because each ECM sub-iteration refines $\nu_k$ with a golden-section search.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Convergence-K18-N.pdf}
+    \caption{CHMM-N}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Convergence-K18-t.pdf}
+    \caption{CHMM-t}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-Convergence-K18-L.pdf}
+    \caption{CHMM-L}
+\end{subfigure}
+\caption{Log-likelihood histories at $K = 18$ across the three emission families. All three curves are monotonically non-decreasing and plateau well before the $\texttt{max\_iter} = 60$ budget.}
+\label{fig:convergence_families}
+\end{figure}
+
 \subsection{Cross-Asset Dependence Models: Derivations and Diagnostics}
 \label{sec:cross_asset_supp}
 
@@ -445,7 +681,10 @@ The VIX extension demonstrates that the CHMM framework is not limited to equity 
 \label{sec:algorithms}
 
 This section provides detailed pseudocode for the main algorithms used in this study.
-Algorithm~\ref{alg:baum_welch} describes the Baum-Welch (EM) procedure for learning CHMM parameters from continuous observations.
+Algorithm~\ref{alg:baum_welch} describes the Baum-Welch (EM) procedure for CHMM-N (Gaussian emissions).
+Algorithm~\ref{alg:ecm_student_t} describes the Expectation-Conditional-Maximization (ECM) procedure for CHMM-t (Student-t emissions), in which the per-state location and scale admit closed-form weighted updates given the augmented precision $u_{t,k}$ and the per-state degrees of freedom $\nu_k$ are refined by a one-dimensional golden-section search on the $Q$-function.
+Algorithm~\ref{alg:em_laplace} describes the EM procedure for CHMM-L (Laplace emissions), whose M-step is the closed-form weighted-median location and weighted mean-absolute-deviation scale.
+All three algorithms share the identical log-space forward-backward E-step and quantile-based initialization; only the per-state emission evaluation and M-step differ.
 Algorithm~\ref{alg:viterbi} presents the Viterbi algorithm for decoding the most likely hidden state sequence.
 Algorithm~\ref{alg:chmm_simulate} describes the CHMM simulation procedure for generating synthetic return paths.
 Algorithm~\ref{alg:copula_sim} describes the cross-asset rank-reordering simulator for copula-based multi-asset synthesis.
@@ -523,6 +762,101 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \ENDFOR
 
 \RETURN $\mathbf{T}, \{\mu_k, \sigma_k\}_{k=1}^K, \boldsymbol{\pi}$
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 1b: ECM for Student-t CHMM
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{ECM algorithm for continuous Student-t HMM (CHMM-t) parameter estimation}
+\label{alg:ecm_student_t}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Observations $O_{1:T}$, number of states $K$, tolerance $\text{tol}$, $\texttt{max\_iter}$, bracket $(\nu_{\min}, \nu_{\max})$, initial $\nu^{(0)}$
+\ENSURE Transition matrix $\mathbf{T}$, emission parameters $\{\mu_k, \sigma_k, \nu_k\}_{k=1}^K$, initial distribution $\boldsymbol{\pi}$
+
+\STATE \textbf{Quantile-Based Initialization.}
+\STATE Sort observations $O^{(\text{sort})} \leftarrow \text{sort}(O_{1:T})$ and partition into $K$ equal chunks $\{C_1, \ldots, C_K\}$.
+\FOR{$k = 1$ to $K$}
+    \STATE $\mu_k \leftarrow \text{mean}(C_k)$, \quad $\sigma_k \leftarrow \max(\text{std}(C_k), 10^{-6})$, \quad $\nu_k \leftarrow \nu^{(0)}$.
+\ENDFOR
+\STATE $T_{ij} \leftarrow 1/K$; \quad $\pi_k \leftarrow 1/K$; \quad $\mathcal{L}_{\text{prev}} \leftarrow -\infty$.
+
+\STATE \textbf{EM Loop.}
+\FOR{$n = 1$ to $\texttt{max\_iter}$}
+
+    \STATE \textbf{E-Step:} emission log-likelihoods $\log B_{t,k} = \log t_{\nu_k}(O_t; \mu_k, \sigma_k)$.
+    \STATE Run the log-space forward--backward recursions~\eqref{eq:forward}--\eqref{eq:backward} to obtain $\gamma_t(k)$ and $\xi_t(i,j)$.
+
+    \STATE \textit{Latent precisions.}
+    \FOR{$t = 1$ to $T$, $k = 1$ to $K$}
+        \STATE $u_{t,k} \leftarrow (\nu_k + 1) / \big(\nu_k + ((O_t - \mu_k)/\sigma_k)^2\big)$.
+    \ENDFOR
+
+    \STATE \textbf{CM-Step 1: update $\mu_k, \sigma_k$ given $\nu_k$.}
+    \STATE $\pi_k \leftarrow \gamma_1(k)$ for all $k$.
+    \FOR{$k = 1$ to $K$}
+        \STATE $w_{t,k} \leftarrow \gamma_t(k)\, u_{t,k}$; \quad $W_k \leftarrow \sum_t w_{t,k}$; \quad $G_k \leftarrow \sum_t \gamma_t(k)$.
+        \STATE $\mu_k \leftarrow \sum_t w_{t,k}\, O_t / W_k$.
+        \STATE $\sigma_k \leftarrow \max\!\left(\sqrt{\sum_t w_{t,k} (O_t - \mu_k)^2 / G_k},\; 10^{-6}\right)$.
+    \ENDFOR
+
+    \STATE \textbf{CM-Step 2: update $\nu_k$ by 1D golden-section search.}
+    \FOR{$k = 1$ to $K$}
+        \STATE Define $Q_k(\nu) = \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k)$.
+        \STATE $\nu_k \leftarrow \arg\max_{\nu \in [\nu_{\min}, \nu_{\max}]} Q_k(\nu)$ via 40-iteration golden-section search.
+    \ENDFOR
+
+    \STATE \textbf{Transition update.} $T_{ij} \leftarrow \sum_t \xi_t(i,j) / \sum_t \gamma_t(i)$.
+
+    \STATE \textbf{Convergence check.} $\mathcal{L}^{(n)} \leftarrow \text{logsumexp}_k\, \log \alpha_T(k)$. \IF{$|\mathcal{L}^{(n)} - \mathcal{L}_{\text{prev}}| < \text{tol}$} \STATE \textbf{break} \ENDIF
+    \STATE $\mathcal{L}_{\text{prev}} \leftarrow \mathcal{L}^{(n)}$.
+\ENDFOR
+
+\RETURN $\mathbf{T}, \{\mu_k, \sigma_k, \nu_k\}_{k=1}^K, \boldsymbol{\pi}$
+\end{algorithmic}
+\end{algorithm}
+
+% ========================================================================================= %
+% Algorithm 1c: EM for Laplace CHMM
+% ========================================================================================= %
+\begin{algorithm}[tp]
+\caption{EM algorithm for continuous Laplace HMM (CHMM-L) parameter estimation}
+\label{alg:em_laplace}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Observations $O_{1:T}$, number of states $K$, tolerance $\text{tol}$, $\texttt{max\_iter}$
+\ENSURE Transition matrix $\mathbf{T}$, emission parameters $\{\mu_k, b_k\}_{k=1}^K$, initial distribution $\boldsymbol{\pi}$
+
+\STATE \textbf{Quantile-Based Initialization.}
+\STATE Sort observations $O^{(\text{sort})} \leftarrow \text{sort}(O_{1:T})$ and partition into $K$ equal chunks $\{C_1, \ldots, C_K\}$.
+\FOR{$k = 1$ to $K$}
+    \STATE $\mu_k \leftarrow \text{median}(C_k)$, \quad $b_k \leftarrow \max(\text{mean}(|C_k - \mu_k|), 10^{-6})$.
+\ENDFOR
+\STATE $T_{ij} \leftarrow 1/K$; \quad $\pi_k \leftarrow 1/K$; \quad $\mathcal{L}_{\text{prev}} \leftarrow -\infty$.
+
+\STATE \textbf{EM Loop.}
+\FOR{$n = 1$ to $\texttt{max\_iter}$}
+
+    \STATE \textbf{E-Step:} emission log-likelihoods $\log B_{t,k} = -\log(2 b_k) - |O_t - \mu_k| / b_k$.
+    \STATE Run the log-space forward--backward recursions~\eqref{eq:forward}--\eqref{eq:backward} to obtain $\gamma_t(k)$ and $\xi_t(i,j)$.
+
+    \STATE \textbf{M-Step (closed-form weighted Laplace MLE).}
+    \STATE $\pi_k \leftarrow \gamma_1(k)$ for all $k$.
+    \FOR{$k = 1$ to $K$}
+        \STATE $W_k \leftarrow \sum_t \gamma_t(k)$.
+        \STATE $\mu_k \leftarrow \text{WeightedMedian}(O_{1:T},\, \gamma_{1:T}(k))$ \COMMENT{cumulative-weight bracketing; linear interpolation at the $W_k/2$ crossing.}
+        \STATE $b_k \leftarrow \max\!\left(\sum_t \gamma_t(k)\, |O_t - \mu_k| / W_k,\; 10^{-6}\right)$.
+    \ENDFOR
+
+    \STATE \textbf{Transition update.} $T_{ij} \leftarrow \sum_t \xi_t(i,j) / \sum_t \gamma_t(i)$.
+
+    \STATE \textbf{Convergence check.} $\mathcal{L}^{(n)} \leftarrow \text{logsumexp}_k\, \log \alpha_T(k)$. \IF{$|\mathcal{L}^{(n)} - \mathcal{L}_{\text{prev}}| < \text{tol}$} \STATE \textbf{break} \ENDIF
+    \STATE $\mathcal{L}_{\text{prev}} \leftarrow \mathcal{L}^{(n)}$.
+\ENDFOR
+
+\RETURN $\mathbf{T}, \{\mu_k, b_k\}_{k=1}^K, \boldsymbol{\pi}$
 \end{algorithmic}
 \end{algorithm}
 
