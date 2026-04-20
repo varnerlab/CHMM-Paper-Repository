@@ -1,0 +1,27 @@
+Empirical equity returns exhibit three well-documented stylized facts: heavy-tailed marginals, negligible linear autocorrelation, and slow decay of the autocorrelation function (ACF) of absolute returns \cite{mandelbrot1963variation, cont2001empirical}.
+Any synthetic-data generator intended for risk management or portfolio backtesting must reproduce all three simultaneously \cite{assefa2020generating, jordon2022synthetic}.
+GARCH models \cite{engle1982autoregressive, bollerslev1986generalized} capture volatility clustering but cannot represent the multi-regime structure of the marginal, while i.i.d.\ generators match the marginal but destroy temporal persistence.
+Hidden Markov models (HMMs), introduced to economics by \citet{hamilton1989new} and extended to stock market returns by \citet{schaller1997regime}, offer a natural middle path through a latent regime structure.
+
+An influential negative result has shaped two decades of work on this problem.
+\citet{ryden1998stylized} fitted Gaussian-emission HMMs with $K = 2$--$3$ states and concluded that, while HMMs reproduce heavy tails and absent return autocorrelation, they \emph{fail} to capture the slow ACF decay of absolute returns: the geometric sojourn-time distribution of a standard Markov chain produces exponential decay that is too fast.
+\citet{bulla2006stylized} restored ACF fidelity with hidden semi-Markov models (HSMMs) at the cost of substantially increased complexity, and \citet{alswaidan2026hybrid} reached the same end within a discrete HMM by adding a Poisson jump-duration mechanism calibrated through two extra hyperparameters.
+
+We show that these complexities are unnecessary.
+A continuous HMM trained by the Baum-Welch algorithm \cite{baum1970maximization, rabiner1986introduction} with quantile-based initialization reproduces all three stylized facts at moderate state resolution, without jump augmentation, discretization, or separate emission fitting.
+We further observe that the emission family is a first-class design choice that the same EM scaffold accommodates at no architectural cost.
+Alongside the classical Gaussian variant (CHMM-N) we introduce and evaluate two heavy-tailed variants sharing identical forward-backward recursions: CHMM-t, with per-state Student-t emissions whose degrees-of-freedom $\nu_k$ are updated inside the M-step by a golden-section search on the ECM $Q$-function in the tradition of \citet{peel2000robust} and \citet{liu1995ml}; and CHMM-L, with per-state Laplace emissions whose location is the weighted median and whose scale is the weighted mean absolute deviation, both in closed form.
+We sweep $K \in \{3, 6, 9, 12, 15, 18, 21\}$ and select $K = 18$ jointly by the four information criteria (AIC, BIC, HQC, CAIC) used for HMM state selection in stock-price prediction by \citet{nguyen2018hidden} and by our multi-metric distributional score.
+The negative result of \citet{ryden1998stylized} is a low-$K$ artifact: once the transition matrix has heterogeneous diagonal entries across regimes, its eigenvalue spectrum provides a mixture of geometric sojourn times that approximates slow ACF decay, achieving an HSMM-like effect within the standard HMM framework.
+
+Against six alternative generators on ten years of daily SPY data (bootstrap, Gaussian and Laplace i.i.d.\ baselines, the discrete HMM of \citet{alswaidan2026hybrid} in no-jump (NJ) and Poisson-jump (WJ) variants, and GARCH(1,1)), the Gaussian CHMM-N at $K = 18$ attains 96.8\% in-sample and 95.0\% out-of-sample Kolmogorov--Smirnov pass rates and ACF-MAE of 0.051 on absolute returns, essentially matching GARCH's temporal fidelity without sacrificing distributional fit.
+The heavy-tailed CHMM-t and CHMM-L variants retain this ACF and pass-rate fidelity while producing simulated excess kurtosis closer to the observed value (7.7), directly addressing the single residual kurtosis gap of the Gaussian model.
+Univariate generalization is confirmed on NVDA, JNJ, JPM, AAPL, and QQQ for all three emission families.
+For multi-asset synthesis, we extend the univariate framework with a Single Index Model \cite{sharpe1963simplified} and Gaussian / Student-t copulas \cite{sklar1959fonctions, demarta2005tcopula, mcneil2015quantitative}, both of which preserve each asset's fitted CHMM marginal.
+On six SPY-member assets the copulas substantially outperform SIM on per-asset KS fidelity (median 98.0\% vs.\ 83.8\%) and correlation-matrix reproduction (off-diagonal MAE 0.027 Student-t, 0.031 Gaussian, 0.078 SIM), with the Student-t copula's profile MLE selecting $\nu^{*} = 6$ degrees of freedom.
+Finally, applying the same pipeline to CBOE VIX and VXX log returns confirms that the framework transfers to the volatility measures most commonly used as risk inputs, in the same scope as the prior discrete-HMM paper~\citep{alswaidan2026hybrid}; option pricing is explicitly out of scope.
+
+The remainder of the paper is organized as follows.
+Section~\ref{sec:related} positions the work against related literature.
+Section~\ref{sec:methods} describes the data, the CHMM, the benchmark models, the cross-asset constructions, and the evaluation protocol, with formal algorithms and metric definitions in Appendix~\ref{sec:supplemental}.
+Section~\ref{sec:results} presents the empirical study; Sections~\ref{sec:discussion}--\ref{sec:conclusion} discuss and conclude.
