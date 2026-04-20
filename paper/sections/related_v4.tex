@@ -31,8 +31,7 @@ The single-decay parameter $\beta$ directly controls the persistence of the cond
 However, GARCH models assume a unimodal innovation distribution and cannot represent discrete market regimes.
 As we demonstrate empirically, this unimodal assumption leads to catastrophic distributional failure: GARCH(1,1) achieves only 13\% KS pass rate despite matching the observed ACF-MAE almost exactly (0.047 vs.\ 0.048 observed).
 
-Parametric stochastic volatility models treat log-variance as a latent diffusion and produce closed-form or semi-analytic option prices, but parameter estimation requires computationally intensive methods such as particle filtering or Markov-chain Monte Carlo.
-A detailed comparison of the CHMM-implied volatility surface against a parametric stochastic-volatility benchmark is the subject of companion work and is not revisited here.
+Parametric stochastic-volatility models treat log-variance as a latent diffusion, but parameter estimation requires computationally intensive methods such as particle filtering or Markov-chain Monte Carlo, and they are orthogonal to the synthetic-data-generation problem addressed here.
 
 Jump-diffusion models \cite{merton1976option, kou2002jump} augment the geometric Brownian motion with Poisson-driven jumps in the price level, producing heavy-tailed marginal distributions.
 \citet{merton1976option} used Gaussian jump sizes, while \citet{kou2002jump} introduced double-exponential jumps to capture the asymmetry between upside and downside tail risk.

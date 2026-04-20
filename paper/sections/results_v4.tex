@@ -125,6 +125,7 @@ IS: 2014--2024 ($T = 2{,}766$); OoS: 2025 ($T = 219$).
 The two discrete HMM rows reproduce \citet{alswaidan2026hybrid} exactly: $K_{\text{disc}} = 13$ bins; WJ jump parameters $(\epsilon, \lambda) = (0.01, 3)$.
 KS = Kolmogorov--Smirnov pass rate; AD = Anderson--Darling pass rate; Kurt = mean simulated excess kurtosis (observed: 7.71 IS, 6.24 OoS); ACF-MAE = mean absolute error of $\text{ACF}(|G_t|)$ over 252 lags; $W_1$ = Wasserstein-1 distance; $H$ = Hellinger distance; Cov = quantile coverage (\%). $\uparrow$/$\downarrow$ indicate preferred direction.}
 \label{tab:model_comparison}
+\resizebox{\textwidth}{!}{%
 \small
 \begin{tabular}{l cc cc cc c c c cc}
 \toprule
@@ -141,7 +142,8 @@ Discrete WJ          & 0.0   & 85.7  & 0.0   & 95.3  & 0.51 & 0.51 & 0.0607 & 0.
 GARCH(1,1)           & 11.5  & 87.8  & 2.9   & 81.2  & 6.40 & 1.21 & 0.0475 & 0.244 & 0.1021 & 40.4  & 100.0 \\
 \textbf{CHMM $(K=18)$}  & \textbf{96.8} & \textbf{95.0} & \textbf{90.1} & \textbf{87.2} & 5.06 & 3.54 & 0.0507 & \textbf{0.099} & 0.0769 & \textbf{100.0} & \textbf{100.0} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \begin{figure}[t]
@@ -234,6 +236,7 @@ The shortfall is most pronounced on the broader-market instruments and smallest 
 \centering
 \caption{Cross-asset univariate generalization (CHMM, $K = 18$, 1{,}000 paths, $\alpha = 0.05$). Each ticker fitted independently.}
 \label{tab:cross_asset}
+\resizebox{\textwidth}{!}{%
 \small
 \begin{tabular}{l cc cc cc c c c c}
 \toprule
@@ -248,7 +251,8 @@ JPM   & 98.4 & 74.5 & 95.5 & 72.1 & 8.0 & 7.82 & 0.0431 & 0.154 & 0.0840 & 100.0
 AAPL  & 99.6 & 97.9 & 99.0 & 97.6 & 3.3 & 2.46 & 0.0401 & 0.134 & 0.0838 & 100.0 \\
 QQQ   & 95.4 & 93.3 & 87.4 & 90.3 & 3.3 & 1.92 & 0.0523 & 0.118 & 0.0698 & 100.0 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \subsection{Cross-Asset Dependence: SIM and Copula Extensions}
@@ -334,22 +338,19 @@ The visual ordering confirms the quantitative summary in Table~\ref{tab:cross_as
 The cross-asset results mirror the ordering reported by \citet{alswaidan2026hybrid} for the discrete HMM marginals: copulas beat SIM on per-asset distributional accuracy by construction (rank reordering preserves marginals, an affine map does not), and the Student-t copula beats the Gaussian copula when asset co-movement has meaningful tail dependence (here, $\nu^* = 6$).
 This evidence suggests that the copula advantage is intrinsic to the rank-reordering construction and not specific to the underlying marginal model, which is a useful robustness finding as practitioners move from discrete to continuous marginal families.
 
-\subsection{VIX/VXX Extension}
+\subsection{Synthetic-Data Generation for VIX and VXX}
 \label{sec:vix_results}
 
-To test whether the CHMM framework generalizes beyond equity returns, we applied it to the CBOE Volatility Index (VIX), whose log returns exhibit fundamentally different statistical properties from equity excess growth rates.
+To test whether the CHMM framework generalizes beyond equity returns, we applied it to two market volatility measures: the CBOE Volatility Index (VIX) and the iPath Series B S\&P 500 VIX Short-Term Futures ETN (VXX).
+Both series exhibit statistical properties that differ fundamentally from equity excess growth rates: positive skewness (volatility spikes are asymmetric), pronounced mean reversion (crises are transient), and heavier tails than SPY returns.
+Each instrument is fitted independently at $K = 18$ using the same Baum-Welch pipeline and evaluated on the same seven-metric battery used in Section~\ref{sec:model_comparison}.
 
-\paragraph{VIX Regime Decomposition.}
-The CHMM trained on VIX log returns produced a regime decomposition that captured the distinct phases of volatility dynamics: low-volatility regimes (calm markets), moderate-volatility regimes (normal fluctuation), and high-volatility regimes (crisis episodes).
-The Viterbi-decoded state sequence aligned with known market events: the model assigned high-volatility states to the 2008 financial crisis aftermath, the 2011 European debt crisis, the 2015 China devaluation, the 2018 volatility spike, and the March 2020 COVID-19 crash.
+\paragraph{VIX and VXX Synthetic-Data Fidelity.}
+Both instruments pass the full seven-metric battery.
+The CHMM recovers the positive-skew, heavy-tailed marginal distribution of VIX and VXX log returns, and simulated paths reproduce the observed slow decay of ACF$(|R_t|)$ without any modification to the fitted Gaussian emission family (Appendix~\ref{sec:supplemental}).
+The decoded regime sequence aligns with known market stress events: the model assigns high-volatility states to the 2008 financial crisis aftermath, the 2011 European debt crisis, the 2015 China devaluation, the 2018 volatility spike, and the March 2020 COVID-19 crash.
 
-\paragraph{Bridge to Option Pricing.}
-The VIX regime decomposition provides a pathway from observed market data to option pricing through three steps.
-First, train the CHMM on VIX returns and decode regimes via Viterbi.
-Second, compute the median VIX level per regime to define the volatility map $\bar{V}_k$.
-Third, simulate regime-switching GBM paths using equation~\eqref{eq:regime_gbm} to price options via Monte Carlo.
-This construction makes option pricing an output of a structural regime model rather than requiring exogenous implied volatility surfaces.
-The regime-switching volatility produces realistic features in the implied volatility surface, including term structure effects driven by regime persistence and moneyness effects driven by the mixture of volatility levels.
-A detailed benchmark of this surface against a parametric stochastic-volatility model is the subject of companion work led by our group and is intentionally outside the scope of this paper.
-
-A detailed analysis of the VIX/VXX CHMM results is presented in Appendix~\ref{sec:supplemental}.
+\paragraph{Unified Synthetic-Data Engine.}
+The key point for the scope of this paper is that the same training and simulation pipeline handles both equities and volatility measures: one implementation, one hyperparameter choice ($K = 18$), one evaluation battery.
+This matches the scope of our prior discrete HMM paper~\citep{alswaidan2026hybrid}, which also treated VIX and VXX as synthetic-data targets on equal footing with equity returns.
+A detailed analysis of the VIX/VXX CHMM results (convergence, emission PDFs, IS/OoS panels) is presented in Appendix~\ref{sec:supplemental}.

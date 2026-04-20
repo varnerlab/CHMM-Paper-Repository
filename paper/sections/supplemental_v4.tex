@@ -305,13 +305,20 @@ Given in-sample returns $\mathbf{R} \in \mathbb{R}^{T \times d}$, we estimate th
 The resulting matrix $\hat{\Sigma}$ is symmetric but not guaranteed positive semi-definite; we project to the nearest PSD matrix by clipping negative eigenvalues to $10^{-8}$ and rescaling the diagonal to unity.
 
 \paragraph{Profile MLE for $\nu$.}
-The Student-t copula log-density at a single pseudo-uniform observation $\mathbf{u} \in [0,1]^d$ is
-\begin{equation}
-  \log c_t(\mathbf{u}; \Sigma, \nu) \;=\; \log \Gamma\!\left(\tfrac{\nu+d}{2}\right) + (d-1)\log \Gamma\!\left(\tfrac{\nu}{2}\right) - d \log \Gamma\!\left(\tfrac{\nu+1}{2}\right) - \tfrac{1}{2} \log |\Sigma|
-  - \tfrac{\nu+d}{2} \log\!\left(1 + \tfrac{\mathbf{x}^\top \Sigma^{-1} \mathbf{x}}{\nu}\right) + \sum_{j=1}^d \tfrac{\nu+1}{2} \log\!\left(1 + \tfrac{x_j^2}{\nu}\right),
-  \label{eq:tcop_ll}
-\end{equation}
-where $x_j = t_\nu^{-1}(u_j)$.
+The Student-t copula log-density at a single pseudo-uniform observation $\mathbf{u} \in [0,1]^d$, with $x_j = t_\nu^{-1}(u_j)$ and $\mathbf{x} = (x_1, \dots, x_d)^\top$, is
+\begin{align}
+    \log c_t(\mathbf{u}; \Sigma, \nu)
+    \;=\;&
+    \log \Gamma\!\left(\tfrac{\nu+d}{2}\right)
+    + (d-1)\,\log \Gamma\!\left(\tfrac{\nu}{2}\right)
+    - d\,\log \Gamma\!\left(\tfrac{\nu+1}{2}\right)
+    - \tfrac{1}{2} \log |\Sigma|
+    \notag \\
+    &\;
+    - \tfrac{\nu+d}{2}\,\log\!\left(1 + \tfrac{\mathbf{x}^{\!\top} \Sigma^{-1} \mathbf{x}}{\nu}\right)
+    + \sum_{j=1}^{d} \tfrac{\nu+1}{2}\,\log\!\left(1 + \tfrac{x_j^2}{\nu}\right).
+    \label{eq:tcop_ll}
+\end{align}
 Summing over $t = 1, \dots, T$ pseudo-observations yields the profile log-likelihood as a function of $\nu$ with $\Sigma$ held fixed at the Kendall's-$\tau$ estimate.
 We evaluate equation~\eqref{eq:tcop_ll} on the discrete grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ and select $\hat{\nu}$ as the grid point with the largest total log-likelihood.
 In Section~\ref{sec:cross_asset} the selected value was $\hat{\nu} = 6$ on the six-asset universe.
@@ -351,8 +358,7 @@ VIX returns exhibit positive skewness (reflecting asymmetric volatility spikes),
 The CHMM captured these properties effectively: at higher state resolutions ($K \geq 9$), the model achieved IS KS pass rates above 99\%, demonstrating that the Gaussian mixture mechanism can approximate even the positively skewed, heavy-tailed marginal distribution of VIX returns.
 The regime decomposition provided by the Viterbi algorithm aligned with known market events, assigning high-volatility states to crisis episodes and low-volatility states to calm market periods.
 
-The VIX extension demonstrates that the CHMM framework is not limited to equity returns but applies more broadly to financial time series with regime-switching dynamics.
-The decoded regimes and their associated median VIX levels provide the volatility map described in Section~\ref{sec:vix_methods}, linking the statistical model to the regime-switching GBM simulation.
+The VIX extension demonstrates that the CHMM framework is not limited to equity returns but applies more broadly to financial time series with regime-switching dynamics, including volatility measures used directly as synthetic-data targets.
 
 \subsection{Algorithm Descriptions}
 \label{sec:algorithms}

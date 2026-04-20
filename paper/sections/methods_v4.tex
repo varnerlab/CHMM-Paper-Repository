@@ -62,7 +62,10 @@ The Baum-Welch algorithm \cite{baum1970maximization} is the standard expectation
 Given a sequence of $T$ observations $O_{1:T} = (O_1, O_2, \ldots, O_T)$, the algorithm iterates between an E-step and an M-step until convergence.
 
 \paragraph{E-Step: Forward-Backward in Log-Space.}
-Define the forward variable $\alpha_t(k) = \Prob(O_1, O_2, \ldots, O_t, S_t = k \mid \mathcal{M})$ and the backward variable $\beta_t(k) = \Prob(O_{t+1}, O_{t+2}, \ldots, O_T \mid S_t = k, \mathcal{M})$.
+Define the forward variable
+$\alpha_t(k) = \Prob(O_{1:t},\, S_t = k \mid \mathcal{M})$
+and the backward variable
+$\beta_t(k) = \Prob(O_{t+1:T} \mid S_t = k, \mathcal{M})$.
 The recursions are
 \begin{align}
     \log \alpha_1(k) &= \log \pi_k + \log b_k(O_1) \label{eq:forward_init} \\
@@ -285,24 +288,20 @@ Each metric is computed per path and then aggregated.
 For the cross-asset extension we additionally track two cross-sectional metrics: the mean Frobenius norm $\|\hat{\Sigma}_{\text{sim}}^{(p)} - \hat{\Sigma}_{\text{obs}}\|_F$ and the mean absolute error of the off-diagonal Pearson correlations between simulated and observed return matrices, averaged over paths.
 These quantify how faithfully each dependence model reproduces the cross-sectional correlation structure.
 
-\subsection{VIX Extension and Option Pricing Pathway}
+\subsection{Volatility Measures: VIX and VXX as Synthetic-Data Targets}
 \label{sec:vix_methods}
 
-To demonstrate the generality of the framework beyond equity returns, we train the CHMM on VIX daily log returns computed as
+To demonstrate that the same Baum-Welch pipeline generalizes beyond equities, we apply it to the two most widely tracked market volatility measures: the CBOE Volatility Index (VIX) and the iPath Series B S\&P 500 VIX Short-Term Futures ETN (VXX).
+Both are treated as univariate return series and fitted independently.
+The model specification, training, and simulation are identical to the equity pipeline of Sections~\ref{sec:chmm_def}--\ref{sec:baum_welch}; only the input series changes.
+Daily log returns are computed as
 \begin{equation}
-    R_t^{\text{VIX}} = \ln\!\left(\frac{\text{VIX}_t}{\text{VIX}_{t-1}}\right).
+    R_t^{\text{VIX}} = \ln\!\left(\frac{\text{VIX}_t}{\text{VIX}_{t-1}}\right),
+    \qquad
+    R_t^{\text{VXX}} = \ln\!\left(\frac{\text{VXX}_t}{\text{VXX}_{t-1}}\right).
     \label{eq:vix_returns}
 \end{equation}
 
-The trained CHMM provides a regime decomposition of VIX dynamics via the Viterbi algorithm, which decodes the most likely hidden state sequence $S_{1:T}^{*} = \arg\max_{S_{1:T}} \Prob(S_{1:T} \mid O_{1:T}, \mathcal{M})$.
-The median VIX level within each decoded regime defines a volatility map $\bar{V}_k = \text{median}(\text{VIX}_t : S_t^* = k)$ that links each HMM state to a characteristic market volatility level.
-
-This regime decomposition provides a natural bridge to option pricing.
-The volatility map $\bar{V}_k$ parameterizes a regime-switching geometric Brownian motion (GBM)
-\begin{equation}
-    dP_t = \mu\, P_t\, dt + \frac{\bar{V}_{S_t}}{100}\, P_t\, dW_t,
-    \label{eq:regime_gbm}
-\end{equation}
-where $S_t$ follows the CHMM's learned Markov dynamics.
-Monte Carlo simulation of \eqref{eq:regime_gbm} produces option prices under the CHMM-implied regime structure, yielding an implied volatility surface that inherits the discrete regime weights and persistence from the VIX-trained CHMM.
-A detailed benchmark of this surface against a parametric stochastic-volatility model is outside the scope of this paper and is the subject of companion work led by our group.
+The same seven-metric evaluation from Section~\ref{sec:metrics} is applied path-by-path to 1{,}000 simulated return paths for each instrument.
+The goal here is synthetic-data quality on volatility measures, which have positive skewness, pronounced mean reversion, and heavier-than-equity excess kurtosis; downstream risk applications that consume synthetic volatility paths (for example, VaR of volatility-sensitive portfolios or scenario stress tests) are direct consumers of this output.
+Option pricing, implied-volatility-surface calibration, and stochastic-volatility benchmarking are explicitly out of scope and are not revisited in this paper.

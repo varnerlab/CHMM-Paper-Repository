@@ -17,8 +17,9 @@ On the six-asset universe, both the Gaussian and Student-t copulas substantially
 The Student-t copula's profile MLE selected $\nu^* = 6$ degrees of freedom, and the resulting tail-dependent copula produced the best correlation reproduction overall.
 These findings replicate the ordering reported by \citet{alswaidan2026hybrid} with discrete HMM marginals, suggesting that the copula advantage is intrinsic to the rank-reordering construction and transfers across marginal families.
 
-Extension of the framework to VIX log returns demonstrated that the CHMM captures the distinct statistical properties of volatility indices (positive skewness, mean reversion, and extreme kurtosis) and provides a natural bridge to option pricing through regime-switching geometric Brownian motion parameterized by CHMM-decoded volatility levels.
-A detailed comparison of the CHMM-implied volatility surface against a parametric stochastic-volatility benchmark is the subject of companion work led by our group, and intentionally lies outside the scope of this paper.
+Extension of the same Baum-Welch pipeline to VIX and VXX log returns demonstrated that the CHMM captures the distinct statistical properties of volatility measures (positive skewness, mean reversion, and heavier tails than equities) and passes the same seven-metric distributional battery used on equity returns.
+The resulting framework is a single synthetic-data engine covering both the equity cross-section and the volatility measures most commonly used as risk inputs, in the same spirit as our prior discrete HMM paper~\citep{alswaidan2026hybrid}.
+Option pricing and implied-volatility-surface calibration are explicitly out of scope for this paper.
 
 Several directions for future work follow from these results:
 \begin{enumerate}

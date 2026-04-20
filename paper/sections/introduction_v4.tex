@@ -51,9 +51,10 @@ The contributions of this work are:
     We extend the univariate framework to multi-asset synthesis through two complementary cross-sectional dependence models that both preserve each asset's fitted CHMM marginal: a Single Index Model with the CHMM-driven SPY path as the market engine, and Gaussian / Student-t copulas fitted by Kendall's $\tau$ and simulated via rank reordering.
     On six representative assets, copulas substantially outperform the SIM factor baseline on per-asset in-sample KS pass rate (median 98.0\% versus 83.8\%) and on the off-diagonal correlation MAE (0.027 for Student-t, 0.031 for Gaussian, 0.078 for SIM), with the Student-t copula profile MLE selecting $\nu^* = 6$ degrees of freedom.
 
-    \item \textbf{Volatility index generalization and regime-switching volatility for option pricing.}
-    We confirm robustness across NVDA, JNJ, JPM, AAPL, and QQQ, and extend the framework to CBOE VIX and VXX log returns, demonstrating that the CHMM captures the distinct statistical properties of volatility indices and provides a natural bridge to regime-switching option pricing through the decoded per-regime volatility map.
-    Benchmarking the resulting implied-volatility surface against a parametric stochastic-volatility model is the subject of a companion paper and is intentionally outside the scope of this study.
+    \item \textbf{Unified synthetic-data generation for equities and volatility measures.}
+    We confirm robustness across NVDA, JNJ, JPM, AAPL, and QQQ, and extend the same Baum-Welch pipeline to CBOE VIX and VXX log returns, demonstrating that the CHMM captures the distinct statistical properties of volatility measures (positive skewness, pronounced mean reversion, heavier tails) using the same seven-metric evaluation.
+    The result is a single synthetic-data engine spanning the equity cross-section and the volatility measures most commonly used as risk inputs, matching the scope of our prior discrete HMM paper~\citep{alswaidan2026hybrid}.
+    Option pricing and implied-volatility-surface calibration are explicitly out of scope for this paper and are not revisited in any section.
 \end{enumerate}
 
 The remainder of this paper is organized as follows.

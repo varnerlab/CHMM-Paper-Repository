@@ -59,12 +59,12 @@ To move from univariate to multi-asset generation we extend the framework with t
 On six SPY-member assets the copula-based dependence models substantially outperform the SIM factor baseline on per-asset distributional accuracy (median in-sample KS pass rate 98.0\% for both copulas versus 83.8\% for SIM) while also delivering closer correlation-matrix reproduction (off-diagonal MAE 0.027 for Student-t, 0.031 for Gaussian, and 0.078 for SIM).
 The Student-t copula's profile MLE selected $\nu^{*} = 6$ degrees of freedom, indicating economically meaningful joint tail dependence.
 
-We further extend the framework to CBOE Volatility Index (VIX) and VXX log returns, demonstrating that the CHMM captures the distinct statistical properties of volatility indices (including stronger mean reversion, positive skewness, and pronounced regime structure).
-The VIX regime decomposition provides a natural bridge to option pricing: median VIX levels per decoded regime define a volatility map that drives regime-switching geometric Brownian motion paths.
-A parametric stochastic-volatility comparison against the resulting implied volatility surface is the subject of companion work and is deliberately outside the scope of this paper.
+We further extend the synthetic-data framework beyond equities to the CBOE Volatility Index (VIX) and the VXX short-term volatility ETN, showing that the same Baum-Welch pipeline reproduces the distinct statistical properties of volatility measures (positive skewness, pronounced mean reversion, and heavier-than-equity excess kurtosis) and passes the same seven-metric distributional battery used on equity returns.
+The result is a single synthetic-data engine that covers both the equity cross-section and the volatility measures most commonly used as risk inputs, in the same spirit as our earlier discrete HMM paper \citep{alswaidan2026hybrid}.
+Option pricing and implied-volatility-surface modeling are explicitly out of scope for this paper.
 
 \bigskip\noindent
-\textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch Algorithm, Stylized Facts, Volatility Clustering, Regime-Switching, Synthetic Financial Data, Single Index Model, Copula Dependence, Cross-Asset Simulation, VIX.
+\textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch Algorithm, Synthetic Financial Data, Stylized Facts, Volatility Clustering, Regime-Switching, Single Index Model, Copula Dependence, Cross-Asset Simulation, VIX, VXX.
 \end{abstract}
 
 % ========================================================================================= %
