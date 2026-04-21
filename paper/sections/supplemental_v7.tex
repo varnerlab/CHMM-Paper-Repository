@@ -1123,3 +1123,329 @@ OoS & 52.5 & 55.0 & 2.21 & 0.0500 & 0.293 & 0.1603 & 69.7 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{Per-Ticker OoS Price-Simulation Figures (Unconditional CHMM)}
+\label{sec:price_sim_oos_appendix}
+
+This appendix collects the per-ticker price-fan and terminal-distribution figures deferred from Section~\ref{sec:price_sim_oos} for the four non-body tickers JNJ, JPM, AAPL, and QQQ.
+All figures use the same plotting conventions as Figure~\ref{fig:price_fan_spy} in the main body: blue shaded bands are the $5$--$95\%$ and $25$--$75\%$ quantile envelopes of the $500$ simulated paths, blue solid line is the simulated median, red solid line is the observed OoS price track.
+Terminal histograms follow the conventions of Figure~\ref{fig:price_terminal_hists}.
+Summary metrics for all four tickers are in Tables~\ref{tab:price_sim_oos} and~\ref{tab:price_sim_path_metrics} in the main body.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JNJ-PriceFan-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JNJ-PriceFan-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JNJ-PriceFan-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{JNJ out-of-sample price fan, unconditional CHMM sampler.}
+\label{fig:price_fan_jnj_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JNJ-TerminalDist-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JNJ-TerminalDist-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JNJ-TerminalDist-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{JNJ terminal-price distribution, unconditional CHMM sampler.}
+\label{fig:terminal_jnj_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JPM-PriceFan-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JPM-PriceFan-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JPM-PriceFan-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{JPM out-of-sample price fan, unconditional CHMM sampler.}
+\label{fig:price_fan_jpm_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JPM-TerminalDist-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JPM-TerminalDist-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-JPM-TerminalDist-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{JPM terminal-price distribution, unconditional CHMM sampler.}
+\label{fig:terminal_jpm_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-AAPL-PriceFan-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-AAPL-PriceFan-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-AAPL-PriceFan-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{AAPL out-of-sample price fan, unconditional CHMM sampler.}
+\label{fig:price_fan_aapl_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-AAPL-TerminalDist-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-AAPL-TerminalDist-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-AAPL-TerminalDist-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{AAPL terminal-price distribution, unconditional CHMM sampler.}
+\label{fig:terminal_aapl_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-QQQ-PriceFan-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-QQQ-PriceFan-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-QQQ-PriceFan-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{QQQ out-of-sample price fan, unconditional CHMM sampler.}
+\label{fig:price_fan_qqq_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-QQQ-TerminalDist-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-QQQ-TerminalDist-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-QQQ-TerminalDist-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{QQQ terminal-price distribution, unconditional CHMM sampler.}
+\label{fig:terminal_qqq_appendix}
+\end{figure}
+
+
+\subsection{Per-Ticker VIX-Conditioned Price-Simulation Figures}
+\label{sec:price_sim_vix_appendix}
+
+This appendix collects the per-ticker VIX-conditioned price-fan, terminal-distribution, and coupling-heatmap figures deferred from Section~\ref{sec:price_sim_vix} for the four non-body tickers JNJ, JPM, AAPL, and QQQ.
+Plotting conventions follow Figures~\ref{fig:price_fan_spy_vix}, \ref{fig:price_terminal_hists_vix}, and \ref{fig:coupling_heatmaps} respectively.
+Summary metrics for all four tickers are in Table~\ref{tab:price_sim_vix_metrics} in the main body.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.22\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-Coupling-JNJ.pdf}
+    \caption{JNJ.}
+\end{subfigure}
+\begin{subfigure}[t]{0.22\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-Coupling-JPM.pdf}
+    \caption{JPM.}
+\end{subfigure}
+\begin{subfigure}[t]{0.22\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-Coupling-AAPL.pdf}
+    \caption{AAPL.}
+\end{subfigure}
+\begin{subfigure}[t]{0.22\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-Coupling-QQQ.pdf}
+    \caption{QQQ.}
+\end{subfigure}
+\caption{VIX-to-equity coupling matrices $C_i[s^V, s^E]$ (lag $h = 1$) for the four appendix tickers.}
+\label{fig:coupling_heatmaps_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JNJ-PriceFan-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JNJ-PriceFan-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JNJ-PriceFan-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{JNJ VIX-conditioned price fan.}
+\label{fig:price_fan_jnj_vix_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JNJ-TerminalDist-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JNJ-TerminalDist-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JNJ-TerminalDist-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{JNJ VIX-conditioned terminal-price distribution.}
+\label{fig:terminal_jnj_vix_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JPM-PriceFan-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JPM-PriceFan-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JPM-PriceFan-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{JPM VIX-conditioned price fan.}
+\label{fig:price_fan_jpm_vix_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JPM-TerminalDist-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JPM-TerminalDist-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-JPM-TerminalDist-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{JPM VIX-conditioned terminal-price distribution.}
+\label{fig:terminal_jpm_vix_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-AAPL-PriceFan-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-AAPL-PriceFan-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-AAPL-PriceFan-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{AAPL VIX-conditioned price fan.}
+\label{fig:price_fan_aapl_vix_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-AAPL-TerminalDist-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-AAPL-TerminalDist-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-AAPL-TerminalDist-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{AAPL VIX-conditioned terminal-price distribution.}
+\label{fig:terminal_aapl_vix_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-QQQ-PriceFan-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-QQQ-PriceFan-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-QQQ-PriceFan-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{QQQ VIX-conditioned price fan.}
+\label{fig:price_fan_qqq_vix_appendix}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-QQQ-TerminalDist-N.pdf}
+    \caption{CHMM-N.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-QQQ-TerminalDist-t.pdf}
+    \caption{CHMM-t.}
+\end{subfigure}
+\begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{sections/figs/Fig-VIX-QQQ-TerminalDist-L.pdf}
+    \caption{CHMM-L.}
+\end{subfigure}
+\caption{QQQ VIX-conditioned terminal-price distribution.}
+\label{fig:terminal_qqq_vix_appendix}
+\end{figure}
