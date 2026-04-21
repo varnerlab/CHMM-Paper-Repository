@@ -1,0 +1,179 @@
+\subsection{Data and Excess Growth Rates}
+\label{sec:data}
+
+The primary single-asset analysis uses daily SPDR S\&P~500 ETF (SPY) prices from January~3, 2014 to January~3, 2024 (a ten-year training window, $T_{\text{IS}} = 2{,}516$), with the period from January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 572$) held out.
+Cross-asset generalization covers NVDA, JNJ, JPM, AAPL, and QQQ, spanning distinct risk profiles.
+For ticker $i$ and trading day $j$, the annualized excess growth rate is
+\begin{equation}
+    G_{i,j} \equiv \frac{1}{\Delta t} \ln\!\left(\frac{P_{i,j}}{P_{i,j-1}}\right) - r_f,
+    \qquad \Delta t = 1/252, \quad r_f = 0.
+    \label{eq:growth_rate}
+\end{equation}
+
+\subsection{Continuous Hidden Markov Model}
+\label{sec:chmm_def}
+
+We model the continuous excess growth rate $G_t$ as a continuous HMM
+$\mathcal{M} = (\mathcal{S}, \mathbf{T}, \mathbf{B}, \boldsymbol{\pi})$
+with $K$ latent states, a per-state emission density $b_k(x; \boldsymbol\theta_k)$,
+transition matrix $\mathbf{T} \in \mathbb{R}^{K \times K}$, and initial
+distribution $\boldsymbol{\pi}$ \cite{rabiner1986introduction}.
+The stationary marginal is the $K$-component mixture
+\begin{equation}
+    f(x) = \sum_{k=1}^{K} \bar{\pi}_k\, b_k(x; \boldsymbol\theta_k),
+    \qquad \bar{\boldsymbol{\pi}} = \bar{\boldsymbol{\pi}} \mathbf{T},
+    \label{eq:mixture}
+\end{equation}
+and supplies heavy tails either through the spread of component moments
+(Gaussian components) or through the emission family itself (Student-t or
+Laplace components).
+Unlike the discrete framework of \citet{alswaidan2026hybrid}, which bins
+observations and estimates $\mathbf{T}$ by frequency counting, we learn
+$\mathbf{T}$, $\boldsymbol\theta_{1:K}$, and $\boldsymbol{\pi}$ jointly
+from continuous observations via EM.
+
+\paragraph{Shared EM scaffold.}
+All three emission families share the same log-space forward-backward
+recursions and the same quantile-based initialization \cite{bilmes1998gentle}:
+observations are sorted, partitioned into $K$ equal-sized chunks, and each
+state's initial location and scale are seeded from the corresponding chunk;
+$T_{ij}^{(0)} = \pi_k^{(0)} = 1/K$.
+EM iterates to tolerance $|\mathcal{L}^{(n)} - \mathcal{L}^{(n-1)}| < 10^{-4}$
+with $\texttt{max\_iter} = 60$; convergence is typically reached in
+20--40 iterations.
+Appendix~\ref{sec:baum_welch_supp} gives the forward-backward recursion,
+the posterior quantities $\gamma_t(k)$ and $\xi_t(i, j)$, and the
+family-specific M-step updates.
+
+\paragraph{CHMM-N: Gaussian emissions.}
+$b_k(x) = \mathcal{N}(x; \mu_k, \sigma_k^2)$.
+The classical Baum-Welch M-step \cite{baum1970maximization} is closed form:
+$\mu_k \leftarrow \sum_t \gamma_t(k) O_t / \sum_t \gamma_t(k)$ and
+$\sigma_k^2 \leftarrow \sum_t \gamma_t(k) (O_t - \mu_k)^2 / \sum_t \gamma_t(k)$.
+
+\paragraph{CHMM-t: Student-t emissions.}
+$b_k(x) = t_{\nu_k}(x; \mu_k, \sigma_k)$ with per-state location $\mu_k$,
+scale $\sigma_k$, and degrees of freedom $\nu_k \in [\nu_{\min}, \nu_{\max}]$.
+We adopt the ECM formulation of \citet{peel2000robust} and \citet{liu1995ml}, the same family of heavy-tailed innovation choices studied outside the HMM framework by \citet{abantovalle2017svm} for stochastic-volatility-in-mean models:
+the latent precision
+\begin{equation}
+    u_{t,k} = \frac{\nu_k + 1}{\nu_k + ((O_t - \mu_k)/\sigma_k)^2}
+    \label{eq:tprecision}
+\end{equation}
+is treated as an augmented E-step quantity, and the M-step updates
+\begin{equation}
+    \mu_k \leftarrow \frac{\sum_t \gamma_t(k) u_{t,k} O_t}{\sum_t \gamma_t(k) u_{t,k}},
+    \qquad
+    \sigma_k^2 \leftarrow \frac{\sum_t \gamma_t(k) u_{t,k} (O_t - \mu_k)^2}{\sum_t \gamma_t(k)}
+    \label{eq:tupdate}
+\end{equation}
+have closed form conditional on $\nu_k$.
+The degrees of freedom $\nu_k$ are updated by a golden-section search
+maximizing the per-state $Q$-function
+$Q_k(\nu) = \sum_t \gamma_t(k) \log t_\nu(O_t; \mu_k, \sigma_k)$
+over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$.
+This M-step preserves the monotonicity of EM while avoiding the joint
+saddle-point issues of simultaneous $(\mu_k, \sigma_k, \nu_k)$ maximization.
+
+\paragraph{CHMM-L: Laplace emissions.}
+$b_k(x) = \text{Laplace}(x; \mu_k, b_k)$.
+The weighted maximum-likelihood estimators are in closed form:
+$\mu_k$ is the posterior-weighted median of the observations
+(weights $\gamma_t(k)$, computed by cumulative-weight bracketing with
+linear interpolation between neighboring order statistics), and
+$b_k \leftarrow \sum_t \gamma_t(k) |O_t - \mu_k| / \sum_t \gamma_t(k)$.
+The heavier-than-Gaussian Laplace tail (excess kurtosis 3 per component)
+provides an alternative route to tail fidelity that is strictly cheaper
+than Student-t because it has no shape parameter.
+
+\paragraph{State-count selection.}
+We sweep $K \in \{3, 6, 9, 12, 15, 18, 21\}$ for CHMM-N and confirm on
+CHMM-t / CHMM-L that the selected $K$ sits inside the IC-minimizing band.
+We compute the four information criteria used for HMM state selection
+in \citet{nguyen2018hidden},
+\begin{equation}
+    \text{AIC} = -2\mathcal{L} + 2p,\quad
+    \text{BIC} = -2\mathcal{L} + p \ln T,\quad
+    \text{HQC} = -2\mathcal{L} + 2p \ln(\ln T),\quad
+    \text{CAIC} = -2\mathcal{L} + p(\ln T + 1),
+    \label{eq:information_criteria}
+\end{equation}
+with $p = K^2 + 2K - 1$ for CHMM-N and CHMM-L, and $p = K^2 + 3K - 1$
+for CHMM-t (one additional per-state degree-of-freedom parameter);
+$\mathcal{L}$ is the converged log-likelihood.
+The operating point is the $K$ that minimizes the average information-criterion
+rank and simultaneously wins or ties every in-sample and out-of-sample
+distributional pass-rate metric.
+
+\subsection{Benchmark Generators}
+\label{sec:benchmarks}
+
+We benchmark the CHMM against eight alternatives fitted on the same in-sample window.
+The \textit{i.i.d.\ bootstrap} samples $T$ returns uniformly with replacement, preserving the empirical marginal exactly and serving as the non-parametric distributional ceiling.
+The \textit{stationary block bootstrap} \cite{politis1994stationary} resamples blocks of expected length $b = 10$ trading days, preserving short-range volatility clustering while keeping the marginal empirical; it is a temporally-aware non-parametric ceiling.
+The \textit{Gaussian} i.i.d.\ generator draws $G_t \sim \mathcal{N}(\hat\mu, \hat\sigma^2)$ from the sample moments; the \textit{Laplace} i.i.d.\ generator draws $G_t \sim \text{Laplace}(\hat m, \hat b)$ from the sample median and mean-absolute deviation.
+\textit{GARCH(1,1)} \cite{bollerslev1986generalized} uses $G_t = \mu + \sigma_t z_t$, $\sigma_t^2 = \omega + \alpha(G_{t-1} - \mu)^2 + \beta \sigma_{t-1}^2$ with $z_t \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 1)$, fitted by Nelder--Mead maximum likelihood.
+\label{sec:discrete_hmm}%
+The \textit{discrete HMM} of \citet{alswaidan2026hybrid} is reproduced in both no-jump (NJ) and Poisson-jump (WJ) variants: returns are partitioned into $K_{\text{disc}} = 13$ quantile bins, transitions are estimated by frequency counting, and simulation returns bin centroids; the WJ variant additionally triggers, with probability $\epsilon = 0.01$, a forced residence in tail states for Poisson$(\lambda = 3)$ steps, matching the grid-calibrated values of the prior paper.
+The \textit{Bin-T NJ} variant replaces those bin centroids with bin-conditional Student-t emissions to isolate the quantization-per-se effect from the emission-family effect.
+Because quantization onto the 13 centroids strips within-bin tail mass, the standard discrete baselines provide a direct upper bound on how much of the CHMM's fidelity is attributable to continuous emissions rather than to regime structure per se.
+
+\paragraph{GRU deep generative baseline.}
+\label{sec:gru_methods}%
+We add a single-layer GRU generator following the deep-baseline tradition of \citet{yoon2019timegan} and the GRU baseline of \citet{alswaidan2026hybrid}.
+The architecture is $\mathbf{h}_t = \mathrm{GRU}_{H}(\mathbf{x}_{t-w:t-1})$ followed by an affine head $(\mu_t, \log \sigma_t) = \mathbf{W} \mathbf{h}_t + \mathbf{b}$, with hidden dimension $H = 32$, context window $w = 20$ trading days, and a Gaussian next-step density $G_t \mid \mathcal{F}_{t-1} \sim \mathcal{N}(\mu_t, \sigma_t^2)$.
+The model is trained for $20$ epochs by Adam (learning rate $10^{-3}$) on the negative log-likelihood (NLL)
+\begin{equation}
+    \ell_t = \log \sigma_t + \tfrac{1}{2}\!\left(\frac{G_t - \mu_t}{\sigma_t}\right)^2
+    \label{eq:gru_nll}
+\end{equation}
+of the standardised in-sample series, with $\log \sigma_t$ clamped to $[-6, 4]$ for numerical stability.
+Synthesis is auto-regressive: the trailing $w$ in-sample returns seed the recurrence, the predicted Gaussian is sampled, the sample is appended to the context window, and the procedure rolls forward.
+A $64$-step burn-in is discarded.
+The implementation is in Julia using \texttt{Flux.jl}~\cite{innes2018flux}; the trained model is callable in the same \texttt{simulate} interface as the CHMM and discrete-HMM models.
+
+\subsection{Cross-Asset Dependence (Pipeline B)}
+\label{sec:cross_asset_methods}
+
+The univariate evaluation of Section~\ref{sec:empirical_protocol} fits a separate CHMM to each ticker independently; we refer to this as \emph{Pipeline A} throughout the paper. The present subsection introduces \emph{Pipeline B}, which reuses the per-asset CHMM marginals from Pipeline A and adds joint dependence across assets. Pipeline A is tested in Table~\ref{tab:cross_asset} (univariate); Pipeline B is tested in Table~\ref{tab:cross_asset_sim_copula} (cross-asset) and Figure~\ref{fig:cross_asset_corr}.
+
+Let $\mathbf{R}_{\text{IS}} \in \mathbb{R}^{T \times d}$ denote the in-sample return matrix for $d$ assets, with the market-factor column indexed by $m$.
+Both constructions below preserve each asset's fitted CHMM marginal and differ in how cross-asset dependence is imposed.
+
+\paragraph{Single Index Model.}
+Following \citet{sharpe1963simplified}, for each non-market asset $j \neq m$ we fit by ordinary least squares (OLS)
+\begin{equation}
+    G_{j,t} = \alpha_j + \beta_j\, G_{m,t} + \eta_{j,t}
+    \label{eq:sim}
+\end{equation}
+and simulate paths by drawing an independent market-factor path $G_{m,t}^{(p)}$ from the market CHMM, resampling residuals $\hat{\eta}_{j,t}^{(p)}$ with replacement, and propagating
+\begin{equation}
+    \hat{G}_{j,t}^{(p)} = \hat\alpha_j + \hat\beta_j G_{m,t}^{(p)} + \hat\eta_{j,t}^{(p)}.
+    \label{eq:sim_sim}
+\end{equation}
+The affine map distorts each non-market marginal and imposes a rank-one correlation structure.
+
+\paragraph{Copulas.}
+By Sklar's theorem \cite{sklar1959fonctions}, any joint CDF with continuous marginals $F_1, \dots, F_d$ factors as $H = C(F_1, \dots, F_d)$ for a unique copula $C : [0, 1]^d \to [0, 1]$; this lets us fix each marginal at the per-asset CHMM and estimate only $C$ from the cross-sectional co-movement.
+We use the nonparametric probability integral transform $u_{j, t} = \text{rank}(g_{j, t}) / (T + 1)$, estimate the copula correlation matrix $\Sigma$ by the analytic Kendall's-$\tau$ inversion $\rho_{ij} = \sin(\pi \tau_{ij} / 2)$ \cite{embrechts2002correlation, mcneil2015quantitative}, and project to the nearest positive semi-definite matrix when needed.
+For the Student-t copula \cite{demarta2005tcopula}, the degrees-of-freedom parameter $\nu$ is selected by profile maximum likelihood over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$.
+Cross-asset simulation follows the rank-reordering construction of \citet{iman1982distribution}: (i) draw $T$ independent paths from each per-asset CHMM, (ii) sample $T$ copula variates, and (iii) reorder each column of the CHMM matrix to match the ranks of the copula sample.
+Reordering only permutes simulated values, so every per-asset marginal is preserved \emph{exactly} while cross-asset dependence is injected through rank coupling.
+Full derivations, the Student-t log-density, and the sampler pseudocode are given in Appendix~\ref{sec:cross_asset_supp}.
+
+\subsection{Evaluation Protocol}
+\label{sec:metrics}
+
+For each model we simulate $P = 1{,}000$ independent paths of length $T$ (200 paths for the cross-asset extension, given the quadratic cost of the copula and SIM pipelines) and evaluate seven complementary metrics, following the framework of \cite{stenger2024thinking} and \cite{alswaidan2026hybrid}.
+Four metrics score \emph{distributional} fidelity: two-sample Kolmogorov--Smirnov \cite{kolmogorov1933, smirnov1948} and Anderson--Darling pass rates at $\alpha = 0.05$ over the 1{,}000 paths, Wasserstein-1 distance $W_1(F, G) = \int_0^1 |F^{-1}(u) - G^{-1}(u)|\, du$, and histogram Hellinger distance.
+Two metrics score \emph{tail} behavior: the mean simulated excess kurtosis and the quantile-coverage rate, defined as the fraction of observed percentiles 1--99 falling within the $[5, 95]$-percentile envelope of the simulated quantiles.
+The final metric scores \emph{temporal} fidelity: the mean absolute error of the absolute-return ACF over 252 lags,
+\begin{equation}
+    \text{ACF-MAE} = \frac{1}{L}\sum_{\tau=1}^{L} \left| \hat\rho^{\text{obs}}_{|G|}(\tau) - \bar{\hat\rho}^{\,\text{sim}}_{|G|}(\tau) \right|,
+    \qquad L = 252,
+    \label{eq:acf_mae}
+\end{equation}
+which is the direct diagnostic for the Ryd\'{e}n et al.\ limitation.
+The cross-asset extension additionally reports the mean Frobenius norm and off-diagonal MAE of the simulated Pearson correlation matrix relative to the observed one.
+Appendix~\ref{sec:metric_details} gives the test statistic for each metric, the histogram binning used for Hellinger, and the path-by-path aggregation details.
+
