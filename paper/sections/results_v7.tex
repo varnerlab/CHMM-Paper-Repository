@@ -68,7 +68,7 @@ Critically, the quantile-based initialization ensures that the Baum-Welch algori
     \includegraphics[width=\textwidth]{sections/figs/Fig-Transition-Matrix-K18.pdf}
     \caption{Transition matrix (log$_{10}$ scale)}
 \end{subfigure}
-\caption{Fitted model internals for SPY at the selected state resolution $K = 18$. (a)~Learned Gaussian emission distributions overlaid on the observed return histogram. (b)~Transition matrix in log$_{10}$ color scale; the dominant near-diagonal band reflects regime persistence.}
+\caption{\textbf{Fitted CHMM internals on SPY} (Pipeline A, CHMM-N Gaussian emissions, $K = 18$). Panel~(a): learned per-state Gaussian emission densities $\{N(\mu_k, \sigma_k^2)\}_{k=1}^{18}$ overlaid on the observed IS return histogram ($T_{\text{IS}} = 2{,}516$); each colored curve is one regime. Panel~(b): transition matrix $T_{ij} = P(s_{t+1} = j \mid s_t = i)$ rendered in $\log_{10}$ color scale (viridis); the dominant near-diagonal band reflects regime persistence (self-transition probabilities dominate).}
 \label{fig:model_internals}
 \end{figure}
 
@@ -176,7 +176,7 @@ Cleanest IS kurtosis match; highest AD pass rate; no shape parameter & CHMM-L \\
 
 \begin{table}[t]
 \centering
-\caption{Twelve-model comparison for SPY (1{,}000 simulated paths, $\alpha = 0.05$, $K = 18$).
+\caption{\textbf{Twelve-model comparison on SPY} (single-index trained: Pipeline A). Only SPY is evaluated here; the six-ticker generalization of the CHMM variants is in Table~\ref{tab:cross_asset}, and the cross-asset dependence extension is in Table~\ref{tab:cross_asset_sim_copula}. 1{,}000 simulated paths per model, $\alpha = 0.05$, $K = 18$.
 IS: $2014$-$01$-$03$ through $2024$-$01$-$03$ ($T = 2{,}516$); OoS: $2024$-$01$-$04$ through $2026$-$04$-$20$ ($T = 572$).
 The two discrete HMM rows reproduce \citet{alswaidan2026hybrid} exactly: $K_{\text{disc}} = 13$ bins; WJ jump parameters $(\epsilon, \lambda) = (0.01, 3)$.
 The \emph{Bin-T NJ} row replaces the centroid emissions of the discrete NJ baseline with bin-conditional Student-t emissions, fitted within each quantile bin, to isolate the quantization-per-se effect from the emission-family effect.
@@ -215,7 +215,7 @@ CHMM-N ($K=18$)     & 94.7  & 84.0  & 86.5  & 76.5  & 5.02    & 4.42    & 0.0513
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K18.pdf}
-\caption{In-sample model comparison for SPY (1{,}000 paths), $K = 18$. (a)~Marginal density with KS pass rates annotated. (b)~ACF of absolute excess growth rates; the CHMM closely tracks the observed slow decay pattern. (c)~Tail Q-Q plot comparing simulated quantiles to observed.}
+\caption{\textbf{In-sample CHMM validation on SPY} (Pipeline A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths). Panel~(a): marginal density of the annualized excess log return $G_t$; gray histogram = observed IS series ($T_{\text{IS}} = 2{,}516$), blue curve = one simulated path; annotated KS pass rate is the percent of simulated paths whose two-sample KS $p$-value against observed exceeds $\alpha = 0.05$. Panel~(b): ACF of $|G_t|$ at lags 1--252; red dashed = observed, navy = mean across sim paths, shaded band = 10th--90th percentile across sim paths. Panel~(c): tail Q-Q plot at 200 quantile levels (0.1\% to 99.9\%); blue points = simulated pooled over paths, black dashed = identity line.}
 \label{fig:is_comparison}
 \end{figure}
 
@@ -274,7 +274,7 @@ The CHMM's regime structure, learned from the full range of IS observations incl
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K18.pdf}
-\caption{Out-of-sample validation of CHMM ($K = 18$, $\alpha = 0.05$). (a)~KS $p$-values for 1{,}000 OoS paths. (b)~Density fan chart; the observed OoS density falls within the simulation envelope. (c)~OoS ACF of $|G_t|$ with 10th--90th percentile band.}
+\caption{\textbf{Out-of-sample CHMM validation on SPY} (Pipeline A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths, $\alpha = 0.05$, OoS window $T_{\text{OoS}} = 572$). Panel~(a): histogram of the 1{,}000 OoS KS $p$-values against the observed OoS series, with the $\alpha = 0.05$ threshold as a red dashed line. Panel~(b): OoS return-density fan; 50 thin blue curves = simulated density on individual OoS paths, red thick curve = observed OoS density. Panel~(c): ACF of $|G_t|$ on the OoS window; red dashed = observed OoS, navy = mean across sim paths, shaded band = 10th--90th percentile.}
 \label{fig:oos_validation}
 \end{figure}
 
@@ -360,8 +360,7 @@ Despite this spread in simulated kurtosis, all three variants achieve IS KS pass
 
 \begin{table}[t]
 \centering
-\caption{Cross-asset univariate generalization across the three CHMM emission variants ($K = 18$, 1{,}000 paths, $\alpha = 0.05$). Each ticker fitted independently.
-CHMM-N, CHMM-t, CHMM-L denote Gaussian, Student-t, and Laplace emissions respectively.}
+\caption{\textbf{Per-ticker marginal fidelity across CHMM emission families} (single-index trained: Pipeline A). Each of the six tickers is fit \emph{independently}, with no cross-asset coupling. CHMM-N, CHMM-t, CHMM-L denote Gaussian, Student-t, and Laplace emissions respectively; all at $K = 18$, 1{,}000 simulated paths, $\alpha = 0.05$. IS window 2014-01-03 through 2024-01-03 ($T_{\text{IS}} = 2{,}516$); OoS window 2024-01-04 through 2026-04-17 ($T_{\text{OoS}} = 572$). KS / AD = percent of paths that pass the two-sample KS / Anderson-Darling test; Kurt = excess kurtosis; ACF-MAE = lag-1 to lag-252 mean absolute error of the ACF of $|G_t|$; $W_1$ = Wasserstein-1 distance; $H$ = Hellinger distance; Cov = 99-level quantile coverage inside the 5-95 percentile envelope. Complementary table: Table~\ref{tab:cross_asset_sim_copula} reuses these CHMM-N marginals and evaluates cross-asset \emph{dependence} on top of them.}
 \label{tab:cross_asset}
 \resizebox{\textwidth}{!}{%
 \small
@@ -433,7 +432,7 @@ On correlation reproduction, the Gaussian copula leads the OoS pass rate (off-di
 
 \begin{table}[t]
 \centering
-\caption{Cross-asset dependence models: per-asset KS pass rates (\%) and cross-sectional correlation reproduction. 200 simulated paths. Each asset's marginal is a fitted CHMM ($K = 18$). Market factor: SPY. Student-t copula degrees of freedom selected by profile MLE, $\nu^* = 6$. Correlation distance is $\|\hat{\Sigma}_{\text{sim}} - \hat{\Sigma}_{\text{obs}}\|_F$ (Frobenius) and off-diagonal MAE, each averaged over paths.}
+\caption{\textbf{Cross-asset dependence models on fixed CHMM marginals} (cross-asset extension: Pipeline B). The per-asset \emph{marginals} are the same CHMM-N fits used in Table~\ref{tab:cross_asset}; this table varies only the \emph{dependence} construction. Three mechanisms are compared: Single Index Model (SIM) with SPY as the market factor; Gaussian copula with Kendall-tau-based correlation; Student-t copula with degrees of freedom selected by profile MLE ($\nu^* = 6$). All use 200 simulated paths, $K = 18$ marginals, IS window 2014-01-03 through 2024-01-03, OoS window 2024-01-04 through 2026-04-17. Upper block: per-asset KS pass rates in percent at $\alpha = 0.05$ (a sanity check on the marginals after dependence injection). Lower block: cross-asset correlation reproduction measured by $\|\hat{\Sigma}_{\text{sim}} - \hat{\Sigma}_{\text{obs}}\|_F$ (Frobenius norm) and the off-diagonal MAE, each averaged over paths. \textbf{Bold} entries mark the best dependence model per row.}
 \label{tab:cross_asset_sim_copula}
 \small
 \begin{tabular}{l cc cc cc}
@@ -467,14 +466,14 @@ The visual ordering confirms the quantitative summary in Table~\ref{tab:cross_as
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.85\textwidth]{sections/figs/Fig-Cross-Asset-Correlation.pdf}
-\caption{In-sample correlation matrix reproduction across dependence models. Upper-left: observed correlation on 2014-01-03 through 2024-01-03 SPY/NVDA/JNJ/JPM/AAPL/QQQ returns. Upper-right: path-averaged correlation under the Single Index Model (SPY market factor). Lower-left: path-averaged correlation under the Gaussian copula. Lower-right: path-averaged correlation under the Student-t copula ($\nu^* = 6$). Each simulated panel averages over 200 paths of length $T = 2{,}516$. Per-asset CHMM marginals fitted at $K = 18$.}
+\caption{\textbf{Cross-asset IS correlation reproduction across dependence models} (Pipeline B, companion to Table~\ref{tab:cross_asset_sim_copula}). Panel~(a), top-left: \emph{observed} correlation matrix on 2014-01-03 through 2024-01-03 daily excess log returns for SPY, NVDA, JNJ, JPM, AAPL, QQQ (IS window, $T_{\text{IS}} = 2{,}516$). Panel~(b), top-right: path-averaged correlation under the Single Index Model with SPY as market factor. Panel~(c), bottom-left: path-averaged correlation under the Gaussian copula on CHMM marginals. Panel~(d), bottom-right: path-averaged correlation under the Student-t copula on CHMM marginals, $\nu^* = 6$. Each simulated panel averages over 200 paths of length $T_{\text{IS}}$. All marginals are the per-asset CHMM-N fits at $K = 18$ from Table~\ref{tab:cross_asset}; color scale in $[-1, 1]$, red-white-blue (RdBu) diverging. Closer visual match to panel~(a) is better.}
 \label{fig:cross_asset_corr}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.85\textwidth]{sections/figs/Fig-Cross-Asset-KS-Dist.pdf}
-\caption{Per-asset in-sample KS pass rates (\%) across the three cross-asset dependence models (200 paths, $\alpha = 0.05$). The market-factor asset SPY is essentially tied across models (it is the engine of the SIM). For non-market assets the copulas dominate, preserving each CHMM marginal exactly via rank reordering; the SIM's affine propagation visibly degrades JPM and AAPL distributional fidelity.}
+\caption{\textbf{Per-asset IS KS pass rates after dependence injection} (Pipeline B sanity check for Table~\ref{tab:cross_asset_sim_copula}). For each of the six tickers and each of the three dependence constructions (SIM, Gaussian copula, Student-t copula with $\nu^* = 6$), the bar reports the percentage of 200 simulated paths whose marginal distribution passes the two-sample KS test against the observed IS series at $\alpha = 0.05$. The market-factor asset SPY is approximately tied across constructions (it is the SIM engine). For non-market assets the copulas dominate because rank reordering preserves each CHMM marginal exactly; the SIM's affine propagation visibly degrades JPM and AAPL.}
 \label{fig:cross_asset_ks}
 \end{figure}
 
@@ -616,7 +615,7 @@ Figure~\ref{fig:price_terminal_hists} shows the terminal-price histogram under C
     \includegraphics[width=\textwidth]{sections/figs/Fig-SPY-PriceFan-L.pdf}
     \caption{CHMM-L.}
 \end{subfigure}
-\caption{SPY out-of-sample price fan across the three CHMM emission families (500 paths, $T_{\text{OoS}} = 572$ trading days, $K = 18$). Blue band: $5\%$--$95\%$ quantile envelope of simulated paths; darker band: $25\%$--$75\%$ interquartile range; blue line: simulated median; red line: observed OoS price track. $S_0 = 469.90$; $P^{\text{obs}}_T = 710.13$.}
+\caption{\textbf{SPY out-of-sample price fan across the three CHMM emission families} (Pipeline A, $K = 18$, 500 simulated paths per panel, horizon $T_{\text{OoS}} = 572$ trading days). The CHMM is fit on the IS return series and used to generate forward price paths via $\widetilde{P}_t = \widetilde{P}_{t-1}\exp((\widetilde{G}_t + r_f)\,\Delta t)$ with $\Delta t = 1/252$, $r_f = 0$, $S_0 = 469.90$ (last IS VWAP). Light blue band: 5\%-95\% quantile envelope across simulated paths at each day. Darker blue band: 25\%-75\% interquartile range. Blue line: simulated median. Red line: observed realized OoS price track to $P^{\text{obs}}_T = 710.13$.}
 \label{fig:price_fan_spy}
 \end{figure}
 
@@ -634,7 +633,7 @@ Figure~\ref{fig:price_terminal_hists} shows the terminal-price histogram under C
     \includegraphics[width=\textwidth]{sections/figs/Fig-NVDA-PriceFan-L.pdf}
     \caption{CHMM-L.}
 \end{subfigure}
-\caption{NVDA out-of-sample price fan across the three CHMM emission families (500 paths, $T_{\text{OoS}} = 572$ trading days, $K = 18$). Same plotting conventions as Figure~\ref{fig:price_fan_spy}. $S_0 = 47.67$; $P^{\text{obs}}_T = 198.07$. The realized 2024--2025 NVDA rally is extreme relative to the prior-decade IS distribution; the observed path exits the interquartile band but remains inside the $5\%$--$95\%$ envelope under all three emission families.}
+\caption{\textbf{NVDA out-of-sample price fan across the three CHMM emission families} (Pipeline A, $K = 18$, 500 paths per panel, $T_{\text{OoS}} = 572$). Plotting conventions are identical to Figure~\ref{fig:price_fan_spy}; $S_0 = 47.67$, $P^{\text{obs}}_T = 198.07$. The realized 2024--2025 NVDA rally (a $4.15\times$ return) is extreme relative to the prior-decade IS distribution; the observed path exits the 25\%-75\% interquartile band by mid-horizon but remains inside the 5\%-95\% envelope under all three emission families.}
 \label{fig:price_fan_nvda}
 \end{figure}
 
@@ -648,7 +647,7 @@ Figure~\ref{fig:price_terminal_hists} shows the terminal-price histogram under C
     \includegraphics[width=\textwidth]{sections/figs/Fig-NVDA-TerminalDist-N.pdf}
     \caption{NVDA terminal.}
 \end{subfigure}
-\caption{Terminal-price distributions under CHMM-N for the two in-body tickers (500 paths, $T_{\text{OoS}} = 572$). Red vertical line: observed OoS terminal $P^{\text{obs}}_T$; blue dashed line: simulated-path median. The right-skew is characteristic of log-returns aggregated to prices; the SPY terminal is centered close to the simulated median, while the NVDA terminal sits in the upper right quadrant of the simulated distribution. Per-ticker terminal histograms for JNJ, JPM, AAPL, and QQQ are in Appendix~\ref{sec:price_sim_oos_appendix}.}
+\caption{\textbf{OoS terminal-price distributions under CHMM-N} (Pipeline A, $K = 18$, 500 simulated paths, horizon $T_{\text{OoS}} = 572$). Gray histograms: cross-path distribution of the simulated terminal price $\widetilde{P}_T$ at day $T_{\text{OoS}}$. Red vertical line: observed OoS terminal $P^{\text{obs}}_T$ (SPY: 710.13; NVDA: 198.07). Blue dashed line: median of the simulated terminal distribution. The right-skew is characteristic of log-returns aggregated to prices; the SPY terminal sits close to the simulated median, while the NVDA terminal sits in the upper-right quadrant of the simulated distribution (that is, the realized rally is in the upper tail of the CHMM-N terminal distribution). Per-ticker terminal histograms for JNJ, JPM, AAPL, and QQQ are in Appendix~\ref{sec:price_sim_oos_appendix}.}
 \label{fig:price_terminal_hists}
 \end{figure}
 
