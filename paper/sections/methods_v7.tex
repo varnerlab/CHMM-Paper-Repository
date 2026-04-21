@@ -123,7 +123,7 @@ Because quantization onto the 13 centroids strips within-bin tail mass, the stan
 \label{sec:gru_methods}%
 We add a single-layer GRU generator following the deep-baseline tradition of \citet{yoon2019timegan} and the GRU baseline of \citet{alswaidan2026hybrid}.
 The architecture is $\mathbf{h}_t = \mathrm{GRU}_{H}(\mathbf{x}_{t-w:t-1})$ followed by an affine head $(\mu_t, \log \sigma_t) = \mathbf{W} \mathbf{h}_t + \mathbf{b}$, with hidden dimension $H = 32$, context window $w = 20$ trading days, and a Gaussian next-step density $G_t \mid \mathcal{F}_{t-1} \sim \mathcal{N}(\mu_t, \sigma_t^2)$.
-The model is trained for $20$ epochs by Adam (learning rate $10^{-3}$) on the negative log-likelihood
+The model is trained for $20$ epochs by Adam (learning rate $10^{-3}$) on the negative log-likelihood (NLL)
 \begin{equation}
     \ell_t = \log \sigma_t + \tfrac{1}{2}\!\left(\frac{G_t - \mu_t}{\sigma_t}\right)^2
     \label{eq:gru_nll}
@@ -140,7 +140,7 @@ Let $\mathbf{R}_{\text{IS}} \in \mathbb{R}^{T \times d}$ denote the in-sample re
 Both constructions below preserve each asset's fitted CHMM marginal and differ in how cross-asset dependence is imposed.
 
 \paragraph{Single Index Model.}
-Following \citet{sharpe1963simplified}, for each non-market asset $j \neq m$ we fit by OLS
+Following \citet{sharpe1963simplified}, for each non-market asset $j \neq m$ we fit by ordinary least squares (OLS)
 \begin{equation}
     G_{j,t} = \alpha_j + \beta_j\, G_{m,t} + \eta_{j,t}
     \label{eq:sim}
