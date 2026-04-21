@@ -55,7 +55,7 @@ $\sigma_k^2 \leftarrow \sum_t \gamma_t(k) (O_t - \mu_k)^2 / \sum_t \gamma_t(k)$.
 \paragraph{CHMM-t: Student-t emissions.}
 $b_k(x) = t_{\nu_k}(x; \mu_k, \sigma_k)$ with per-state location $\mu_k$,
 scale $\sigma_k$, and degrees of freedom $\nu_k \in [\nu_{\min}, \nu_{\max}]$.
-We adopt the ECM formulation of \citet{peel2000robust} and \citet{liu1995ml}:
+We adopt the ECM formulation of \citet{peel2000robust} and \citet{liu1995ml}, the same family of heavy-tailed innovation choices studied outside the HMM framework by \citet{abantovalle2017svm} for stochastic-volatility-in-mean models:
 the latent precision
 \begin{equation}
     u_{t,k} = \frac{\nu_k + 1}{\nu_k + ((O_t - \mu_k)/\sigma_k)^2}

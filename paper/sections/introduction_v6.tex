@@ -1,5 +1,5 @@
 Empirical equity returns exhibit three well-documented stylized facts: heavy-tailed marginals, negligible linear autocorrelation, and slow decay of the autocorrelation function (ACF) of absolute returns \cite{mandelbrot1963variation, cont2001empirical}.
-Any synthetic-data generator intended for risk management or portfolio backtesting must reproduce all three simultaneously \cite{assefa2020generating, jordon2022synthetic}.
+Any synthetic-data generator intended for downstream tasks such as risk measurement, scenario generation, or regime-aware dynamic asset allocation \cite{baekimmulvey2014} must reproduce all three simultaneously \cite{assefa2020generating, jordon2022synthetic}.
 GARCH models \cite{engle1982autoregressive, bollerslev1986generalized} capture volatility clustering but cannot represent the multi-regime structure of the marginal, while i.i.d.\ generators match the marginal but destroy temporal persistence.
 Hidden Markov models (HMMs), introduced to economics by \citet{hamilton1989new} and extended to stock market returns by \citet{schaller1997regime}, offer a natural middle path through a latent regime structure.
 

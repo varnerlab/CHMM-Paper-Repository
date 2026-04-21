@@ -36,6 +36,9 @@ Several directions for future work follow from these results:
 
     \item \textit{Principled state selection.}
     Our $K = 18$ choice is a multi-metric score on top of a finite sweep; combining it with BIC or held-out log-likelihood (walk-forward) would yield a formally principled selection that plugs directly into the appendix Table~\ref{tab:sensitivity}.
+
+    \item \textit{Regime-aware dynamic asset allocation.}
+    The most immediate downstream application of the synthetic-data engine is regime-switching portfolio choice in the spirit of \citet{baekimmulvey2014}: using CHMM-decoded states as conditioning variables in a dynamic allocation model, and evaluating the realized utility of the resulting policy against policies calibrated on i.i.d.\ or GARCH generators.
 \end{enumerate}
 
 \paragraph{Data and Code Availability.}
