@@ -874,10 +874,6 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \end{algorithm}
 
 
-% =========================================================================== %
-% v7 revision supplemental
-% =========================================================================== %
-
 \subsection{CHMM-t Degrees-of-Freedom Diagnostics}
 \label{sec:nu_diagnostics}
 
@@ -888,7 +884,7 @@ The simulated in-sample mixture kurtosis of $17.34$ is driven by the posterior m
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.75\textwidth]{sections/figs/Fig-v7-nu-Histogram.pdf}
+\includegraphics[width=0.75\textwidth]{sections/figs/Fig-nu-Histogram.pdf}
 \caption{Per-state degrees-of-freedom $\nu_k$ for the CHMM-t fit at $K = 18$ on SPY IS. The dashed red line marks the lower ECM bracket $\nu_{\min} = 2.1$. Only two states ($\nu_2 = 2.19$, $\nu_4 = 2.10$) sit near the lower bracket; the median $\nu_k$ is at the upper bracket.}
 \label{fig:nu_hist}
 \end{figure}
@@ -1003,7 +999,7 @@ The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.70\textwidth]{sections/figs/Fig-v7-Copula-Profile.pdf}
+\includegraphics[width=0.70\textwidth]{sections/figs/Fig-Copula-Profile.pdf}
 \caption{\textbf{Profile log-likelihood of the Student-t copula} used inside Pipeline B on the six-asset SPY cross-section (SPY, NVDA, JNJ, JPM, AAPL, QQQ; IS window 2014-01-03 through 2024-01-03). The vertical axis is the profile log-likelihood evaluated at each degrees-of-freedom value $\nu$ on the grid $\{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$; the dashed red line marks the profile MLE $\nu^{*} = 6$ (peak value 6157.47). The CHMM-N marginals are held fixed at the Pipeline A per-asset fits while $\nu$ is varied.}
 \label{fig:copula_profile}
 \end{figure}
@@ -1091,7 +1087,7 @@ Section~\ref{sec:model_comparison} are summarised here.
     \item \textbf{Implementation.} Julia using \texttt{Flux.jl}
     \cite{innes2018flux} with the \texttt{Optimisers.Adam} state.
     Random seed for weight initialisation, training shuffling, and per-path
-    sampling: $V7\_SEED = 20260420$ with deterministic per-path sub-seeds.
+    sampling: $20260420$, with deterministic per-path sub-seeds.
 \end{itemize}
 
 The trained model is callable through the same

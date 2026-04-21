@@ -1,21 +1,3 @@
-% =========================================================================================
-% Paper_v8.tex -- revision of Paper_v7.tex
-%
-% Changes in v8 relative to v7:
-%   1. Pipeline A / Pipeline B labeling stated explicitly throughout.
-%        Pipeline A: single-index trained CHMM (per-ticker independent).
-%        Pipeline B: cross-asset dependence (SIM / Gaussian copula / Student-t copula
-%                    on top of Pipeline A per-asset CHMM marginals).
-%   2. Table T2 now unambiguously denotes per-ticker marginal fidelity across
-%        three emission families (Pipeline A). The cross-asset dependence table
-%        is Table T3 (Pipeline B). Both were colliding on "Table T2" in v7.
-%   3. Figure captions rewritten to be self-contained: every caption states
-%        pipeline, ticker(s), K, emission family, IS/OoS window, and n_paths.
-%   4. Table preambles on disk (results/SPY/Table-T2-Per-Ticker-Emission-Families.txt
-%        and results/cross_asset/Table-T3-Cross-Asset-Dependence.txt) now carry
-%        matching pipeline blocks for readers inspecting the raw artifacts.
-% =========================================================================================
-
 \documentclass[11pt,a4paper]{article}
 
 % --- Packages ---

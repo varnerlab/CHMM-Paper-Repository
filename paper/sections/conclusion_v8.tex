@@ -42,8 +42,8 @@ Several directions for future work follow from these results:
 \paragraph{Data and Code Availability.}
 The simulation scripts, training and test data, and all code to reproduce the results in this paper are available under an MIT license from the paper repository: \url{https://github.com/altashly1/CHMM-paper}.
 The core continuous HMM implementation (all three emission families, SIM, and Gaussian / Student-t copula modules) is available in the code repository: \url{https://github.com/altashly1/CHMM-Model}.
-All revision experiments reported in Section~\ref{sec:results} and in the appendix use a deterministic seed (\texttt{V7\_SEED = 20260420}) applied globally at the top of the analysis script \texttt{run\_v7\_revisions.jl}, with per-experiment sub-seeds derived additively to keep each block independently reproducible.
-Software environment: Julia \(\geq\) 1.12 with the exact package versions pinned in \texttt{Manifest.toml} at the repository root; running \texttt{Pkg.instantiate()} inside the project directory reproduces the dependency graph, after which \texttt{include("run\_v7\_revisions.jl")} regenerates every table and figure that is new in v7.
+All experiments reported in Section~\ref{sec:results} and in the appendix use a deterministic global seed ($20260420$), with per-experiment sub-seeds derived additively to keep each block independently reproducible.
+The software environment is Julia $\geq 1.12$ with package versions pinned in \texttt{Manifest.toml}; running \texttt{Pkg.instantiate()} inside the project directory reproduces the dependency graph, after which the analysis entry-point script regenerates every table and figure.
 
 \paragraph{Conflict of Interest.}
 The authors declare no competing interests.
