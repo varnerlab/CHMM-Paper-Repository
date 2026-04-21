@@ -1060,3 +1060,66 @@ OoS & 97.4 & 96.7 & 5.77  & 0.0587 & 0.298 & 0.2357 & 99.0 \\
 
 The bin-conditional Student-t fit picks $\nu \approx 2.71$ for the two extreme bins (bins $1$ and $13$, corresponding to the lower and upper quantile tails of the IS distribution) and $\nu = 50$ (upper bracket) for the eleven central bins, which explains both the large in-sample simulated kurtosis ($27.28$) and the very thin-scale central bins ($\sigma$ $\sim$ $0.06$--$0.25$).
 
+
+
+\subsection{GRU Deep-Generative Baseline}
+\label{sec:gru_supp}
+
+Architecture and training details for the GRU baseline used in
+Section~\ref{sec:model_comparison} are summarised here.
+
+\begin{itemize}
+    \item \textbf{Architecture.} A single-layer Gated Recurrent Unit (GRU)
+    with hidden dimension $H = 32$ followed by a Dense head with two
+    outputs $(\mu_t, \log \sigma_t)$. Input is a single feature (the
+    standardised return) over a context window of $w = 20$ trading days.
+
+    \item \textbf{Loss.} Per-window negative log-likelihood of a Gaussian
+    next-step density, equation~\eqref{eq:gru_nll}.
+
+    \item \textbf{Optimiser.} Adam, learning rate $1.0 \times 10^{-3}$.
+
+    \item \textbf{Training schedule.} $20$ epochs, full pass per epoch
+    over $T_{\text{IS}} - w$ training windows, randomly shuffled at each
+    epoch.
+
+    \item \textbf{Numerical stability.} $\log \sigma_t$ is clamped to
+    $[-6, 4]$ inside the loss to prevent gradient explosion when the
+    network attempts to assign vanishingly-small variance to extreme
+    observations.
+
+    \item \textbf{Pre-processing.} The input return series is standardised
+    by its in-sample mean and standard deviation; predictions are
+    re-scaled back at sampling time.
+
+    \item \textbf{Synthesis.} The trailing $w$ in-sample returns seed the
+    recurrence; for each generation step the predicted Gaussian is
+    sampled, the sample is appended to the context window, and the
+    procedure rolls forward. The first $64$ steps are discarded as
+    burn-in.
+
+    \item \textbf{Implementation.} Julia using \texttt{Flux.jl}
+    \cite{innes2018flux} with the \texttt{Optimisers.Adam} state.
+    Random seed for weight initialisation, training shuffling, and per-path
+    sampling: $V7\_SEED = 20260420$ with deterministic per-path sub-seeds.
+\end{itemize}
+
+The trained model is callable through the same
+\texttt{simulate\_gru(model, n\_steps; seed\_window)} interface as the
+CHMM and discrete-HMM models, so the seven-metric panel evaluates the GRU
+on byte-identical windows to the other generators.
+
+\begin{table}[h]
+\centering
+\small
+\caption{GRU deep-generative baseline on SPY (single-layer, hidden $H=32$, window $w=20$, $20$ epochs, Adam $\eta=10^{-3}$, $1{,}000$ paths, seed = 20260420). Final training NLL: $0.2101$.}
+\label{tab:gru}
+\begin{tabular}{l cc c c c c c}
+\toprule
+Window & KS & AD & Kurt & ACF-MAE & $W_1$ & $H$ & Cov \\
+\midrule
+IS  & 2.1  & 2.7  & 2.79 & 0.0526 & 0.174 & 0.0906 & 51.5 \\
+OoS & 84.2 & 85.1 & 1.72 & 0.0538 & 0.372 & 0.2441 & 78.8 \\
+\bottomrule
+\end{tabular}
+\end{table}

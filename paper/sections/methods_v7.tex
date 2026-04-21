@@ -109,13 +109,29 @@ distributional pass-rate metric.
 \subsection{Benchmark Generators}
 \label{sec:benchmarks}
 
-We benchmark the CHMM against six alternatives fitted on the same in-sample window.
-The \textit{bootstrap} samples $T$ returns uniformly with replacement, preserving the empirical marginal exactly and serving as the non-parametric distributional ceiling.
+We benchmark the CHMM against eight alternatives fitted on the same in-sample window.
+The \textit{i.i.d.\ bootstrap} samples $T$ returns uniformly with replacement, preserving the empirical marginal exactly and serving as the non-parametric distributional ceiling.
+The \textit{stationary block bootstrap} \cite{politis1994stationary} resamples blocks of expected length $b = 10$ trading days, preserving short-range volatility clustering while keeping the marginal empirical; it is a temporally-aware non-parametric ceiling.
 The \textit{Gaussian} i.i.d.\ generator draws $G_t \sim \mathcal{N}(\hat\mu, \hat\sigma^2)$ from the sample moments; the \textit{Laplace} i.i.d.\ generator draws $G_t \sim \text{Laplace}(\hat m, \hat b)$ from the sample median and mean-absolute deviation.
 \textit{GARCH(1,1)} \cite{bollerslev1986generalized} uses $G_t = \mu + \sigma_t z_t$, $\sigma_t^2 = \omega + \alpha(G_{t-1} - \mu)^2 + \beta \sigma_{t-1}^2$ with $z_t \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 1)$, fitted by Nelder--Mead maximum likelihood.
 \label{sec:discrete_hmm}%
 The \textit{discrete HMM} of \citet{alswaidan2026hybrid} is reproduced in both no-jump (NJ) and Poisson-jump (WJ) variants: returns are partitioned into $K_{\text{disc}} = 13$ quantile bins, transitions are estimated by frequency counting, and simulation returns bin centroids; the WJ variant additionally triggers, with probability $\epsilon = 0.01$, a forced residence in tail states for Poisson$(\lambda = 3)$ steps, matching the grid-calibrated values of the prior paper.
-Because quantization onto the 13 centroids strips within-bin tail mass, the discrete baselines provide a direct upper bound on how much of the CHMM's fidelity is attributable to continuous emissions rather than to regime structure per se.
+The \textit{Bin-T NJ} variant replaces those bin centroids with bin-conditional Student-t emissions to isolate the quantization-per-se effect from the emission-family effect.
+Because quantization onto the 13 centroids strips within-bin tail mass, the standard discrete baselines provide a direct upper bound on how much of the CHMM's fidelity is attributable to continuous emissions rather than to regime structure per se.
+
+\paragraph{GRU deep generative baseline.}
+\label{sec:gru_methods}%
+We add a single-layer GRU generator following the deep-baseline tradition of \citet{yoon2019timegan} and the GRU baseline of \citet{alswaidan2026hybrid}.
+The architecture is $\mathbf{h}_t = \mathrm{GRU}_{H}(\mathbf{x}_{t-w:t-1})$ followed by an affine head $(\mu_t, \log \sigma_t) = \mathbf{W} \mathbf{h}_t + \mathbf{b}$, with hidden dimension $H = 32$, context window $w = 20$ trading days, and a Gaussian next-step density $G_t \mid \mathcal{F}_{t-1} \sim \mathcal{N}(\mu_t, \sigma_t^2)$.
+The model is trained for $20$ epochs by Adam (learning rate $10^{-3}$) on the negative log-likelihood
+\begin{equation}
+    \ell_t = \log \sigma_t + \tfrac{1}{2}\!\left(\frac{G_t - \mu_t}{\sigma_t}\right)^2
+    \label{eq:gru_nll}
+\end{equation}
+of the standardised in-sample series, with $\log \sigma_t$ clamped to $[-6, 4]$ for numerical stability.
+Synthesis is auto-regressive: the trailing $w$ in-sample returns seed the recurrence, the predicted Gaussian is sampled, the sample is appended to the context window, and the procedure rolls forward.
+A $64$-step burn-in is discarded.
+The implementation is in Julia using \texttt{Flux.jl}~\cite{innes2018flux}; the trained model is callable in the same \texttt{simulate} interface as the CHMM and discrete-HMM models.
 
 \subsection{Cross-Asset Dependence}
 \label{sec:cross_asset_methods}

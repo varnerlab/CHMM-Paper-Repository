@@ -126,6 +126,13 @@ The simulated kurtosis (6.62 IS, 1.18 OoS) was reasonably close to observed in-s
 Quantile coverage was only 40.4\%.
 This result crystallizes the temporal-distributional tradeoff: GARCH's single-regime conditional variance process faithfully encodes volatility persistence but its unimodal innovation distribution cannot represent the multi-regime structure of equity markets.
 
+\paragraph{GRU (Deep-Generative Baseline).}
+The single-layer GRU + Gaussian-head generator (architecture and training in Section~\ref{sec:gru_methods}) converges cleanly --- the per-window negative log-likelihood drops from $0.346$ at epoch $1$ to $0.210$ at epoch $20$ --- and reproduces volatility clustering reasonably well: ACF-MAE of $0.0526$ on $|G_t|$ is within $0.003$ of CHMM-N ($0.0499$) and within $0.006$ of GARCH ($0.0470$).
+On distributional fidelity the GRU collapses, however: in-sample KS pass rate $2.1\%$, AD pass rate $2.7\%$, simulated kurtosis $2.79$ against an observed $7.71$, $W_1 = 0.174$, $H = 0.0906$, and quantile coverage $51.5\%$.
+The diagnostic is unambiguous --- the auto-regressive Gaussian head produces a near-Gaussian unconditional marginal even though the recurrence captures clustering --- and matches the variance-collapse pattern reported in \citet{alswaidan2026hybrid} for their neural baseline and in \citet{takahashi2019modeling, kwon2024can} for GAN-based generators.
+The OoS KS rate of $84.2\%$ should not be read as a recovery of distributional fidelity: it is the same low-power artefact that inflates the OoS KS of the discrete baselines, as quantified in Section~\ref{sec:oos} and Appendix~\ref{sec:ks_power}.
+The takeaway for the comparison is that adding a deep-generative row does not displace the CHMM operating point: among parametric and deep generators, the CHMM-N is the only one that achieves both $\geq 90\%$ IS KS \emph{and} ACF-MAE within $0.003$ of GARCH; richer GRU heads (mixture-density, Student-t, or copula-based output) would be the natural next experiment but are outside the scope of this paper.
+
 \paragraph{CHMM-N ($K = 18$, Gaussian emissions).}
 The Gaussian CHMM achieved 95.9\% KS and 88.9\% AD in-sample, competitive with the bootstrap (100.0\%) and Laplace i.i.d.\ (98.1\%) on KS, and substantially outperforming GARCH (11.7\%), Discrete NJ (0.0\%), and Discrete WJ (0.0\%).
 ACF-MAE of 0.0499 was essentially identical to GARCH (0.0470), demonstrating that the CHMM reproduces volatility clustering \emph{without} a dedicated jump mechanism or conditional variance equation.
@@ -168,14 +175,15 @@ Cleanest IS kurtosis match; highest AD pass rate; no shape parameter & CHMM-L \\
 
 \begin{table}[t]
 \centering
-\caption{Eleven-model comparison for SPY (1{,}000 simulated paths, $\alpha = 0.05$, $K = 18$).
+\caption{Twelve-model comparison for SPY (1{,}000 simulated paths, $\alpha = 0.05$, $K = 18$).
 IS: 2014--2024 ($T = 2{,}766$); OoS: 2025 ($T = 219$).
 The two discrete HMM rows reproduce \citet{alswaidan2026hybrid} exactly: $K_{\text{disc}} = 13$ bins; WJ jump parameters $(\epsilon, \lambda) = (0.01, 3)$.
 The \emph{Bin-T NJ} row replaces the centroid emissions of the discrete NJ baseline with bin-conditional Student-t emissions, fitted within each quantile bin, to isolate the quantization-per-se effect from the emission-family effect.
 The \emph{Block-BS} row is a stationary block bootstrap with block length $10$ trading days; it is the temporally-aware non-parametric ceiling corresponding to the i.i.d.\ bootstrap.
+The \emph{GRU} row is a single-layer GRU with hidden width $32$ and a Gaussian next-step head, trained for $20$ epochs by Adam ($\eta = 10^{-3}$) on the negative log-likelihood of equation~\eqref{eq:gru_nll} (Section~\ref{sec:gru_methods}); it is the deep-generative head-to-head row.
 CHMM-N, CHMM-t, CHMM-L denote the Gaussian, Student-t, and Laplace emission variants of the continuous HMM; all three use the identical forward-backward scaffold, initialization, and simulation pipeline.
 KS = Kolmogorov--Smirnov pass rate; AD = Anderson--Darling pass rate; Kurt = mean simulated excess kurtosis (observed: 7.71 IS, 6.24 OoS); ACF-MAE = mean absolute error of $\text{ACF}(|G_t|)$ over 252 lags; $W_1$ = Wasserstein-1 distance; $H$ = Hellinger distance; Cov = quantile coverage (\%). $\uparrow$/$\downarrow$ indicate preferred direction.
-OoS AD for Bin-T NJ and Block-BS is reported alongside OoS KS in the row; their OoS AD is $96.7$ and $94.6$ respectively (see Appendix~\ref{sec:supplemental} Tables~\ref{tab:block_bootstrap} and~\ref{tab:bin_t} for the full panel).}
+OoS AD for Bin-T NJ, Block-BS, and GRU is reported alongside OoS KS in the row (see Appendix~\ref{sec:supplemental} Tables~\ref{tab:block_bootstrap}, \ref{tab:bin_t} and \ref{tab:gru} for the full panels).}
 \label{tab:model_comparison}
 \resizebox{\textwidth}{!}{%
 \small
@@ -194,6 +202,7 @@ Discrete NJ         & 0.0   & 88.2  & 0.0   & 95.8  & 0.62    & 0.62    & 0.0606
 Discrete WJ         & 0.0   & 85.7  & 0.0   & 95.1  & 0.50    & 0.48    & 0.0606 & 0.319 & 0.3818 & 36.4  & 86.9  \\
 Bin-T NJ            & 95.5  & 97.4  & 90.3  & 96.7  & 27.28   & 5.77    & 0.0608 & 0.113 & 0.0919 & 84.8  & 99.0  \\
 GARCH(1,1)          & 11.7  & 87.5  & 2.9   & 83.2  & 6.62    & 1.18    & 0.0470 & 0.250 & 0.1022 & 40.4  & 99.0  \\
+GRU                 & 2.1   & 84.2  & 2.7   & 85.1  & 2.79    & 1.72    & 0.0526 & 0.174 & 0.0906 & 51.5  & 78.8  \\
 CHMM-N ($K=18$)     & 95.9  & 94.7  & 88.9  & 88.0  & 5.04    & 3.45    & 0.0499 & 0.102 & 0.0771 & 100.0 & 100.0 \\
 \textbf{CHMM-t ($K=18$)} & \textbf{96.0} & \textbf{95.2} & 91.7 & 90.0 & 12.60 & 6.42 & 0.0535 & \textbf{0.091} & \textbf{0.0720} & \textbf{100.0} & \textbf{100.0} \\
 \textbf{CHMM-L ($K=18$)} & 94.0 & 93.9 & \textbf{91.7} & \textbf{91.7} & \textbf{6.34} & \textbf{5.06} & 0.0546 & 0.095 & 0.0759 & \textbf{100.0} & \textbf{100.0} \\
