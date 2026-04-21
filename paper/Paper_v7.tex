@@ -1,0 +1,104 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[margin=1in]{geometry}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{float}
+
+% --- Hyperref setup ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% --- Custom commands ---
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+
+\title{Continuous Hidden Markov Models for Equity and Volatility Index Dynamics:\\Gaussian, Student-t, and Laplace Emissions Trained by EM, with Cross-Asset SIM and Copula Extensions}
+
+\author{
+    Abdulrahman Alswaidan\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA. Email: \texttt{aa2725@cornell.edu}.}
+    \and
+    Cade Jin\thanks{Cornell University, Ithaca, NY, USA. Email: \texttt{cj383@cornell.edu}.}
+    \and
+    Jeffrey D.\ Varner\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA. Email: \texttt{jdv27@cornell.edu}.}
+}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% ========================================================================================= %
+\begin{abstract}
+We present a family of continuous hidden Markov models (CHMMs) for generating synthetic financial time series that preserve the canonical stylized facts of asset returns.
+Each model trains a per-state location--scale emission distribution jointly with the transition matrix by Expectation--Maximization: CHMM-N uses Gaussian emissions and the classical Baum-Welch updates; CHMM-t uses Student-t emissions with per-state degrees of freedom selected inside the M-step by a golden-section search on the ECM Q-function \citep{peel2000robust, liu1995ml}; CHMM-L uses Laplace emissions whose weighted-median location and mean-absolute-deviation scale are closed-form weighted maximum-likelihood estimators.
+All three emission families share the same log-space forward--backward recursions and a common quantile-based initialization.
+Unlike the discrete-state framework of \citet{alswaidan2026hybrid}, which requires Laplace quantile binning and a Poisson jump-duration mechanism to achieve volatility clustering, the continuous models at a single moderate state resolution ($K = 18$, chosen jointly by four information criteria \citep{nguyen2018hidden} and a seven-metric distributional score over $K \in \{3, 6, 9, 12, 15, 18, 21\}$) reproduce all three stylized facts without jump augmentation, eliminating two tunable hyperparameters and the discretization step.
+
+On ten years of daily SPDR S\&P~500 ETF (SPY) data we benchmark the three CHMM variants against six alternatives (bootstrap resampling, Gaussian and Laplace i.i.d., the discrete HMM of \citet{alswaidan2026hybrid} in no-jump (NJ) and Poisson-jump (WJ) variants, and GARCH(1,1)) using seven complementary metrics (Kolmogorov--Smirnov and Anderson--Darling pass rates, excess kurtosis, absolute-return ACF-MAE, Wasserstein-1, Hellinger, quantile coverage) on 1{,}000 simulated paths in in-sample (2014--2024) and out-of-sample (2025) windows.
+The heavy-tailed CHMM-t and CHMM-L variants address the residual kurtosis gap of the Gaussian CHMM: CHMM-L lifts simulated in-sample excess kurtosis from $5.04$ to $6.34$ against the observed $7.71$ without adding a shape parameter, while CHMM-t overshoots in-sample ($12.60$) but aligns its out-of-sample simulated kurtosis ($6.42$) with the observed OoS value ($6.24$); both retain the ACF and pass-rate fidelity of CHMM-N.
+We diagnose the CHMM-t overshoot through a per-state $\nu_k$ histogram and a $\nu_{\min}$ bracket-sensitivity study, and quantify its downstream consequence with a $1\%/5\%$ VaR and Expected-Shortfall back-test calibrated against the historical series.
+Cross-asset generalization to NVDA, JNJ, JPM, AAPL, and QQQ confirms adaptability across risk profiles for all three emission families; a quarterly walk-forward re-estimation on JNJ and JPM recovers most of the OoS KS drop that the fixed-IS fit exhibits for defensives.
+We extend the univariate framework to multi-asset synthesis with a Single Index Model \citep{sharpe1963simplified} and Gaussian / Student-t copulas \citep{sklar1959fonctions, demarta2005tcopula}, both of which preserve each asset's fitted CHMM marginal through rank reordering.
+On six SPY-member assets the copulas substantially outperform SIM on per-asset distributional fidelity (median in-sample KS 98.0\% versus 83.8\%) and correlation reproduction (off-diagonal MAE 0.027 Student-t, 0.031 Gaussian, 0.078 SIM); the Student-t copula's profile MLE selects $\nu^{*} = 6$ degrees of freedom.
+Applying the same EM pipeline to the CBOE VIX log-return series confirms that the framework also covers the volatility measures most commonly used as risk inputs; option pricing is explicitly out of scope.
+The seven-metric panel supplies the fidelity dimension of the JDIQ fidelity/utility/privacy triad, the VaR/ES back-test supplies a utility consumer, and privacy is out of scope by construction because SPY and VIX data are public.
+
+\bigskip\noindent
+\textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch Algorithm, EM, Student-t Emissions, Laplace Emissions, Synthetic Financial Data, Stylized Facts, Volatility Clustering, Regime-Switching, Single Index Model, Copula Dependence, Cross-Asset Simulation, VIX, Value-at-Risk, Expected Shortfall.
+\end{abstract}
+
+% ========================================================================================= %
+\section{Introduction}
+\label{sec:introduction}
+\input{sections/introduction_v7}
+
+\section{Related Work}
+\label{sec:related}
+\input{sections/related_v7}
+
+\section{Methods}
+\label{sec:methods}
+\input{sections/methods_v7}
+
+\section{Empirical Study}
+\label{sec:results}
+\input{sections/results_v7}
+
+\section{Discussion}
+\label{sec:discussion}
+\input{sections/discussion_v7}
+
+\section{Conclusion}
+\label{sec:conclusion}
+\input{sections/conclusion_v7}
+
+% ========================================================================================= %
+\bibliographystyle{unsrtnat}
+\bibliography{References_v7}
+
+% ========================================================================================= %
+\appendix
+\section{Supplementary Material}
+\label{sec:supplemental}
+\input{sections/supplemental_v7}
+
+\end{document}
