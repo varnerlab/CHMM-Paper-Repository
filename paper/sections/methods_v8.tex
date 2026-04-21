@@ -135,7 +135,7 @@ The implementation is in Julia using \texttt{Flux.jl}~\cite{innes2018flux}; the 
 \subsection{Cross-Asset Dependence (Pipeline B)}
 \label{sec:cross_asset_methods}
 
-The univariate evaluation of Section~\ref{sec:empirical_protocol} fits a separate CHMM to each ticker independently; we refer to this as \emph{Pipeline A} throughout the paper. The present subsection introduces \emph{Pipeline B}, which reuses the per-asset CHMM marginals from Pipeline A and adds joint dependence across assets. Pipeline A is tested in Table~\ref{tab:cross_asset} (univariate); Pipeline B is tested in Table~\ref{tab:cross_asset_sim_copula} (cross-asset) and Figure~\ref{fig:cross_asset_corr}.
+The univariate evaluation of Section~\ref{sec:model_comparison} fits a separate CHMM to each ticker independently; we refer to this as \emph{Pipeline A} throughout the paper. The present subsection introduces \emph{Pipeline B}, which reuses the per-asset CHMM marginals from Pipeline A and adds joint dependence across assets. Pipeline A is tested in Table~\ref{tab:cross_asset} (univariate); Pipeline B is tested in Table~\ref{tab:cross_asset_sim_copula} (cross-asset) and Figure~\ref{fig:cross_asset_corr}.
 
 Let $\mathbf{R}_{\text{IS}} \in \mathbb{R}^{T \times d}$ denote the in-sample return matrix for $d$ assets, with the market-factor column indexed by $m$.
 Both constructions below preserve each asset's fitted CHMM marginal and differ in how cross-asset dependence is imposed.
