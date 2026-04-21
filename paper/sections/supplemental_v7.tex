@@ -108,26 +108,26 @@ The Laplace M-step carries no shape parameter, so CHMM-L is strictly cheaper per
 \label{sec:sensitivity_table}
 
 Table~\ref{tab:sensitivity} reports the full sweep summarized by Figure~\ref{fig:k_sweep_summary} in the main text.
-Observed excess kurtosis is 7.71 IS and 6.24 OoS at all $K$.
+Observed excess kurtosis is $7.68$ IS and $5.29$ OoS at all $K$.
 
 \begin{table}[H]
 \centering
-\caption{State resolution sensitivity for SPY CHMM (1{,}000 paths, $\alpha = 0.05$). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison} in the main text. Coverage was 100\% at every $K$ in both IS and OoS windows.}
+\caption{State resolution sensitivity for SPY CHMM-N (1{,}000 paths, $\alpha = 0.05$). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison} in the main text. In-sample coverage was 100\% at every $K$; OoS coverage is reported separately.}
 \label{tab:sensitivity}
 \small
 \begin{tabular}{c cc cc cc c c c c}
 \toprule
 & \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & \multicolumn{2}{c}{Kurtosis} & & & & \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
-$K$ & IS & OoS & IS & OoS & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov (\%) \\
+$K$ & IS & OoS & IS & OoS & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov OoS (\%) \\
 \midrule
-3  & 88.7 & 92.8 & 79.2 & 84.9 & 7.71 & 3.91 & 0.0453 & 0.119 & 0.0793 & 100.0 \\
-6  & 90.3 & 93.8 & 83.6 & 87.0 & 7.71 & 5.13 & 0.0488 & 0.110 & 0.0786 & 100.0 \\
-9  & 91.7 & 92.4 & 83.2 & 85.3 & 7.71 & 3.70 & 0.0473 & 0.115 & 0.0779 & 100.0 \\
-12 & 95.3 & 91.9 & 87.2 & 85.0 & 7.71 & 4.19 & 0.0483 & 0.108 & 0.0767 & 100.0 \\
-15 & 93.5 & 94.0 & 86.8 & 87.0 & 7.71 & 4.46 & 0.0490 & 0.105 & 0.0765 & 100.0 \\
-\textbf{18} & 95.2 & 94.0 & 88.3 & 88.7 & 7.71 & 5.03 & 0.0505 & 0.101 & 0.0771 & 100.0 \\
-21 & \textbf{96.5} & \textbf{94.9} & \textbf{89.1} & 87.0 & 7.71 & 4.71 & 0.0503 & 0.103 & 0.0777 & 100.0 \\
+3  & 88.8 & 77.1 & 79.2 & 67.9 & 7.68 & 3.80 & 0.0466 & 0.130 & 0.0836 & 94.9 \\
+6  & 93.1 & 80.0 & 87.1 & 74.6 & 7.68 & 5.26 & 0.0499 & 0.113 & 0.0828 & 90.9 \\
+9  & 94.6 & 82.4 & 85.8 & 73.6 & 7.68 & 4.56 & 0.0494 & 0.116 & 0.0806 & 93.9 \\
+12 & 94.6 & 82.8 & 86.0 & 74.9 & 7.68 & 4.57 & 0.0495 & 0.112 & 0.0802 & 88.9 \\
+15 & 93.9 & 82.7 & 86.9 & 75.6 & 7.68 & 4.89 & 0.0505 & 0.116 & 0.0806 & 90.9 \\
+\textbf{18} & 95.6 & 81.7 & 88.4 & 73.2 & 7.68 & 4.98 & 0.0509 & 0.110 & 0.0805 & 90.9 \\
+21 & \textbf{96.1} & \textbf{86.6} & \textbf{89.0} & \textbf{78.4} & 7.68 & 3.83 & 0.0532 & 0.111 & 0.0798 & \textbf{100.0} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -138,14 +138,14 @@ $K$ & IS & OoS & IS & OoS & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov (\%) \\
 Table~\ref{tab:sensitivity_multi} extends Table~\ref{tab:sensitivity} across the three emission families, confirming that the qualitative operating point $K = 18$ is stable when the Gaussian component is replaced with Student-t or Laplace emissions.
 For CHMM-t the per-state degrees of freedom $\nu_k$ are refit by ECM-plus-golden-section at every $K$; for CHMM-L the weighted-median location and weighted MAD scale are closed form and impose no additional cost.
 Three patterns extend from Table~\ref{tab:sensitivity} to the new families.
-First, the distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band for all three families: CHMM-t reaches its highest IS KS at $K = 15$ (96.3\%) and its highest OoS KS at $K = 18$ (95.6\%), and CHMM-L reaches its highest IS AD at $K = 12$ (91.1\%) and its highest OoS AD at $K = 18$ (92.6\%).
+First, the distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band for all three families: CHMM-t reaches its highest IS KS at $K = 18$ ($95.2\%$) and its highest OoS KS at $K = 18$ ($85.1\%$), and CHMM-L reaches its highest IS KS at $K = 18$ ($96.2\%$) and its highest IS AD at $K = 18$ ($93.0\%$).
 Once a family enters the plateau the operating point is flat with respect to $K$, so we report the main-text results at the same $K = 18$ used for CHMM-N.
-Second, the ACF-MAE remains within the narrow 0.045--0.055 band observed for the Gaussian sweep, indicating that the volatility-clustering mechanism is a property of the regime structure rather than the emission family.
-Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks at 5.1, the Laplace sweep lands squarely in the 5.1--6.5 range (closest to the observed 7.71), and the Student-t sweep climbs sharply above 10 across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, over-correcting in-sample kurtosis but aligning OoS.
+Second, the ACF-MAE remains within the narrow $0.047$--$0.056$ band observed for the Gaussian sweep, indicating that the volatility-clustering mechanism is a property of the regime structure rather than the emission family.
+Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks around $5.0$ at the high-$K$ end, the Laplace sweep lands squarely in the $5.2$--$6.6$ range (closest to the observed $7.68$), and the Student-t sweep climbs sharply above $13$ across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, over-correcting in-sample kurtosis.
 
 \begin{table}[H]
 \centering
-\caption{Multi-emission state resolution sensitivity for SPY (1{,}000 paths, $\alpha = 0.05$). CHMM-N: Gaussian; CHMM-t: Student-t with per-state $\nu_k$ refit by ECM-plus-golden-section; CHMM-L: Laplace with weighted-median location and weighted-MAD scale. Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison}. Quantile coverage is 100\% at every $(K, \text{family})$ cell in both IS and OoS windows with the single exception of CHMM-L at $K = 3$ (88.9\% IS, 100.0\% OoS). Observed excess kurtosis is 7.71 IS and 6.24 OoS.}
+\caption{Multi-emission state resolution sensitivity for SPY (1{,}000 paths, $\alpha = 0.05$). CHMM-N: Gaussian; CHMM-t: Student-t with per-state $\nu_k$ refit by ECM-plus-golden-section; CHMM-L: Laplace with weighted-median location and weighted-MAD scale. Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison}. Observed excess kurtosis is $7.68$ IS and $5.29$ OoS.}
 \label{tab:sensitivity_multi}
 \small
 \resizebox{\textwidth}{!}{%
@@ -155,29 +155,29 @@ Third, simulated kurtosis behaves as expected from the component families: the G
 \cmidrule(lr){3-4} \cmidrule(lr){5-6}
 Family & $K$ & IS & OoS & IS & OoS & Kurt (IS sim) & ACF-MAE & $W_1$ IS & $H$ IS \\
 \midrule
-CHMM-N & 3  & 88.7 & 92.8 & 79.2 & 84.9 & 3.91 & 0.0453 & 0.119 & 0.0793 \\
-       & 6  & 90.3 & 93.8 & 83.6 & 87.0 & 5.13 & 0.0488 & 0.110 & 0.0786 \\
-       & 9  & 91.7 & 92.4 & 83.2 & 85.3 & 3.70 & 0.0473 & 0.115 & 0.0779 \\
-       & 12 & 95.3 & 91.9 & 87.2 & 85.0 & 4.19 & 0.0483 & 0.108 & 0.0767 \\
-       & 15 & 93.5 & 94.0 & 86.8 & 87.0 & 4.46 & 0.0490 & 0.105 & 0.0765 \\
-       & \textbf{18} & 95.2 & 94.0 & 88.3 & 88.7 & 5.03 & 0.0505 & 0.101 & 0.0771 \\
-       & 21 & \textbf{96.5} & 94.9 & \textbf{89.1} & 87.0 & 4.71 & 0.0503 & 0.103 & 0.0777 \\
+CHMM-N & 3  & 89.8 & 76.3 & 81.3 & 67.7 & 3.81 & 0.0468 & 0.128 & 0.0835 \\
+       & 6  & 91.7 & 79.6 & 85.9 & 73.6 & 5.30 & 0.0497 & 0.115 & 0.0831 \\
+       & 9  & 92.8 & 82.2 & 84.7 & 75.5 & 4.55 & 0.0497 & 0.118 & 0.0810 \\
+       & 12 & 95.0 & 83.7 & 86.1 & 76.6 & 4.55 & 0.0497 & 0.114 & 0.0805 \\
+       & 15 & 95.2 & 83.5 & 86.9 & 76.3 & 4.91 & 0.0508 & 0.111 & 0.0802 \\
+       & \textbf{18} & 94.7 & 82.4 & 85.8 & 76.5 & 5.02 & 0.0509 & 0.111 & 0.0809 \\
+       & 21 & \textbf{95.2} & \textbf{87.6} & \textbf{89.1} & \textbf{80.9} & 3.80 & 0.0530 & 0.112 & 0.0802 \\
 \midrule
-CHMM-t & 3  & 92.0 & 93.0 & 90.3 & 88.1 & 28.28 & 0.0541 & 0.097 & 0.0722 \\
-       & 6  & 93.3 & 94.2 & 89.2 & 87.1 & 26.01 & 0.0529 & 0.097 & 0.0729 \\
-       & 9  & 94.6 & 94.4 & 89.0 & 88.2 & 17.05 & 0.0532 & 0.096 & 0.0725 \\
-       & 12 & 94.8 & 94.6 & 90.0 & 89.4 & 13.23 & 0.0532 & 0.095 & 0.0723 \\
-       & 15 & \textbf{96.3} & 95.2 & 90.9 & 90.3 & 14.33 & 0.0539 & 0.093 & 0.0721 \\
-       & \textbf{18} & 95.3 & \textbf{95.6} & 90.1 & 89.3 & 13.40 & 0.0535 & 0.094 & \textbf{0.0719} \\
-       & 21 & 96.0 & 94.7 & \textbf{91.1} & 87.5 & 12.07 & 0.0526 & \textbf{0.093} & 0.0727 \\
+CHMM-t & 3  & 91.1 & 81.6 & 85.2 & 77.1 & 27.12 & 0.0540 & 0.109 & 0.0764 \\
+       & 6  & 92.2 & 82.1 & 86.1 & 76.6 & 20.80 & 0.0533 & 0.108 & 0.0768 \\
+       & 9  & 92.7 & 84.8 & 86.9 & 80.1 & 15.96 & 0.0537 & 0.104 & 0.0756 \\
+       & 12 & 94.1 & 83.1 & 88.3 & 80.6 & 14.68 & 0.0542 & 0.102 & 0.0757 \\
+       & 15 & 93.5 & 82.9 & 88.0 & 76.5 & 15.85 & 0.0537 & 0.103 & 0.0757 \\
+       & \textbf{18} & \textbf{95.2} & \textbf{85.1} & \textbf{90.9} & \textbf{80.7} & 14.40 & 0.0550 & \textbf{0.101} & \textbf{0.0756} \\
+       & 21 & 94.9 & 82.2 & 89.3 & 77.8 & 13.28 & 0.0540 & 0.103 & 0.0758 \\
 \midrule
-CHMM-L & 3  & 77.0 & 90.3 & 80.1 & 86.0 & 5.11 & 0.0529 & 0.110 & 0.0822 \\
-       & 6  & 90.1 & 91.3 & 85.2 & 83.8 & 5.87 & 0.0504 & 0.105 & 0.0786 \\
-       & 9  & 91.7 & 92.8 & 86.0 & 85.5 & 6.08 & 0.0517 & 0.103 & 0.0777 \\
-       & 12 & 94.6 & 94.5 & \textbf{91.1} & 89.5 & 6.41 & 0.0533 & 0.096 & 0.0758 \\
-       & 15 & \textbf{94.7} & 95.0 & 90.1 & 90.5 & 6.36 & 0.0537 & 0.097 & 0.0760 \\
-       & \textbf{18} & 93.2 & 94.1 & 91.0 & \textbf{92.6} & \textbf{6.45} & 0.0541 & 0.096 & 0.0761 \\
-       & 21 & 93.9 & 92.7 & 89.4 & 89.5 & 5.98 & 0.0532 & 0.097 & 0.0764 \\
+CHMM-L & 3  & 82.4 & 63.6 & 82.9 & 66.9 & 5.24 & 0.0533 & 0.112 & 0.0853 \\
+       & 6  & 88.8 & 77.0 & 83.3 & 72.5 & 5.74 & 0.0511 & 0.113 & 0.0823 \\
+       & 9  & 90.0 & 77.9 & 84.1 & 74.8 & 6.05 & 0.0519 & 0.113 & 0.0823 \\
+       & 12 & 92.4 & 77.8 & 87.6 & 77.9 & 6.21 & 0.0540 & 0.106 & 0.0797 \\
+       & 15 & 92.6 & 79.4 & 87.0 & 77.6 & 6.06 & 0.0542 & 0.106 & 0.0795 \\
+       & \textbf{18} & \textbf{96.2} & \textbf{80.9} & \textbf{93.0} & \textbf{80.6} & \textbf{6.60} & 0.0564 & \textbf{0.101} & 0.0793 \\
+       & 21 & 90.7 & 80.7 & 87.3 & 78.8 & 5.99 & 0.0544 & 0.107 & 0.0809 \\
 \bottomrule
 \end{tabular}%
 }
@@ -646,23 +646,23 @@ For the Student-t copula with degrees of freedom $\nu$, we draw $W \sim \chi^2_\
 
 \paragraph{SIM regression summary.}
 Table~\ref{tab:sim_regression} reports the fitted SIM regression coefficients and goodness-of-fit statistics for the non-market assets in Section~\ref{sec:cross_asset}.
-QQQ's high $R^2 = 0.841$ reflects that the Nasdaq-100 ETF is essentially a linear combination of large-cap technology names that also drive the S\&P~500 index, while JNJ's lower $R^2 = 0.225$ reflects the limited systematic exposure of low-beta healthcare stocks.
+QQQ's high $R^2 = 0.840$ reflects that the Nasdaq-100 ETF is essentially a linear combination of large-cap technology names that also drive the S\&P~500 index, while JNJ's lower $R^2 = 0.260$ reflects the limited systematic exposure of low-beta healthcare stocks.
 These factor loadings and residual magnitudes are what the SIM simulation in equation~\eqref{eq:sim_sim} re-injects at simulation time, and they explain the uneven per-asset KS pass rates reported in Table~\ref{tab:cross_asset_sim_copula}.
 
 \begin{table}[H]
 \centering
-\caption{SIM regression $\hat{G}_{j,t} = \hat{\alpha}_j + \hat{\beta}_j G_{\text{SPY},t} + \hat{\eta}_{j,t}$ for the five non-market assets, fitted on the 2014--2024 in-sample window ($T = 2{,}766$). Coefficients $\hat{\alpha}, \hat{\beta}$ and $R^2$ are reported for the factor equation used in equation~\eqref{eq:sim_sim}.}
+\caption{SIM regression $\hat{G}_{j,t} = \hat{\alpha}_j + \hat{\beta}_j G_{\text{SPY},t} + \hat{\eta}_{j,t}$ for the five non-market assets, fitted on the $2014$-$01$-$03$ through $2024$-$01$-$03$ in-sample window ($T = 2{,}516$). Coefficients $\hat{\alpha}, \hat{\beta}$ and $R^2$ are reported for the factor equation used in equation~\eqref{eq:sim_sim}.}
 \label{tab:sim_regression}
 \small
 \begin{tabular}{l ccc}
 \toprule
 Ticker & $\hat{\alpha}$ & $\hat{\beta}$ & $R^2$ \\
 \midrule
-NVDA & $0.347$   & $1.749$ & $0.370$ \\
-JNJ  & $-0.016$  & $0.539$ & $0.225$ \\
-JPM  & $0.001$   & $1.204$ & $0.483$ \\
-AAPL & $0.106$   & $1.194$ & $0.474$ \\
-QQQ  & $0.041$   & $1.134$ & $0.841$ \\
+NVDA & $0.321$   & $1.694$ & $0.371$ \\
+JNJ  & $0.002$   & $0.576$ & $0.260$ \\
+JPM  & $-0.008$  & $1.223$ & $0.507$ \\
+AAPL & $0.111$   & $1.205$ & $0.492$ \\
+QQQ  & $0.047$   & $1.122$ & $0.840$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -893,13 +893,13 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 
 This appendix backs the discussion in Section~\ref{sec:discussion} of the CHMM-t in-sample kurtosis overshoot.
 Figure~\ref{fig:nu_hist} plots the per-state $\nu_k$ histogram for the $K = 18$ CHMM-t fit on SPY IS (seed = $20260420$).
-Twelve of the eighteen states rest at the upper ECM bracket ($\nu_k = 50$), and only two states lie near the lower bracket ($\nu_2 = 2.35$, $\nu_4 = 2.82$).
-The simulated in-sample mixture kurtosis of $12.60$ is driven by the posterior mass routed to those two very heavy-tailed states, not by a systemic collapse to the lower bracket.
+Thirteen of the eighteen states rest at the upper ECM bracket ($\nu_k = 50$), and only two states lie near the lower bracket ($\nu_2 = 2.19$, $\nu_4 = 2.10$).
+The simulated in-sample mixture kurtosis of $17.34$ is driven by the posterior mass routed to those two very heavy-tailed states, not by a systemic collapse to the lower bracket.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.75\textwidth]{sections/figs/Fig-v7-nu-Histogram.pdf}
-\caption{Per-state degrees-of-freedom $\nu_k$ for the CHMM-t fit at $K = 18$ on SPY IS. The dashed red line marks the lower ECM bracket $\nu_{\min} = 2.1$. Only two states ($\nu_2 = 2.35$, $\nu_4 = 2.82$) sit near the lower bracket; the median $\nu_k$ is at the upper bracket.}
+\caption{Per-state degrees-of-freedom $\nu_k$ for the CHMM-t fit at $K = 18$ on SPY IS. The dashed red line marks the lower ECM bracket $\nu_{\min} = 2.1$. Only two states ($\nu_2 = 2.19$, $\nu_4 = 2.10$) sit near the lower bracket; the median $\nu_k$ is at the upper bracket.}
 \label{fig:nu_hist}
 \end{figure}
 
@@ -916,13 +916,13 @@ The overshoot is therefore a feature of the Student-t emission family at $K = 18
 \toprule
 $\nu_{\min}$ & KS IS & AD IS & KS OoS & AD OoS & Kurt IS & Kurt OoS & ACF-MAE & $W_1$ & $H$ \\
 \midrule
-$2.1$     & 94.2 & 89.4 & 95.5 & 90.1 & 12.50 & 6.95 & 0.0538 & 0.094 & 0.0725 \\
-$2.5$     & 95.7 & 91.9 & 94.5 & 89.7 & 13.94 & 5.97 & 0.0536 & 0.094 & 0.0725 \\
-$3.0$     & 95.6 & 91.4 & 93.8 & 89.7 & 14.04 & 6.25 & 0.0537 & 0.092 & 0.0725 \\
-$4.0$     & 95.8 & 92.2 & 94.8 & 90.1 & 13.71 & 6.72 & 0.0535 & 0.092 & 0.0721 \\
-$\infty$ (Gauss) & 96.6 & 88.6 & 94.3 & 87.9 & 5.05  & 3.47 & 0.0503 & 0.101 & 0.0770 \\
+$2.1$     & 95.7 & 90.2 & 86.2 & 82.0 & 13.95 & 10.08 & 0.0546 & 0.100 & 0.0759 \\
+$2.5$     & 95.8 & 90.6 & 84.2 & 79.1 & 15.12 & 10.34 & 0.0547 & 0.100 & 0.0759 \\
+$3.0$     & 93.8 & 89.5 & 85.3 & 80.4 & 12.25 & 9.65  & 0.0548 & 0.099 & 0.0760 \\
+$4.0$     & 95.5 & 89.5 & 85.0 & 80.3 & 13.25 & 9.39  & 0.0550 & 0.101 & 0.0759 \\
+$\infty$ (Gauss) & 94.1 & 86.7 & 84.2 & 75.5 & 5.03  & 4.46 & 0.0510 & 0.110 & 0.0809 \\
 \midrule
-\textit{Observed} & -- & -- & -- & -- & 7.71 & 6.24 & -- & -- & -- \\
+\textit{Observed} & -- & -- & -- & -- & 7.68 & 5.29 & -- & -- & -- \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -943,25 +943,25 @@ Random init here draws per-state $(\mu_k, \sigma_k)$ from a moderate perturbatio
 \toprule
 Init & KS IS (\%) & AD IS (\%) & ACF-MAE & Kurt IS & KS OoS (\%) \\
 \midrule
-Quantile (main body) & 71.8 & 68.3 & 0.0499 & 2.58 & 93.3 \\
-Random seed = 1      & 72.2 & 70.0 & 0.0499 & 2.61 & 93.5 \\
-Random seed = 7      & 67.9 & 65.7 & 0.0497 & 2.58 & 93.8 \\
-Random seed = 42     & 69.9 & 66.0 & 0.0501 & 2.57 & 91.9 \\
-Random seed = 100    & 69.1 & 67.4 & 0.0503 & 2.60 & 93.7 \\
-Random seed = 2024   & 68.5 & 65.6 & 0.0498 & 2.58 & 94.0 \\
+Quantile (main body) & 79.0 & 71.5 & 0.0501 & 2.57 & 72.4 \\
+Random seed = 1      & 78.7 & 70.7 & 0.0502 & 2.57 & 73.2 \\
+Random seed = 7      & 75.3 & 69.6 & 0.0498 & 2.56 & 74.0 \\
+Random seed = 42     & 77.6 & 70.0 & 0.0498 & 2.59 & 71.8 \\
+Random seed = 100    & 76.2 & 69.4 & 0.0500 & 2.59 & 72.3 \\
+Random seed = 2024   & 76.4 & 69.8 & 0.0499 & 2.54 & 72.9 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The key observation is that ACF-MAE is essentially constant at $\approx 0.050$ across all six rows, matching the $K = 18$ CHMM-N of the main body.
-In-sample KS pass rate remains below the $K = 18$ operating point (67.9--72.2\%) because two Gaussian components cannot tile the full multi-regime return distribution.
+In-sample KS pass rate remains below the $K = 18$ operating point ($75.3$--$79.0\%$) because two Gaussian components cannot tile the full multi-regime return distribution.
 The combination confirms that the Ryd\'en low-$K$ limitation is a distributional (not temporal) artefact: the ACF is already well reproduced at $K = 2$, and it is distributional fidelity that drives the preference for $K = 18$.
 
 \subsection{OoS KS Test-Power Calibration}
 \label{sec:ks_power}
 
 Table~\ref{tab:ks_power} reports the two-sample KS test-power calibration used to anchor the OoS KS pass rates of Section~\ref{sec:oos}.
-For each of $1{,}000$ Monte Carlo replications (seed = 20260420), a simulated series of length $T_{\text{OoS}} = 219$ is drawn from each of three reference generators and tested against the observed OoS series using the same $\alpha = 0.05$ threshold as the main-body pass-rate metric.
+For each of $1{,}000$ Monte Carlo replications (seed = 20260420), a simulated series of length $T_{\text{OoS}} = 572$ is drawn from each of three reference generators and tested against the observed OoS series using the same $\alpha = 0.05$ threshold as the main-body pass-rate metric.
 
 \begin{table}[h]
 \centering
@@ -972,35 +972,35 @@ For each of $1{,}000$ Monte Carlo replications (seed = 20260420), a simulated se
 \toprule
 Reference generator & Pass rate (\%) \\
 \midrule
-I.i.d.\ resamples of $R_{\text{OoS}}$ at length $T_{\text{OoS}} = 219$ (known-correct ceiling) & 100.0 \\
-I.i.d.\ resamples of $R_{\text{IS}}$ at length $T_{\text{OoS}} = 219$ (nearly correct)          & 98.4 \\
+I.i.d.\ resamples of $R_{\text{OoS}}$ at length $T_{\text{OoS}} = 572$ (known-correct ceiling) & 100.0 \\
+I.i.d.\ resamples of $R_{\text{IS}}$ at length $T_{\text{OoS}} = 572$ (nearly correct)          & 90.0  \\
 Gaussian$(\hat\mu_{\text{IS}}, \hat\sigma_{\text{IS}})$ at length $T_{\text{IS}}$ (negative control) & 0.0 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The $98.4\%$ rate is the practical ceiling for the CHMM OoS KS pass rates reported in Section~\ref{sec:oos} ($93$--$96\%$); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
+The $90.0\%$ "nearly correct" rate is the practical ceiling for the CHMM OoS KS pass rates reported in Section~\ref{sec:oos} ($80$--$84\%$); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
 
 \subsection{Walk-Forward Rolling-Window Re-Estimation}
 \label{sec:walk_forward}
 
 Table~\ref{tab:walk_forward} reports the quarterly walk-forward re-estimation results referenced in Section~\ref{sec:cross_asset_univariate}.
-The walk-forward protocol refits the CHMM-N every $63$ trading days (one quarter), feeding the realized returns of the prior quarter into the training set before each refit.
-On both defensive tickers the rolling protocol recovers $1$--$2$ percentage points of OoS KS and AD relative to the fixed-IS baseline, consistent with the stationarity explanation for the OoS gap while leaving a residual term that a richer time-varying extension would be needed to close.
+The walk-forward protocol refits the CHMM-N every $63$ trading days (one quarter) across the $572$-day OoS window, feeding the realized returns of the prior quarter into the training set before each refit.
+The rolling protocol recovers a modest $\sim 1$ percentage point on JNJ and a substantial $\sim 15$ percentage points on JPM relative to the fixed-IS baseline, confirming that the stationarity assumption is the principal contributor to the JPM OoS gap while JNJ's OoS gap is already small under the fixed fit.
 
 \begin{table}[h]
 \centering
 \small
-\caption{Walk-forward (quarterly CHMM-N refit) vs fixed-IS CHMM-N on the two defensives (JNJ, JPM) at $K = 18$, 1000 paths (seed = 20260420).}
+\caption{Walk-forward (quarterly CHMM-N refit) vs fixed-IS CHMM-N on JNJ and JPM at $K = 18$, 1000 paths (seed = 20260420).}
 \label{tab:walk_forward}
 \begin{tabular}{l cc cc cc c c c}
 \toprule
 Mode & KS IS & AD IS & KS OoS & AD OoS & Kurt IS & Kurt OoS & ACF-MAE & $W_1$ & $H$ \\
 \midrule
-JNJ fixed-IS      & 99.7 & 99.4 & 70.2 & 61.5 & 5.68 & 4.63 & 0.0319 & 0.083 & 0.0759 \\
-JNJ walk-forward  & 99.7 & 99.4 & 71.0 & 62.9 & 5.68 & 4.51 & 0.0319 & 0.083 & 0.0759 \\
-JPM fixed-IS      & 98.7 & 96.2 & 74.9 & 76.5 & 7.97 & 5.08 & 0.0431 & 0.154 & 0.0839 \\
-JPM walk-forward  & 98.7 & 96.2 & 76.8 & 78.1 & 7.97 & 4.92 & 0.0431 & 0.154 & 0.0839 \\
+JNJ fixed-IS      & 99.3 & 98.2 & 94.0 & 92.1 & 5.46 & 4.98 & 0.0322 & 0.095 & 0.0786 \\
+JNJ walk-forward  & 99.3 & 98.2 & 94.9 & 91.3 & 5.46 & 5.14 & 0.0322 & 0.095 & 0.0786 \\
+JPM fixed-IS      & 96.6 & 94.4 & 49.0 & 48.6 & 7.33 & 6.31 & 0.0449 & 0.165 & 0.0875 \\
+JPM walk-forward  & 96.6 & 94.4 & 64.3 & 63.6 & 7.33 & 5.96 & 0.0449 & 0.165 & 0.0875 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1009,7 +1009,7 @@ JPM walk-forward  & 98.7 & 96.2 & 76.8 & 78.1 & 7.97 & 4.92 & 0.0431 & 0.154 & 0
 \label{sec:copula_profile_supp}
 
 Figure~\ref{fig:copula_profile} plots the profile log-likelihood of the Student-t copula, computed on the six-asset SPY cross-section over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ used in Section~\ref{sec:cross_asset}.
-The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum profile log-likelihood ($6584.31$), and the neighbouring grid points $\nu = 5$ and $\nu = 8$ each within one profile-log-likelihood unit of the peak, indicating a shallow-but-clean optimum that agrees with the $4$--$10$ range typically reported for equity-portfolio Student-t copulas in the risk-management literature.
+The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum profile log-likelihood ($6157.47$), and the neighbouring grid points $\nu = 5$ ($6143.37$) and $\nu = 8$ ($6148.37$) each within $15$ profile-log-likelihood units of the peak, indicating a shallow-but-clean optimum that agrees with the $4$--$10$ range typically reported for equity-portfolio Student-t copulas in the risk-management literature.
 
 \begin{figure}[h]
 \centering
@@ -1032,8 +1032,8 @@ Table~\ref{tab:block_bootstrap} reports the full seven-metric panel for the stat
 \toprule
 Window & KS & AD & Kurt & ACF-MAE & $W_1$ & $H$ & Cov \\
 \midrule
-IS  & 99.1 & 97.6 & 7.14 & 0.0555 & 0.084 & 0.0504 & 100.0 \\
-OoS & 97.7 & 94.6 & 4.03 & 0.0547 & 0.327 & 0.2394 & 100.0 \\
+IS  & 99.2 & 96.4 & 7.07 & 0.0568 & 0.092 & 0.0534 & 100.0 \\
+OoS & 87.5 & 86.4 & 5.34 & 0.0512 & 0.225 & 0.1570 & 86.9  \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1052,13 +1052,13 @@ Table~\ref{tab:bin_t} reports the full seven-metric panel for the Bin-T NJ varia
 \toprule
 Window & KS & AD & Kurt & ACF-MAE & $W_1$ & $H$ & Cov \\
 \midrule
-IS  & 95.5 & 90.3 & 27.28 & 0.0608 & 0.113 & 0.0919 & 84.8 \\
-OoS & 97.4 & 96.7 & 5.77  & 0.0587 & 0.298 & 0.2357 & 99.0 \\
+IS  & 95.4 & 92.1 & 26.18 & 0.0619 & 0.116 & 0.0929 & 89.9 \\
+OoS & 86.7 & 93.2 & 10.76 & 0.0538 & 0.177 & 0.1614 & 93.9 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The bin-conditional Student-t fit picks $\nu \approx 2.71$ for the two extreme bins (bins $1$ and $13$, corresponding to the lower and upper quantile tails of the IS distribution) and $\nu = 50$ (upper bracket) for the eleven central bins, which explains both the large in-sample simulated kurtosis ($27.28$) and the very thin-scale central bins ($\sigma$ $\sim$ $0.06$--$0.25$).
+The bin-conditional Student-t fit picks $\nu \approx 2.71$ for the two extreme bins (bins $1$ and $13$, corresponding to the lower and upper quantile tails of the IS distribution) and $\nu = 50$ (upper bracket) for the eleven central bins, which explains both the large in-sample simulated kurtosis ($26.18$) and the very thin-scale central bins ($\sigma$ $\sim$ $0.06$--$0.28$).
 
 
 
@@ -1112,14 +1112,14 @@ on byte-identical windows to the other generators.
 \begin{table}[h]
 \centering
 \small
-\caption{GRU deep-generative baseline on SPY (single-layer, hidden $H=32$, window $w=20$, $20$ epochs, Adam $\eta=10^{-3}$, $1{,}000$ paths, seed = 20260420). Final training NLL: $0.2101$.}
+\caption{GRU deep-generative baseline on SPY (single-layer, hidden $H=32$, window $w=20$, $20$ epochs, Adam $\eta=10^{-3}$, $1{,}000$ paths, seed = 20260420). Final training NLL: $0.2005$.}
 \label{tab:gru}
 \begin{tabular}{l cc c c c c c}
 \toprule
 Window & KS & AD & Kurt & ACF-MAE & $W_1$ & $H$ & Cov \\
 \midrule
-IS  & 2.1  & 2.7  & 2.79 & 0.0526 & 0.174 & 0.0906 & 51.5 \\
-OoS & 84.2 & 85.1 & 1.72 & 0.0538 & 0.372 & 0.2441 & 78.8 \\
+IS  & 18.1 & 13.7 & 2.85 & 0.0518 & 0.196 & 0.0966 & 37.4 \\
+OoS & 52.5 & 55.0 & 2.21 & 0.0500 & 0.293 & 0.1603 & 69.7 \\
 \bottomrule
 \end{tabular}
 \end{table}
