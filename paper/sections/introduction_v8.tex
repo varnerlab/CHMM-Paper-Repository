@@ -23,10 +23,10 @@ For multi-asset synthesis, we extend the univariate framework with a Single Inde
 On six SPY-member assets the copulas substantially outperform SIM on per-asset KS fidelity (median $96.0$--$97.8\%$ vs.\ $78.5\%$) and correlation-matrix reproduction (off-diagonal MAE $0.027$ Student-t, $0.031$ Gaussian, $0.076$ SIM), with the Student-t copula's profile MLE selecting $\nu^{*} = 6$ degrees of freedom.
 Option pricing is explicitly out of scope.
 
-\paragraph{Scope within the JDIQ fidelity/utility/privacy triad.}
-This paper sits inside the synthetic-data quality framework that distinguishes \emph{fidelity}, \emph{utility}, and \emph{privacy}.
-The seven-metric panel in Section~\ref{sec:metrics} is the fidelity contribution; the $1\%/5\%$ VaR and Expected-Shortfall back-test in Section~\ref{sec:utility} is the utility consumer that grounds the fidelity numbers in a consequence for risk measurement; and privacy is out of scope by construction, because the input series (daily SPY and cross-asset prices) are public market data with no individual-level information.
-We therefore report fidelity and utility end-to-end and explicitly flag privacy as not applicable.
+\paragraph{Scope.}
+The seven-metric panel in Section~\ref{sec:metrics} evaluates distributional, tail, and temporal fidelity of the generated return series.
+The $1\%/5\%$ VaR and Expected-Shortfall back-test in Section~\ref{sec:utility} grounds those fidelity numbers in a concrete downstream risk-measurement consumer.
+The input data are public daily U.S.\ equity prices, so no privacy or individual-level considerations apply.
 
 The remainder of the paper is organized as follows.
 Section~\ref{sec:related} positions the work against related literature.
