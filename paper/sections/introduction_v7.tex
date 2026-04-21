@@ -21,11 +21,11 @@ We diagnose the CHMM-t in-sample kurtosis over-correction ($17.34$ versus observ
 Univariate generalization is confirmed on NVDA, JNJ, JPM, AAPL, and QQQ for all three emission families; a quarterly walk-forward re-estimation on JPM recovers about $15$ percentage points of OoS KS that the fixed-IS fit loses to the 2024--2026 macroeconomic regime, supporting the stationarity explanation for that gap.
 For multi-asset synthesis, we extend the univariate framework with a Single Index Model \cite{sharpe1963simplified} and Gaussian / Student-t copulas \cite{sklar1959fonctions, demarta2005tcopula, mcneil2015quantitative}, both of which preserve each asset's fitted CHMM marginal.
 On six SPY-member assets the copulas substantially outperform SIM on per-asset KS fidelity (median $96.0$--$97.8\%$ vs.\ $78.5\%$) and correlation-matrix reproduction (off-diagonal MAE $0.027$ Student-t, $0.031$ Gaussian, $0.076$ SIM), with the Student-t copula's profile MLE selecting $\nu^{*} = 6$ degrees of freedom.
-Finally, applying the same pipeline to CBOE VIX log returns confirms that the framework transfers to the volatility measures most commonly used as risk inputs, in the same scope as the prior discrete-HMM paper~\citep{alswaidan2026hybrid}; option pricing is explicitly out of scope.
+Option pricing is explicitly out of scope.
 
 \paragraph{Scope within the JDIQ fidelity/utility/privacy triad.}
 This paper sits inside the synthetic-data quality framework that distinguishes \emph{fidelity}, \emph{utility}, and \emph{privacy}.
-The seven-metric panel in Section~\ref{sec:metrics} is the fidelity contribution; the $1\%/5\%$ VaR and Expected-Shortfall back-test in Section~\ref{sec:utility} is the utility consumer that grounds the fidelity numbers in a consequence for risk measurement; and privacy is out of scope by construction, because the input series (daily SPY, VIX, and cross-asset prices) are public market data with no individual-level information.
+The seven-metric panel in Section~\ref{sec:metrics} is the fidelity contribution; the $1\%/5\%$ VaR and Expected-Shortfall back-test in Section~\ref{sec:utility} is the utility consumer that grounds the fidelity numbers in a consequence for risk measurement; and privacy is out of scope by construction, because the input series (daily SPY and cross-asset prices) are public market data with no individual-level information.
 We therefore report fidelity and utility end-to-end and explicitly flag privacy as not applicable.
 
 The remainder of the paper is organized as follows.

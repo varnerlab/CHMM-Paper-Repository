@@ -3,7 +3,6 @@
 
 The primary single-asset analysis uses daily SPDR S\&P~500 ETF (SPY) prices from January~3, 2014 to January~3, 2024 (a ten-year training window, $T_{\text{IS}} = 2{,}516$), with the period from January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 572$) held out.
 Cross-asset generalization covers NVDA, JNJ, JPM, AAPL, and QQQ, spanning distinct risk profiles.
-The VIX extensions use daily closes over approximately 2006--2024 with the same 2025 out-of-sample window.
 For ticker $i$ and trading day $j$, the annualized excess growth rate is
 \begin{equation}
     G_{i,j} \equiv \frac{1}{\Delta t} \ln\!\left(\frac{P_{i,j}}{P_{i,j-1}}\right) - r_f,
@@ -176,10 +175,3 @@ which is the direct diagnostic for the Ryd\'{e}n et al.\ limitation.
 The cross-asset extension additionally reports the mean Frobenius norm and off-diagonal MAE of the simulated Pearson correlation matrix relative to the observed one.
 Appendix~\ref{sec:metric_details} gives the test statistic for each metric, the histogram binning used for Hellinger, and the path-by-path aggregation details.
 
-\subsection{Volatility-Measure Extension}
-\label{sec:vix_methods}
-
-To confirm that the pipeline generalizes beyond equities, we apply it to the CBOE CBOE VIX log-return series
-$R_t = \ln(X_t / X_{t-1})$ for $X = \text{VIX}$.
-Both series are fitted and evaluated under exactly the pipeline of Sections~\ref{sec:chmm_def}--\ref{sec:metrics}; only the input series changes.
-Volatility measures have positive skew, pronounced mean reversion, and heavier tails than equity returns, and they are direct consumers of scenario-style synthetic data for volatility-sensitive risk measurement; option pricing and implied-volatility-surface calibration are explicitly out of scope.
