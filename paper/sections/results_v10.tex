@@ -561,6 +561,63 @@ The following subsection shows that a Viterbi-decoded state-conditional quantile
 The correct reading of the SM ablation is operational: the SM variants should be used for unconditional VaR back-testing and TSTR vol forecasting, while the flat CHMM-t should be used for distributional matching.
 The three-way operational split that we formalise in Section~\ref{sec:discussion} separates these roles.
 
+\subsection{Regime-Conditional Value-at-Risk via Viterbi Decode}
+\label{sec:conditional_var}
+
+The Christoffersen-independence failures documented in Sections~\ref{sec:extended_evaluation} and~\ref{sec:sm_ablation} are not a property of any one generator: every row in the unconditional-VaR panel fails independence at both $1\%$ and $5\%$ on the $2024$-$2026$ OoS window.
+The common cause is that an unconditional VaR fixes the quantile at a single calibrated level across the entire horizon and cannot contract during stress regimes, so breaches cluster when the market enters a high-volatility state.
+A natural remedy is to make the VaR quantile regime-conditional.
+
+\paragraph{Estimator.}
+For each CHMM family we fit a flat CHMM on the in-sample window and then, at each OoS time $t$, run the Viterbi algorithm once on the full OoS series $(r_1, \ldots, r_T)$ under the fitted flat model to obtain a most-likely state sequence $(\hat{s}_1, \ldots, \hat{s}_T)$.
+The regime-conditional VaR at level $\alpha$ at time $t$ is then
+\begin{equation}
+\widehat{\mathrm{VaR}}^{\mathrm{cond}}_{t}(\alpha) \;=\; F^{-1}_{F_{\hat{s}_t}}(\alpha),
+\label{eq:conditional_var}
+\end{equation}
+where $F^{-1}_{F_k}$ is the inverse CDF of the state-$k$ emission law under family $F$.
+For CHMM-N this is $\mu_k + \sigma_k \Phi^{-1}(\alpha)$; for CHMM-t it is $\mu_k + \sigma_k t^{-1}_{\nu_k}(\alpha)$; for CHMM-L it is the Laplace $\alpha$-quantile.
+The breach indicator is $\mathbf{1}\{r_t \le \widehat{\mathrm{VaR}}^{\mathrm{cond}}_{t}(\alpha)\}$ and we apply Kupiec and Christoffersen likelihood-ratio tests to the resulting breach sequence.
+
+\paragraph{Headline: flat CHMM-t passes Kupiec and Christoffersen cleanly at $1\%$ and $5\%$.}
+Table~\ref{tab:conditional_var} compares the Track A unconditional LR statistics against the new conditional LR statistics for the three flat CHMM variants on the OoS window.
+Flat CHMM-t achieves a breach rate of $0.87\%$ at $1\%$ (Kupiec $\text{LR}_{\text{uc}} = 0.10$, $p = 0.76$) and $5.07\%$ at $5\%$ (Kupiec $\text{LR}_{\text{uc}} = 0.01$, $p = 0.94$).
+Both are clean passes.
+Crucially, on the independence side, Christoffersen $\text{LR}_{\text{ind}}$ drops from $15.53$ (unconditional) to $0.09$ at $1\%$ and from $5.26$ (unconditional) to $0.19$ at $5\%$: both are now far below the $\chi^2_1$ critical value of $3.84$.
+The breach-clustering structure of the $2024$-$2026$ OoS window that every unconditional row failed to capture is now accommodated.
+CHMM-N and CHMM-L each pass Christoffersen at $5\%$ (LR$_{\text{ind}}$ $= 1.39$ and $2.25$ respectively); CHMM-L also passes Christoffersen at $1\%$ ($\text{LR}_{\text{ind}} = 0.01$).
+CHMM-t is therefore the single CHMM family that passes both tests at both confidence levels simultaneously.
+
+\begin{table}[t]
+\centering
+\small
+\caption{\textbf{Regime-conditional VaR} (Pipeline A, SPY, OoS $T_{\text{OoS}} = 572$). Viterbi decode on the OoS series under each fitted flat CHMM, then $\alpha$-quantile of the decoded state's emission as $\widehat{\mathrm{VaR}}_t$. The ``unconditional (A8)'' rows reproduce the Kupiec and Christoffersen likelihood-ratio statistics discussed in Section~\ref{sec:extended_evaluation} for reference; bold entries mark passes (likelihood ratio below the $\chi^2_1$ critical value of $3.84$). Reproduced from \texttt{results/track\_c3/VaR\_conditional\_LR\_tests.txt}.}
+\label{tab:conditional_var}
+\begin{tabular}{lcrrrr|rrrr}
+\toprule
+ & & \multicolumn{4}{c}{$\alpha = 0.01$} & \multicolumn{4}{c}{$\alpha = 0.05$} \\
+Model & VaR kind & br\% & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $p_{\text{ind}}$ & br\% & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $p_{\text{ind}}$ \\
+\midrule
+\multirow{2}{*}{CHMM-N} & unconditional (A8) & $0.5$ & $1.58$ & $18.98$ & $< 0.01$ & $3.3$ & $3.83$ & $5.26$ & $0.02$ \\
+                        & conditional        & $0.7$ & $\mathbf{0.58}$ & $5.73$ & $0.02$ & $5.1$ & $\mathbf{0.01}$ & $\mathbf{1.39}$ & $0.24$ \\
+\multirow{2}{*}{\textbf{CHMM-t}} & unconditional (A8) & $0.7$ & $0.58$ & $15.53$ & $< 0.01$ & $3.3$ & $3.83$ & $5.26$ & $0.02$ \\
+                        & \textbf{conditional} & $\mathbf{0.9}$ & $\mathbf{0.10}$ & $\mathbf{0.09}$ & $\mathbf{0.77}$ & $\mathbf{5.1}$ & $\mathbf{0.01}$ & $\mathbf{0.19}$ & $\mathbf{0.66}$ \\
+\multirow{2}{*}{CHMM-L} & unconditional (A8) & $0.3$ & $3.26$ & $9.15$ & $< 0.01$ & $3.5$ & $3.03$ & $4.71$ & $0.03$ \\
+                        & conditional        & $0.3$ & $3.26$ & $\mathbf{0.01}$ & $\mathbf{0.91}$ & $3.3$ & $3.83$ & $\mathbf{2.25}$ & $0.13$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{SM-CHMM conditional VaR is non-trivial and we defer it.}
+A naive reuse of the flat-model Viterbi decoder on SM-CHMM over-breaches at $15$ to $33\%$ at both confidence levels because the flat Viterbi state partition does not match the SM sojourn-refitted partition, and the AR-residual scale used for plug-in SM simulation is not directly interpretable as a one-sided quantile.
+Two approximations (AR-residual scale and stationary within-state $\sigma$) both fail Kupiec by wide margins; interestingly the stationary-$\sigma$ SM-CHMM-t variant achieves a clean Christoffersen $\text{LR}_{\text{ind}}$ of $0.07$ at $1\%$, suggesting that the regime-persistence structure alone carries most of the independence fix, but the unconditional coverage remains broken until an SM-aware Viterbi decoder is implemented.
+We leave a proper SM-aware decoder to future work; the flat CHMM-t conditional VaR already closes the independence gap for the paper.
+
+\paragraph{Where this lands in the three-way operational split.}
+Conditional VaR becomes the third operational axis of the paper alongside distributional fidelity and unconditional VaR.
+Flat CHMM-t is the best generator on distributional fidelity (Section~\ref{sec:extended_evaluation}), MS-GARCH (Section~\ref{sec:benchmarks}) and the SM ablation are the best generators on unconditional VaR (Section~\ref{sec:sm_ablation}), and flat CHMM-t with Viterbi-decoded conditional VaR is the best generator on regime-conditional VaR (this subsection).
+Section~\ref{sec:discussion} crystallises this as an explicit operational recommendation.
+
 \subsection{Cross-Asset Univariate Generalization (Pipeline A)}
 \label{sec:cross_asset_univariate}
 
