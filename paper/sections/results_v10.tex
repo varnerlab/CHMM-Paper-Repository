@@ -486,6 +486,16 @@ The CHMM-t kurtosis overshoot therefore translates into a modestly widened uncer
 A useful out-of-sample check: the $2024$--$2026$ observed VaR$_{0.01}$ is $-5.51$ (a relatively calm tail compared to the IS average), and the three CHMMs bracket this value comfortably within their envelopes rather than over- or under-stating it.
 Figure~\ref{fig:var_es} visualizes the envelopes alongside the historical observations.
 
+\paragraph{Explicit Kupiec failure of the Discrete HMM baseline of \citet{alswaidan2026hybrid} at $5\%$ VaR.}
+\label{par:discrete_var_failure}%
+Table~\ref{tab:var_es} shows envelope coverage for the five continuous and non-parametric generators, but the discrete HMM baselines of \citet{alswaidan2026hybrid} are excluded from the envelope panel because their bin-centroid emission produces a point-mass VaR estimator whose envelope width is mechanically zero.
+The Kupiec and Christoffersen likelihood-ratio tests of Section~\ref{sec:extended_evaluation} are the appropriate diagnostic for those baselines, and they deliver a clear negative finding.
+Both Discrete NJ and Discrete WJ produce an OoS $5\%$ VaR breach rate of exactly $1.75\%$, roughly one-third of the $5\%$ target; the Kupiec likelihood-ratio statistic $\text{LR}_{\text{uc}} = 16.81$ rejects unconditional coverage with $p < 10^{-3}$, and the independence statistic $\text{LR}_{\text{ind}} = 13.22$ also rejects.
+The Poisson-jump augmentation does not remedy the failure: no-jump and with-jump variants produce the same breach rate to three significant figures because the quantization onto $K_{\text{disc}} = 13$ bin centroids dominates the effect of the jump process on the left tail.
+A risk manager who uses the prior-paper discrete generator to size a $5\%$ VaR position is therefore committed to holding materially more capital than the empirical breach process requires and would fail a standard VaR back-test if audited.
+The continuous CHMM family of the present paper eliminates this failure at the $5\%$ level (all three variants attain $\text{LR}_{\text{uc}} \le 3.83$, with CHMM-N, CHMM-t, and CHMM-L at $3.83$, $3.83$, and $3.03$ respectively) and the Viterbi-decoded conditional VaR of Section~\ref{sec:conditional_var} additionally passes Christoffersen independence.
+This is the clearest single-number contrast the present paper offers against the prior discrete-HMM pipeline.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.98\textwidth]{sections/figs/Fig-VaR-ES.pdf}
