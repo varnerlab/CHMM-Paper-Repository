@@ -129,6 +129,31 @@ When the fitted correlation matrix already captures the bulk of linear co-moveme
 The same ordering (copulas ahead of SIM, Student-t ahead of Gaussian) is reported by \citet{alswaidan2026hybrid} for discrete-HMM marginals.
 Our replication of that ordering with continuous CHMM marginals at $K = 18$ is evidence that the copula advantage is robust to the marginal family, which is a useful practical message: practitioners can swap in a richer marginal (CHMM, semi-HMM, or any other calibrated univariate model) without needing to revisit the choice of dependence structure.
 
+\paragraph{Three-Way Operational Split: Distribution, Unconditional VaR, Conditional VaR.}
+The extended evaluation (Section~\ref{sec:extended_evaluation}), the semi-Markov ablation (Section~\ref{sec:sm_ablation}), the conditional-VaR subsection (Section~\ref{sec:conditional_var}), and the new QuantGAN / diffusion / MS-GARCH rows (Section~\ref{sec:benchmarks}) together produce a three-way operational split that we crystallise here as an explicit recommendation for synthetic-data consumers.
+No single row dominates every axis; the right choice depends on the downstream question.
+
+First, for \emph{distributional fidelity}, where the question is \emph{"does the generator produce return windows that are indistinguishable from real on marginal and short-horizon joint metrics?"}, the recommendation is flat CHMM-t at $K = 18$.
+It attains the smallest Maximum Mean Discrepancy ($2.0 \times 10^{-5}$ in-sample), the discriminator Area Under the Curve closest to $0.5$ ($0.607 \pm 0.027$ in-sample), and the cleanest monotone aggregational kurtosis decay through the observed band.
+The window-diffusion baseline is competitive on the first two axes but collapses on global stylised-fact coverage ($\bar{pv}_{\text{OoS}} = 0.204$); flat CHMM-t remains the combined-panel winner.
+
+Second, for \emph{unconditional Value-at-Risk calibration}, where the question is \emph{"if the consumer pretends the breach process is unconditionally memoryless and only cares about the long-run breach rate, which generator has the best-calibrated Kupiec statistic?"}, the recommendation is either the two-regime Markov-switching GARCH of \citet{haas2004new} or the semi-Markov CHMM-N variant.
+Both tie at the top of the $1\%$ Kupiec likelihood ratio ($\text{LR}_{\text{uc}} = 0.01$, breach rate exactly $1.0\%$); MS-GARCH is slightly better at $5\%$ ($\text{LR}_{\text{uc}} = 0.26$, breach rate $4.5\%$) and SM-CHMM-N is slightly better on OoS TSTR HAR vol forecasting (QLIKE ratio $1.000$ against the real-trained benchmark).
+If the consumer also wants path-level interpretability through regime labels, SM-CHMM-N is preferable; if the consumer only needs a calibrated variance process, MS-GARCH is simpler and equally effective.
+
+Third, for \emph{regime-conditional Value-at-Risk}, where the question is \emph{"at each day $t$, given the inferred regime, is the VaR quantile calibrated so that breaches do not cluster?"}, the recommendation is flat CHMM-t with the Viterbi-decoded conditional VaR of Equation~\eqref{eq:conditional_var}.
+This is the only combination that simultaneously passes the Kupiec unconditional-coverage and the Christoffersen independence likelihood-ratio tests cleanly at both $\alpha = 0.01$ and $\alpha = 0.05$ on the $2024$-$2026$ OoS window ($\text{LR}_{\text{uc}} = 0.10 / 0.01$, $\text{LR}_{\text{ind}} = 0.09 / 0.19$).
+It does so using the same flat CHMM-t that wins the distributional axis: the regime-conditional quantile does not require a different fitted model, only a Viterbi decode at the time of evaluation.
+
+A consumer who needs all three axes simultaneously (stylised-fact-consistent paths for Monte Carlo scenario generation, a long-run calibrated VaR, and a clean conditional VaR for breach-independence testing) can therefore assemble a CHMM-based pipeline with flat CHMM-t as the generator of paths and of conditional VaR, and either the semi-Markov variant or the two-regime MS-GARCH as the long-run unconditional VaR calibration reference.
+The three rows complement rather than compete, and the underlying EM scaffold is shared, so the operational split does not add model-selection risk.
+
+\paragraph{Discrete HMM + Poisson-Jump Baseline is Overly Conservative on $5\%$ VaR.}
+A concrete negative finding against the prior-paper baseline of \citet{alswaidan2026hybrid} is worth calling out as a consequence of the extended evaluation.
+Both the no-jump and the Poisson-jump discrete variants produce a $5\%$ VaR breach rate of $1.75\%$ against a target of $5\%$ on the OoS window; the Kupiec likelihood ratio $\text{LR}_{\text{uc}} = 16.81$ with $p < 10^{-3}$ strongly rejects unconditional coverage.
+The discrete quantization therefore over-states tail risk at the $5\%$ level: a risk manager using the prior-paper discrete model to size $5\%$ VaR positions would be forced to hold materially more capital than the empirical breach process requires, without any corresponding statistical justification.
+The $1\%$ level is not as stark (both discrete variants pass Kupiec marginally with $\text{LR}_{\text{uc}} = 2.64$), but the $5\%$ failure is robust, is uncorrelated with the jump augmentation (no-jump and with-jump fail by the same margin), and reinforces the case that the continuous-emissions upgrade of the present paper is worth the added model complexity.
+
 \paragraph{Limitations.}
 Several limitations qualify the conclusions of this study:
 \begin{enumerate}
