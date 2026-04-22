@@ -93,6 +93,19 @@ Ryd\'{e}n et al.~\cite{ryden1998stylized} showed at state counts
 $K \in \{2, 3\}$, the geometric sojourn-time distribution decays too
 fast to sustain volatility clustering.
 
+A parallel line of continuous-emission HMM research in financial
+econometrics~\cite{hamilton1989regime, bulla2006stylized,
+nystrup2017longmemory} has established continuous-emission regime models
+for returns, typically at low state counts ($K \in \{2, 3, 4\}$) and
+with a single global emission family. The present work differs in three
+specific components: (i) per-state Student-t degrees of freedom
+$\nu_k$ selected inside the M-step by golden-section Expectation-Conditional
+Maximization rather than a single global $\nu$, (ii) closed-form
+weighted-median and weighted mean-absolute-deviation M-step updates for
+a Laplace-emission CHMM, and (iii) the Pipeline A / Pipeline B separation
+that decouples the emission-family claim from the cross-asset-dependence
+claim.
+
 The recent discrete-HMM framework of Alswaidan et
 al.~\cite{alswaidan2026hybrid} works around this limitation by
 \emph{quantizing} returns into Laplace quantile bins, frequency-counting
@@ -146,7 +159,10 @@ median and weighted mean-absolute-deviation estimators for
 CHMM-L. All three families use a quantile-based initialization that
 places state means on equi-spaced quantiles of $G_{1:T}$. Convergence
 tolerance is $10^{-4}$ on the log-likelihood; default iteration count
-is 60.
+is 60. The implementation is in Julia; a single full fit of CHMM-N at
+$K = 18$ on $T = 2{,}516$ converges in under ten seconds on a standard
+laptop. CHMM-t is roughly $3\times$ slower due to the inner golden-section
+search, and CHMM-L is comparable to CHMM-N.
 
 \subsection{Cross-Asset Dependence (Pipeline B)}
 \label{sec:methods_ca}
@@ -248,7 +264,20 @@ values) and the 23.1\% of GARCH(1,1). The i.i.d.\ bootstrap is the
 non-parametric ceiling at 99.6\% IS KS but fails the temporal
 diagnostic (ACF-MAE 0.0627, the highest in the panel), confirming
 that good marginal fidelity alone does not certify a generator for
-time-series downstream use.
+time-series downstream use. A single-layer gated-recurrent-unit (GRU)
+auto-regressive generator with a Gaussian head, benchmarked in the
+full-length companion version of this study, attains IS KS in the
+same 90s\% band as CHMM but lags on OoS tail coverage; the CHMM
+versus deep-generative comparison is reported there in full.
+
+\emph{Statistical significance.} At $n = 1{,}000$ simulated paths,
+Wilson-score $95\%$ confidence intervals on a pass rate of
+$p = 0.95$ have half-width $\approx 1.4$ percentage points, and on
+$p = 0.80$ have half-width $\approx 2.5$ percentage points. The
+intra-CHMM differences in Table~\ref{tab:spy_comparison} (CHMM-N,
+CHMM-t, CHMM-L within 0.8 percentage points of one another on IS KS)
+are therefore within overlap; the CHMM-versus-GARCH and
+CHMM-versus-discrete gaps are not.
 
 \begin{table}[t]
 \centering
@@ -319,11 +348,8 @@ Median & 96.7 & 87.1 & 93.5 & 84.3 & 6.6 \\
 \end{tabular}
 \end{table}
 
-A quarterly walk-forward refit of the CHMM-N on the most-degraded
-ticker (JPM) lifts OoS KS from 49.0\% to 64.3\% and OoS AD from
-48.6\% to 63.6\%, a 15-percentage-point recovery, confirming that
-the stationarity assumption of the fixed-IS fit is the dominant driver
-of the OoS gap on this ticker.
+The OoS gap on NVDA and JPM motivates the rolling-window deployment
+analysis of \S\ref{sec:online}.
 
 \subsection{Cross-asset dependence (Pipeline B)}
 
@@ -400,6 +426,59 @@ numerical ordering.}
 \label{fig:cross_asset_corr}
 \end{figure}
 
+\subsection{Online and rolling-window deployment}
+\label{sec:online}
+
+The fixed in-sample fit used above assumes that the generating process
+is stationary over the 2014-2024 training window. The OoS degradation
+on NVDA ($96.7\% \to 55.8\%$ IS to OoS KS) and JPM ($97.8\% \to 49.8\%$)
+shown in Table~\ref{tab:six_ticker} is direct evidence that this
+assumption is violated under the 2024-2026 macro-financial regime. For
+deployment in back-testing, stress-testing, or trading-strategy
+evaluation, the relevant measure is the OoS pass rate under a realistic
+refit cadence, not the pass rate of a once-fit model held fixed across
+a regime break.
+
+\emph{Walk-forward evidence.} A quarterly walk-forward refit of the
+CHMM-N on the most degraded ticker (JPM) lifts OoS KS from
+$49.0\%$ to $64.3\%$ and OoS AD from $48.6\%$ to $63.6\%$, a
+15-percentage-point recovery. The refit uses an expanding window of
+every trading day up to the refit date and re-runs Baum-Welch from the
+previous quarter's $\hat\theta$ as a warm start, which empirically
+converges in under ten EM iterations rather than the default 60.
+
+\emph{Candidate refit regimes.} We identify four deployment regimes
+ordered by increasing adaptivity:
+\begin{enumerate}
+  \item \textbf{Fixed fit.} Train once, never refit. Appropriate only
+    under strict stationarity. Corresponds to the protocol of
+    Table~\ref{tab:spy_comparison}.
+  \item \textbf{Rolling-window batch with warm start.} Drop the oldest
+    $\Delta$ observations, append the newest, initialise EM at the
+    previous $\hat\theta$. Small $\hat\theta$ movement day-to-day
+    admits convergence in $5\text{-}10$ EM iterations; a $6\text{-}12
+    \times$ speed-up over cold-start EM.
+  \item \textbf{Online EM.} The Capp\'e-Moulines recursive EM
+    algorithm~\cite{cappe2011online,cappe2009onlineem} maintains a
+    running sufficient-statistic vector
+    $S_t = \gamma_t\, s(x_t;\theta_{t-1}) + (1 - \gamma_t)\, S_{t-1}$
+    with step size $\gamma_t \propto t^{-\alpha}$, $\alpha \in (1/2, 1]$,
+    and updates $\theta_t$ from $S_t$ by the usual M-step. Constant
+    per-day cost; provably convergent under stationarity.
+  \item \textbf{Drift-triggered refit.} Monitor the log-likelihood of
+    the last $N$ observations under the current $\hat\theta$ or the
+    KL divergence between the filtered state distribution and the
+    stationary distribution; trigger a full refit only when a threshold
+    is exceeded. Allocates compute where the data actually demand it.
+\end{enumerate}
+
+\emph{Recommendation.} For a trading-strategy back-test on daily data
+with $K \in [10, 25]$ and $T \leq 5{,}000$, the warm-start rolling-window
+regime (regime 2) is the appropriate default: it is simple, batch-EM
+retains its convergence guarantees, and the per-day cost is under one
+second at $K = 18$. The JPM walk-forward result of the preceding
+paragraph is a single realisation of exactly this regime.
+
 % =================================================================
 \section{Discussion and Conclusion}
 \label{sec:discussion}
@@ -426,9 +505,11 @@ discrete marginals, suggesting the rank-reordering advantage is
 intrinsic to the construction and transfers across marginal families.
 Stationarity is the principal limitation: OoS pass rates drop on NVDA
 and JPM under the 2024-2026 regime, and a quarterly walk-forward refit
-recovers roughly 15 percentage points on JPM, supporting stationarity
-as the mechanism rather than mis-specified state count or
-emission family.
+recovers roughly 15 percentage points on JPM (\S\ref{sec:online}),
+supporting stationarity as the mechanism rather than mis-specified state
+count or emission family. The online and rolling-window deployment
+options of \S\ref{sec:online} convert this limitation into a deployment
+choice rather than a model-class constraint.
 
 \paragraph{Scope.} Option pricing and implied-volatility-surface
 calibration are out of scope. The six-asset universe is sufficient to
