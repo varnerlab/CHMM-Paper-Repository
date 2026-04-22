@@ -22,9 +22,7 @@ We diagnose the CHMM-t in-sample kurtosis over-correction ($17.34$ versus observ
 Univariate generalization is confirmed on NVDA, JNJ, JPM, AAPL, and QQQ for all three emission families; the OoS gap on NVDA and JPM under the 2024--2026 regime is acknowledged as a stationarity scope point and a quarterly refit diagnostic is reported in Appendix~\ref{sec:supplemental}, but is not a headline methodology of the paper.
 For multi-asset synthesis, we extend the univariate framework with a Single Index Model \cite{sharpe1963simplified} and Gaussian / Student-t copulas \cite{sklar1959fonctions, demarta2005tcopula, mcneil2015quantitative}, both of which preserve each asset's fitted CHMM marginal.
 On six SPY-member assets the copulas substantially outperform SIM on per-asset KS fidelity (median $96.0$--$97.8\%$ vs.\ $78.5\%$) and correlation-matrix reproduction (off-diagonal MAE $0.027$ Student-t, $0.031$ Gaussian, $0.076$ SIM), with the Student-t copula's profile MLE selecting $\nu^{*} = 6$ degrees of freedom.
-Finally, to demonstrate that the scaffold itself, rather than any equity-specific feature, is what drives the fidelity result, we apply the identical three-family CHMM machinery to the CBOE Volatility Index (VIX) under the log-level-increment transform used by the log-mean-reverting VIX process literature \cite{papanicolaou2014regime, dotsis2007empirical, kaeck2013stochastic}.
-The VIX generalization (Block~D, Section~\ref{sec:results_vix}) reproduces mean reversion, long-memory ACF of log-levels, and right-tail skew without any VIX-specific code changes, validating the scaffold at the algorithmic level and not merely at the return-series level.
-Option pricing, joint equity--VIX dynamics, and leverage-effect modelling are explicitly out of scope.
+Option pricing, volatility-index generalization, and leverage-effect modelling are explicitly out of scope and are deferred to future work.
 
 \paragraph{Scope.}
 The seven-metric panel in Section~\ref{sec:metrics} evaluates distributional, tail, and temporal fidelity of the generated return series.
