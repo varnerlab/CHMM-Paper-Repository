@@ -1,0 +1,164 @@
+The results demonstrate that a continuous Gaussian HMM trained via Baum-Welch at a single operating point ($K = 18$) achieves strong distributional fidelity (94.7\% IS KS, 84.0\% OoS KS, 100\% in-sample quantile coverage) while retaining competitive temporal fidelity (ACF-MAE of 0.0513), without requiring jump augmentation.
+The direct comparison against the discrete HMM of \citet{alswaidan2026hybrid}, reproduced in both no-jump and Poisson-jump variants within our pipeline, shows a two-orders-of-magnitude swing in IS KS pass rate (0\% $\to$ 94.7\%) attributable purely to the move from quantized to continuous emissions.
+The cross-asset extension then shows that the univariate CHMM composes cleanly with rank-based copula dependence to produce multi-asset paths that preserve every per-asset marginal while outperforming a classical factor baseline on correlation reproduction.
+The following paragraphs interpret the key findings, address the Ryd\'{e}n et al.\ consensus, unpack why the discrete baseline collapses on distributional metrics, discuss the dependence-model ordering, and identify limitations.
+Block~D (Section~\ref{sec:results_vix}) adds a volatility-index robustness check on $\log(\text{VIX})$: the identical CHMM scaffold, trained without any VIX-specific code change, reproduces the stationarity, slow-decay ACF, and skewed heavy-tailed first-difference profile that the log-mean-reverting VIX literature \cite{papanicolaou2014regime, kaeck2013stochastic, dotsis2007empirical} identifies as the canonical stylized-fact panel for a volatility-index generator.
+The implication for the thesis is that the high-fidelity result is an algorithmic-scaffold property of the CHMM, not an equity-return-series property; the same code that trains a return-series digital twin also trains a volatility-index digital twin at the cost of one extra $O(KT)$ EM pass.
+
+\paragraph{Resolving the Ryd\'{e}n et al.\ Limitation.}
+The most significant univariate finding is that the CHMM achieves ACF-MAE of $0.047$--$0.053$ on absolute returns across the entire $K \in \{3, 6, 9, 12, 15, 18, 21\}$ sweep, comparable to GARCH(1,1) ($0.049$), directly contradicting the widely cited conclusion of \citet{ryden1998stylized} that Gaussian HMMs cannot reproduce the slow decay of volatility autocorrelation.
+
+The mechanism behind this contradiction is straightforward.
+\citet{ryden1998stylized} tested only $K = 2$--$3$ states.
+With two states, the sojourn time in each state follows a geometric distribution with a single rate parameter, producing a single exponential decay mode.
+If that rate is fast (short mean sojourn), the ACF decays too quickly; if slow, the model spends too much time in one regime, distorting the marginal distribution.
+This tradeoff is unresolvable at $K = 2$.
+
+At $K \geq 3$ with quantile-based initialization, the Baum-Welch algorithm learns a transition matrix with heterogeneous diagonal entries.
+Central (low-volatility) states develop high self-transition probabilities because calm market conditions are persistent, while tail states maintain lower self-transition probabilities reflecting the transient nature of extreme events.
+The ACF of the resulting process is a weighted sum of $K$ exponential decay terms,
+\begin{equation}
+    \rho_{|G|}(\tau) \approx \sum_{k=1}^{K} w_k \, \lambda_k^{\tau},
+    \label{eq:acf_mixture}
+\end{equation}
+where $\lambda_k$ are the eigenvalues of $\mathbf{T}$ (excluding the unit eigenvalue) and $w_k$ are weights determined by the emission parameters.
+With $K \geq 6$ states spanning a range of persistence levels, this sum of exponentials can approximate the slow, quasi-hyperbolic ACF decay observed empirically.
+This is, in effect, the same mathematical mechanism by which hidden semi-Markov models \cite{bulla2006stylized} achieve ACF fidelity, but realized within the standard HMM framework through increased state resolution rather than modified sojourn-time distributions.
+
+It is notable that even $K = 3$ achieves ACF-MAE of 0.047 with our initialization, while \citet{ryden1998stylized} reported ACF failure at the same state count.
+The difference is the initialization: the quantile-based strategy ensures that each state captures a distinct volatility regime from the start, guiding the EM algorithm toward a solution with differentiated emission parameters.
+Random or uniform initialization, as was standard in the 1990s literature, increases the likelihood of convergence to degenerate local optima where states overlap, reducing the effective state resolution and reproducing the Ryd\'{e}n failure.
+
+To make this claim direct we replicated Ryd\'en et al.'s original $K = 2$ setting on the SPY in-sample series with both initialization strategies (Appendix~\ref{sec:ryden_replication}, Table~\ref{tab:ryden_init}).
+Two findings emerge from the $K = 2$ replication.
+First, the ACF-MAE on $|G_t|$ is essentially constant at $\approx 0.050$ across all initializations (quantile init, and five independent random-seed initializations), matching the ACF-MAE of the $K = 18$ CHMM-N reported in Section~\ref{sec:k_sensitivity}.
+This directly contradicts the original Ryd\'en verdict that Gaussian HMMs at low $K$ cannot recover volatility-clustering autocorrelation: on SPY, the CHMM-N at $K = 2$ recovers that clustering regardless of how the M-step is seeded.
+Second, the distributional fidelity at $K = 2$ is much weaker than at the selected $K = 18$ operating point ($71.8\%$ IS KS under quantile init, $67.9$--$72.2\%$ under random init) because two Gaussian components cannot tile the full multi-regime return distribution.
+The combination -- ACF-MAE small at $K = 2$, KS at $K = 2$ well below $K = 18$ -- clarifies that the Ryd\'en limitation is a \emph{distributional} low-$K$ artefact, not a \emph{temporal} one: with modern implementations the ACF is reproduced at any $K \geq 2$, while distributional fidelity is the dimension that actually requires moderate state resolution.
+
+\paragraph{OoS KS Pass Rates Against the Test-Power Ceiling.}
+The out-of-sample length $T_{\text{OoS}} = 572$ is long enough to give the two-sample KS test substantial power, but the test still does not reach $100\%$ on truly-correct generators; reported CHMM OoS pass rates must therefore be read against the rate achieved by a generator that is known to be correct.
+Appendix~\ref{sec:ks_power} reports a calibration of this ceiling: one thousand i.i.d.\ resamples of length $T_{\text{OoS}} = 572$ drawn from the in-sample return distribution itself, tested against the $2024$--$2026$ observed OoS series, pass KS at $90.0\%$ (seed-reproducible), and i.i.d.\ resamples of the OoS series itself pass at $100.0\%$.
+Against the same pipeline the Gaussian i.i.d.\ negative control is rejected at IS length with pass rate $0.0\%$, so the test retains ample power to refuse clearly-wrong generators.
+The CHMM-N / CHMM-t / CHMM-L OoS KS pass rates in the $80$--$84\%$ range sit below but close to the $90.0\%$ ceiling, so the OoS fidelity claim is genuine and not a low-power artefact on the positive side; the $36$--$58\%$ rates of the discrete NJ, WJ, and GARCH variants are now correctly rejected OoS as well under the longer $T = 572$ window.
+
+\paragraph{Why the Discrete Baselines Collapse on Distributional Metrics.}
+The discrete NJ and WJ variants reached IS KS pass rates of exactly 0.0\% despite sharing the underlying Markov chain structure with the CHMM.
+This is not a GARCH-style structural failure but a quantization artefact: with $K_{\text{disc}} = 13$ bins, every simulated return is constrained to one of 13 empirical bin centroids, and the two-sample KS test at length $T = 2{,}516$ has ample power to reject any 13-atom distribution against the observed continuous distribution at $\alpha = 0.05$.
+The Anderson--Darling test, which weights the tails more heavily, is similarly and correctly at 0.0\%.
+Under the new $T_{\text{OoS}} = 572$ window, the discrete NJ and WJ variants are correctly rejected OoS as well ($36$--$38\%$ pass rate), eliminating the low-power artefact that inflated the v6 OoS rates to the $85$--$96\%$ range.
+
+The Poisson jump augmentation (WJ) marginally worsens every IS metric relative to NJ.
+The intuition is that the jump process forcibly places mass at the extreme bin centroids, which \emph{increases} the distance between the simulated 13-atom distribution and the observed continuous one, even though qualitatively it produces more of the kurtosis-like behavior that the quantile-binning step has already stripped away.
+
+This is not a criticism of the prior paper's framework on its own terms.
+\citet{alswaidan2026hybrid} explicitly frame the jump mechanism as a corrective for the ACF-decay limitation within the discrete pipeline, evaluate against different metrics, and emphasize bin-conditional Student-$t$ emissions that mitigate the tail-loss issue we observe when bin-centroid simulation is used directly.
+What our comparison crystallizes is that, once the pipeline insists on continuous-return metrics (KS, AD, Wasserstein, Hellinger) evaluated on the simulated return series itself, the joint optimization of transitions and continuous emissions is essential: a matching transition matrix on top of a quantized emission surface is insufficient.
+
+\paragraph{The Temporal-Distributional Tradeoff.}
+The seven-model comparison reveals that no single model dominates all seven metrics, confirming the temporal-distributional tradeoff identified in the discrete framework of \citet{alswaidan2026hybrid}.
+GARCH(1,1) achieves the best ACF-MAE (0.049) among parametric models but catastrophically fails KS (23.1\%), while the bootstrap achieves near-perfect KS (99.6\%) but the worst ACF-MAE (0.063).
+
+The CHMM at $K = 18$ occupies a distinctive position in this tradeoff: it achieves IS KS of 94.7\% (CHMM-N and CHMM-t) to 95.2\% (CHMM-L) and IS AD of 86.5\%--93.2\% --- close to the non-parametric bootstrap --- while simultaneously matching GARCH's ACF-MAE to within 0.002--0.007.
+It also achieves the smallest Wasserstein-1 (0.102 under CHMM-t and CHMM-L) of any parametric model, competitive Hellinger (0.076--0.081), and 100\% in-sample quantile coverage.
+No other model in the comparison achieves this combination of distributional and temporal fidelity.
+
+\paragraph{Closing the Kurtosis Gap with Heavy-Tailed Emissions.}
+The Gaussian CHMM-N at $K = 18$ produces simulated excess kurtosis of 5.02 against an observed value of 7.68, a shortfall inherent to the Gaussian emission assumption: a Gaussian mixture's kurtosis is bounded by the variance of the component means relative to the component variances, and pushing tail states further out degrades the central fit.
+The CHMM-t and CHMM-L variants address this gap directly.
+CHMM-t's per-state Student-t emissions, with degrees-of-freedom updated inside the ECM M-step by one-dimensional search on the $Q$-function, produce tail states whose individual kurtosis can be arbitrarily high for $\nu_k$ close to the lower bracket, and the simulated mixture kurtosis consequently rises toward the observed value (see Section~\ref{sec:model_comparison}, Table~\ref{tab:model_comparison}).
+CHMM-L's Laplace emissions contribute per-component excess kurtosis of $3$ rather than $0$ without adding any shape parameter, and supply a parameter-efficient alternative route to heavier tails.
+Because all three variants share the same forward-backward scaffold, the KS/AD/ACF-MAE fidelity of CHMM-N is preserved or improved in both heavy-tailed variants; no retuning of $K$ or the transition structure is required.
+The AD pass rate, which weights tails more heavily than KS, shows the largest gain under CHMM-t and CHMM-L, confirming that the kurtosis gap was the residual source of AD failures.
+
+\paragraph{Diagnosing the CHMM-t In-Sample Kurtosis Overshoot.}
+The Student-t variant produces an in-sample mixture kurtosis of $17.34$ against an observed $7.68$: a $\sim 126\%$ overshoot.
+To diagnose the overshoot we report the per-state $\nu_k$ histogram for the $K = 18$ fit and a sensitivity study that lifts the ECM lower bracket $\nu_{\min}$ through $\{2.1, 2.5, 3.0, 4.0\}$ and into the Gaussian limit (Appendix~\ref{sec:nu_diagnostics}, Table~\ref{tab:nu_bracket}).
+Two facts emerge.
+First, the fit does \emph{not} pile $\nu_k$ against the lower bracket: the median $\nu_k$ sits at the upper bracket (50), and only two of the eighteen states ($\nu_2 = 2.19$, $\nu_4 = 2.10$) land near the lower edge.
+The mixture kurtosis is therefore driven by a small number of very heavy-tailed regimes, not by a systemic collapse of the ECM search to the lower bracket.
+Second, raising $\nu_{\min}$ from $2.1$ to $4.0$ does \emph{not} reduce the in-sample overshoot: the simulated kurtosis moves within the $12.3$--$15.1$ band across brackets, because the fit compensates for a lifted floor by shifting more posterior mass into the newly-recentred tail states.
+Only eliminating heavy tails entirely (the $\nu = \infty$ Gaussian limit) brings the simulated kurtosis down to $5.03$ (i.e.\ CHMM-N), confirming that the overshoot is a feature of the Student-t emission family at $K = 18$ rather than a lower-bracket artefact.
+We quantify the downstream consequence of this overshoot in Section~\ref{sec:utility}: CHMM-t's $5$th--$95$th percentile envelopes still bracket the observed historical VaR and ES at both $1\%$ and $5\%$ levels, so a risk consumer of CHMM-t incurs a widened uncertainty band rather than a systematic over-statement of tail risk.
+
+\paragraph{Why Jumps Are Unnecessary.}
+The discrete framework of \citet{alswaidan2026hybrid} required a Poisson jump-duration mechanism to force the model into tail states for empirically realistic durations.
+The continuous model achieves comparable ACF performance without this mechanism.
+The explanation lies in the richer parameterization of continuous emissions.
+
+In the discrete model, the emission distributions were estimated \emph{separately} from the transition matrix: observations were first binned into quantile-defined states, then the transition matrix was estimated by frequency counting, and finally within-bin Student-$t$ distributions were fitted.
+This three-stage procedure meant that the transition matrix was not optimized jointly with the emissions, so the learned $\mathbf{T}$ might not produce sufficient tail-state persistence, necessitating the jump mechanism as a corrective.
+
+In the continuous model, the Baum-Welch algorithm jointly optimizes $\mathbf{T}$ and $\{(\mu_k, \sigma_k)\}$.
+The emission parameters and transition probabilities co-adapt: if a tail state has a distinctive emission distribution that captures extreme observations well, the posterior $\gamma_t(k)$ will assign high probability to that state during extreme events, and the M-step will increase the self-transition probability $T_{kk}$ to reflect the clustering of such events.
+This joint optimization is the key advantage of the continuous approach: it allows the model to learn the persistence of tail regimes directly from data, rather than imposing it externally.
+
+The elimination of the jump mechanism removes two hyperparameters ($\epsilon$, $\lambda$) and the grid search required to calibrate them.
+For the discrete model, this grid search evaluated $6 \times 8 = 48$ parameter combinations, each requiring 200 simulated paths, for a total of 9{,}600 simulations per $K$ value.
+The continuous model requires only the Baum-Welch iterations (20--40 to convergence), making it substantially more computationally efficient.
+
+\paragraph{State Resolution and the Choice of $K = 18$.}
+The state resolution sweep shows that $K$ buys distributional accuracy in the 85--95\% range at low cost (ACF-MAE is nearly flat), and that the gains saturate at $K = 18$.
+$K = 21$ is not meaningfully better than $K = 18$ on any metric, while $K$ below 12 costs 3--6 percentage points of KS and AD pass rate relative to the $K = 18$ operating point.
+The practical recommendation is therefore: choose $K = 18$ for distributional-fidelity-sensitive applications (risk measurement, scenario generation), and $K = 3$ only when the downstream task is regime identification rather than synthetic generation.
+
+The stability of ACF-MAE across $K$ is theoretically predicted by the eigenvalue structure of $\mathbf{T}$.
+The dominant eigenvalue $\lambda_2$ (which controls the slowest ACF decay mode) depends on the maximum self-transition probability in the matrix.
+At all $K$ values, the Baum-Welch algorithm learns at least one high-persistence central state ($T_{kk} > 0.9$, typically), ensuring that $\lambda_2$ remains close to unity regardless of the total number of states.
+Additional states refine the distributional shape of the mixture but do not substantially affect the dominant eigenvalue.
+
+\paragraph{Cross-Asset Robustness and OoS Degradation on NVDA and JPM (Pipeline A).}
+The Pipeline A cross-asset univariate results confirm that the per-ticker independent CHMM generalizes to equities with diverse risk profiles (SPY: 95.5\% IS KS; NVDA: 96.7\%; JNJ: 99.4\%; AAPL: 98.3\%; QQQ: 95.5\%).
+At $K = 18$, the OoS degradation concentrates on NVDA (55.8\% OoS KS) and JPM (49.8\%), reflecting the stationarity assumption: the CHMM's transition matrix and emission parameters are fixed at their IS-estimated values, so regime shifts between the training and test periods, which may arise from sector-specific events (the AI-driven high-volatility regime for NVDA; the interest-rate-repricing cycle for financials) or macroeconomic shocks, are not captured.
+This degradation is not specific to the chosen state count --- the appendix sensitivity analysis shows the same pattern at every $K$ in the sweep --- so it is not a model-selection artefact but a stationarity artefact.
+A time-varying extension, either through rolling-window re-estimation or Bayesian online learning of the transition matrix, would likely improve OoS performance for such assets and is a natural next step.
+
+\paragraph{Why Copulas Beat SIM on Cross-Asset Fidelity (Pipeline B).}
+The Pipeline B extension tells a clean story: the two copula-based dependence models dominate the SIM factor baseline on both per-asset distributional fidelity (mean in-sample KS of 97.5\% and 96.2\% versus 72.1\%) and cross-sectional correlation reproduction (off-diagonal MAE $0.031$/$0.027$ versus $0.076$). All three dependence constructions sit on top of the same per-asset Pipeline A CHMM-N marginals; only the coupling differs.
+Two structural reasons explain this ordering.
+
+First, rank reordering preserves marginals by construction.
+The copula simulation procedure in Section~\ref{sec:cross_asset_methods} never touches the per-asset simulated values except to permute them: the simulated $\hat{G}_{j,1:T}^{(p)}$ is a permutation of the stand-alone CHMM path, so its empirical CDF coincides with the CHMM marginal.
+The SIM, in contrast, replaces each asset's CHMM draw with an affine combination $\alpha_j + \beta_j G_{m,t} + \eta_{j,t}$, whose distribution is a convolution of the market factor's distribution (a CHMM mixture, rescaled by $\beta_j$) with the empirical residual distribution.
+This convolution does not generally coincide with the original asset's marginal, and the mismatch grows with the distance of the asset's factor loading from unity and with the heaviness of its idiosyncratic residuals.
+JPM's 31.5\% IS KS under SIM is the most dramatic illustration: JPM's $\hat{\beta} = 1.22$ rescales an already-heavy SPY factor, and the re-injected residuals fatten the result beyond JPM's own fitted marginal.
+
+Second, the Student-t copula's advantage over the Gaussian copula on correlation reproduction ($0.027$ vs.\ $0.031$ off-diagonal MAE, and $0.184$ vs.\ $0.206$ Frobenius) is driven by its ability to represent joint tail dependence.
+The profile MLE selection of $\nu^* = 6$ is in the range ($4 \leq \nu \leq 10$) typically reported for equity-index portfolios in the risk management literature \cite{demarta2005tcopula, mcneil2015quantitative}, and implies a non-trivial lower/upper tail dependence coefficient.
+Concordant extreme moves across assets are substantially more likely under $C_t(\cdot ; \Sigma, \nu = 6)$ than under the Gaussian copula.
+When the fitted correlation matrix already captures the bulk of linear co-movement, the Student-t copula's additional tail-coupling shifts simulated correlation matrices closer to observed ones by injecting rarely-observed co-movement that the Gaussian copula never produces.
+
+The same ordering (copulas ahead of SIM, Student-t ahead of Gaussian) is reported by \citet{alswaidan2026hybrid} for discrete-HMM marginals.
+Our replication of that ordering with continuous CHMM marginals at $K = 18$ is evidence that the copula advantage is robust to the marginal family, which is a useful practical message: practitioners can swap in a richer marginal (CHMM, semi-HMM, or any other calibrated univariate model) without needing to revisit the choice of dependence structure.
+
+\paragraph{Limitations.}
+Several limitations qualify the conclusions of this study:
+\begin{enumerate}
+    \item \textit{Residual tail gap under CHMM-N.}
+    The Gaussian variant still underestimates excess kurtosis (5.02 simulated vs.\ 7.68 observed at $K = 18$); CHMM-t and CHMM-L close most of this gap within the same EM framework (Section~\ref{sec:model_comparison}), but generalized hyperbolic or $\alpha$-stable emissions would be the next step for applications that target the most extreme quantiles.
+
+    \item \textit{Emission symmetry.}
+    Each emission in CHMM-N, CHMM-t, and CHMM-L is symmetric about its state-specific location.
+    Empirical SPY returns exhibit negative skewness ($-0.75$); overall skewness is produced through asymmetric state occupancies and means, but within-regime asymmetry (e.g.\ through skew-$t$ or skew-Laplace emissions) is a natural next extension.
+
+    \item \textit{Stationarity assumption.}
+    The transition matrix and emission parameters are estimated from the full IS window and held constant.
+    Structural breaks (for example, the March 2020 COVID-19 crash) may not be adequately captured if the IS window does not contain comparable events.
+    This assumption is the primary candidate explanation for the $\sim 50$-percentage-point OoS KS drop on NVDA and JPM.
+
+    \item \textit{Single OoS window.}
+    The out-of-sample evaluation covers a single 572-day window (2024-01-04 through 2026-04-20).
+    A rolling or expanding-window evaluation would provide more robust generalization assessment and is the natural next step for the defensive-sector story.
+
+    \item \textit{KS test i.i.d.\ assumption.}
+    The two-sample KS test assumes i.i.d.\ observations, but each simulated path exhibits temporal dependence by construction.
+    Volatility clustering in the simulated paths may inflate pass rates slightly relative to a block-bootstrap calibration \cite{alswaidan2026hybrid}.
+
+    \item \textit{Small cross-asset universe.}
+    The cross-asset extension is evaluated on six representative tickers, which is sufficient to establish the SIM-versus-copula ordering but does not explore scaling to the 424-asset universe of \citet{alswaidan2026hybrid}.
+    A full-universe study would require vine copulas or factor copulas for computational tractability and is a natural extension.
+
+    \item \textit{Information-criterion vs.\ held-out selection.}
+    We combine the four information criteria (AIC, BIC, HQC, CAIC) of \citet{nguyen2018hidden} with the multi-metric fidelity score of Section~\ref{sec:model_selection}.
+    A held-out walk-forward log-likelihood procedure would provide a complementary, purely predictive check and is a natural refinement.
+\end{enumerate}
