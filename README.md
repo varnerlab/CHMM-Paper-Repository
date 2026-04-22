@@ -1,89 +1,96 @@
-# Continuous Hidden Markov Model with Jump-Diffusion for Equity Excess Growth Rate Dynamics
+# CHMM-paper
 
-This repository contains the code, data pipeline, and figure-generation scripts for the paper:
+LaTeX source, figures, and archived drafts for the working paper:
 
-> **Alswaidan A, Varner JD.** *Continuous Hidden Markov Models with Poisson Jump Processes for Financial Time Series.* Cornell University, 2026. *(In preparation)*
+> **Alswaidan A, Jin C, Varner JD.** *Continuous Hidden Markov Models as a Digital Twin for Equity Returns: Gaussian, Student-t, and Laplace Emissions Trained by EM, with Cross-Asset Copula Composition.* Cornell University, 2026. *(Working paper)*
+
+The companion code repository that produces every table and figure is [`CHMM-Model`](https://github.com/altashly1/CHMM-Model).
+
+## Authors
+
+- **Abdulrahman Alswaidan** — Robert Frederick Smith School of Chemical and Biomolecular Engineering, Cornell University, Ithaca, NY, USA. `aa2725@cornell.edu`
+- **Cade Jin** — Cornell University, Ithaca, NY, USA. `cj383@cornell.edu`
+- **Jeffrey D. Varner** — Robert Frederick Smith School of Chemical and Biomolecular Engineering, Cornell University, Ithaca, NY, USA. `jdv27@cornell.edu`
 
 ## Overview
-This work extends the discrete HMM framework in [Alswaidan & Varner (2026)](https://arxiv.org/abs/2603.10202) to **continuous Gaussian emissions** learned via the **Baum-Welch (Expectation-Maximization) algorithm**, eliminating the quantization error inherent in Laplace quantile binning. The Poisson jump-duration mechanism is preserved to enforce realistic tail-state dwell times and partially reproduce volatility clustering.
+
+This paper develops the Continuous Hidden Markov Model (CHMM) as a **finite-state, fully generative digital twin** for daily equity returns, and extends it to cross-asset dependence via rank-reordering copulas. The work builds on the discrete HMM framework of [Alswaidan & Varner (2026)](https://arxiv.org/abs/2603.10202) and replaces Laplace quantile binning with direct continuous-emission EM, eliminating quantization error.
 
 ### Key Contributions
-- **Baum-Welch training** of emission means, variances, and transition probabilities directly from continuous observations
-- **Quantile-based EM initialization** to avoid degenerate local optima
-- **State resolution analysis** across K = {3, 6, 9, 11, 13} hidden states
-- **Comprehensive validation** using KS/AD pass rates, Wasserstein-1, Hellinger distances, and ACF-MAE
+
+- **Three-family emission ablation** at $K = 18$: Gaussian (closed-form M-step), Student-t with per-state $\nu_k$ (ECM with golden-section search), Laplace (weighted-median M-step)
+- **Pipeline A (single-asset fidelity)**: CHMM vs. bootstrap, stationary-block bootstrap, Gaussian i.i.d., discrete HMM (NJ / WJ), GARCH(1,1), GRU+Gaussian head on SPY plus a six-ticker generalization panel
+- **Pipeline B (cross-asset dependence)**: Single Index Model vs. Gaussian copula vs. Student-t copula with $\nu^\ast$ by profile MLE, scored on per-asset fidelity and off-diagonal correlation reproduction
+- **Seven-metric fidelity panel**: KS, AD, kurtosis, ACF-MAE, Wasserstein-1, Hellinger, quantile-envelope coverage
+- **Quantile-based EM initialization**, log-space forward-backward numerics, and a convergence tolerance of $10^{-4}$ on the expected complete-data log-likelihood
 
 ## Repository Structure
 
 ```
 .
 |-- README.md
-|-- code/
-|   |-- spy-experiment/
-|   |   |-- Include.jl              # Entry point (loads dependencies + src)
-|   |   |-- Project.toml            # Julia dependencies
-|   |   |-- src/                    # Core model code
-|   |   |   |-- Types.jl
-|   |   |   |-- Files.jl
-|   |   |   |-- Factory.jl
-|   |   |   |-- Compute.jl
-|   |   |   |-- Visualize.jl
-|   |   |-- run_all_analysis.jl     # Full pipeline: trains + validates K={3,6,9,11,13}
-|   |   |-- data/                   # Training/test datasets (JLD2)
-|   |   |-- figs/                   # Pre-generated figures from analysis
-|   |   |-- results/                # Full results organized by K
-|   |   |   |-- SPY/
-|   |   |       |-- stylized_facts/ # Figure 1, Table 1
-|   |   |       |-- K3/             # All figures + metrics for K=3
-|   |   |       |-- K6/
-|   |   |       |-- K9/
-|   |   |       |-- K11/
-|   |   |       |-- K13/
-|   |   |       |-- Table-T1-State-Resolution-Sensitivity.txt
+|-- LICENSE
 |-- paper/
-|   |-- sections/
-|   |   |-- figs/                   # Paper-ready figures (PDF)
+|   |-- Paper_v9.tex               # Current manuscript source (2026-04 draft)
+|   |-- Paper_v9.pdf               # Compiled PDF
+|   |-- References_v9.bib          # Bibliography
+|   |-- sections/                  # Section-level figure assets (PDF)
+|   |-- CHANGELOG.md               # v7 / v8 / v9 revision history
+|   |-- Paper_v{7,8}.{tex,pdf,bib} # Archived prior drafts
+|-- code/
+|   |-- README.md
+|   |-- spy-experiment/            # Snapshot pointing at the CHMM-Model driver scripts
 ```
 
-## Reproducing Results
+Figures and tables are regenerated by the companion code repository
+[`CHMM-Model`](https://github.com/altashly1/CHMM-Model); the PDFs in
+`paper/sections/figs/` are copied from that repo's `figs/` after each rebuild.
 
-### Prerequisites
-- Julia 1.9+ (tested on 1.11.4 and 1.12.5)
-- All dependencies are managed via `Project.toml`
+## Building the Paper
 
-### Quick Start
+Requires TeX Live 2024+ with the `article` class, `natbib`, `amsmath`, `booktabs`, and `hyperref`.
 
 ```bash
-cd code/spy-experiment
-julia --project=. -e 'using Pkg; Pkg.instantiate()'
-julia --project=. run_all_analysis.jl
+cd paper
+pdflatex -interaction=nonstopmode Paper_v9.tex
+bibtex Paper_v9
+pdflatex -interaction=nonstopmode Paper_v9.tex
+pdflatex -interaction=nonstopmode Paper_v9.tex
 ```
 
-This runs the full analysis pipeline for K = {3, 6, 9, 11, 13} states:
-1. Trains continuous Gaussian HMMs via Baum-Welch
-2. Performs grid search over jump parameters (epsilon, lambda)
-3. Simulates 1,000 paths per model (NJ and WJ variants)
-4. Computes validation metrics (KS, AD, Wasserstein-1, Hellinger, ACF-MAE)
-5. Generates all figures (SVG + PDF)
+Target output: `paper/Paper_v9.pdf` with zero undefined citations or references.
 
-### Output
-Results are saved to `results/SPY/K{N}/` with:
-- 11 figures per K value (convergence, emissions, transition matrix, ACF, validation, etc.)
-- `Metrics.txt` with full IS/OoS validation table
-- `Emission-Parameters.txt` with learned regime parameters
+## Reproducing the Numbers
+
+All empirical results (Table 1 SPY model comparison, Table 2 six-ticker generalization, Table 3 Pipeline B cross-asset dependence, and Figures 1 and 2) are produced by
+[`CHMM-Model`](https://github.com/altashly1/CHMM-Model). From that repo's root:
+
+```bash
+julia --project=. -e 'using Pkg; Pkg.instantiate()'
+julia --project=. run_full_rebuild.jl
+```
+
+After regenerating, copy the resulting PDFs from `CHMM-Model/figs/` into
+`CHMM-paper/paper/sections/figs/` before rebuilding the manuscript.
 
 ## Related Repositories
-- [JumpHMM.jl](https://github.com/varnerlab/JumpHMM.jl) -- Core model package (discrete HMM)
-- [HMM-w-jumps-paper](https://github.com/varnerlab/HMM-w-jumps-paper) -- Discrete paper repository (arXiv:2603.10202)
-- [ContinuousJumpHMM (WIP)](https://github.com/altashly1/HMM-withJumps-WIP) -- Development repository
+
+- [`CHMM-Model`](https://github.com/altashly1/CHMM-Model) — Julia code that produces every table and figure in this paper
+- [`SM-CHMM-AR-Paper`](https://github.com/altashly1/SM-CHMM-AR-Paper) / [`SM-CHMM-AR-Model`](https://github.com/altashly1/SM-CHMM-AR-Model) — companion VIX / semi-Markov extension
+- [JumpHMM.jl](https://github.com/varnerlab/JumpHMM.jl) — discrete HMM core package from the prior paper
+- [HMM-w-jumps-paper](https://github.com/varnerlab/HMM-w-jumps-paper) — discrete paper repository (arXiv:2603.10202)
 
 ## Citation
+
 ```bibtex
-@article{alswaidan2026continuous,
-  title={Continuous Hidden Markov Models with Poisson Jump Processes for Financial Time Series},
-  author={Alswaidan, Abdulrahman and Varner, Jeffrey D.},
-  year={2026},
-  note={In preparation}
+@article{alswaidan2026chmm,
+  title   = {Continuous Hidden Markov Models as a Digital Twin for Equity Returns:
+             {Gaussian}, {Student}-t, and {Laplace} Emissions Trained by {EM},
+             with Cross-Asset Copula Composition},
+  author  = {Alswaidan, Abdulrahman and Jin, Cade and Varner, Jeffrey D.},
+  year    = {2026},
+  institution = {Cornell University},
+  note    = {Working paper}
 }
 ```
 
