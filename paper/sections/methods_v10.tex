@@ -132,6 +132,28 @@ Synthesis is auto-regressive: the trailing $w$ in-sample returns seed the recurr
 A $64$-step burn-in is discarded.
 The implementation is in Julia using \texttt{Flux.jl}~\cite{innes2018flux}; the trained model is callable in the same \texttt{simulate} interface as the CHMM and discrete-HMM models.
 
+\paragraph{QuantGAN convolutional Wasserstein baseline.}
+\label{sec:quantgan_methods}%
+We add a repo-native QuantGAN-style baseline in the sense of \citet{wiese2020quantgan}: a $1$D convolutional generator and critic trained with the Wasserstein loss of \citet{arjovsky2017wasserstein} and critic weight clipping on standardised SPY returns, with rolling-window training and stitched-window path generation at inference time.
+The window length is $W = 64$, the latent dimension is $8$, and training runs for $15$ epochs.
+The generator is implemented in \texttt{Flux.jl} and is callable in the same \texttt{simulate} interface as the other generators.
+This is a deliberately reproducible first-pass design: no temporal convolutional network, no gradient-penalty, no rolling-origin re-training; it functions as a deep-generative negative control that reviewers at generator-oriented venues expect to see.
+The row therefore strengthens rather than threatens the CHMM narrative in Section~\ref{sec:extended_evaluation}.
+
+\paragraph{Window-diffusion deep baseline.}
+\label{sec:diffusion_methods}%
+We add a DDPM-style window-diffusion baseline following \citet{ho2020denoising, rasul2021autoregressive}: a conditional denoising UNet trained to reverse a $T = 50$-step Gaussian noise schedule on standardised SPY return windows of length $W = 64$, with stitched-window generation at inference.
+Training runs for $18$ epochs with final denoising loss $0.736$.
+Like the QuantGAN row, this is a first-pass reproducible design; it is the strongest deep-generative row on local $20$-day window distributional metrics and the second-strongest overall row on MMD after the flat CHMM-t, and it serves as a distributional stress test for the CHMM family in Section~\ref{sec:extended_evaluation}.
+
+\paragraph{MS-GARCH variance-regime baseline.}
+\label{sec:msgarch_methods}%
+We add a two-regime Markov-switching GARCH(1,1) baseline in the sense of \citet{haas2004new}.
+The observable evolves as $G_t = \mu + \sigma_t z_t$ with a regime-specific variance recursion $\sigma_t^2(k) = \omega_k + \alpha_k (G_{t-1} - \mu)^2 + \beta_k \sigma_{t-1}^2(k)$, where $k \in \{1, 2\}$ is a hidden regime with transition matrix $P = \{p_{ij}\}$.
+We use the path-independent HMP 2004 recursion with a Hamilton filter for the regime likelihood and fit the eight parameters $(\mu, \omega_{1:2}, \alpha_{1:2}, \beta_{1:2}, p_{11}, p_{22})$ by Nelder-Mead maximum likelihood on the in-sample SPY window.
+The fitted calm regime has unconditional $\sigma \approx 0.97$ and expected sojourn $\sim 12$ days ($p_{11} = 0.914$); the stress regime has unconditional $\sigma \approx 12.67$ and expected sojourn $\sim 2$ days ($p_{22} = 0.547$).
+MS-GARCH provides the variance-regime reference point for the Kupiec VaR calibration discussion in Section~\ref{sec:extended_evaluation} and Section~\ref{sec:sm_ablation}: it attains best-in-panel unconditional VaR calibration at $1\%$ ($\text{LR}_{\text{uc}} = 0.01$, breach rate exactly $1.0\%$) and at $5\%$ ($\text{LR}_{\text{uc}} = 0.26$, breach rate $4.5\%$), and its $\text{LR}_{\text{ind}} = 4.79$ at $5\%$ is the closest to the $3.84$ independence-pass threshold of any unconditional-VaR row.
+
 \subsection{Cross-Asset Dependence (Pipeline B)}
 \label{sec:cross_asset_methods}
 

@@ -423,10 +423,20 @@ CHMM-t      & $0.872$ & $0.000$ & $0.000$ & $0.196$ & $0.228$ & $0.324$ & $0.661
 \end{tabular}
 \end{table}
 
+\paragraph{Where the added baselines land on the extended panel.}
+The QuantGAN deep-generative baseline of Section~\ref{sec:quantgan_methods} is a clear deep-generative negative control under the reproducible first-pass setup: $\text{MMD IS} = 6.4 \times 10^{-2}$, $\text{sig-MMD IS} = 1.29 \times 10^{-1}$, discriminator AUC IS $= 0.963$, and $\bar{pv}$ OoS $= 0.289$, all worse than every CHMM row.
+This matches the variance-collapse pattern that \citet{kwon2024can} and \citet{takahashi2019modeling} document for untuned GAN-based generators and shows that adding a GAN comparator to the panel strengthens rather than threatens the CHMM narrative.
+The window-diffusion baseline of Section~\ref{sec:diffusion_methods} is materially stronger: $\text{MMD IS} = 9.0 \times 10^{-5}$ (second-smallest after CHMM-t), $\text{sig-MMD IS} = 2.6 \times 10^{-3}$, and discriminator AUC IS $= 0.565$ (closer to $0.5$ than any CHMM row on IS windows).
+However, on the joint coverage axis diffusion collapses ($\bar{pv}_{\text{OoS}} = 0.204$) and on unconditional VaR it fails Christoffersen at both levels ($\text{LR}_{\text{ind}} = 16.4, 7.4$ at $1\%$, $5\%$ respectively).
+The correct reading is that diffusion wins local distributional matching on short windows but loses on global stylised-fact coverage and on risk calibration.
+The two-regime MS-GARCH baseline of Section~\ref{sec:msgarch_methods} is the variance-regime reference row: its MMD IS is $4.8 \times 10^{-4}$ (best non-CHMM, bracketing GARCH's bandwidth-heuristic artefact), its discriminator AUC IS is $0.734$ (better than single-regime GARCH at $0.766$, worse than every CHMM row), and its unconditional VaR calibration is best-in-panel at both $\alpha \in \{0.01, 0.05\}$.
+MS-GARCH's unconditional $\text{LR}_{\text{ind}} = 4.79$ at $5\%$ is also the closest any generator in the unconditional panel gets to the independence-pass threshold, but it still fails independence and is superseded by the Viterbi-decoded flat CHMM-t conditional VaR in Section~\ref{sec:conditional_var}.
+
 \paragraph{Summary of the extended panel.}
 CHMM-t sets the distributional-fidelity frontier: smallest MMD, discriminator AUC closest to $0.5$, and cleanest monotone aggregational kurtosis decay.
 CHMM-N is the best leverage-effect generator on OoS, and CHMM-L is the best joint $p$-value coverage generator on OoS.
 The single-regime GARCH baseline performs competitively on aggregational kurtosis $p$-values (because its simulated tails are wide and envelop the observed point), but fails the leverage and joint-coverage axes.
+MS-GARCH is the best unconditional-VaR generator and the window-diffusion baseline is the best local-window deep-generative row, but neither displaces flat CHMM-t on the combined distributional panel.
 The discrete HMM baselines of \citet{alswaidan2026hybrid} fail the discriminator AUC, leverage, aggregational kurtosis, and joint $p$-value axes, and additionally fail the $5\%$ Kupiec VaR test as noted above.
 
 \subsection{Utility: VaR and Expected-Shortfall Back-Test}
