@@ -96,7 +96,7 @@ The Laplace generator achieved 98.9\% KS and 97.2\% AD in-sample, demonstrating 
 However, its simulated kurtosis (2.96) fell well short of the observed 7.68, and as an i.i.d.\ generator it produced flat ACF profiles (ACF-MAE $= 0.0627$, comparable to the i.i.d.\ bootstrap).
 The 77.8\% in-sample quantile coverage indicates that the Laplace distribution's fixed tail decay rate cannot fully envelop the observed quantile range.
 
-\paragraph{Discrete HMM --- No Jumps (NJ) and With Jumps (WJ).}
+\paragraph{Discrete HMM: No Jumps (NJ) and With Jumps (WJ).}
 Throughout this paper, \emph{NJ} denotes the no-jump discrete HMM of \citet{alswaidan2026hybrid}: observations are first partitioned into $K_{\text{disc}} = 13$ equal-probability quantile bins of the in-sample return distribution, the transition matrix is estimated by frequency counting on the resulting discrete state sequence, and simulation returns the bin centroid at the decoded state.
 \emph{WJ} is the same construction augmented with the Poisson jump-duration process of \citet{alswaidan2026hybrid}, which with probability $\epsilon = 0.01$ forces a residence in the tail bins for $\text{Poisson}(\lambda = 3)$ steps.
 Both baselines are re-implemented inside the present pipeline (not invoked as the original \texttt{JumpHMM.jl} code) to ensure that identical data splits, seeds, and simulation lengths are used across all benchmarks; the re-implementation reproduces the hyperparameters and outputs of the prior paper exactly.
@@ -129,9 +129,9 @@ In-sample quantile coverage was only 50.5\%.
 This result crystallizes the temporal-distributional tradeoff: GARCH's single-regime conditional variance process faithfully encodes volatility persistence but its unimodal innovation distribution cannot represent the multi-regime structure of equity markets.
 
 \paragraph{GRU (Deep-Generative Baseline).}
-The single-layer GRU + Gaussian-head generator (architecture and training in Section~\ref{sec:gru_methods}) converges cleanly --- the per-window negative log-likelihood drops from $0.340$ at epoch $1$ to $0.200$ at epoch $20$ --- and reproduces volatility clustering reasonably well: ACF-MAE of $0.0518$ on $|G_t|$ is within $0.001$ of CHMM-N ($0.0513$) and within $0.003$ of GARCH ($0.0492$).
+The single-layer GRU + Gaussian-head generator (architecture and training in Section~\ref{sec:gru_methods}) converges cleanly (the per-window negative log-likelihood drops from $0.340$ at epoch $1$ to $0.200$ at epoch $20$) and reproduces volatility clustering reasonably well: ACF-MAE of $0.0518$ on $|G_t|$ is within $0.001$ of CHMM-N ($0.0513$) and within $0.003$ of GARCH ($0.0492$).
 On distributional fidelity the GRU collapses, however: in-sample KS pass rate $18.1\%$, AD pass rate $13.7\%$, simulated kurtosis $2.85$ against an observed $7.68$, $W_1 = 0.196$, $H = 0.0966$, and quantile coverage $37.4\%$.
-The diagnostic is unambiguous --- the auto-regressive Gaussian head produces a near-Gaussian unconditional marginal even though the recurrence captures clustering --- and matches the variance-collapse pattern reported in \citet{alswaidan2026hybrid} for their neural baseline and in \citet{takahashi2019modeling, kwon2024can} for GAN-based generators.
+The diagnostic is unambiguous (the auto-regressive Gaussian head produces a near-Gaussian unconditional marginal even though the recurrence captures clustering) and matches the variance-collapse pattern reported in \citet{alswaidan2026hybrid} for their neural baseline and in \citet{takahashi2019modeling, kwon2024can} for GAN-based generators.
 The OoS KS rate of $52.5\%$ (AD $55.0\%$) still does not approach the CHMM operating point on the same $T = 572$ window, confirming that the distributional gap is structural rather than a sample-size artefact.
 The takeaway for the comparison is that adding a deep-generative row does not displace the CHMM operating point: among parametric and deep generators, the CHMM-N is the only one that achieves both $\geq 85\%$ IS KS \emph{and} ACF-MAE within $0.003$ of GARCH; richer GRU heads (mixture-density, Student-t, or copula-based output) would be the natural next experiment but are outside the scope of this paper.
 
@@ -233,7 +233,7 @@ The same pattern holds for AD (79.2\% $\to$ 88.3\% IS and 84.9\% $\to$ 88.7\% Oo
 This saturation is consistent with an upper bound imposed by the Gaussian emission family: once the mixture has enough components to resolve the bulk and near-tail regions, additional components do not recover the extreme tails that remain light under any Gaussian mixture.
 
 \paragraph{Temporal Fidelity Is Flat Across the Sweep.}
-ACF-MAE was 0.0453 ($K=3$) to 0.0505 ($K=18$) and 0.0503 ($K=21$) for CHMM-N --- a total swing of 0.005 across the entire sweep.
+ACF-MAE was 0.0453 ($K=3$) to 0.0505 ($K=18$) and 0.0503 ($K=21$) for CHMM-N, a total swing of 0.005 across the entire sweep.
 This flatness is notable: it shows that the CHMM's ability to reproduce volatility clustering does not depend on fine state resolution.
 Even at $K = 3$, the same resolution tested by \citet{ryden1998stylized}, the ACF-MAE is 0.0453, comparable to GARCH(1,1) at 0.047.
 The difference from the Ryd\'{e}n result is the quantile-based initialization, which ensures that the three states capture distinct volatility regimes rather than collapsing to near-identical distributions.
@@ -354,7 +354,7 @@ We return to this finding in Section~\ref{sec:discussion}, where we argue that i
 
 \paragraph{Walk-Forward Rolling-Window Re-Estimation on JPM and JNJ.}
 To test the stationarity explanation directly, we refit the CHMM-N at $K = 18$ quarterly (every $63$ trading days) across the $2024$--$2026$ OoS window, feeding the realized returns of each completed quarter back into the training set before the next refit (Appendix~\ref{sec:walk_forward}, Table~\ref{tab:walk_forward}).
-The rolling-window fit helps differentially: JNJ moves from $94.0\%$ to $94.9\%$ OoS KS (a modest gain, indicating that JNJ's OoS distribution was already close to the IS fit), whereas JPM moves from $49.0\%$ to $64.3\%$ OoS KS and from $48.6\%$ to $63.6\%$ OoS AD --- a substantial $\sim 15$ percentage-point recovery.
+The rolling-window fit helps differentially: JNJ moves from $94.0\%$ to $94.9\%$ OoS KS (a modest gain, indicating that JNJ's OoS distribution was already close to the IS fit), whereas JPM moves from $49.0\%$ to $64.3\%$ OoS KS and from $48.6\%$ to $63.6\%$ OoS AD, a substantial $\sim 15$ percentage-point recovery.
 The JPM recovery directly supports the stationarity explanation for the financial-sector OoS gap: once the CHMM can absorb within-OoS regime shifts through quarterly refits, most of the OoS KS gap closes.
 The residual $\sim 35$ percentage-point gap that remains on JPM is evidence of a more fundamental distributional shift in the 2024--2026 period that a richer extension (time-varying emission scales, or a Bayesian online transition-matrix update) would be needed to fully close.
 

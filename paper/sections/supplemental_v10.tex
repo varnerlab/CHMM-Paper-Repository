@@ -673,7 +673,7 @@ QQQ  & $0.047$   & $1.122$ & $0.840$ \\
 This section provides detailed pseudocode for the main algorithms used in this study.
 Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all three emission families.
 It makes explicit the \emph{shared scaffold} (quantile-based initialization, log-space forward-backward, transition update) and the three \emph{family-specific branches} (Gaussian M-step for CHMM-N, ECM with one-dimensional golden-section $\nu$-search for CHMM-t, closed-form weighted-median + weighted-MAD for CHMM-L); the branch points are lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep}.
-Visualizing the three variants as a single algorithm with three M-step branches makes the architectural contribution of the paper --- one EM engine, three interchangeable emission families --- immediate from the pseudocode.
+Visualizing the three variants as a single algorithm with three M-step branches makes the architectural contribution of the paper (one EM engine, three interchangeable emission families) immediate from the pseudocode.
 Algorithm~\ref{alg:viterbi} presents the Viterbi algorithm for decoding the most likely hidden state sequence.
 Algorithm~\ref{alg:chmm_simulate} describes the CHMM simulation procedure for generating synthetic return paths.
 Algorithm~\ref{alg:copula_sim} describes the cross-asset rank-reordering simulator for copula-based multi-asset synthesis.
@@ -705,13 +705,13 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \STATE \textbf{EM Loop.}
 \FOR{$n = 1$ to $\texttt{max\_iter}$}
 
-    \STATE \textbf{E-Step --- per-family emission log-likelihood.} \label{line:emit}
+    \STATE \textbf{E-Step, per-family emission log-likelihood.} \label{line:emit}
     \STATE \textbf{switch} $F$
     \STATE \quad $F = \mathcal{N}$: $\log B_{t,k} \leftarrow \log \mathcal{N}(O_t \mid \mu_k, \sigma_k^2)$.
     \STATE \quad $F = t$: $\log B_{t,k} \leftarrow \log t_{\nu_k}(O_t; \mu_k, \sigma_k)$.
     \STATE \quad $F = L$: $\log B_{t,k} \leftarrow -\log(2 b_k) - |O_t - \mu_k|/b_k$.
 
-    \STATE \textbf{E-Step --- shared log-space forward-backward.}
+    \STATE \textbf{E-Step, shared log-space forward-backward.}
     \STATE $\log \alpha_1(k) \leftarrow \log \pi_k + \log B_{1,k}$.
     \FOR{$t = 2$ to $T$, $j = 1$ to $K$}
         \STATE $\log \alpha_t(j) \leftarrow \underset{i}{\text{logsumexp}}\!\left(\log \alpha_{t-1}(i) + \log T_{ij}\right) + \log B_{t,j}$.
@@ -724,7 +724,7 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 
     \STATE \textbf{Shared transition update.} $T_{ij} \leftarrow \sum_t \xi_t(i,j) \;/\; \sum_t \gamma_t(i)$; $\pi_k \leftarrow \gamma_1(k)$.
 
-    \STATE \textbf{M-Step --- per-family emission update.} \label{line:mstep}
+    \STATE \textbf{M-Step, per-family emission update.} \label{line:mstep}
     \STATE \textbf{switch} $F$
     \STATE \quad $F = \mathcal{N}$ \COMMENT{classical Baum-Welch \citep{baum1970maximization}.}
     \STATE \qquad $\mu_k \leftarrow \sum_t \gamma_t(k)\, O_t / \sum_t \gamma_t(k)$.

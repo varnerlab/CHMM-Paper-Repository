@@ -57,7 +57,7 @@ What our comparison crystallizes is that, once the pipeline insists on continuou
 The seven-model comparison reveals that no single model dominates all seven metrics, confirming the temporal-distributional tradeoff identified in the discrete framework of \citet{alswaidan2026hybrid}.
 GARCH(1,1) achieves the best ACF-MAE (0.049) among parametric models but catastrophically fails KS (23.1\%), while the bootstrap achieves near-perfect KS (99.6\%) but the worst ACF-MAE (0.063).
 
-The CHMM at $K = 18$ occupies a distinctive position in this tradeoff: it achieves IS KS of 94.7\% (CHMM-N and CHMM-t) to 95.2\% (CHMM-L) and IS AD of 86.5\%--93.2\% --- close to the non-parametric bootstrap --- while simultaneously matching GARCH's ACF-MAE to within 0.002--0.007.
+The CHMM at $K = 18$ occupies a distinctive position in this tradeoff: it achieves IS KS of 94.7\% (CHMM-N and CHMM-t) to 95.2\% (CHMM-L) and IS AD of 86.5\% to 93.2\%, close to the non-parametric bootstrap, while simultaneously matching GARCH's ACF-MAE to within 0.002 to 0.007.
 It also achieves the smallest Wasserstein-1 (0.102 under CHMM-t and CHMM-L) of any parametric model, competitive Hellinger (0.076--0.081), and 100\% in-sample quantile coverage.
 No other model in the comparison achieves this combination of distributional and temporal fidelity.
 
@@ -108,7 +108,7 @@ Additional states refine the distributional shape of the mixture but do not subs
 \paragraph{Cross-Asset Robustness and OoS Degradation on NVDA and JPM (Pipeline A).}
 The Pipeline A cross-asset univariate results confirm that the per-ticker independent CHMM generalizes to equities with diverse risk profiles (SPY: 95.5\% IS KS; NVDA: 96.7\%; JNJ: 99.4\%; AAPL: 98.3\%; QQQ: 95.5\%).
 At $K = 18$, the OoS degradation concentrates on NVDA (55.8\% OoS KS) and JPM (49.8\%), reflecting the stationarity assumption: the CHMM's transition matrix and emission parameters are fixed at their IS-estimated values, so regime shifts between the training and test periods, which may arise from sector-specific events (the AI-driven high-volatility regime for NVDA; the interest-rate-repricing cycle for financials) or macroeconomic shocks, are not captured.
-This degradation is not specific to the chosen state count --- the appendix sensitivity analysis shows the same pattern at every $K$ in the sweep --- so it is not a model-selection artefact but a stationarity artefact.
+This degradation is not specific to the chosen state count (the appendix sensitivity analysis shows the same pattern at every $K$ in the sweep), so it is not a model-selection artefact but a stationarity artefact.
 A time-varying extension, either through rolling-window re-estimation or Bayesian online learning of the transition matrix, would likely improve OoS performance for such assets and is a natural next step.
 
 \paragraph{Why Copulas Beat SIM on Cross-Asset Fidelity (Pipeline B).}
