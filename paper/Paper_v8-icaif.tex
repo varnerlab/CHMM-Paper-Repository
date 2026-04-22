@@ -32,22 +32,19 @@ We train a continuous hidden Markov model (CHMM) by Baum-Welch /
 Expectation-Conditional-Maximization on raw annualized excess log returns and
 show that, at a single moderate state resolution ($K = 18$), it reproduces all
 three canonical stylized facts of equity returns (heavy tails, negligible
-linear autocorrelation, persistent volatility clustering) without the Poisson
-jump mechanism required by the recent discrete-HMM baseline of
-Alswaidan et al. Three emission families are compared under identical
-training: Gaussian (CHMM-N), Student-t with per-state degrees of freedom
-(CHMM-t), and Laplace (CHMM-L). On 2014-2024 SPY in-sample (T = 2{,}516) and
-2024-2026 out-of-sample (T = 572) data, all three CHMM variants reach KS pass
-rates above 94\% in-sample and 80\% out-of-sample, versus 0\% for both
-discrete-HMM variants of the prior paper, 23\% for GARCH(1,1), and 99.6\% for
-an i.i.d.\ bootstrap ceiling. The rank-reordering copula extension composes
-cleanly on top of the per-asset CHMM marginals: across six tickers the
-Student-t copula (profile-MLE $\nu^* = 6$) reduces off-diagonal correlation
-MAE to 0.027 against 0.076 for a Single Index Model baseline, while
-preserving every per-asset marginal exactly. The framework separates cleanly
-into \emph{Pipeline A} (per-ticker independent CHMM) and \emph{Pipeline B}
-(cross-asset dependence on Pipeline A marginals), reported through
-self-contained tables and figures.
+linear autocorrelation, persistent volatility clustering) without any jump
+mechanism or return-space discretization. Three emission families are
+compared under identical training: Gaussian (CHMM-N), Student-t with
+per-state degrees of freedom (CHMM-t), and Laplace (CHMM-L). On 2014-2024
+SPY in-sample ($T = 2{,}516$) and 2024-2026 out-of-sample ($T = 572$) data,
+all three CHMM variants reach Kolmogorov-Smirnov pass rates above $94\%$
+in-sample and $80\%$ out-of-sample, outperforming GARCH(1,1), discrete-HMM,
+and recurrent deep-generative baselines across seven distributional and
+autocorrelation metrics. A rank-reordering copula extension composes on top
+of the per-asset CHMM marginals: across six tickers the Student-t copula
+(profile-MLE $\nu^{*} = 6$) reduces off-diagonal correlation MAE to $0.027$
+against $0.076$ for a Single Index Model baseline while preserving every
+per-asset marginal exactly.
 \end{abstract}
 
 %% ACM CCS concepts (2012 taxonomy).
