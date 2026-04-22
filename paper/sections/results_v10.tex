@@ -483,6 +483,84 @@ Figure~\ref{fig:var_es} visualizes the envelopes alongside the historical observ
 \label{fig:var_es}
 \end{figure}
 
+\subsection{Semi-Markov Ablation: Heavy-Tailed Sojourn Distributions}
+\label{sec:sm_ablation}
+
+The flat CHMM assumes geometric sojourn times in every state, an implicit by-product of the Markov transition matrix.
+Empirically, equity returns exhibit crisis-regime sojourn tails that are heavier than geometric: the bottom-$3$ states of the CHMM partition, which hold the March $2020$ crash and the $2022$ rate-cycle stress, persist longer in the Viterbi decode than a geometric sojourn would predict.
+To quantify the effect of relaxing the geometric-sojourn assumption we port the explicit-duration forward-backward machinery of \citet{yu2010hidden} from our companion volatility-index work and fit a semi-Markov variant of each CHMM emission family.
+Let $\mathrm{SM\text{-}CHMM\text{-}}F$ denote the semi-Markov extension of the corresponding flat CHMM-$F$ for $F \in \{\mathcal{N}, t, L\}$.
+
+\paragraph{Plug-in estimator and per-state sojourn family selection.}
+We fit the SM variants with the plug-in estimator: given the flat CHMM transition matrix and emission parameters, we (i) decode the most-likely state sequence under Viterbi, (ii) extract the empirical run-length distribution for each state, and (iii) fit one of a negative-binomial, geometric, or discrete truncated Pareto to each state's run-lengths by AIC, after which the SM generator samples sojourn times from the fitted family.
+The AIC-selected family per state is reported in Table~\ref{tab:sm_sojourn}: for all three emission families, $17$ of the $18$ states select a Pareto sojourn and $1$ selects a negative binomial.
+This matches the finding of the companion volatility-index paper, where Pareto sojourns dominated on daily log-$\mathrm{VIX}$: the heavy-tailed sojourn pattern is not specific to vol-index series but holds on equity returns at moderate state resolution.
+
+\begin{table}[t]
+\centering
+\small
+\caption{\textbf{Per-state sojourn family selected by AIC} for each SM-CHMM variant on SPY $K = 18$. Pareto sojourns dominate under all three emission families. Reproduced from \texttt{results/track\_c1/sojourn\_summary.txt}.}
+\label{tab:sm_sojourn}
+\begin{tabular}{lccc}
+\toprule
+Model & Pareto states & Negative-binomial states & Geometric states \\
+\midrule
+SM-CHMM-N & $17$ & $1$ & $0$ \\
+SM-CHMM-t & $17$ & $1$ & $0$ \\
+SM-CHMM-L & $17$ & $1$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Risk-calibration gain: cleaner unconditional $1\%$ and $5\%$ VaR Kupiec.}
+Table~\ref{tab:sm_var} reproduces the Kupiec and Christoffersen LR tests on the OoS window for the three flat CHMM variants and their SM counterparts.
+At $1\%$ VaR, SM-CHMM-N drops $\text{LR}_{\text{uc}}$ from $1.58$ (flat) to $0.01$ (a breach rate of exactly $1.0\%$ against a target of $1.0\%$), SM-CHMM-t drops from $0.58$ to $0.10$, and SM-CHMM-L is unchanged at $3.26$.
+At $5\%$ VaR, SM-CHMM-N drops $\text{LR}_{\text{uc}}$ from $3.83$ (marginal pass at the $3.84$ critical value) to $0.82$ (clean pass, breach rate $4.2\%$), SM-CHMM-t drops from $3.83$ to $1.74$ (clean pass, breach rate $3.8\%$), and SM-CHMM-L is unchanged at $3.03$.
+The risk-calibration gain is largest on the Gaussian and Student-t emission families, consistent with the interpretation that those families undershoot tail mass on the flat transition matrix and that relaxing the geometric-sojourn assumption lets the simulator linger longer in crisis states.
+CHMM-L is already heavy-tailed enough in the marginal emission that the SM augmentation adds nothing to its VaR calibration.
+
+\begin{table}[t]
+\centering
+\small
+\caption{\textbf{Semi-Markov VaR calibration} (Pipeline A, SPY, OoS $T_{\text{OoS}} = 572$, $N_{\text{paths}} = 1{,}000$). Kupiec and Christoffersen LR statistics for the three flat CHMM variants and their semi-Markov counterparts at $\alpha \in \{0.01, 0.05\}$. The $\chi^2_1$ critical value is $3.84$ for both tests. Reproduced from \texttt{results/track\_c1/VaR\_LR\_tests\_c1.txt}.}
+\label{tab:sm_var}
+\begin{tabular}{lrrrr|rrrr}
+\toprule
+ & \multicolumn{4}{c}{$\alpha = 0.01$} & \multicolumn{4}{c}{$\alpha = 0.05$} \\
+Model & br\% & $\text{LR}_{\text{uc}}$ & $p_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & br\% & $\text{LR}_{\text{uc}}$ & $p_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ \\
+\midrule
+CHMM-N       & $0.5$ & $1.58$ & $0.209$ & $18.98$ & $3.3$ & $3.83$ & $0.050$ & $5.26$ \\
+\textbf{SM-CHMM-N} & $\mathbf{1.0}$ & $\mathbf{0.01}$ & $\mathbf{0.907}$ & $20.87$ & $\mathbf{4.2}$ & $\mathbf{0.82}$ & $\mathbf{0.365}$ & $5.87$ \\
+CHMM-t       & $0.7$ & $0.58$ & $0.445$ & $15.53$ & $3.3$ & $3.83$ & $0.050$ & $5.26$ \\
+\textbf{SM-CHMM-t} & $\mathbf{0.9}$ & $\mathbf{0.10}$ & $\mathbf{0.757}$ & $13.18$ & $\mathbf{3.8}$ & $\mathbf{1.74}$ & $\mathbf{0.188}$ & $7.12$ \\
+CHMM-L       & $0.3$ & $3.26$ & $0.071$ & $\phantom{0}9.15$ & $3.5$ & $3.03$ & $0.082$ & $4.71$ \\
+SM-CHMM-L    & $0.3$ & $3.26$ & $0.071$ & $\phantom{0}9.15$ & $3.5$ & $3.03$ & $0.082$ & $4.71$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{TSTR HAR vol-forecasting gain.}
+The train-on-synthetic-test-on-real HAR(1, 5, 22) vol forecaster, already introduced in the Extended Evaluation panel, also tightens under the SM ablation.
+The QLIKE ratio of the synthetic-trained forecaster to a real-trained benchmark tightens from $0.999$ to $1.000$ under CHMM-N $\to$ SM-CHMM-N, from $1.045$ to $1.014$ under CHMM-t $\to$ SM-CHMM-t, and from $1.027$ to $1.012$ under CHMM-L $\to$ SM-CHMM-L.
+Closer to $1.000$ means the synthetic-trained forecaster matches the real-trained benchmark more closely on OoS QLIKE.
+SM-CHMM-N ties the real-trained benchmark exactly at $1.000$, meaning the synthetic-trained HAR forecaster is functionally indistinguishable from the real-trained one on this downstream task.
+The full TSTR panel is in \texttt{results/track\_c1/tstr\_vol\_forecaster\_c1.txt}.
+
+\paragraph{Marginal-fidelity trade-off.}
+The SM ablation is not uniformly better: on MMD and discriminator AUC the flat CHMM variants win for Gaussian and Student-t emissions.
+Concretely, MMD IS moves from $1.5 \times 10^{-4}$ (CHMM-N) to $3.8 \times 10^{-3}$ (SM-CHMM-N) and from $2.0 \times 10^{-5}$ (CHMM-t) to $6.2 \times 10^{-3}$ (SM-CHMM-t); discriminator AUC IS moves from $0.646$ to $0.699$ (CHMM-N $\to$ SM-CHMM-N) and from $0.607$ to $0.782$ (CHMM-t $\to$ SM-CHMM-t).
+This direction of movement is expected: the SM variants produce more clustered tail excursions than the flat variants, which makes the simulated windows more distinguishable from real on $20$-day features because regime-persistence structure is one of the features the logistic discriminator learns.
+The Laplace SM variant is the exception in both directions: SM-CHMM-L attains the smallest IS MMD of any row in the full panel ($4.0 \times 10^{-5}$), but its discriminator AUC IS climbs to $0.823$ and its joint $\bar{pv}$ OoS drops from $0.692$ to $0.436$.
+
+\paragraph{Christoffersen independence is not closed by the SM ablation.}
+On the $2024$-$2026$ OoS window, breach clustering remains pronounced for every SM variant: $\text{LR}_{\text{ind}}$ ranges from $9.15$ (SM-CHMM-L at $1\%$) to $20.87$ (SM-CHMM-N at $1\%$), all above the $\chi^2_1$ critical value of $3.84$.
+Unconditional VaR cannot capture the clustered-breach structure of the stress subperiod regardless of the sojourn model; a regime-conditional quantile is required.
+The following subsection shows that a Viterbi-decoded state-conditional quantile of the flat CHMM-t passes both the Kupiec and Christoffersen tests cleanly at $1\%$ and $5\%$, closing the independence gap that the SM ablation leaves open.
+
+\paragraph{Takeaway: SM is a risk-calibration upgrade, not a marginal-fidelity upgrade.}
+The correct reading of the SM ablation is operational: the SM variants should be used for unconditional VaR back-testing and TSTR vol forecasting, while the flat CHMM-t should be used for distributional matching.
+The three-way operational split that we formalise in Section~\ref{sec:discussion} separates these roles.
+
 \subsection{Cross-Asset Univariate Generalization (Pipeline A)}
 \label{sec:cross_asset_univariate}
 
