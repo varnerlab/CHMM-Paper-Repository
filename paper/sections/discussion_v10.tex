@@ -71,7 +71,7 @@ Because all three variants share the same forward-backward scaffold, the KS/AD/A
 The AD pass rate, which weights tails more heavily than KS, shows the largest gain under CHMM-t and CHMM-L, confirming that the kurtosis gap was the residual source of AD failures.
 
 \paragraph{Diagnosing the CHMM-t In-Sample Kurtosis Overshoot.}
-The Student-t variant produces an in-sample mixture kurtosis of $17.34$ against an observed $7.68$: a $\sim 126\%$ overshoot.
+The Student-t variant produces an in-sample mixture kurtosis of $14.57$ against an observed $7.68$: a $\sim 90\%$ overshoot.
 To diagnose the overshoot we report the per-state $\nu_k$ histogram for the $K = 18$ fit and a sensitivity study that lifts the ECM lower bracket $\nu_{\min}$ through $\{2.1, 2.5, 3.0, 4.0\}$ and into the Gaussian limit (Appendix~\ref{sec:nu_diagnostics}, Table~\ref{tab:nu_bracket}).
 Two facts emerge.
 First, the fit does \emph{not} pile $\nu_k$ against the lower bracket: the median $\nu_k$ sits at the upper bracket (50), and only two of the eighteen states ($\nu_2 = 2.19$, $\nu_4 = 2.10$) land near the lower edge.
