@@ -89,7 +89,7 @@ The Wasserstein-1 (0.065) and Hellinger (0.050) distances were the lowest, as ex
 \paragraph{Gaussian i.i.d.\ (Negative Control).}
 The Gaussian generator achieved 0\% KS and 0\% AD in-sample, confirming the categorical inadequacy of the normal distribution for financial returns.
 Its simulated kurtosis was $-0.00$ (i.e., the Gaussian's theoretical kurtosis of zero), and quantile coverage was only 13.1\%.
-Unlike the $T_{\text{OoS}} = 219$ window of v6, the new $T_{\text{OoS}} = 572$ window preserves enough KS-test power that the Gaussian generator is correctly rejected OoS as well (2.0\% KS, 0.0\% AD), so the OoS row is no longer misleadingly inflated for this clearly-wrong baseline.
+The \TOoS{572} window of over two years preserves enough KS-test power to correctly reject the Gaussian generator OoS as well ($1.2\%$ KS, $0.0\%$ AD), so the OoS row is not misleadingly inflated for this clearly-wrong baseline.
 
 \paragraph{Laplace i.i.d.}
 The Laplace generator achieved 98.9\% KS and 97.2\% AD in-sample, demonstrating that the Laplace distribution provides a reasonable approximation to the marginal distribution of equity returns.
@@ -269,7 +269,7 @@ At the selected state resolution $K = 18$ the CHMM-N achieves $84.2\%$ OoS KS pa
 The CHMM-N OoS simulated kurtosis is 4.42 against an observed 5.29, bringing the kurtosis gap to below one unit; CHMM-t overshoots at 10.24 and CHMM-L overshoots modestly at 6.27.
 Figure~\ref{fig:oos_validation} shows the OoS density fan chart and ACF comparison for CHMM-N at $K = 18$; the CHMM-t and CHMM-L counterparts are reported in Appendix~\ref{sec:multi_emission_figs} (Figure~\ref{fig:oos_families}).
 
-This generalization performance is notable given that the $T_{\text{OoS}} = 572$ window (over two years) gives KS/AD substantially more power than the v6 $T_{\text{OoS}} = 219$ window: the CHMMs still pass at $80$--$84\%$ while the prior-paper discrete and GARCH baselines are rejected in the $36$--$58\%$ range.
+The \TOoS{572} window (over two years of OoS data) gives the KS/AD tests substantial power to separate the generators: the three CHMM variants pass at $79$--$86\%$ OoS KS, the $K_{\text{disc}} = 90$ discrete baselines land in the same $83$--$85\%$ band (for the KS-pass dimension only; they separate from the CHMMs on kurtosis, aggregational Gaussianity, and Kupiec VaR per Sections~\ref{sec:extended_evaluation} and~\ref{sec:utility}), and GARCH is correctly rejected at $58\%$ OoS KS.
 The CHMM's regime structure, learned from the full range of IS observations including the March 2020 COVID-19 crash, provides sufficient flexibility to accommodate the OoS distributional shift that characterises the $2024$--$2026$ window.
 
 \begin{figure}[t]
@@ -285,7 +285,7 @@ The CHMM's regime structure, learned from the full range of IS observations incl
 The seven-metric panel of Section~\ref{sec:model_comparison} reports marginal and autocorrelation fidelity.
 For a reference synthetic-data generator, the community has converged on a broader metric set since \citet{gretton2012kernel, chevyrev2016primer, yoon2019timegan, ni2020conditional}.
 We therefore add six evaluation axes that probe joint window distributions, path geometry, learned discriminability, tail coupling, aggregational scaling behaviour, and multi-statistic coverage.
-All rows are computed at $N_{\text{paths}} = 1{,}000$ simulated paths, seed $20260422$, on both the $T_{\text{IS}} = 2{,}516$ and $T_{\text{OoS}} = 572$ SPY windows.
+All rows are computed at \NPaths{1{,}000} simulated paths on both the \TIS{2{,}516} and \TOoS{572} SPY windows, under the global seed policy stated in Section~\ref{sec:metrics}.
 The full numerical panel is in Tables~\ref{tab:extended_metrics}, \ref{tab:leverage}, \ref{tab:agg_kurt}, and \ref{tab:sim_pvalues}; we summarise the headline findings here.
 
 \paragraph{MMD (RBF kernel, 20-day windows).}
@@ -449,7 +449,7 @@ Table~\ref{tab:var_es} reports the median and $[5\%, 95\%]$ envelope of each qua
 
 \begin{table}[t]
 \centering
-\caption{VaR and Expected-Shortfall back-test calibration for SPY (seed = 20260420, $1{,}000$ paths). Each entry shows the median and $[5\%, 95\%]$ envelope across paths of the left-tail VaR / ES at the stated level. Observed historical values given in the first row. A well-calibrated generator brackets the observed value within its envelope.}
+\caption{VaR and Expected-Shortfall back-test calibration for SPY (\NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each entry shows the median and $[5\%, 95\%]$ envelope across paths of the left-tail VaR / ES at the stated level. Observed historical values given in the first row. A well-calibrated generator brackets the observed value within its envelope.}
 \label{tab:var_es}
 \small
 \resizebox{\textwidth}{!}{%
@@ -498,7 +498,7 @@ This is the clearest single-number contrast the present paper offers against the
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.98\textwidth]{sections/figs/Fig-VaR-ES.pdf}
-\caption{VaR and Expected-Shortfall back-test calibration (SPY, $1{,}000$ simulated paths, seed = 20260420). Each subplot shows the simulated median and $[5\%, 95\%]$ envelope (error bars) across paths and the observed historical value (dashed red line). All three CHMM variants bracket the observed historical VaR and ES at both confidence levels on both in-sample and out-of-sample windows.}
+\caption{VaR and Expected-Shortfall back-test calibration (SPY, \NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each subplot shows the simulated median and $[5\%, 95\%]$ envelope (error bars) across paths and the observed historical value (dashed red line). All three CHMM variants bracket the observed historical VaR and ES at both confidence levels on both in-sample and out-of-sample windows.}
 \label{fig:var_es}
 \end{figure}
 
@@ -817,7 +817,7 @@ Band widths and medians are nearly indistinguishable across the three emission f
 
 \begin{table}[t]
 \centering
-\caption{OoS equity price simulation summary across the six main-study tickers and three CHMM emission families ($K = 18$, $500$ paths, $T_{\text{OoS}} = 572$ trading days, seed = 20260421). For each (ticker, family) row we report the observed OoS terminal price $P^{\text{obs}}_T$, the $5\%$/$50\%$/$95\%$ quantiles of the $500$-path simulated terminal distribution, and the $90\%$-band coverage indicator \textsc{Hit}. Coverage is $18/18$.}
+\caption{OoS equity price simulation summary across the six main-study tickers and three CHMM emission families ($K = 18$, $500$ paths, \TOoS{572} trading days; global seed policy in Section~\ref{sec:metrics}). For each (ticker, family) row we report the observed OoS terminal price $P^{\text{obs}}_T$, the $5\%$/$50\%$/$95\%$ quantiles of the $500$-path simulated terminal distribution, and the $90\%$-band coverage indicator \textsc{Hit}. Coverage is $18/18$.}
 \label{tab:price_sim_oos}
 \small
 \begin{tabular}{ll r rrr c}
@@ -866,7 +866,7 @@ Smaller CRPS indicates a better joint sharpness--calibration trade-off.
 
 \begin{table}[t]
 \centering
-\caption{Path-level probabilistic-forecast metrics for OoS equity price simulation ($K = 18$, $500$ paths, $T_{\text{OoS}} = 572$, seed = 20260421). $\overline{C}_{0.90}$: fraction of OoS steps at which the observed price falls inside the simulated $5$--$95\%$ band. $\text{MAPE}_{0.50}$: mean absolute percentage error between observed path and simulated median. $\overline{\text{CRPS}}$: horizon-average CRPS of Equation~\eqref{eq:crps}. $\overline{\text{CRPS}}/S_0$: CRPS scaled by $S_0$ to remove price-level effects, enabling cross-ticker comparison. Lower MAPE and CRPS, and higher $\overline{C}_{0.90}$, indicate better probabilistic forecasts.}
+\caption{Path-level probabilistic-forecast metrics for OoS equity price simulation ($K = 18$, $500$ paths, \TOoS{572}; global seed policy in Section~\ref{sec:metrics}). $\overline{C}_{0.90}$: fraction of OoS steps at which the observed price falls inside the simulated $5$--$95\%$ band. $\text{MAPE}_{0.50}$: mean absolute percentage error between observed path and simulated median. $\overline{\text{CRPS}}$: horizon-average CRPS of Equation~\eqref{eq:crps}. $\overline{\text{CRPS}}/S_0$: CRPS scaled by $S_0$ to remove price-level effects, enabling cross-ticker comparison. Lower MAPE and CRPS, and higher $\overline{C}_{0.90}$, indicate better probabilistic forecasts.}
 \label{tab:price_sim_path_metrics}
 \small
 \begin{tabular}{ll r r r r}

@@ -187,6 +187,7 @@ Full derivations, the Student-t log-density, and the sampler pseudocode are give
 \label{sec:metrics}
 
 For each model we simulate $P = 1{,}000$ independent paths of length $T$ (200 paths for the cross-asset extension, given the quadratic cost of the copula and SIM pipelines) and evaluate seven complementary metrics, following the framework of \cite{stenger2024thinking} and \cite{alswaidan2026hybrid}.
+All experiments reported in the main body and appendix use a deterministic global random seed ($20260420$), with per-experiment sub-seeds ($20260421$ for OoS equity-price simulation, $20260422$ for Track A extended evaluation) derived additively so that each block is independently reproducible from a single seed root; no other random-seed specification is given in-line throughout the remainder of the paper.
 Four metrics score \emph{distributional} fidelity: two-sample Kolmogorov--Smirnov \cite{kolmogorov1933, smirnov1948} and Anderson--Darling pass rates at $\alpha = 0.05$ over the 1{,}000 paths, Wasserstein-1 distance $W_1(F, G) = \int_0^1 |F^{-1}(u) - G^{-1}(u)|\, du$, and histogram Hellinger distance.
 Two metrics score \emph{tail} behavior: the mean simulated excess kurtosis and the quantile-coverage rate, defined as the fraction of observed percentiles 1--99 falling within the $[5, 95]$-percentile envelope of the simulated quantiles.
 The final metric scores \emph{temporal} fidelity: the mean absolute error of the absolute-return ACF over 252 lags,
