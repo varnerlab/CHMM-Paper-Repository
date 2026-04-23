@@ -162,7 +162,7 @@ Table~\ref{tab:variant_choice} summarizes the practical choice.
 \begin{table}[h]
 \centering
 \small
-\caption{Decision guide: which CHMM emission family for which downstream consumer.}
+\caption{\textbf{Decision guide:} recommended CHMM emission family keyed to the downstream consumer's use case. Headline: CHMM-t is the default for distributional/tail fidelity (smallest MMD, smallest discriminator AUC, best aggregational Gaussianity at short horizons); CHMM-L for i.i.d.-Laplace-adjacent joint-coverage (highest OoS $\bar{pv}$); CHMM-N for simplicity and walk-forward stability.}
 \label{tab:variant_choice}
 \begin{tabular}{l l}
 \toprule
@@ -257,8 +257,7 @@ These monotonic trends provide a consistent signal that $K = 18$ is the sensible
     \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K18.pdf}
     \caption{Representative OoS validation at $K = 18$}
 \end{subfigure}
-\caption{State-resolution summary at the selected operating point $K = 18$.
-The full sweep over $K \in \{3, 6, 9, 12, 15, 18, 21\}$ and per-$K$ figures are reproduced in Appendix~\ref{sec:supplemental} (Table~\ref{tab:sensitivity} and Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_panels_oos}).}
+\caption{\textbf{State-resolution summary at the selected operating point $K = 18$}, Pipeline A, CHMM-N Gaussian emissions on SPY. Panel~(a) shows the representative in-sample density and ACF match at $K = 18$; Panel~(b) shows the corresponding out-of-sample validation. Headline: distributional fidelity rises from $K = 3$ to $K = 18$ and plateaus in the $K \in \{12, 15, 18, 21\}$ band while ACF-MAE is already near its floor at $K = 3$, supporting the choice of $K = 18$ jointly by the four information criteria (AIC / BIC / HQC / CAIC) and the multi-metric distributional score. The full sweep over $K \in \{3, 6, 9, 12, 15, 18, 21\}$ and per-$K$ figures are reproduced in Appendix~\ref{sec:supplemental} (Table~\ref{tab:sensitivity} and Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_panels_oos}).}
 \label{fig:k_sweep_summary}
 \end{figure}
 
@@ -462,7 +461,7 @@ Table~\ref{tab:var_es} reports the median and $[5\%, 95\%]$ envelope of each qua
 
 \begin{table}[t]
 \centering
-\caption{VaR and Expected-Shortfall back-test calibration for SPY (\NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each entry shows the median and $[5\%, 95\%]$ envelope across paths of the left-tail VaR / ES at the stated level. Observed historical values given in the first row. A well-calibrated generator brackets the observed value within its envelope.}
+\caption{\textbf{VaR and Expected-Shortfall back-test calibration for SPY} (\NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each entry is the median and $[5\%, 95\%]$ envelope across paths of the left-tail VaR / ES at $\alpha \in \{0.01, 0.05\}$; observed historical values are in the first row. Headline: all three CHMM variants bracket the observed historical VaR and ES at both $1\%$ and $5\%$ on both IS and OoS windows, and the CHMM-N medians (IS VaR$_{0.01} = -6.64$, ES$_{0.01} = -8.80$) are the closest point estimates to the observed $-6.38$ and $-9.00$ among the reported generators.}
 \label{tab:var_es}
 \small
 \resizebox{\textwidth}{!}{%
@@ -511,7 +510,7 @@ This is the clearest single-number contrast the present paper offers against the
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.98\textwidth]{sections/figs/Fig-VaR-ES.pdf}
-\caption{VaR and Expected-Shortfall back-test calibration (SPY, \NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each subplot shows the simulated median and $[5\%, 95\%]$ envelope (error bars) across paths and the observed historical value (dashed red line). All three CHMM variants bracket the observed historical VaR and ES at both confidence levels on both in-sample and out-of-sample windows.}
+\caption{\textbf{VaR / ES envelope diagnostic} (SPY, \NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each subplot shows the simulated median (dot) and $[5\%, 95\%]$ envelope (error bar) across paths against the observed historical value (dashed red line); columns are IS / OoS, rows are the three CHMM emission families and the $1\%$ / $5\%$ confidence levels. Headline: every observed red line falls inside the corresponding simulated envelope, confirming that the CHMM family passes the coverage leg of the back-test complementary to the Kupiec / Christoffersen likelihood-ratio leg in Section~\ref{sec:utility}.}
 \label{fig:var_es}
 \end{figure}
 
@@ -531,7 +530,7 @@ This matches the finding of the companion volatility-index paper, where Pareto s
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Per-state sojourn family selected by AIC} for each SM-CHMM variant on SPY $K = 18$. Pareto sojourns dominate under all three emission families.}
+\caption{\textbf{Per-state sojourn family selected by AIC} for each SM-CHMM variant on SPY at $K = 18$; candidate families are truncated Pareto, negative binomial, and geometric. Headline: $17$ of $18$ states pick Pareto sojourns under all three emission families (Gaussian / Student-t / Laplace), one state picks negative binomial each, and no state picks geometric, confirming that a heavy-tailed sojourn layer on top of the Markov chain is empirically warranted for equity-return regime persistence.}
 \label{tab:sm_sojourn}
 \begin{tabular}{lccc}
 \toprule
@@ -554,7 +553,7 @@ CHMM-L is already heavy-tailed enough in the marginal emission that the SM augme
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Semi-Markov VaR calibration} (Pipeline A, SPY, OoS $T_{\text{OoS}} = 572$, $N_{\text{paths}} = 1{,}000$). Kupiec and Christoffersen LR statistics for the three flat CHMM variants and their semi-Markov counterparts at $\alpha \in \{0.01, 0.05\}$. The $\chi^2_1$ critical value is $3.84$ for both tests.}
+\caption{\textbf{Semi-Markov VaR calibration} (Pipeline A, SPY, \TOoS{572}, \NPaths{1{,}000}); Kupiec ($\text{LR}_{\text{uc}}$) and Christoffersen ($\text{LR}_{\text{ind}}$) likelihood-ratio statistics for the three flat CHMM variants and their semi-Markov counterparts at $\alpha \in \{0.01, 0.05\}$; $\chi^2_1$ critical value $3.84$ for each test. Headline: the semi-Markov layer is a \emph{risk-calibration upgrade}: $\text{LR}_{\text{uc}}^{5\%}$ drops from $3.83$ (flat CHMM-N) to $0.82$ (SM-CHMM-N) and from $3.83$ (flat CHMM-t) to $1.74$ (SM-CHMM-t); Christoffersen independence remains open across the panel and is closed in Table~\ref{tab:conditional_var} via a Viterbi-decoded conditional-quantile estimator.}
 \label{tab:sm_var}
 \begin{tabular}{lrrrr|rrrr}
 \toprule
@@ -623,7 +622,7 @@ CHMM-t is therefore the single CHMM family that passes both tests at both confid
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Regime-conditional VaR} (Pipeline A, SPY, OoS $T_{\text{OoS}} = 572$). Viterbi decode on the OoS series under each fitted flat CHMM, then $\alpha$-quantile of the decoded state's emission as $\widehat{\mathrm{VaR}}_t$. The ``unconditional (A8)'' rows reproduce the Kupiec and Christoffersen likelihood-ratio statistics discussed in Section~\ref{sec:extended_evaluation} for reference; bold entries mark passes (likelihood ratio below the $\chi^2_1$ critical value of $3.84$).}
+\caption{\textbf{Regime-conditional VaR via Viterbi decode} (Pipeline A, SPY, \TOoS{572}). The estimator runs a Viterbi decode on the OoS series under each fitted flat CHMM, then takes the $\alpha$-quantile of the decoded state's conditional emission as $\widehat{\mathrm{VaR}}_t$. The ``unconditional (A8)'' rows restate the matching Kupiec / Christoffersen statistics from Section~\ref{sec:extended_evaluation} for reference; bold entries mark passes ($\text{LR} < 3.84 = \chi^2_1$ critical value). Headline: flat CHMM-t clears both Kupiec and Christoffersen at $1\%$ and $5\%$ simultaneously on the $2024$--$2026$ OoS window ($\text{LR}_{\text{uc}} = 0.10 / 0.01$, $\text{LR}_{\text{ind}} = 0.09 / 0.19$), closing the independence gap that every unconditional-VaR row in Table~\ref{tab:sm_var} left open.}
 \label{tab:conditional_var}
 \begin{tabular}{lcrrrr|rrrr}
 \toprule
@@ -830,7 +829,7 @@ Band widths and medians are nearly indistinguishable across the three emission f
 
 \begin{table}[t]
 \centering
-\caption{OoS equity price simulation summary across the six main-study tickers and three CHMM emission families ($K = 18$, $500$ paths, \TOoS{572} trading days; global seed policy in Section~\ref{sec:metrics}). For each (ticker, family) row we report the observed OoS terminal price $P^{\text{obs}}_T$, the $5\%$/$50\%$/$95\%$ quantiles of the $500$-path simulated terminal distribution, and the $90\%$-band coverage indicator \textsc{Hit}. Coverage is $18/18$.}
+\caption{\textbf{OoS equity price simulation summary} across the six main-study tickers and three CHMM emission families ($K = 18$, $500$ paths, \TOoS{572} trading days; global seed policy in Section~\ref{sec:metrics}). Each (ticker, family) row reports the observed OoS terminal price $P^{\text{obs}}_T$, the $5\%$/$50\%$/$95\%$ quantiles of the $500$-path simulated terminal distribution, and the $90\%$-band coverage indicator \textsc{Hit}. Headline: the $90\%$-band covers the observed terminal in $18$ of $18$ (ticker, family) cells, including the atypical NVDA rally ($4.15\times$ observed return, still inside band), so the return-space fit of Section~\ref{sec:model_comparison} propagates cleanly to price-level OoS envelopes.}
 \label{tab:price_sim_oos}
 \small
 \begin{tabular}{ll r rrr c}
@@ -879,7 +878,7 @@ Smaller CRPS indicates a better joint sharpness--calibration trade-off.
 
 \begin{table}[t]
 \centering
-\caption{Path-level probabilistic-forecast metrics for OoS equity price simulation ($K = 18$, $500$ paths, \TOoS{572}; global seed policy in Section~\ref{sec:metrics}). $\overline{C}_{0.90}$: fraction of OoS steps at which the observed price falls inside the simulated $5$--$95\%$ band. $\text{MAPE}_{0.50}$: mean absolute percentage error between observed path and simulated median. $\overline{\text{CRPS}}$: horizon-average CRPS of Equation~\eqref{eq:crps}. $\overline{\text{CRPS}}/S_0$: CRPS scaled by $S_0$ to remove price-level effects, enabling cross-ticker comparison. Lower MAPE and CRPS, and higher $\overline{C}_{0.90}$, indicate better probabilistic forecasts.}
+\caption{\textbf{Path-level probabilistic-forecast metrics for OoS equity-price simulation} ($K = 18$, $500$ paths, \TOoS{572}; global seed policy in Section~\ref{sec:metrics}). $\overline{C}_{0.90}$: fraction of OoS steps at which the observed price falls inside the simulated $5$--$95\%$ band (calibration); $\text{MAPE}_{0.50}$: mean absolute percentage error between observed path and simulated median (sharpness); $\overline{\text{CRPS}}$: horizon-average CRPS of Equation~\eqref{eq:crps}; $\overline{\text{CRPS}}/S_0$: CRPS scaled by $S_0$ to remove price-level effects, enabling cross-ticker comparison. Lower MAPE and CRPS, and higher $\overline{C}_{0.90}$, are better. Headline: no CHMM emission family dominates on all four metrics across all six tickers; differences between CHMM-N, CHMM-t and CHMM-L live mostly in the return tails and propagate only weakly into aggregated price-level scores.}
 \label{tab:price_sim_path_metrics}
 \small
 \begin{tabular}{ll r r r r}
