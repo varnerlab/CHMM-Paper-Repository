@@ -42,7 +42,7 @@ LB test on $|G_t|$ (lag 20) & reject$^*$ (2959.3) & reject$^*$ (250.6) \\
 
 We trained continuous Gaussian HMMs for $K \in \{3, 6, 9, 12, 15, 18, 21\}$ states on the SPY in-sample window using the Baum-Welch algorithm with $\texttt{max\_iter} = 60$ and quantile-based initialization, and evaluated every fitted model on (i) the four information criteria of equation~\eqref{eq:information_criteria}, following the HMM state-selection methodology of \citet{nguyen2018hidden}, and (ii) the full seven-metric distributional battery.
 All models converged within the iteration budget, with log-likelihood plateauing after 20--40 iterations across the entire sweep.
-The full sensitivity table is reproduced in Appendix~\ref{sec:supplemental} (Table~\ref{tab:sensitivity}); Figure~\ref{fig:k_sweep_summary} summarizes the distributional pass rates and ACF-MAE as a function of $K$.
+The full sensitivity table is reproduced in Appendix~\ref{sec:supplemental} (Table~\ref{tab:sensitivity}), with per-$K$ IS and OoS panels in Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_panels_oos}.
 
 Three patterns emerge.
 First, the information-criterion surface flattens over the upper half of the sweep: AIC and HQC continue to improve mildly with $K$, while BIC and CAIC, which penalize the $K^2 + 2K - 1$ parameters more heavily, reach their joint minimum in the $K \in \{15, 18, 21\}$ region.
@@ -223,7 +223,7 @@ CHMM-N ($K=18$)     & 93.8  & 84.2  & 86.6  & 77.9  & 4.99    & 4.51    & 0.0507
 \subsection{State Resolution Sensitivity}
 \label{sec:k_sensitivity}
 
-Figure~\ref{fig:k_sweep_summary} summarizes the CHMM's seven-metric performance as a function of $K$; the underlying table is reproduced as Table~\ref{tab:sensitivity} in Appendix~\ref{sec:supplemental}.
+The full seven-metric $K$-sweep is reported in Table~\ref{tab:sensitivity} (Appendix~\ref{sec:supplemental}); per-$K$ IS and OoS panels at each state count are reproduced in Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_panels_oos}.
 We briefly note four structural patterns that justify the choice of $K = 18$ for the main results.
 
 \paragraph{Distributional Fidelity Saturates in the $K \in \{15, 18, 21\}$ Band.}
@@ -245,23 +245,6 @@ The heavy-tailed CHMM-t and CHMM-L variants close most of this gap at the same $
 \paragraph{Wasserstein, Hellinger, and Coverage Are Monotonic.}
 $W_1$ improved monotonically from 0.119 ($K=3$) to 0.101 ($K=18$), Hellinger from 0.079 to 0.077, and Coverage was 100\% at every $K$.
 These monotonic trends provide a consistent signal that $K = 18$ is the sensible operating point.
-
-\begin{figure}[t]
-\centering
-\begin{subfigure}[t]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K18.pdf}
-    \caption{Representative IS comparison at the selected $K = 18$.}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K18.pdf}
-    \caption{Representative OoS validation at $K = 18$.}
-\end{subfigure}
-\caption{\textbf{State-resolution summary at the selected operating point $K = 18$}, Pipeline A, CHMM-N Gaussian emissions on SPY. Panel~(a) shows the representative in-sample density and ACF match at $K = 18$; Panel~(b) shows the corresponding out-of-sample validation. Headline: distributional fidelity rises from $K = 3$ to $K = 18$ and plateaus in the $K \in \{12, 15, 18, 21\}$ band while ACF-MAE is already near its floor at $K = 3$, supporting the choice of $K = 18$ jointly by the four information criteria (AIC / BIC / HQC / CAIC) and the multi-metric distributional score. The full sweep over $K \in \{3, 6, 9, 12, 15, 18, 21\}$ and per-$K$ figures are reproduced in Appendix~\ref{sec:supplemental} (Table~\ref{tab:sensitivity} and Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_panels_oos}).}
-\label{fig:k_sweep_summary}
-\end{figure}
 
 \subsection{Out-of-Sample Evaluation}
 \label{sec:oos}

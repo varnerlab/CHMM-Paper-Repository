@@ -107,7 +107,7 @@ The Laplace M-step carries no shape parameter, so CHMM-L is strictly cheaper per
 \subsection{Full State-Resolution Sensitivity Table}
 \label{sec:sensitivity_table}
 
-Table~\ref{tab:sensitivity} reports the full sweep summarized by Figure~\ref{fig:k_sweep_summary} in the main text.
+Table~\ref{tab:sensitivity} reports the full $K$-sweep referenced in Section~\ref{sec:k_sensitivity} of the main text.
 Observed excess kurtosis is $7.68$ IS and $5.29$ OoS at all $K$.
 
 \begin{table}[H]
@@ -318,112 +318,123 @@ This contrasts with the discrete model of \citet{alswaidan2026hybrid}, where tai
 \subsection{In-Sample Comparison at Non-Selected State Resolutions}
 \label{sec:k_sweep_panels}
 
-Figure~\ref{fig:k_sweep_panels_is} shows the in-sample model comparison panels for $K \in \{3, 6, 9, 12, 15, 21\}$, complementing the $K = 18$ comparison in Figure~\ref{fig:is_comparison} of the main text.
+Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_is_k21} show the in-sample model comparison panels for $K \in \{3, 6, 9, 12, 15, 21\}$, complementing the $K = 18$ comparison in Figure~\ref{fig:is_comparison} of the main text.
 Across all resolutions, the CHMM's simulated density closely overlays the observed density, and the ACF of absolute returns tracks the slow decay pattern.
 The visible improvement from $K = 3$ to $K = 18$ is concentrated in the tails of the Q-Q panel and the steady-state level of the ACF panel.
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K3.pdf}
-    \caption{$K = 3$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K6.pdf}
-    \caption{$K = 6$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K9.pdf}
-    \caption{$K = 9$}
-\end{subfigure}
-
-\vspace{0.4cm}
-
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K12.pdf}
-    \caption{$K = 12$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K15.pdf}
-    \caption{$K = 15$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K21.pdf}
-    \caption{$K = 21$}
-\end{subfigure}
-\caption{In-sample CHMM comparison panels at the non-selected state resolutions. Panel $K = 18$ is reproduced in Figure~\ref{fig:is_comparison} of the main text.}
+\includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K3.pdf}
+\caption{In-sample CHMM comparison at $K = 3$. The $K = 18$ counterpart is Figure~\ref{fig:is_comparison} of the main text.}
 \label{fig:k_sweep_panels_is}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K6.pdf}
+\caption{In-sample CHMM comparison at $K = 6$.}
+\label{fig:k_sweep_is_k6}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K9.pdf}
+\caption{In-sample CHMM comparison at $K = 9$.}
+\label{fig:k_sweep_is_k9}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K12.pdf}
+\caption{In-sample CHMM comparison at $K = 12$.}
+\label{fig:k_sweep_is_k12}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K15.pdf}
+\caption{In-sample CHMM comparison at $K = 15$.}
+\label{fig:k_sweep_is_k15}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K21.pdf}
+\caption{In-sample CHMM comparison at $K = 21$.}
+\label{fig:k_sweep_is_k21}
 \end{figure}
 
 \subsection{Out-of-Sample Validation at Non-Selected State Resolutions}
 
-Figure~\ref{fig:k_sweep_panels_oos} shows the out-of-sample validation panels for $K \in \{3, 6, 9, 12, 15, 21\}$.
+Figures~\ref{fig:k_sweep_panels_oos}--\ref{fig:k_sweep_oos_k21} show the out-of-sample validation panels for $K \in \{3, 6, 9, 12, 15, 21\}$.
 KS pass rates remain above 91\% at all resolutions; the $K = 18$ panel is reproduced in Figure~\ref{fig:oos_validation} of the main text.
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K3.pdf}
-    \caption{$K = 3$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K6.pdf}
-    \caption{$K = 6$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K9.pdf}
-    \caption{$K = 9$}
-\end{subfigure}
-
-\vspace{0.4cm}
-
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K12.pdf}
-    \caption{$K = 12$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K15.pdf}
-    \caption{$K = 15$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K21.pdf}
-    \caption{$K = 21$}
-\end{subfigure}
-\caption{Out-of-sample CHMM validation panels at the non-selected state resolutions.}
+\includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K3.pdf}
+\caption{Out-of-sample CHMM validation at $K = 3$. The $K = 18$ counterpart is Figure~\ref{fig:oos_validation} of the main text.}
 \label{fig:k_sweep_panels_oos}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K6.pdf}
+\caption{Out-of-sample CHMM validation at $K = 6$.}
+\label{fig:k_sweep_oos_k6}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K9.pdf}
+\caption{Out-of-sample CHMM validation at $K = 9$.}
+\label{fig:k_sweep_oos_k9}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K12.pdf}
+\caption{Out-of-sample CHMM validation at $K = 12$.}
+\label{fig:k_sweep_oos_k12}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K15.pdf}
+\caption{Out-of-sample CHMM validation at $K = 15$.}
+\label{fig:k_sweep_oos_k15}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K21.pdf}
+\caption{Out-of-sample CHMM validation at $K = 21$.}
+\label{fig:k_sweep_oos_k21}
 \end{figure}
 
 \subsection{ACF Comparison Across State Resolutions}
 
-Figure~\ref{fig:acf_all} shows the ACF of $|G_t|$ for the CHMM at $K = 3$, $K = 12$, and $K = 18$, compared to the observed ACF.
+Figures~\ref{fig:acf_all}--\ref{fig:acf_k18} show the ACF of $|G_t|$ for the CHMM at $K = 3$, $K = 12$, and $K = 18$, compared to the observed ACF.
 At all resolutions, the simulated ACF (shown as the median with 10th--90th percentile envelope across 1{,}000 paths) tracks the observed slow decay pattern.
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K3.pdf}
-    \caption{$K = 3$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K12.pdf}
-    \caption{$K = 12$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K18.pdf}
-    \caption{$K = 18$ (selected)}
-\end{subfigure}
-\caption{ACF of $|G_t|$ for the CHMM at $K = 3$, $K = 12$, and $K = 18$. The simulated 10th--90th percentile envelope (shaded) envelopes the observed ACF (red dashed), confirming that the CHMM reproduces volatility clustering without jump augmentation across the entire sweep.}
+\includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K3.pdf}
+\caption{ACF of $|G_t|$ for the CHMM at $K = 3$. The simulated 10th--90th percentile envelope (shaded) envelopes the observed ACF (red dashed).}
 \label{fig:acf_all}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K12.pdf}
+\caption{ACF of $|G_t|$ for the CHMM at $K = 12$.}
+\label{fig:acf_k12}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-ACF-Comparison-K18.pdf}
+\caption{ACF of $|G_t|$ for the CHMM at $K = 18$ (selected). Consistent with Figures~\ref{fig:acf_all} and~\ref{fig:acf_k12}, the CHMM reproduces volatility clustering without jump augmentation across the entire sweep.}
+\label{fig:acf_k18}
 \end{figure}
 
 \subsection{Example Simulated Trajectories}
@@ -546,40 +557,38 @@ The mass concentration at central states and the monotone decrease of $\tau_k$ t
 \end{figure}
 
 \paragraph{In-sample comparison.}
-Figure~\ref{fig:is_families} reproduces the three-panel in-sample comparison (density, ACF of $|G_t|$, tail Q-Q) at $K = 18$ for the two heavy-tailed families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
+Figures~\ref{fig:is_families}--\ref{fig:is_families_L} reproduce the three-panel in-sample comparison (density, ACF of $|G_t|$, tail Q-Q) at $K = 18$ for the two heavy-tailed families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K18-t.pdf}
-    \caption{CHMM-t}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K18-L.pdf}
-    \caption{CHMM-L}
-\end{subfigure}
-\caption{In-sample model comparison at $K = 18$ for the two heavy-tailed emission families. Each panel shows (a) marginal density with KS pass rate, (b) ACF of $|G_t|$, and (c) tail Q-Q plot. The CHMM-N counterpart is Figure~\ref{fig:is_comparison}.}
+\includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K18-t.pdf}
+\caption{In-sample model comparison at $K = 18$ for CHMM-t. Panels show (a) marginal density with KS pass rate, (b) ACF of $|G_t|$, and (c) tail Q-Q plot. The CHMM-N counterpart is Figure~\ref{fig:is_comparison}; the CHMM-L counterpart is Figure~\ref{fig:is_families_L}.}
 \label{fig:is_families}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K18-L.pdf}
+\caption{In-sample model comparison at $K = 18$ for CHMM-L. Panels as in Figure~\ref{fig:is_families}.}
+\label{fig:is_families_L}
+\end{figure}
+
 \paragraph{Out-of-sample validation.}
-Figure~\ref{fig:oos_families} shows the OoS validation panels for CHMM-t and CHMM-L at $K = 18$.
+Figures~\ref{fig:oos_families}--\ref{fig:oos_families_L} show the OoS validation panels for CHMM-t and CHMM-L at $K = 18$.
 The CHMM-t panel demonstrates the OoS kurtosis alignment noted in the main text (simulated 6.40 vs.\ observed 6.24), and the CHMM-L panel shows the tighter density fan produced by the heavier Laplace tails relative to the Gaussian.
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K18-t.pdf}
-    \caption{CHMM-t}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K18-L.pdf}
-    \caption{CHMM-L}
-\end{subfigure}
-\caption{Out-of-sample validation at $K = 18$ for the two heavy-tailed emission families. Each panel shows (a) KS $p$-values, (b) OoS density fan, and (c) OoS ACF of $|G_t|$. The CHMM-N counterpart is Figure~\ref{fig:oos_validation}.}
+\includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K18-t.pdf}
+\caption{Out-of-sample validation at $K = 18$ for CHMM-t. Panels show (a) KS $p$-values, (b) OoS density fan, and (c) OoS ACF of $|G_t|$. The CHMM-N counterpart is Figure~\ref{fig:oos_validation}; the CHMM-L counterpart is Figure~\ref{fig:oos_families_L}.}
 \label{fig:oos_families}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K18-L.pdf}
+\caption{Out-of-sample validation at $K = 18$ for CHMM-L. Panels as in Figure~\ref{fig:oos_families}.}
+\label{fig:oos_families_L}
 \end{figure}
 
 \paragraph{Convergence.}
