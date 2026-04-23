@@ -42,7 +42,7 @@ The CHMM-N / CHMM-t / CHMM-L OoS KS pass rates in the $79$--$86\%$ range sit bel
 
 \paragraph{Where the Discrete Baselines Still Fall Short at the Prior-Paper $K_{\text{disc}} = 90$.}
 With the authoritative prior-paper hyperparameters, the discrete NJ and WJ variants reach $98.3\%$ and $97.9\%$ IS KS respectively, comparable to the CHMM family ($93.8$--$95.2\%$).
-At this state resolution a bin-centroid discrete HMM is \emph{not} a straw man on coarse distributional pass rates; the distributional-metric gap that earlier versions of this paper reported against a $K_{\text{disc}} = 13$ baseline was driven by an under-resolution of the prior-paper's own operating point.
+At this state resolution a bin-centroid discrete HMM is \emph{not} a straw man on coarse distributional pass rates; a coarser $K_{\text{disc}} = 13$ discretization does open a visible KS/AD gap against the CHMM family, but that gap reflects under-resolution of the bin grid rather than a property of the discrete-state framework itself.
 Correcting the bin count to the prior-paper value eliminates that gap and re-centers the continuous-vs.-discrete claim on three structural dimensions where the bin-centroid scaffold cannot follow the observed marginal.
 
 First, tail weight: simulated kurtosis for NJ / WJ clamps near $3.5$ (IS) and $3.4$ (OoS) because the centroid-mix fourth moment is bounded above by the empirical variance of the tail bins, whereas the observed fourth moment is $7.68$ (IS) and $5.29$ (OoS), and CHMM-t reaches $14.57$ (IS) and $9.74$ (OoS).

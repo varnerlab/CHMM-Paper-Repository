@@ -38,9 +38,9 @@ For ticker $i$ and trading day $j$, the annualized excess growth rate is
 \draw[flow] (paSim) -- (paMet);
 
 % ---------- Pipeline B: cross-asset (bottom row) ----------
-\node[font=\small\bfseries, anchor=west, below=6mm of paData.south west] (pbTitle) {Pipeline~B (cross-asset, Section~\ref{sec:cross_asset}):};
-\node[data, below=2mm of pbTitle.south west, anchor=north west] (pbData) {$d$ tickers\\ returns $G^{(i)}_t$};
-\node[model, right=of pbData] (pbMarg) {Per-asset\\ CHMM fits\\ (marginals)};
+\node[font=\small\bfseries, anchor=west, below=11mm of paData.south west] (pbTitle) {Pipeline~B (cross-asset, Section~\ref{sec:cross_asset}):};
+\node[data, below=4mm of pbTitle.south west, anchor=north west] (pbData) {$d$ tickers\\ returns $G^{(i)}_t$};
+\node[model, right=of pbData] (pbMarg) {Per-asset\\ CHMM fits};
 \node[sim, right=of pbMarg] (pbPaths) {Per-asset\\ simulated\\ paths};
 \node[model, right=of pbPaths, fill=black!10, draw=black!70] (pbCop) {Copula on\\ ranks\\ (Gauss / $t$)};
 \node[sim, right=of pbCop] (pbReord) {Rank-\\ reordered\\ paths};
@@ -51,9 +51,13 @@ For ticker $i$ and trading day $j$, the annualized excess growth rate is
 \draw[flow] (pbCop) -- (pbReord);
 \draw[flow] (pbReord) -- (pbMet);
 
-% side labels clarifying the decomposition
-\node[lbl, anchor=west] at ($(pbMarg.north)+(0,1.4mm)$) {marginals};
-\node[lbl, anchor=center] at ($(pbCop.north)+(0,1.4mm)$) {dependence};
+% bracket + side labels: marginals span (data -> paths), dependence sits on copula boxes
+\draw[decorate, decoration={brace, amplitude=4pt, raise=1pt}, black!60]
+    ($(pbMarg.north west)+(0,1mm)$) -- ($(pbPaths.north east)+(0,1mm)$)
+    node[midway, lbl, above=3pt] {marginals};
+\draw[decorate, decoration={brace, amplitude=4pt, raise=1pt}, black!60]
+    ($(pbCop.north west)+(0,1mm)$) -- ($(pbReord.north east)+(0,1mm)$)
+    node[midway, lbl, above=3pt] {dependence};
 
 \end{tikzpicture}
 \caption{\textbf{Schematic of Pipeline~A (single-asset) and Pipeline~B (cross-asset).} Pipeline~A fits a CHMM per ticker independently and evaluates single-asset marginal / temporal metrics. Pipeline~B reuses the per-asset CHMM fits as \emph{marginals} and injects cross-asset \emph{dependence} through a rank-based copula (Gaussian or Student-$t$), preserving each asset's fitted CHMM distribution exactly while coupling asset ranks to match observed multi-asset correlation structure. Headline: the two pipelines share the single-asset scaffold, so improvements to the CHMM at the marginal step propagate into Pipeline~B without any changes to the dependence layer.}
@@ -81,6 +85,71 @@ Unlike the discrete framework of \citet{alswaidan2026hybrid}, which bins
 observations and estimates $\mathbf{T}$ by frequency counting, we learn
 $\mathbf{T}$, $\boldsymbol\theta_{1:K}$, and $\boldsymbol{\pi}$ jointly
 from continuous observations via EM.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    font=\small,
+    >={Stealth[length=2mm, width=1.6mm]},
+    state/.style={draw, circle, minimum size=9mm, inner sep=0pt,
+                  fill=black!4, thick},
+    obs/.style={draw, rectangle, rounded corners=1pt, minimum size=9mm,
+                inner sep=1pt, fill=black!10, thick},
+    emit/.style={draw, rectangle, rounded corners=1.5pt, align=center,
+                 minimum height=10mm, minimum width=28mm, inner sep=1.5mm,
+                 fill=black!3},
+    block/.style={draw, rectangle, rounded corners=1.5pt, align=center,
+                  minimum height=11mm, minimum width=34mm, inner sep=1.5mm,
+                  fill=black!6, thick},
+    flow/.style={-Stealth, thick, black!75},
+    lbl/.style={font=\footnotesize\itshape, black!65, inner sep=1pt},
+    eq/.style={font=\footnotesize, inner sep=1pt},
+]
+
+% ---- Latent Markov chain (top row) ----
+\node[state] (s1) at (0, 0) {$s_{t-1}$};
+\node[state, right=14mm of s1] (s2) {$s_t$};
+\node[state, right=14mm of s2] (s3) {$s_{t+1}$};
+\node[left=6mm of s1] (sdots) {$\cdots$};
+\node[right=6mm of s3] (edots) {$\cdots$};
+\draw[flow] (sdots) -- (s1);
+\draw[flow] (s1) -- (s2) node[midway, above, eq] {$T_{ij}$};
+\draw[flow] (s2) -- (s3) node[midway, above, eq] {$T_{ij}$};
+\draw[flow] (s3) -- (edots);
+\node[lbl, above=2mm of s2] {latent regime chain $s_t \in \{1,\ldots,K\}$};
+
+% ---- Observations (below chain) ----
+\node[obs, below=12mm of s1] (o1) {$G_{t-1}$};
+\node[obs, below=12mm of s2] (o2) {$G_t$};
+\node[obs, below=12mm of s3] (o3) {$G_{t+1}$};
+\draw[flow] (s1) -- (o1) node[midway, right, eq] {$b_{s_{t-1}}$};
+\draw[flow] (s2) -- (o2) node[midway, right, eq] {$b_{s_t}$};
+\draw[flow] (s3) -- (o3) node[midway, right, eq] {$b_{s_{t+1}}$};
+\node[lbl, below=2mm of o2] {observed excess growth rate $G_t \in \mathbb{R}$};
+
+% ---- Three emission families (bottom-left panel) ----
+\node[emit, below=20mm of o1.south west, anchor=north west] (eN)
+    {\textbf{CHMM-N} \\ $b_k = \mathcal{N}(\mu_k, \sigma_k^2)$};
+\node[emit, right=3mm of eN] (eT)
+    {\textbf{CHMM-t} \\ $b_k = t_{\nu_k}(\mu_k, \sigma_k)$};
+\node[emit, right=3mm of eT] (eL)
+    {\textbf{CHMM-L} \\ $b_k = \mathrm{Laplace}(\mu_k, b_k)$};
+\node[lbl, above=1mm of eT] {per-state emission family (one per CHMM variant)};
+
+% ---- EM training loop (right of emission panel) ----
+\node[block, right=12mm of eL] (estep)
+    {E-step\\ forward--backward\\ $\gamma_t(k),\ \xi_t(i,j)$};
+\node[block, above=4mm of estep] (mstep)
+    {M-step\\ update $\mathbf{T}$, $\{\boldsymbol\theta_k\}$\\ (family-specific)};
+\draw[flow, black!75] ([xshift=-3mm]mstep.south) -- ([xshift=-3mm]estep.north);
+\draw[flow, black!75] ([xshift=3mm]estep.north) -- ([xshift=3mm]mstep.south);
+\node[lbl, left=1mm of estep, rotate=90, anchor=south, yshift=1mm] {};
+\node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
+
+\end{tikzpicture}
+\caption{\textbf{CHMM architecture and training loop.} \textsc{Top}: a $K$-state latent Markov chain with transition matrix $\mathbf{T} \in \mathbb{R}^{K \times K}$ (entries $T_{ij} = \Pr(s_{t+1} = j \mid s_t = i)$) generates the regime sequence $s_t$; each $s_t$ conditionally emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}(\cdot; \boldsymbol\theta_{s_t})$. \textsc{Bottom left}: the three CHMM variants share everything except the emission family --- Gaussian (CHMM-N), Student-$t$ with per-state degrees of freedom $\nu_k$ (CHMM-t), or Laplace (CHMM-L). \textsc{Bottom right}: joint estimation of $(\mathbf{T}, \{\boldsymbol\theta_k\}, \boldsymbol\pi)$ alternates an E-step (log-space forward--backward on $\gamma_t(k), \xi_t(i,j)$) and a family-specific M-step until the log-likelihood change falls below $10^{-4}$ or $\mathrm{max\_iter} = 60$. The emission-family swap is the only architectural difference across the three variants in this paper.}
+\label{fig:chmm_architecture}
+\end{figure}
 
 \paragraph{Shared EM scaffold.}
 All three emission families share the same log-space forward-backward
@@ -164,8 +233,9 @@ The \textit{stationary block bootstrap} \cite{politis1994stationary} resamples b
 The \textit{Gaussian} i.i.d.\ generator draws $G_t \sim \mathcal{N}(\hat\mu, \hat\sigma^2)$ from the sample moments; the \textit{Laplace} i.i.d.\ generator draws $G_t \sim \text{Laplace}(\hat m, \hat b)$ from the sample median and mean-absolute deviation.
 \textit{GARCH(1,1)} \cite{bollerslev1986generalized} uses $G_t = \mu + \sigma_t z_t$, $\sigma_t^2 = \omega + \alpha(G_{t-1} - \mu)^2 + \beta \sigma_{t-1}^2$ with $z_t \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 1)$, fitted by Nelder--Mead maximum likelihood.
 \label{sec:discrete_hmm}%
-The \textit{discrete HMM} of \citet{alswaidan2026hybrid} is reproduced in both no-jump (NJ) and Poisson-jump (WJ) variants with the authoritative hyperparameters of the prior-paper final SPY run: returns are partitioned into $K_{\text{disc}} = 90$ quantile bins, transitions are estimated by frequency counting, and simulation returns bin centroids; the WJ variant additionally triggers, with probability $\epsilon = 5 \times 10^{-5}$, a forced residence in tail states for Poisson$(\lambda = 67)$ steps, matching the values used in the prior-paper SPY simulation notebook.
-The \textit{Bin-T NJ} variant replaces those bin centroids with bin-conditional Student-t emissions to isolate the quantization-per-se effect from the emission-family effect; for the Bin-T NJ variant only we retain a coarser $K_{\text{disc}} = 13$ bin count so that within-bin tail mass is estimable from a reasonable number of observations per bin.
+The \textit{discrete HMM} of \citet{alswaidan2026hybrid} is reproduced in both no-jump (NJ) and Poisson-jump (WJ) variants at the final SPY hyperparameters reported therein: returns are partitioned into $K_{\text{disc}} = 90$ quantile bins, transitions are estimated by frequency counting, and simulation returns bin centroids; the WJ variant additionally triggers, with probability $\epsilon = 5 \times 10^{-5}$, a forced residence in tail states for Poisson$(\lambda = 67)$ steps, matching the values of \citet{alswaidan2026hybrid}.
+The \textit{Bin-T NJ} variant replaces those bin centroids with bin-conditional Student-t emissions to approximately isolate the quantization-per-se effect from the emission-family effect; because per-bin Student-t MLE is under-identified at $K = 90$ (only $T/K \approx 28$ observations per bin over $T \approx 2{,}516$ in-sample days), we use a coarser $K_{\text{disc}} = 13$ for Bin-T NJ so that each bin carries enough mass to estimate its tail parameters.
+The comparison with the NJ row therefore varies both the bin count and the emission family; we flag this confound in Section~\ref{sec:discussion} and treat Bin-T NJ as an approximate rather than exact quantization ablation.
 Because quantization onto discrete centroids strips within-bin tail mass, the standard discrete baselines provide a direct upper bound on how much of the CHMM's fidelity is attributable to continuous emissions rather than to regime structure per se.
 
 \paragraph{GRU deep generative baseline.}

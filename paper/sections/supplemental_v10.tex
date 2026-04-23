@@ -907,6 +907,7 @@ The overshoot is therefore a feature of the Student-t emission family at $K = 18
 \small
 \caption{CHMM-t $\nu_{\min}$ bracket sensitivity at $K = 18$ on SPY (seed = 20260420, 1000 paths).}
 \label{tab:nu_bracket}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{l cc cc cc c c c}
 \toprule
 $\nu_{\min}$ & KS IS & AD IS & KS OoS & AD OoS & Kurt IS & Kurt OoS & ACF-MAE & $W_1$ & $H$ \\
@@ -919,7 +920,8 @@ $\infty$ (Gauss) & 94.1 & 86.7 & 84.2 & 75.5 & 5.03  & 4.46 & 0.0510 & 0.110 & 0
 \midrule
 \textit{Observed} & -- & -- & -- & -- & 7.68 & 5.29 & -- & -- & -- \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \subsection{Ryd\'en K = 2 Replication}
@@ -988,6 +990,7 @@ The rolling protocol recovers a modest $\sim 1$ percentage point on JNJ and a su
 \small
 \caption{\textbf{Walk-forward (quarterly CHMM-N refit) vs fixed-IS CHMM-N on JNJ and JPM} (Pipeline A, per-ticker independent fits; walk-forward only rolls the fit window, it does not introduce cross-asset dependence). $K = 18$, 1000 simulated paths per (ticker, mode), seed = 20260420. IS window 2014-01-03 through 2024-01-03; OoS window 2024-01-04 through 2026-04-17 ($T_{\text{OoS}} = 572$). The walk-forward mode refits the CHMM-N every 63 trading days across the OoS window, feeding each completed quarter's realized returns back into the training set before the next refit. Columns report percent KS / AD pass rate at $\alpha = 0.05$, excess kurtosis, ACF-MAE of $|G_t|$, Wasserstein-1, and Hellinger distance.}
 \label{tab:walk_forward}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{l cc cc cc c c c}
 \toprule
 Mode & KS IS & AD IS & KS OoS & AD OoS & Kurt IS & Kurt OoS & ACF-MAE & $W_1$ & $H$ \\
@@ -997,7 +1000,8 @@ JNJ walk-forward  & 99.3 & 98.2 & 94.9 & 91.3 & 5.46 & 5.14 & 0.0322 & 0.095 & 0
 JPM fixed-IS      & 96.6 & 94.4 & 49.0 & 48.6 & 7.33 & 6.31 & 0.0449 & 0.165 & 0.0875 \\
 JPM walk-forward  & 96.6 & 94.4 & 64.3 & 63.6 & 7.33 & 5.96 & 0.0449 & 0.165 & 0.0875 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \subsection{Student-t Copula Profile Log-Likelihood (Pipeline B)}

@@ -320,7 +320,7 @@ Under the OoS series the pattern is preserved with CHMM-t at $h = 1$ of $5.55$ a
 We complement the VaR envelope diagnostic of Section~\ref{sec:utility} with the unconditional-coverage likelihood-ratio test of \citet{kupiec1995techniques} and the independence likelihood-ratio test of \citet{christoffersen1998evaluating}, both evaluated on the $T_{\text{OoS}} = 572$ OoS window at $\alpha \in \{0.01, 0.05\}$.
 At the $1\%$ level all continuous generators pass Kupiec with $\text{LR}_{\text{uc}} < 3.84$ (the $\chi^2_1$ critical value).
 At the $5\%$ level, the discrete HMM with Poisson jumps baseline of \citet{alswaidan2026hybrid} and its no-jump variant both over-conservatively produce a breach rate of $1.7\%$ against a target of $5\%$, which rejects Kupiec decisively with $\text{LR}_{\text{uc}} = 16.81$ and $p < 0.001$.
-This is a concrete negative finding against the prior-paper baseline that the v9 VaR envelope diagnostic did not surface: the discrete quantization both wastes capital (breach rate far below target) and statistically fails the $5\%$ VaR test.
+This is a concrete negative finding against the discrete baseline of \citet{alswaidan2026hybrid} that the VaR envelope diagnostic of Section~\ref{sec:utility} does not surface on its own: the discrete quantization both wastes capital (breach rate far below target) and statistically fails the $5\%$ VaR test.
 Independence is harder: every row of the panel fails Christoffersen $\text{LR}_{\text{ind}}$ at both $1\%$ and $5\%$ on this OoS window, reflecting the breach-clustering structure of the $2024$-$2026$ stress subperiod.
 Section~\ref{sec:conditional_var} shows that a regime-conditional VaR closes this gap for the flat CHMM-t generator.
 
@@ -334,6 +334,7 @@ On the IS window, the $\bar{pv}$ scores are tighter because the IS horizon expos
 \small
 \caption{\textbf{Extended evaluation panel} (Pipeline A, SPY, \TIS{2{,}516}, \TOoS{572}, \NPaths{1{,}000}). Nine-model Track A subset of the twelve-row Table~\ref{tab:model_comparison}: Block-BS, Bin-T NJ, and GRU are dropped here because the Track A window-feature pipeline requires stationary i.i.d.\ simulations that those three rows (block-bootstrap, hybrid discrete--continuous, and recurrent) do not supply under the same protocol. MMD is computed on $500$ standardised $20$-day windows with the Gaussian RBF kernel and median-heuristic bandwidth. Signature-MMD is depth $3$ on the time-lifted $2$D path $(t/W, r_t / \operatorname{std}(r))$. Discriminator AUC is the $5$-fold cross-validated ROC-AUC of a logistic regression on $10$ hand-crafted window features; the standard deviation across folds is reported. Lower MMD and Signature-MMD is better; discriminator AUC closer to $0.50$ is better. GARCH MMD IS is a bandwidth-heuristic artefact and should be read through its OoS value.}
 \label{tab:extended_metrics}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrr}
 \toprule
 Model & MMD IS & MMD OoS & Sig IS & Sig OoS & AUC IS & AUC OoS \\
@@ -348,7 +349,8 @@ CHMM-N      & $1.5\!\times\!10^{-4}$  & $6.1\!\times\!10^{-4}$  & $7.2\!\times\!
 \textbf{CHMM-t}   & $\mathbf{2.0\!\times\!10^{-5}}$  & $2.17\!\times\!10^{-3}$ & $4.72\!\times\!10^{-3}$ & $8.25\!\times\!10^{-3}$ & $\mathbf{0.607 \pm 0.027}$ & $\mathbf{0.644 \pm 0.044}$ \\
 CHMM-L      & $8.9\!\times\!10^{-4}$  & $2.80\!\times\!10^{-3}$ & $\mathbf{4.28\!\times\!10^{-3}}$ & $\mathbf{3.81\!\times\!10^{-3}}$ & $0.623 \pm 0.051$ & $0.671 \pm 0.047$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \begin{table}[t]
