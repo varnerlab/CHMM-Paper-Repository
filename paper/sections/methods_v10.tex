@@ -38,8 +38,8 @@ For ticker $i$ and trading day $j$, the annualized excess growth rate is
 \draw[flow] (paSim) -- (paMet);
 
 % ---------- Pipeline B: cross-asset (bottom row) ----------
-\node[font=\small\bfseries, anchor=west, below=11mm of paData.south west] (pbTitle) {Pipeline~B (cross-asset, Section~\ref{sec:cross_asset}):};
-\node[data, below=4mm of pbTitle.south west, anchor=north west] (pbData) {$d$ tickers\\ returns $G^{(i)}_t$};
+\node[font=\small\bfseries, anchor=west, below=9mm of paData.south west] (pbTitle) {Pipeline~B (cross-asset, Section~\ref{sec:cross_asset}):};
+\node[data, below=10mm of pbTitle.south west, anchor=north west] (pbData) {$d$ tickers\\ returns $G^{(i)}_t$};
 \node[model, right=of pbData] (pbMarg) {Per-asset\\ CHMM fits};
 \node[sim, right=of pbMarg] (pbPaths) {Per-asset\\ simulated\\ paths};
 \node[model, right=of pbPaths, fill=black!10, draw=black!70] (pbCop) {Copula on\\ ranks\\ (Gauss / $t$)};
@@ -136,14 +136,13 @@ from continuous observations via EM.
     {\textbf{CHMM-L} \\ $b_k = \mathrm{Laplace}(\mu_k, b_k)$};
 \node[lbl, above=1mm of eT] {per-state emission family (one per CHMM variant)};
 
-% ---- EM training loop (right of emission panel) ----
-\node[block, right=12mm of eL] (estep)
-    {E-step\\ forward--backward\\ $\gamma_t(k),\ \xi_t(i,j)$};
-\node[block, above=4mm of estep] (mstep)
+% ---- EM training loop (top-right, beside Markov chain) ----
+\node[block, right=18mm of edots] (mstep)
     {M-step\\ update $\mathbf{T}$, $\{\boldsymbol\theta_k\}$\\ (family-specific)};
+\node[block, below=6mm of mstep] (estep)
+    {E-step\\ forward--backward\\ $\gamma_t(k),\ \xi_t(i,j)$};
 \draw[flow, black!75] ([xshift=-3mm]mstep.south) -- ([xshift=-3mm]estep.north);
 \draw[flow, black!75] ([xshift=3mm]estep.north) -- ([xshift=3mm]mstep.south);
-\node[lbl, left=1mm of estep, rotate=90, anchor=south, yshift=1mm] {};
 \node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
 
 \end{tikzpicture}
