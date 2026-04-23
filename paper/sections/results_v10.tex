@@ -97,29 +97,28 @@ However, its simulated kurtosis (2.96) fell well short of the observed 7.68, and
 The 77.8\% in-sample quantile coverage indicates that the Laplace distribution's fixed tail decay rate cannot fully envelop the observed quantile range.
 
 \paragraph{Discrete HMM: No Jumps (NJ) and With Jumps (WJ).}
-Throughout this paper, \emph{NJ} denotes the no-jump discrete HMM of \citet{alswaidan2026hybrid}: observations are first partitioned into $K_{\text{disc}} = 13$ equal-probability quantile bins of the in-sample return distribution, the transition matrix is estimated by frequency counting on the resulting discrete state sequence, and simulation returns the bin centroid at the decoded state.
-\emph{WJ} is the same construction augmented with the Poisson jump-duration process of \citet{alswaidan2026hybrid}, which with probability $\epsilon = 0.01$ forces a residence in the tail bins for $\text{Poisson}(\lambda = 3)$ steps.
-Both baselines are re-implemented inside the present pipeline (not invoked as the original \texttt{JumpHMM.jl} code) to ensure that identical data splits, seeds, and simulation lengths are used across all benchmarks; the re-implementation reproduces the hyperparameters and outputs of the prior paper exactly.
-The two discrete variants both collapsed on the distributional metrics: 0.0\% KS IS / 38.1\% KS OoS and 0.0\% AD IS / 65.9\% AD OoS for NJ, and 0.0\% KS IS / 36.2\% KS OoS and 0.0\% AD IS / 54.3\% AD OoS for WJ.
-The explanation is the 13-bin quantization step described in Section~\ref{sec:discrete_hmm}: every simulated path is constrained to the $K_{\text{disc}} = 13$ empirical bin centroids, so the within-bin tail mass that the continuous model preserves is discarded by construction.
-Simulated kurtosis falls to 0.64 (NJ) and 0.52 (WJ), Wasserstein-1 explodes to 0.314 / 0.326, and Hellinger jumps to 0.381 / 0.385.
-The Poisson jump augmentation (WJ) marginally \emph{worsens} every IS metric relative to NJ, which is consistent with the interpretation that jumps forcibly add mass at the already-coarse tail centroids and further distort the marginal.
-Under the longer $T_{\text{OoS}} = 572$ window, the OoS pass rates for the two discrete baselines are now also rejected at the $36$--$38\%$ range rather than the $85$--$88\%$ range that the shorter v6 window produced, making the quantization failure visible on \emph{both} windows.
-This is the central empirical contrast for our paper: the \emph{only} methodological change between the prior paper and this work that affects the KS/AD metrics is the move from quantized to continuous emissions, and that move is responsible for the 94.7-percentage-point swing in IS KS pass rate between the discrete and continuous Gaussian variants.
+Throughout this paper, \emph{NJ} denotes the no-jump discrete HMM of \citet{alswaidan2026hybrid}: observations are first partitioned into $K_{\text{disc}} = 90$ equal-probability quantile bins of the in-sample return distribution, the transition matrix is estimated by frequency counting on the resulting discrete state sequence, and simulation returns the bin centroid at the decoded state.
+\emph{WJ} is the same construction augmented with the Poisson jump-duration process of \citet{alswaidan2026hybrid}, which with probability $\epsilon = 5 \times 10^{-5}$ forces a residence in the tail bins for $\text{Poisson}(\lambda = 67)$ steps.
+Both baselines are re-implemented inside the present pipeline (not invoked as the original \texttt{JumpHMM.jl} code) to ensure that identical data splits, seeds, and simulation lengths are used across all benchmarks; the re-implementation adopts the authoritative hyperparameters of the prior-paper final SPY run ($K_{\text{disc}} = 90$, $\epsilon = 5 \times 10^{-5}$, $\lambda = 67$).
+At this state resolution both discrete variants match the CHMM family on coarse distributional fidelity: $98.3\%$ KS IS / $85.2\%$ KS OoS and $98.3\%$ AD IS / $89.9\%$ AD OoS for NJ, and $97.9\%$ KS IS / $83.9\%$ KS OoS and $96.5\%$ AD IS / $85.4\%$ AD OoS for WJ; these KS/AD rates are comparable to the CHMM-N / CHMM-t / CHMM-L range of $93.2$--$93.8\%$ IS KS and $79.3$--$85.9\%$ OoS KS.
+Where the discrete variants fall short is on \emph{higher-order} distributional structure: simulated kurtosis is $3.49$ (WJ) and $3.53$ (NJ) against an observed $7.68$, Hellinger distance is roughly double that of the CHMMs ($0.1605$ / $0.1621$ vs.\ $0.0762$--$0.0810$), and aggregational kurtosis at horizons $h = 10$ and $h = 21$ decays to near-zero ($0.39$ / $0.47$ and $0.01$ / $0.01$) against the CHMM-N / CHMM-t values of $3.27$ / $2.06$ and $2.38$ / $1.35$ (Section~\ref{sec:extended_evaluation}, Table~\ref{tab:agg_kurt}).
+The discrete variants' simulated kurtosis is clamped from above by the $K_{\text{disc}}$-atom structure of the bin-centroid emission: tail mass is represented only by the two tail bins, which together account for roughly $2/K_{\text{disc}}$ of the stationary distribution, so no amount of jump augmentation can produce a sample fourth moment above the observed centroid-mix kurtosis of $\approx 3.5$.
+The Poisson jump augmentation (WJ) with $\epsilon = 5 \times 10^{-5}$ and $\lambda = 67$ (the prior-paper SPY values) triggers on roughly $0.005\%$ of time steps and therefore leaves the IS and OoS marginal metrics essentially unchanged from the NJ baseline, making the WJ row a slight perturbation rather than a meaningful variance-regime addition at this sample size.
+The central empirical contrast for our paper is therefore not on coarse KS/AD pass rates (where the discrete baselines at $K_{\text{disc}} = 90$ are competitive) but on tail structure, aggregational Gaussianity decay, and VaR calibration: Section~\ref{sec:utility} and Section~\ref{sec:extended_evaluation} document that both discrete variants fail the Kupiec $5\%$ VaR test with $\text{LR}_{\text{uc}} = 16.81$ (breach rate $1.7\%$ against a $5\%$ target) while all three continuous CHMM variants clear the test, and the continuous emissions preserve the Cont (2001) aggregational Gaussianity signature that the $K_{\text{disc}} = 90$ centroid scaffold cannot.
 
 \paragraph{Block Bootstrap ($b = 10$): Temporally-Aware Non-Parametric Ceiling.}
 The stationary block bootstrap at block length $b = 10$ is added as a temporally-aware non-parametric benchmark: it preserves clustering (through the block structure) while keeping the marginal distribution empirical.
 On the SPY in-sample series it attains $99.2\%$ KS and $96.4\%$ AD with simulated kurtosis of $7.07$ (observed $7.68$) and ACF-MAE of $0.0568$, essentially saturating the distributional ceiling while reproducing most of the absolute-return autocorrelation.
-The i.i.d.\ bootstrap row sits slightly above it on the distributional metrics (at the cost of destroyed temporal structure), and the CHMM-N row sits slightly below on the distributional metrics but improves on the block-bootstrap ACF-MAE ($0.0513$ vs.\ $0.0568$).
+The i.i.d.\ bootstrap row sits slightly above it on the distributional metrics (at the cost of destroyed temporal structure), and the CHMM-N row sits slightly below on the distributional metrics but improves on the block-bootstrap ACF-MAE ($0.0507$ vs.\ $0.0568$).
 The $b = 10$ block bootstrap is therefore a stronger ceiling than the i.i.d.\ bootstrap for synthetic-data consumers who care about temporal fidelity, and the CHMM-N recovers most of the block-bootstrap performance with the additional advantages of a parametric regime interpretation and an emission-family choice.
 
 \paragraph{Discrete HMM with Bin-Conditional Student-t Emissions (Bin-T NJ).}
-The Bin-T NJ row replaces the bin-centroid emissions of the standard NJ baseline with a bin-conditional Student-t emission fitted within each quantile bin (no jump mechanism).
-This is the fairest discrete analog of the continuous CHMMs because it isolates the emission-family effect from the transition-matrix effect: both Bin-T NJ and Discrete NJ share the same $K_{\text{disc}} = 13$ quantile bins and the same frequency-counted transition matrix, but Bin-T NJ emits from a continuous bin-conditional density rather than from the bin centroid.
-The result is striking: Bin-T NJ jumps from $0.0\%$ to $95.4\%$ IS KS and from $0.0\%$ to $92.1\%$ IS AD relative to the standard NJ row, confirming that the distributional-fidelity collapse of the discrete NJ and WJ variants is a \emph{quantization} artefact (centroid emission), not a \emph{transition-matrix-structure} artefact.
-Bin-T NJ's simulated kurtosis of $26.18$ is a large overshoot driven by the two tail bins (bins 1 and 13) where the within-bin Student-t fit lands at the lower $\nu$ bracket; this is the discrete analog of the CHMM-t overshoot described in Section~\ref{sec:discussion}, and it confirms that when a discrete pipeline is allowed continuous within-bin emissions its KS performance becomes competitive with the jointly-optimized continuous CHMM.
-Bin-T NJ does \emph{not} dominate the CHMM-N because it still underperforms on the tail-distance metrics ($W_1 = 0.116$ vs.\ $0.110$; $H = 0.0929$ vs.\ $0.0808$) and on ACF-MAE ($0.0619$ vs.\ $0.0513$); but the KS/AD gap with CHMM-N is effectively closed.
-The takeaway for the prior-paper loop is that the $94.7$-percentage-point IS KS swing reported as \emph{``continuous vs.\ quantized''} in Section~\ref{sec:model_comparison} is more precisely a swing in the \emph{emission-step} of the pipeline; once the emission step is lifted from discrete bin centroids to bin-conditional continuous densities, the discrete transition structure of \citet{alswaidan2026hybrid} is competitive with our continuous-emissions baseline on KS and AD.
+The Bin-T NJ row replaces the bin-centroid emissions of the standard NJ baseline with a bin-conditional Student-t emission fitted within each quantile bin (no jump mechanism), and uses a coarser $K_{\text{disc}} = 13$ bin count so that the within-bin Student-t parameters are estimable from a reasonable number of observations per bin.
+It serves as an ablation that decouples the \emph{emission-family} effect from the \emph{state-resolution} effect: Bin-T NJ and the $K_{\text{disc}} = 90$ Discrete NJ baseline share the same frequency-counting transition-estimation pipeline but differ in whether the emission density within each bin is a point mass at the centroid or a fitted Student-t, and they differ in bin count.
+Bin-T NJ achieves $95.4\%$ IS KS and $92.1\%$ IS AD, attaining the same broad KS/AD band as the $K_{\text{disc}} = 90$ Discrete NJ ($98.3\%$ IS KS / $98.3\%$ IS AD) and the jointly-optimized CHMMs ($93$--$95\%$ IS KS / $86$--$92\%$ IS AD).
+Bin-T NJ's simulated kurtosis of $26.18$ is a large overshoot driven by the two tail bins (bins $1$ and $13$) where the within-bin Student-t fit lands at the lower $\nu$ bracket; this is the discrete analog of the CHMM-t overshoot described in Section~\ref{sec:discussion} and confirms that within-bin continuous emissions can reproduce the CHMM-t tail weight at a coarse $K_{\text{disc}}$ level.
+Bin-T NJ does \emph{not} dominate the CHMM-N because it still underperforms on the tail-distance metrics ($W_1 = 0.116$ vs.\ $0.110$; $H = 0.0929$ vs.\ $0.0810$) and on ACF-MAE ($0.0619$ vs.\ $0.0507$).
+The takeaway for the prior-paper loop is that, once the discrete pipeline is given either a high enough bin count ($K_{\text{disc}} = 90$) or a continuous within-bin emission family (Bin-T NJ), its KS/AD pass rates become competitive with the jointly-optimized continuous CHMM; the CHMM advantage over the prior-paper family is therefore a higher-order tail-structure and VaR-calibration claim, not a coarse-KS claim (Section~\ref{sec:extended_evaluation}, Table~\ref{tab:extended_metrics}; Section~\ref{sec:utility}).
 
 \paragraph{GARCH(1,1).}
 GARCH achieved ACF-MAE of 0.0492 among the parametric models, confirming its strong temporal fidelity.
@@ -129,29 +128,29 @@ In-sample quantile coverage was only 50.5\%.
 This result crystallizes the temporal-distributional tradeoff: GARCH's single-regime conditional variance process faithfully encodes volatility persistence but its unimodal innovation distribution cannot represent the multi-regime structure of equity markets.
 
 \paragraph{GRU (Deep-Generative Baseline).}
-The single-layer GRU + Gaussian-head generator (architecture and training in Section~\ref{sec:gru_methods}) converges cleanly (the per-window negative log-likelihood drops from $0.340$ at epoch $1$ to $0.200$ at epoch $20$) and reproduces volatility clustering reasonably well: ACF-MAE of $0.0518$ on $|G_t|$ is within $0.001$ of CHMM-N ($0.0513$) and within $0.003$ of GARCH ($0.0492$).
+The single-layer GRU + Gaussian-head generator (architecture and training in Section~\ref{sec:gru_methods}) converges cleanly (the per-window negative log-likelihood drops from $0.340$ at epoch $1$ to $0.200$ at epoch $20$) and reproduces volatility clustering reasonably well: ACF-MAE of $0.0518$ on $|G_t|$ is within $0.001$ of CHMM-N ($0.0507$) and within $0.004$ of GARCH ($0.0484$).
 On distributional fidelity the GRU collapses, however: in-sample KS pass rate $18.1\%$, AD pass rate $13.7\%$, simulated kurtosis $2.85$ against an observed $7.68$, $W_1 = 0.196$, $H = 0.0966$, and quantile coverage $37.4\%$.
 The diagnostic is unambiguous (the auto-regressive Gaussian head produces a near-Gaussian unconditional marginal even though the recurrence captures clustering) and matches the variance-collapse pattern reported in \citet{alswaidan2026hybrid} for their neural baseline and in \citet{takahashi2019modeling, kwon2024can} for GAN-based generators.
 The OoS KS rate of $52.5\%$ (AD $55.0\%$) still does not approach the CHMM operating point on the same $T = 572$ window, confirming that the distributional gap is structural rather than a sample-size artefact.
 The takeaway for the comparison is that adding a deep-generative row does not displace the CHMM operating point: among parametric and deep generators, the CHMM-N is the only one that achieves both $\geq 85\%$ IS KS \emph{and} ACF-MAE within $0.003$ of GARCH; richer GRU heads (mixture-density, Student-t, or copula-based output) would be the natural next experiment but are outside the scope of this paper.
 
 \paragraph{CHMM-N ($K = 18$, Gaussian emissions).}
-The Gaussian CHMM achieved 94.7\% KS and 86.5\% AD in-sample, competitive with the bootstrap (99.6\%) and Laplace i.i.d.\ (98.9\%) on KS, and substantially outperforming GARCH (23.1\%), Discrete NJ (0.0\%), and Discrete WJ (0.0\%).
-ACF-MAE of 0.0513 was essentially on par with GARCH (0.0492), demonstrating that the CHMM reproduces volatility clustering \emph{without} a dedicated jump mechanism or conditional variance equation.
+The Gaussian CHMM achieved $93.8\%$ KS and $86.6\%$ AD in-sample, competitive with the bootstrap ($99.9\%$), Laplace i.i.d.\ ($99.1\%$), and the $K_{\text{disc}} = 90$ Discrete NJ / WJ variants ($98.3\%$ / $97.9\%$) on KS, and substantially outperforming GARCH ($25.9\%$).
+ACF-MAE of $0.0507$ was essentially on par with GARCH ($0.0484$), demonstrating that the CHMM reproduces volatility clustering \emph{without} a dedicated jump mechanism or conditional variance equation.
 This is the central finding of this paper: the Ryd\'{e}n et al.\ limitation is resolved by moderate state resolution in a standard HMM framework.
 The Wasserstein-1 (0.110) is well below the GARCH figure (0.245); Hellinger (0.0808) is four times smaller than either discrete HMM; in-sample quantile coverage is 100\% matching the bootstrap ceiling.
 The residual Gaussian-emission weakness is a kurtosis shortfall: simulated excess kurtosis is 5.02 IS and 4.42 OoS against observed values of 7.68 / 5.29.
 
 \paragraph{CHMM-t ($K = 18$, Student-t emissions).}
-Replacing the Gaussian component with a per-state Student-t matches the CHMM-N in-sample KS (94.7\%) and raises AD to 89.9\% (vs.\ 86.5\% for CHMM-N); OoS AD rises from 76.5\% to 79.0\%, while OoS KS is essentially unchanged (83.4\% vs.\ 84.0\%).
+Replacing the Gaussian component with a per-state Student-t matches the CHMM-N in-sample KS ($93.7\%$ vs.\ $93.8\%$) and raises AD to $88.9\%$ (vs.\ $86.6\%$ for CHMM-N); OoS AD rises from $77.9\%$ to $80.0\%$, and OoS KS rises from $84.2\%$ to $85.9\%$.
 The CHMM-t is the best non-bootstrap entry on Wasserstein-1 (0.102) and Hellinger (0.0758), two quantile-weighted metrics that penalize tail mismatch directly.
 Simulated excess kurtosis rises to 17.34 IS and 10.24 OoS: the ECM search allocates small $\nu_k$ to a subset of tail states, which over-corrects both the in-sample and out-of-sample mixture kurtosis (observed 7.68 IS and 5.29 OoS).
 We diagnose this overshoot in Section~\ref{sec:discussion} via the per-state $\nu_k$ histogram and the $\nu_{\min}$ bracket-sensitivity study.
-The slight ACF-MAE increase (0.0554 vs.\ 0.0513) is consistent with the heavier tail states spending marginally more time away from the central regimes.
+The slight ACF-MAE increase ($0.0548$ vs.\ $0.0507$) is consistent with the heavier tail states spending marginally more time away from the central regimes.
 
 \paragraph{CHMM-L ($K = 18$, Laplace emissions).}
 The Laplace variant produces the most \emph{kurtosis-aligned} fit: simulated excess kurtosis is 6.76 IS and 6.27 OoS against observed 7.68 / 5.29, closing most of the CHMM-N IS shortfall (without the CHMM-t over-correction) and even overshooting the OoS target by $\sim 1$.
-CHMM-L attains the strongest IS AD fit of any parametric model (93.2\% IS AD, 6.7 percentage points ahead of CHMM-N and 3.3 ahead of CHMM-t), consistent with the AD statistic's tail weighting and the Laplace component's per-component excess kurtosis of 3.
+CHMM-L attains the strongest IS AD fit among the continuous CHMMs ($91.2\%$ IS AD, $4.6$ percentage points ahead of CHMM-N and $2.3$ ahead of CHMM-t), consistent with the AD statistic's tail weighting and the Laplace component's per-component excess kurtosis of $3$.
 ACF-MAE (0.0564) and $W_1$ (0.102) are within 10\% of the CHMM-N values, and in-sample quantile coverage is 100\%.
 Because Laplace emissions carry no shape parameter, CHMM-L is strictly cheaper than CHMM-t (no per-state golden-section search) and adds no new hyperparameters.
 
@@ -197,18 +196,18 @@ OoS AD for Bin-T NJ, Block-BS, and GRU is reported alongside OoS KS in the row (
 Model & IS & OoS & IS & OoS & IS & OoS & ACF-MAE $\downarrow$ & $W_1$ $\downarrow$ & $H$ $\downarrow$ & IS & OoS \\
 \midrule
 \textit{Observed}   & --    & --    & --    & --    & 7.68    & 5.29    & --     & --    & --     & --    & --    \\
-Bootstrap           & 99.6  & 91.0  & 99.4  & 94.2  & 7.43    & 6.66    & 0.0627 & 0.065 & 0.0500 & 100.0 & 76.8  \\
+Bootstrap           & 99.9  & 91.0  & 99.7  & 93.8  & 7.54    & 6.80    & 0.0628 & 0.066 & 0.0501 & 100.0 & 77.8  \\
 Block-BS ($b=10$)   & 99.2  & 87.5  & 96.4  & 86.4  & 7.07    & 5.34    & 0.0568 & 0.092 & 0.0534 & 100.0 & 86.9  \\
-Gaussian            & 0.0   & 2.0   & 0.0   & 0.0   & $-0.00$ & $-0.02$ & 0.0627 & 0.411 & 0.1541 & 13.1  & 21.2  \\
-Laplace             & 98.9  & 87.2  & 97.2  & 91.9  & 2.96    & 2.86    & 0.0627 & 0.122 & 0.0816 & 77.8  & 71.7  \\
-Discrete NJ         & 0.0   & 38.1  & 0.0   & 65.9  & 0.64    & 0.63    & 0.0617 & 0.314 & 0.3810 & 38.4  & 66.7  \\
-Discrete WJ         & 0.0   & 36.2  & 0.0   & 54.3  & 0.52    & 0.51    & 0.0618 & 0.326 & 0.3848 & 41.4  & 66.7  \\
+Gaussian            & 0.0   & 1.2   & 0.0   & 0.0   & $-0.01$ & $-0.02$ & 0.0627 & 0.413 & 0.1543 & 13.1  & 21.2  \\
+Laplace             & 99.1  & 86.1  & 97.3  & 91.7  & 2.96    & 2.83    & 0.0627 & 0.123 & 0.0816 & 77.8  & 69.7  \\
+Discrete NJ ($K_{\text{disc}} = 90$) & 98.3  & 85.2  & 98.3  & 89.9  & 3.53    & 3.44    & 0.0618 & 0.110 & 0.1605 & 100.0 & 93.9  \\
+Discrete WJ ($K_{\text{disc}} = 90$) & 97.9  & 83.9  & 96.5  & 85.4  & 3.49    & 3.40    & 0.0598 & 0.117 & 0.1621 & 100.0 & 89.9  \\
 Bin-T NJ            & 95.4  & 86.7  & 92.1  & 93.2  & 26.18   & 10.76   & 0.0619 & 0.116 & 0.0929 & 89.9  & 93.9  \\
-GARCH(1,1)          & 23.1  & 58.3  & 8.5   & 55.5  & 6.97    & 3.08    & 0.0492 & 0.245 & 0.1030 & 50.5  & 85.9  \\
+GARCH(1,1)          & 25.9  & 58.2  & 10.0  & 56.0  & 6.97    & 2.88    & 0.0484 & 0.248 & 0.1033 & 51.5  & 87.9  \\
 GRU                 & 18.1  & 52.5  & 13.7  & 55.0  & 2.85    & 2.21    & 0.0518 & 0.196 & 0.0966 & 37.4  & 69.7  \\
-CHMM-N ($K=18$)     & 94.7  & 84.0  & 86.5  & 76.5  & 5.02    & 4.42    & 0.0513 & 0.110 & 0.0808 & 100.0 & 91.9  \\
-\textbf{CHMM-t ($K=18$)} & 94.7  & 83.4  & 89.9  & 79.0  & 17.34   & 10.24   & 0.0554 & \textbf{0.102} & \textbf{0.0758} & \textbf{100.0} & \textbf{92.9} \\
-\textbf{CHMM-L ($K=18$)} & \textbf{95.2} & 80.4 & \textbf{93.2} & \textbf{79.9} & \textbf{6.76} & \textbf{6.27} & 0.0564 & 0.102 & 0.0797 & \textbf{100.0} & 81.8  \\
+CHMM-N ($K=18$)     & 93.8  & 84.2  & 86.6  & 77.9  & 4.99    & 4.51    & 0.0507 & 0.112 & 0.0810 & 100.0 & 90.9  \\
+\textbf{CHMM-t ($K=18$)} & 93.7  & 85.9  & 88.9  & 80.0  & 14.57   & 9.74    & 0.0548 & \textbf{0.103} & \textbf{0.0762} & \textbf{100.0} & \textbf{93.9} \\
+\textbf{CHMM-L ($K=18$)} & 93.2  & 79.3 & 91.2  & 79.3  & \textbf{6.75} & \textbf{6.29} & 0.0565 & 0.101 & 0.0795 & \textbf{100.0} & 81.8  \\
 \bottomrule
 \end{tabular}%
 }
@@ -266,7 +265,7 @@ The full sweep over $K \in \{3, 6, 9, 12, 15, 18, 21\}$ and per-$K$ figures are 
 \subsection{Out-of-Sample Evaluation}
 \label{sec:oos}
 
-At the selected state resolution $K = 18$ the CHMM-N achieves 84.0\% OoS KS pass rate, 76.5\% OoS AD pass rate, and 91.9\% OoS quantile coverage on the $2024$-$01$-$04$ through $2026$-$04$-$20$ holdout window; the heavy-tailed CHMM-t and CHMM-L variants reach 83.4\%/79.0\% and 80.4\%/79.9\% OoS KS/AD, respectively.
+At the selected state resolution $K = 18$ the CHMM-N achieves $84.2\%$ OoS KS pass rate, $77.9\%$ OoS AD pass rate, and $90.9\%$ OoS quantile coverage on the $2024$-$01$-$04$ through $2026$-$04$-$20$ holdout window; the heavy-tailed CHMM-t and CHMM-L variants reach $85.9\%/80.0\%$ and $79.3\%/79.3\%$ OoS KS/AD, respectively.
 The CHMM-N OoS simulated kurtosis is 4.42 against an observed 5.29, bringing the kurtosis gap to below one unit; CHMM-t overshoots at 10.24 and CHMM-L overshoots modestly at 6.27.
 Figure~\ref{fig:oos_validation} shows the OoS density fan chart and ACF comparison for CHMM-N at $K = 18$; the CHMM-t and CHMM-L counterparts are reported in Appendix~\ref{sec:multi_emission_figs} (Figure~\ref{fig:oos_families}).
 
@@ -299,7 +298,7 @@ The single-regime GARCH(1,1) attains $\text{MMD}^2 = 0.0$ numerically because th
 We lift each window to a $2$D path $(t/W, r_t / \operatorname{std}(r))$ and compute a depth-$3$ truncated path signature in the sense of \citet{chevyrev2016primer}, then evaluate MMD with the signature feature as the kernel embedding.
 CHMM-L attains the smallest IS signature-MMD at $4.3 \times 10^{-3}$, essentially tied with CHMM-t ($4.7 \times 10^{-3}$); CHMM-N follows at $7.2 \times 10^{-3}$.
 The i.i.d.\ baselines land an order of magnitude worse ($2.7$ to $3.3 \times 10^{-2}$), confirming that path-geometric distinguishability separates regime-switching generators from memoryless ones.
-The Discrete NJ signature-MMD is anomalously low ($9 \times 10^{-5}$) because the bin-centroid emission produces a piecewise-constant path whose depth-$3$ signature is near-zero by construction; we flag this artefact and treat the row as non-informative for this metric.
+The Discrete NJ and WJ variants at $K_{\text{disc}} = 90$ score $1.5 \times 10^{-3}$ on the IS signature-MMD: lower than the i.i.d.\ baselines but larger than any CHMM row, consistent with the 90-atom bin-centroid emission producing a piecewise-constant path whose depth-$3$ path signature has reduced expressiveness relative to a continuous-emission trajectory.
 
 \paragraph{Discriminator AUC (logistic regression on hand-crafted window features).}
 Following \citet{yoon2019timegan} we train a logistic regression classifier on $10$ window features (mean, std, skew, kurt, min, max, first- and second-order autocorrelation, absolute-return first-order autocorrelation, and realised volatility) to distinguish $500$ real and $500$ simulated $20$-day windows, with $5$-fold cross-validated area under the ROC curve as the summary statistic.
@@ -323,7 +322,7 @@ Under the OoS series the pattern is preserved with CHMM-t at $h = 1$ of $5.55$ a
 \paragraph{Unconditional $1\%$ and $5\%$ VaR: Kupiec and Christoffersen tests.}
 We complement the VaR envelope diagnostic of Section~\ref{sec:utility} with the unconditional-coverage likelihood-ratio test of \citet{kupiec1995techniques} and the independence likelihood-ratio test of \citet{christoffersen1998evaluating}, both evaluated on the $T_{\text{OoS}} = 572$ OoS window at $\alpha \in \{0.01, 0.05\}$.
 At the $1\%$ level all continuous generators pass Kupiec with $\text{LR}_{\text{uc}} < 3.84$ (the $\chi^2_1$ critical value).
-At the $5\%$ level, the discrete HMM with Poisson jumps baseline of \citet{alswaidan2026hybrid} and its no-jump variant both over-conservatively produce a breach rate of $1.75\%$ against a target of $5\%$, which rejects Kupiec decisively with $\text{LR}_{\text{uc}} = 16.81$ and $p < 0.001$.
+At the $5\%$ level, the discrete HMM with Poisson jumps baseline of \citet{alswaidan2026hybrid} and its no-jump variant both over-conservatively produce a breach rate of $1.7\%$ against a target of $5\%$, which rejects Kupiec decisively with $\text{LR}_{\text{uc}} = 16.81$ and $p < 0.001$.
 This is a concrete negative finding against the prior-paper baseline that the v9 VaR envelope diagnostic did not surface: the discrete quantization both wastes capital (breach rate far below target) and statistically fails the $5\%$ VaR test.
 Independence is harder: every row of the panel fails Christoffersen $\text{LR}_{\text{ind}}$ at both $1\%$ and $5\%$ on this OoS window, reflecting the breach-clustering structure of the $2024$-$2026$ stress subperiod.
 Section~\ref{sec:conditional_var} shows that a regime-conditional VaR closes this gap for the flat CHMM-t generator.
@@ -345,8 +344,8 @@ Model & MMD IS & MMD OoS & Sig IS & Sig OoS & AUC IS & AUC OoS \\
 Bootstrap   & $5.77\!\times\!10^{-3}$ & $1.26\!\times\!10^{-2}$ & $3.08\!\times\!10^{-2}$ & $3.77\!\times\!10^{-2}$ & $0.779 \pm 0.038$ & $0.760 \pm 0.047$ \\
 Gaussian    & $9.38\!\times\!10^{-3}$ & $1.32\!\times\!10^{-2}$ & $2.68\!\times\!10^{-2}$ & $3.81\!\times\!10^{-2}$ & $0.780 \pm 0.024$ & $0.795 \pm 0.021$ \\
 Laplace     & $3.51\!\times\!10^{-3}$ & $7.60\!\times\!10^{-3}$ & $2.82\!\times\!10^{-2}$ & $2.43\!\times\!10^{-2}$ & $0.796 \pm 0.027$ & $0.751 \pm 0.040$ \\
-Discrete NJ & $3.91\!\times\!10^{-3}$ & $4.49\!\times\!10^{-3}$ & $9.0\!\times\!10^{-5}$  & $4.89\!\times\!10^{-3}$ & $0.729 \pm 0.037$ & $0.767 \pm 0.039$ \\
-Discrete WJ & $2.69\!\times\!10^{-3}$ & $7.29\!\times\!10^{-3}$ & $1.66\!\times\!10^{-3}$ & $9.27\!\times\!10^{-3}$ & $0.728 \pm 0.040$ & $0.754 \pm 0.023$ \\
+Discrete NJ ($K_{\text{disc}}{=}90$) & $5.76\!\times\!10^{-3}$ & $4.42\!\times\!10^{-3}$ & $1.45\!\times\!10^{-3}$ & $4.12\!\times\!10^{-3}$ & $0.711 \pm 0.049$ & $0.763 \pm 0.067$ \\
+Discrete WJ ($K_{\text{disc}}{=}90$) & $3.02\!\times\!10^{-3}$ & $6.11\!\times\!10^{-3}$ & $1.50\!\times\!10^{-3}$ & $4.50\!\times\!10^{-3}$ & $0.731 \pm 0.027$ & $0.738 \pm 0.047$ \\
 GARCH(1,1)  & $0.0^{\dagger}$         & $7.5\!\times\!10^{-4}$  & $3.25\!\times\!10^{-2}$ & $3.82\!\times\!10^{-2}$ & $0.766 \pm 0.025$ & $0.807 \pm 0.021$ \\
 CHMM-N      & $1.5\!\times\!10^{-4}$  & $6.1\!\times\!10^{-4}$  & $7.2\!\times\!10^{-3}$  & $9.31\!\times\!10^{-3}$ & $0.646 \pm 0.024$ & $0.709 \pm 0.016$ \\
 \textbf{CHMM-t}   & $\mathbf{2.0\!\times\!10^{-5}}$  & $2.17\!\times\!10^{-3}$ & $4.72\!\times\!10^{-3}$ & $8.25\!\times\!10^{-3}$ & $\mathbf{0.607 \pm 0.027}$ & $\mathbf{0.644 \pm 0.044}$ \\
@@ -367,8 +366,8 @@ Model & avg IS & asym IS & $p_{\text{avg}}$ IS & avg OoS & asym OoS & $p_{\text{
 Bootstrap & $\phantom{-}0.000$ & $\phantom{-}0.001$ & $0.000$ & $\phantom{-}0.001$ & $-0.006$ & $0.000$ \\
 Gaussian  & $-0.000$ & $-0.001$ & $0.000$ & $-0.000$ & $\phantom{-}0.001$ & $0.000$ \\
 Laplace   & $-0.000$ & $-0.000$ & $0.000$ & $-0.000$ & $\phantom{-}0.005$ & $0.000$ \\
-Discrete NJ & $-0.009$ & $\phantom{-}0.296$ & $0.000$ & $-0.009$ & $\phantom{-}0.292$ & $0.001$ \\
-Discrete WJ & $-0.009$ & $\phantom{-}0.295$ & $0.000$ & $-0.007$ & $\phantom{-}0.289$ & $0.000$ \\
+Discrete NJ & $-0.010$ & $\phantom{-}0.287$ & $0.000$ & $-0.008$ & $\phantom{-}0.273$ & $0.001$ \\
+Discrete WJ & $-0.010$ & $\phantom{-}0.290$ & $0.000$ & $-0.008$ & $\phantom{-}0.287$ & $0.011$ \\
 GARCH(1,1)  & $-0.001$ & $\phantom{-}0.064$ & $0.014$ & $-0.001$ & $\phantom{-}0.065$ & $0.061$ \\
 \textbf{CHMM-N} & $\mathbf{-0.038}$ & $\phantom{-}0.292$ & $0.000$ & $\mathbf{-0.033}$ & $\phantom{-}0.287$ & $\mathbf{0.205}$ \\
 CHMM-t  & $-0.025$ & $\phantom{-}0.281$ & $0.000$ & $-0.029$ & $\phantom{-}0.274$ & $0.048$ \\
@@ -391,8 +390,8 @@ Observed    & $7.68$ & $4.34$ & $6.82$ & $2.63$ & $5.29$ & $1.98$ & $0.09$  & $-
 Bootstrap   & $7.44$ & $1.31$ & $0.54$ & $0.13$ & $5.24$ & $0.77$ & $0.04$  & $-0.39$ \\
 Gaussian    & $-0.01$& $-0.03$& $-0.09$& $-0.17$& $-0.05$& $-0.17$& $-0.30$ & $-0.54$ \\
 Laplace     & $2.86$ & $0.51$ & $0.16$ & $-0.04$& $2.55$ & $0.23$ & $-0.15$ & $-0.49$ \\
-Discrete NJ & $0.63$ & $0.77$ & $0.40$ & $0.01$ & $0.64$ & $0.53$ & $0.00$  & $-0.47$ \\
-Discrete WJ & $0.53$ & $0.71$ & $0.35$ & $0.01$ & $0.51$ & $0.41$ & $-0.01$ & $-0.47$ \\
+Discrete NJ & $3.55$ & $2.15$ & $1.10$ & $0.34$ & $3.41$ & $1.42$ & $0.39$  & $-0.29$ \\
+Discrete WJ & $3.50$ & $2.16$ & $1.16$ & $0.42$ & $3.34$ & $1.41$ & $0.47$  & $-0.25$ \\
 GARCH(1,1)  & $4.35$ & $4.79$ & $3.74$ & $2.55$ & $1.79$ & $1.87$ & $1.26$  & $0.34$ \\
 CHMM-N      & $4.88$ & $3.70$ & $3.27$ & $2.38$ & $4.08$ & $2.38$ & $1.60$  & $0.40$ \\
 \textbf{CHMM-t} & $\mathbf{8.46}$ & $\mathbf{2.65}$ & $\mathbf{2.06}$ & $\mathbf{1.35}$ & $\mathbf{5.55}$ & $\mathbf{1.89}$ & $\mathbf{1.15}$ & $\mathbf{0.21}$ \\
@@ -413,8 +412,8 @@ Model & $p_{\text{kurt}}$ & $p_{\text{acf}}$ & $p_{\text{lev}}$ & $p_{\text{ak5}
 Bootstrap   & $0.894$ & $0.000$ & $0.000$ & $0.012$ & $0.005$ & $0.228$ & $0.466$ \\
 Gaussian    & $0.000$ & $0.000$ & $0.000$ & $0.000$ & $0.002$ & $0.000$ & $0.116$ \\
 Laplace     & $0.002$ & $0.000$ & $0.000$ & $0.000$ & $0.002$ & $0.001$ & $0.156$ \\
-Discrete NJ & $0.000$ & $0.000$ & $0.000$ & $0.000$ & $0.007$ & $0.002$ & $0.163$ \\
-Discrete WJ & $0.000$ & $0.000$ & $0.000$ & $0.000$ & $0.001$ & $0.000$ & $0.164$ \\
+Discrete NJ & $0.000$ & $0.000$ & $0.000$ & $0.034$ & $0.029$ & $0.016$ & $0.376$ \\
+Discrete WJ & $0.000$ & $0.000$ & $0.000$ & $0.060$ & $0.057$ & $0.029$ & $0.384$ \\
 GARCH(1,1)  & $0.271$ & $0.021$ & $0.014$ & $0.903$ & $0.974$ & $0.540$ & $0.468$ \\
 CHMM-N      & $0.009$ & $0.000$ & $0.000$ & $0.659$ & $0.894$ & $0.390$ & $0.539$ \\
 CHMM-t      & $0.872$ & $0.000$ & $0.000$ & $0.196$ & $0.228$ & $0.324$ & $0.661$ \\
@@ -490,7 +489,7 @@ Figure~\ref{fig:var_es} visualizes the envelopes alongside the historical observ
 \label{par:discrete_var_failure}%
 Table~\ref{tab:var_es} shows envelope coverage for the five continuous and non-parametric generators, but the discrete HMM baselines of \citet{alswaidan2026hybrid} are excluded from the envelope panel because their bin-centroid emission produces a point-mass VaR estimator whose envelope width is mechanically zero.
 The Kupiec and Christoffersen likelihood-ratio tests of Section~\ref{sec:extended_evaluation} are the appropriate diagnostic for those baselines, and they deliver a clear negative finding.
-Both Discrete NJ and Discrete WJ produce an OoS $5\%$ VaR breach rate of exactly $1.75\%$, roughly one-third of the $5\%$ target; the Kupiec likelihood-ratio statistic $\text{LR}_{\text{uc}} = 16.81$ rejects unconditional coverage with $p < 10^{-3}$, and the independence statistic $\text{LR}_{\text{ind}} = 13.22$ also rejects.
+Both Discrete NJ and Discrete WJ produce an OoS $5\%$ VaR breach rate of exactly $1.7\%$, roughly one-third of the $5\%$ target; the Kupiec likelihood-ratio statistic $\text{LR}_{\text{uc}} = 16.81$ rejects unconditional coverage with $p < 10^{-3}$, and the independence statistic $\text{LR}_{\text{ind}} = 13.22$ also rejects.
 The Poisson-jump augmentation does not remedy the failure: no-jump and with-jump variants produce the same breach rate to three significant figures because the quantization onto $K_{\text{disc}} = 13$ bin centroids dominates the effect of the jump process on the left tail.
 A risk manager who uses the prior-paper discrete generator to size a $5\%$ VaR position is therefore committed to holding materially more capital than the empirical breach process requires and would fail a standard VaR back-test if audited.
 The continuous CHMM family of the present paper eliminates this failure at the $5\%$ level (all three variants attain $\text{LR}_{\text{uc}} \le 3.83$, with CHMM-N, CHMM-t, and CHMM-L at $3.83$, $3.83$, and $3.03$ respectively) and the Viterbi-decoded conditional VaR of Section~\ref{sec:conditional_var} additionally passes Christoffersen independence.
