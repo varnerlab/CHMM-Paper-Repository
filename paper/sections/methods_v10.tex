@@ -10,6 +10,56 @@ For ticker $i$ and trading day $j$, the annualized excess growth rate is
     \label{eq:growth_rate}
 \end{equation}
 
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    font=\small,
+    node distance=3.8mm,
+    >={Stealth[length=2mm, width=1.6mm]},
+    box/.style={draw, rectangle, rounded corners=1.5pt, align=center,
+                minimum height=8mm, minimum width=22mm, inner sep=1.5mm,
+                fill=black!3},
+    data/.style={box, fill=black!2, draw=black!60},
+    model/.style={box, fill=black!6, draw=black!60, thick},
+    sim/.style={box, fill=black!4, draw=black!60, dashed},
+    metric/.style={box, fill=black!10, draw=black!70, thick},
+    flow/.style={-Stealth, thick, black!70},
+    lbl/.style={font=\scriptsize\itshape, black!60, inner sep=1pt},
+]
+
+% ---------- Pipeline A: single-asset (top row) ----------
+\node[font=\small\bfseries, anchor=west] (paTitle) at (0, 0) {Pipeline~A (single-asset, Section~\ref{sec:model_comparison}):};
+\node[data, below=2mm of paTitle.south west, anchor=north west] (paData) {Observed\\ returns $G_t$};
+\node[model, right=of paData] (paFit) {Fit CHMM\\ (Baum--Welch,\\ $K = 18$)};
+\node[sim, right=of paFit] (paSim) {Simulate\\ $1{,}000$ paths};
+\node[metric, right=of paSim] (paMet) {Per-asset\\ metrics\\ (Table~\ref{tab:model_comparison})};
+\draw[flow] (paData) -- (paFit);
+\draw[flow] (paFit) -- (paSim);
+\draw[flow] (paSim) -- (paMet);
+
+% ---------- Pipeline B: cross-asset (bottom row) ----------
+\node[font=\small\bfseries, anchor=west, below=6mm of paData.south west] (pbTitle) {Pipeline~B (cross-asset, Section~\ref{sec:cross_asset}):};
+\node[data, below=2mm of pbTitle.south west, anchor=north west] (pbData) {$d$ tickers\\ returns $G^{(i)}_t$};
+\node[model, right=of pbData] (pbMarg) {Per-asset\\ CHMM fits\\ (marginals)};
+\node[sim, right=of pbMarg] (pbPaths) {Per-asset\\ simulated\\ paths};
+\node[model, right=of pbPaths, fill=black!10, draw=black!70] (pbCop) {Copula on\\ ranks\\ (Gauss / $t$)};
+\node[sim, right=of pbCop] (pbReord) {Rank-\\ reordered\\ paths};
+\node[metric, right=of pbReord] (pbMet) {Cross-asset\\ metrics\\ (Table~\ref{tab:cross_asset_sim_copula})};
+\draw[flow] (pbData) -- (pbMarg);
+\draw[flow] (pbMarg) -- (pbPaths);
+\draw[flow] (pbPaths) -- (pbCop);
+\draw[flow] (pbCop) -- (pbReord);
+\draw[flow] (pbReord) -- (pbMet);
+
+% side labels clarifying the decomposition
+\node[lbl, anchor=west] at ($(pbMarg.north)+(0,1.4mm)$) {marginals};
+\node[lbl, anchor=center] at ($(pbCop.north)+(0,1.4mm)$) {dependence};
+
+\end{tikzpicture}
+\caption{\textbf{Schematic of Pipeline~A (single-asset) and Pipeline~B (cross-asset).} Pipeline~A fits a CHMM per ticker independently and evaluates single-asset marginal / temporal metrics. Pipeline~B reuses the per-asset CHMM fits as \emph{marginals} and injects cross-asset \emph{dependence} through a rank-based copula (Gaussian or Student-$t$), preserving each asset's fitted CHMM distribution exactly while coupling asset ranks to match observed multi-asset correlation structure. Headline: the two pipelines share the single-asset scaffold, so improvements to the CHMM at the marginal step propagate into Pipeline~B without any changes to the dependence layer.}
+\label{fig:pipeline_schematic}
+\end{figure}
+
 \subsection{Continuous Hidden Markov Model}
 \label{sec:chmm_def}
 
