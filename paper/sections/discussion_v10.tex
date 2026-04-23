@@ -55,7 +55,7 @@ This is not a criticism of the prior paper's framework on its own terms.
 What our comparison crystallizes is that, once the pipeline insists on \emph{tail-aware} continuous-return metrics (kurtosis, Hellinger, aggregational kurtosis, Kupiec VaR) evaluated on the simulated return series itself, the joint optimization of transitions and continuous emissions is essential: a matching transition matrix on top of a centroid emission surface reproduces the marginal KS/AD pass rate but not the higher-order tail structure that downstream users of synthetic data depend on.
 
 \paragraph{The Temporal-Distributional Tradeoff.}
-The seven-model comparison reveals that no single model dominates all seven metrics, confirming the temporal-distributional tradeoff identified in the discrete framework of \citet{alswaidan2026hybrid}.
+The twelve-model comparison of Table~\ref{tab:model_comparison} reveals that no single model dominates all of the reported metrics, confirming the temporal-distributional tradeoff identified in the discrete framework of \citet{alswaidan2026hybrid}.
 GARCH(1,1) achieves the best ACF-MAE ($0.048$) among parametric models but fails KS ($25.9\%$), while the bootstrap achieves near-perfect KS ($99.9\%$) but the worst ACF-MAE ($0.063$).
 
 The CHMM at $K = 18$ occupies a distinctive position in this tradeoff: it achieves IS KS of $93.2$--$93.8\%$ across the three emission families and IS AD of $86.6$--$91.2\%$, matching the non-parametric bootstrap to within a few points, while simultaneously matching GARCH's ACF-MAE to within $0.002$ to $0.008$.

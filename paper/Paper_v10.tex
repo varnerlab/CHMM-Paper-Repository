@@ -25,10 +25,27 @@
     urlcolor=blue
 }
 
+% --- Caption style (V10/V11, 2026-04-22) ---
+% Top-of-table labels, bold table/figure tags, small font for captions and subcaptions.
+\captionsetup{labelfont=bf, labelsep=period, font=small, justification=justified}
+\captionsetup[sub]{labelfont=bf, font=small, labelformat=parens, labelsep=space}
+
 % --- Custom commands ---
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Prob}{\mathbb{P}}
+
+% --- Project-level numeric macros (V10/V11 bundle, 2026-04-22) ---
+% Consistent formatting for recurring numeric constructs.
+% Use in new prose and tables; legacy cells may be migrated gradually (see V16
+% siunitx migration in plan-equity-paper.md for the bulk pass).
+\newcommand{\pct}[1]{\ensuremath{#1\%}}
+\newcommand{\Kdisc}[1]{\ensuremath{K_{\text{disc}} = #1}}
+\newcommand{\LRuc}[1]{\ensuremath{\text{LR}_{\text{uc}} = #1}}
+\newcommand{\LRind}[1]{\ensuremath{\text{LR}_{\text{ind}} = #1}}
+\newcommand{\NPaths}[1]{\ensuremath{N_{\text{paths}} = #1}}
+\newcommand{\TIS}[1]{\ensuremath{T_{\text{IS}} = #1}}
+\newcommand{\TOoS}[1]{\ensuremath{T_{\text{OoS}} = #1}}
 
 \title{A Regime-Switching Continuous Hidden Markov Model as a Reference Synthetic-Data Generator for Equity Returns:\\Extended Evaluation, Semi-Markov Ablation, and Regime-Conditional Value-at-Risk}
 

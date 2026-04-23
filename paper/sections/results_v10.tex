@@ -77,7 +77,7 @@ Critically, the quantile-based initialization ensures that the Baum-Welch algori
 
 \emph{Pipeline note.} This subsection operates under Pipeline A on the SPY ticker only. Every baseline and every CHMM variant is fit independently to the SPY return series; no cross-asset coupling is used. Readers who want the six-ticker generalization should proceed to Section~\ref{sec:cross_asset_univariate} (still Pipeline A); those who want the joint multi-asset extension should proceed to Section~\ref{sec:cross_asset} (Pipeline B).
 
-Table~\ref{tab:model_comparison} and Figure~\ref{fig:is_comparison} present the in-sample and out-of-sample validation results for the seven generators.
+Table~\ref{tab:model_comparison} and Figure~\ref{fig:is_comparison} present the in-sample and out-of-sample validation results for the twelve generators (Bootstrap, Block-BS $b = 10$, Gaussian i.i.d., Laplace i.i.d., Discrete NJ and WJ at \Kdisc{90}, Bin-T NJ, GARCH(1,1), GRU, and CHMM-N / -t / -L at $K = 18$).
 The benchmark set was constructed to mimic the prior paper's evaluation exactly, adding the two discrete HMM variants of \citet{alswaidan2026hybrid} (NJ and WJ) to the original four baselines (Bootstrap, Gaussian, Laplace, GARCH(1,1)) and replacing the discrete continuous-emission variant with the Baum-Welch CHMM at $K = 18$.
 
 \paragraph{Bootstrap (Non-Parametric Ceiling).}
@@ -179,7 +179,7 @@ Cleanest IS kurtosis match; highest AD pass rate; no shape parameter & CHMM-L \\
 \centering
 \caption{\textbf{Twelve-model comparison on SPY} (single-index trained: Pipeline A). Only SPY is evaluated here; the six-ticker generalization of the CHMM variants is in Table~\ref{tab:cross_asset}, and the cross-asset dependence extension is in Table~\ref{tab:cross_asset_sim_copula}. 1{,}000 simulated paths per model, $\alpha = 0.05$, $K = 18$.
 IS: $2014$-$01$-$03$ through $2024$-$01$-$03$ ($T = 2{,}516$); OoS: $2024$-$01$-$04$ through $2026$-$04$-$20$ ($T = 572$).
-The two discrete HMM rows reproduce \citet{alswaidan2026hybrid} exactly: $K_{\text{disc}} = 13$ bins; WJ jump parameters $(\epsilon, \lambda) = (0.01, 3)$.
+The two discrete HMM rows reproduce \citet{alswaidan2026hybrid} at the authoritative prior-paper SPY hyperparameters: \Kdisc{90} quantile bins; WJ jump parameters $(\epsilon, \lambda) = (5 \times 10^{-5}, 67)$.
 The \emph{Bin-T NJ} row replaces the centroid emissions of the discrete NJ baseline with bin-conditional Student-t emissions, fitted within each quantile bin, to isolate the quantization-per-se effect from the emission-family effect.
 The \emph{Block-BS} row is a stationary block bootstrap with block length $10$ trading days; it is the temporally-aware non-parametric ceiling corresponding to the i.i.d.\ bootstrap.
 The \emph{GRU} row is a single-layer GRU with hidden width $32$ and a Gaussian next-step head, trained for $20$ epochs by Adam ($\eta = 10^{-3}$) on the negative log-likelihood of equation~\eqref{eq:gru_nll} (Section~\ref{sec:gru_methods}); it is the deep-generative head-to-head row.
@@ -335,7 +335,7 @@ On the IS window, the $\bar{pv}$ scores are tighter because the IS horizon expos
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Extended evaluation panel} (Pipeline A, SPY, IS $= 2{,}516$ and OoS $= 572$, $N_{\text{paths}} = 1{,}000$). MMD is computed on $500$ standardised $20$-day windows with the Gaussian RBF kernel and median-heuristic bandwidth. Signature-MMD is depth $3$ on the time-lifted $2$D path $(t/W, r_t / \operatorname{std}(r))$. Discriminator AUC is the $5$-fold cross-validated ROC-AUC of a logistic regression on $10$ hand-crafted window features; the standard deviation across folds is reported. Lower MMD and Signature-MMD is better; discriminator AUC closer to $0.50$ is better. GARCH MMD IS is a bandwidth-heuristic artefact and should be read through its OoS value; Discrete NJ Signature-MMD IS is a quantization artefact. Reproduced from \texttt{results/track\_a/Table-4-Extended-Metrics.txt}.}
+\caption{\textbf{Extended evaluation panel} (Pipeline A, SPY, \TIS{2{,}516}, \TOoS{572}, \NPaths{1{,}000}). Nine-model Track A subset of the twelve-row Table~\ref{tab:model_comparison}: Block-BS, Bin-T NJ, and GRU are dropped here because the Track A window-feature pipeline requires stationary i.i.d.\ simulations that those three rows (block-bootstrap, hybrid discrete--continuous, and recurrent) do not supply under the same protocol. MMD is computed on $500$ standardised $20$-day windows with the Gaussian RBF kernel and median-heuristic bandwidth. Signature-MMD is depth $3$ on the time-lifted $2$D path $(t/W, r_t / \operatorname{std}(r))$. Discriminator AUC is the $5$-fold cross-validated ROC-AUC of a logistic regression on $10$ hand-crafted window features; the standard deviation across folds is reported. Lower MMD and Signature-MMD is better; discriminator AUC closer to $0.50$ is better. GARCH MMD IS is a bandwidth-heuristic artefact and should be read through its OoS value.}
 \label{tab:extended_metrics}
 \begin{tabular}{lrrrrrr}
 \toprule
