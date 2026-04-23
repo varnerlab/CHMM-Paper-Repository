@@ -248,14 +248,16 @@ These monotonic trends provide a consistent signal that $K = 18$ is the sensible
 
 \begin{figure}[t]
 \centering
-\begin{subfigure}[b]{0.48\textwidth}
+\begin{subfigure}[t]{0.48\textwidth}
+    \centering
     \includegraphics[width=\textwidth]{sections/figs/Fig-3-IS-Comparison-K18.pdf}
-    \caption{Representative IS comparison at the selected $K = 18$}
-\end{subfigure}
+    \caption{Representative IS comparison at the selected $K = 18$.}
+\end{subfigure}%
 \hfill
-\begin{subfigure}[b]{0.48\textwidth}
+\begin{subfigure}[t]{0.48\textwidth}
+    \centering
     \includegraphics[width=\textwidth]{sections/figs/Fig-4-OoS-Validation-K18.pdf}
-    \caption{Representative OoS validation at $K = 18$}
+    \caption{Representative OoS validation at $K = 18$.}
 \end{subfigure}
 \caption{\textbf{State-resolution summary at the selected operating point $K = 18$}, Pipeline A, CHMM-N Gaussian emissions on SPY. Panel~(a) shows the representative in-sample density and ACF match at $K = 18$; Panel~(b) shows the corresponding out-of-sample validation. Headline: distributional fidelity rises from $K = 3$ to $K = 18$ and plateaus in the $K \in \{12, 15, 18, 21\}$ band while ACF-MAE is already near its floor at $K = 3$, supporting the choice of $K = 18$ jointly by the four information criteria (AIC / BIC / HQC / CAIC) and the multi-metric distributional score. The full sweep over $K \in \{3, 6, 9, 12, 15, 18, 21\}$ and per-$K$ figures are reproduced in Appendix~\ref{sec:supplemental} (Table~\ref{tab:sensitivity} and Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_panels_oos}).}
 \label{fig:k_sweep_summary}
