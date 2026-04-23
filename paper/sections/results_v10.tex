@@ -295,7 +295,14 @@ Flat CHMM-t wins IS at $\text{MMD}^2 = 2.0 \times 10^{-5}$, ahead of CHMM-N ($1.
 The single-regime GARCH(1,1) attains $\text{MMD}^2 = 0.0$ numerically because the median-heuristic bandwidth widens to accommodate its overdispersed simulated windows and the empirical kernel saturates; we flag this as a bandwidth-heuristic artefact rather than a genuine tie, and report the OoS panel where GARCH lands at $7.5 \times 10^{-4}$ (CHMM-N $6.1 \times 10^{-4}$, CHMM-t $2.2 \times 10^{-3}$) to resolve the comparison.
 
 \paragraph{Signature-MMD (depth $3$ time-lifted path).}
-We lift each window to a $2$D path $(t/W, r_t / \operatorname{std}(r))$ and compute a depth-$3$ truncated path signature in the sense of \citet{chevyrev2016primer}, then evaluate MMD with the signature feature as the kernel embedding.
+Each $W$-day return window $r_{1:W}$ is lifted to the two-dimensional time-augmented path
+\begin{equation}
+    \gamma: [0, 1] \to \mathbb{R}^2,
+    \qquad \gamma(t/W) = \bigl( t/W,\; r_t / \operatorname{std}(r_{1:W}) \bigr),
+    \qquad t = 1, \ldots, W,
+    \label{eq:path_lift}
+\end{equation}
+and we compute the depth-$3$ truncated path signature of $\gamma$ in the sense of \citet{chevyrev2016primer}, then evaluate MMD with the signature feature as the kernel embedding.
 CHMM-L attains the smallest IS signature-MMD at $4.3 \times 10^{-3}$, essentially tied with CHMM-t ($4.7 \times 10^{-3}$); CHMM-N follows at $7.2 \times 10^{-3}$.
 The i.i.d.\ baselines land an order of magnitude worse ($2.7$ to $3.3 \times 10^{-2}$), confirming that path-geometric distinguishability separates regime-switching generators from memoryless ones.
 The Discrete NJ and WJ variants at $K_{\text{disc}} = 90$ score $1.5 \times 10^{-3}$ on the IS signature-MMD: lower than the i.i.d.\ baselines but larger than any CHMM row, consistent with the 90-atom bin-centroid emission producing a piecewise-constant path whose depth-$3$ path signature has reduced expressiveness relative to a continuous-emission trajectory.
@@ -308,7 +315,13 @@ On OoS the ordering holds: CHMM-t $0.644 \pm 0.044$, Bin-T NJ $0.690$ area not s
 We read these numbers honestly: the $10$-feature discriminator at $N = 500$ windows is powerful, so AUC values near $0.6$ do not mean indistinguishable, but they do mean closest-to-indistinguishable among the rows in this panel.
 
 \paragraph{Leverage effect.}
-The observed leverage effect on the IS window, measured as $\operatorname{avg}_{k=1}^{20} \operatorname{corr}(r_t^2, r_{t-k})$, is $-0.088$ with a down-vs-up volatility asymmetry of $0.358$.
+Let $\bar\rho_{\text{lev}}$ denote the short-lag average of squared-return autocorrelation on returns,
+\begin{equation}
+    \bar\rho_{\text{lev}} = \frac{1}{20} \sum_{k=1}^{20} \operatorname{corr}\!\bigl(r_t^2,\; r_{t-k}\bigr),
+    \label{eq:leverage}
+\end{equation}
+and let the down-vs-up asymmetry be the gap in mean absolute next-day return conditional on the sign of $r_t$.
+On the IS window the observed statistics are $\bar\rho_{\text{lev}} = -0.088$ and asymmetry $0.358$.
 CHMM-N reproduces the sign and magnitude most closely (average $-0.038$, asymmetry $0.292$), followed by CHMM-t ($-0.025$, $0.281$) and CHMM-L ($-0.024$, $0.322$).
 GARCH produces essentially no leverage asymmetry ($-0.0007$, $0.064$) because its conditional variance process is symmetric in the sign of past returns.
 On OoS, CHMM-N also attains the highest simulation-based $p$-value for coverage of the observed leverage statistic at $p = 0.205$, meaning its sampling distribution over $1{,}000$ paths brackets the observed value; GARCH and the i.i.d.\ baselines all fail coverage at $p < 0.07$.
