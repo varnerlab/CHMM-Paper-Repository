@@ -269,7 +269,7 @@ The CHMM's regime structure, learned from the full range of IS observations incl
 
 The seven-metric panel of Section~\ref{sec:model_comparison} covers marginal and autocorrelation fidelity.
 We add seven axes that probe joint window distributions, path geometry, learned discriminability, tail coupling, aggregational scaling, unconditional VaR under Kupiec / Christoffersen, and multi-statistic coverage \citep{gretton2012kernel, chevyrev2016primer, yoon2019timegan, ni2020conditional}.
-All rows are computed at \NPaths{1{,}000} simulated paths on both the \TIS{2{,}516} and \TOoS{572} SPY windows under the seed policy of Section~\ref{sec:metrics}; full numerical panels in Tables~\ref{tab:extended_metrics}--\ref{tab:sim_pvalues}.
+All rows are computed at \NPaths{1{,}000} simulated paths on both the \TIS{2{,}516} and \TOoS{572} SPY windows under the seed policy of Section~\ref{sec:metrics}; the headline panel is Table~\ref{tab:extended_metrics} below, with the per-generator detail panels for leverage, aggregational kurtosis, and joint $p$-value coverage (Tables~\ref{tab:leverage}, \ref{tab:agg_kurt}, \ref{tab:sim_pvalues}) deferred to Appendix~\ref{sec:extended_eval_detail}.
 
 \paragraph{MMD (RBF kernel, 20-day windows).}
 We compute empirical $\text{MMD}^2$ \citep{gretton2012kernel} between $500$ observed and $500$ simulated $20$-day windows with median-heuristic bandwidth.
@@ -335,74 +335,6 @@ CHMM-L      & $8.9\!\times\!10^{-4}$  & $2.80\!\times\!10^{-3}$ & $\mathbf{4.28\
 \bottomrule
 \end{tabular}%
 }
-\end{table}
-
-\begin{table}[t]
-\centering
-\small
-\caption{\textbf{Leverage effect} (Pipeline A, SPY). Observed IS $\operatorname{avg}_{k=1}^{20} \operatorname{corr}(r_t^2, r_{t-k}) = -0.088$ with down-vs-up asymmetry $0.358$; observed OoS averages are $-0.066$ and $0.478$. $p_{\text{avg}}$ is the two-sided simulation-based coverage $p$-value for the observed average over $1{,}000$ paths.}
-\label{tab:leverage}
-\begin{tabular}{lrrrrrr}
-\toprule
-Model & avg IS & asym IS & $p_{\text{avg}}$ IS & avg OoS & asym OoS & $p_{\text{avg}}$ OoS \\
-\midrule
-Bootstrap & $\phantom{-}0.000$ & $\phantom{-}0.001$ & $0.000$ & $\phantom{-}0.001$ & $-0.006$ & $0.000$ \\
-Gaussian  & $-0.000$ & $-0.001$ & $0.000$ & $-0.000$ & $\phantom{-}0.001$ & $0.000$ \\
-Laplace   & $-0.000$ & $-0.000$ & $0.000$ & $-0.000$ & $\phantom{-}0.005$ & $0.000$ \\
-Discrete NJ & $-0.010$ & $\phantom{-}0.287$ & $0.000$ & $-0.008$ & $\phantom{-}0.273$ & $0.001$ \\
-Discrete WJ & $-0.010$ & $\phantom{-}0.290$ & $0.000$ & $-0.008$ & $\phantom{-}0.287$ & $0.011$ \\
-GARCH(1,1)  & $-0.001$ & $\phantom{-}0.064$ & $0.014$ & $-0.001$ & $\phantom{-}0.065$ & $0.061$ \\
-\textbf{CHMM-N} & $\mathbf{-0.038}$ & $\phantom{-}0.292$ & $0.000$ & $\mathbf{-0.033}$ & $\phantom{-}0.287$ & $\mathbf{0.205}$ \\
-CHMM-t  & $-0.025$ & $\phantom{-}0.281$ & $0.000$ & $-0.029$ & $\phantom{-}0.274$ & $0.048$ \\
-CHMM-L  & $-0.024$ & $\phantom{-}0.322$ & $0.000$ & $-0.025$ & $\phantom{-}0.310$ & $0.019$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[t]
-\centering
-\small
-\caption{\textbf{Aggregational Gaussianity} (Pipeline A, SPY). Median simulated kurtosis at aggregation horizons $h \in \{1, 5, 10, 21\}$ over $1{,}000$ paths. Observed IS kurtosis is $\{7.68, 4.34, 6.82, 2.63\}$; observed OoS kurtosis is $\{5.29, 1.98, 0.09, -0.16\}$.}
-\label{tab:agg_kurt}
-\begin{tabular}{lrrrr|rrrr}
-\toprule
- & \multicolumn{4}{c}{IS kurtosis} & \multicolumn{4}{c}{OoS kurtosis} \\
-Model & $h = 1$ & $h = 5$ & $h = 10$ & $h = 21$ & $h = 1$ & $h = 5$ & $h = 10$ & $h = 21$ \\
-\midrule
-Observed    & $7.68$ & $4.34$ & $6.82$ & $2.63$ & $5.29$ & $1.98$ & $0.09$  & $-0.16$ \\
-Bootstrap   & $7.44$ & $1.31$ & $0.54$ & $0.13$ & $5.24$ & $0.77$ & $0.04$  & $-0.39$ \\
-Gaussian    & $-0.01$& $-0.03$& $-0.09$& $-0.17$& $-0.05$& $-0.17$& $-0.30$ & $-0.54$ \\
-Laplace     & $2.86$ & $0.51$ & $0.16$ & $-0.04$& $2.55$ & $0.23$ & $-0.15$ & $-0.49$ \\
-Discrete NJ & $3.55$ & $2.15$ & $1.10$ & $0.34$ & $3.41$ & $1.42$ & $0.39$  & $-0.29$ \\
-Discrete WJ & $3.50$ & $2.16$ & $1.16$ & $0.42$ & $3.34$ & $1.41$ & $0.47$  & $-0.25$ \\
-GARCH(1,1)  & $4.35$ & $4.79$ & $3.74$ & $2.55$ & $1.79$ & $1.87$ & $1.26$  & $0.34$ \\
-CHMM-N      & $4.88$ & $3.70$ & $3.27$ & $2.38$ & $4.08$ & $2.38$ & $1.60$  & $0.40$ \\
-\textbf{CHMM-t} & $\mathbf{8.46}$ & $\mathbf{2.65}$ & $\mathbf{2.06}$ & $\mathbf{1.35}$ & $\mathbf{5.55}$ & $\mathbf{1.89}$ & $\mathbf{1.15}$ & $\mathbf{0.21}$ \\
-CHMM-L      & $6.33$ & $2.45$ & $1.80$ & $1.02$ & $5.49$ & $1.97$ & $1.04$  & $0.07$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[t]
-\centering
-\small
-\caption{\textbf{Joint simulation-based $p$-value coverage} (Pipeline A, SPY). Each cell is the two-sided simulation-based $p$-value for the observed statistic under the generator. $\bar{pv}$ is the mean across $\{$kurt, avg leverage, agg kurt $h = 5$, agg kurt $h = 21\}$; larger $\bar{pv}$ means better joint coverage.}
-\label{tab:sim_pvalues}
-\begin{tabular}{lrrrrr|rr}
-\toprule
-Model & $p_{\text{kurt}}$ & $p_{\text{acf}}$ & $p_{\text{lev}}$ & $p_{\text{ak5}}$ & $p_{\text{ak21}}$ & $\bar{pv}$ IS & $\bar{pv}$ OoS \\
-\midrule
-Bootstrap   & $0.894$ & $0.000$ & $0.000$ & $0.012$ & $0.005$ & $0.228$ & $0.466$ \\
-Gaussian    & $0.000$ & $0.000$ & $0.000$ & $0.000$ & $0.002$ & $0.000$ & $0.116$ \\
-Laplace     & $0.002$ & $0.000$ & $0.000$ & $0.000$ & $0.002$ & $0.001$ & $0.156$ \\
-Discrete NJ & $0.000$ & $0.000$ & $0.000$ & $0.034$ & $0.029$ & $0.016$ & $0.376$ \\
-Discrete WJ & $0.000$ & $0.000$ & $0.000$ & $0.060$ & $0.057$ & $0.029$ & $0.384$ \\
-GARCH(1,1)  & $0.271$ & $0.021$ & $0.014$ & $0.903$ & $0.974$ & $0.540$ & $0.468$ \\
-CHMM-N      & $0.009$ & $0.000$ & $0.000$ & $0.659$ & $0.894$ & $0.390$ & $0.539$ \\
-CHMM-t      & $0.872$ & $0.000$ & $0.000$ & $0.196$ & $0.228$ & $0.324$ & $0.661$ \\
-\textbf{CHMM-L} & $0.369$ & $0.000$ & $0.000$ & $0.061$ & $0.130$ & $0.140$ & $\mathbf{0.692}$ \\
-\bottomrule
-\end{tabular}
 \end{table}
 
 \paragraph{Where the added baselines land.}
@@ -546,21 +478,14 @@ Off-diag MAE OoS     & \multicolumn{2}{c}{0.261} & \multicolumn{2}{c}{\textbf{0.
 \end{tabular}
 \end{table}
 
-Figure~\ref{fig:cross_asset_corr} visualizes the observed and path-averaged simulated correlation matrices for the three dependence models, and Figure~\ref{fig:cross_asset_ks} shows the per-asset in-sample KS pass rates as a grouped bar chart.
+Figure~\ref{fig:cross_asset_corr} visualises the observed and path-averaged simulated correlation matrices for the three dependence models; the per-asset in-sample KS pass rates as a grouped bar chart (Figure~\ref{fig:cross_asset_ks}) are deferred to Appendix~\ref{sec:cross_asset_ks_supp}.
 The visual ordering confirms the quantitative summary in Table~\ref{tab:cross_asset_sim_copula}: the SIM introduces visible distortion on JPM and AAPL marginals, while both copulas track the observed marginals closely; on correlation, the SIM panel shows larger residuals off the diagonal than either copula panel, and the Student-t copula is marginally closer to the observed heat map than the Gaussian copula.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.85\textwidth]{figs/Fig-Cross-Asset-Correlation.pdf}
+\includegraphics[width=0.85\textwidth, trim=0 430 0 0, clip]{figs/Fig-Cross-Asset-Correlation.pdf}
 \caption{\textbf{Cross-asset IS correlation reproduction across dependence models} (Pipeline B, companion to Table~\ref{tab:cross_asset_sim_copula}). Panel~(a), top-left: \emph{observed} correlation matrix on 2014-01-03 through 2024-01-03 daily excess log returns for SPY, NVDA, JNJ, JPM, AAPL, QQQ (IS window, $T_{\text{IS}} = 2{,}516$). Panel~(b), top-right: path-averaged correlation under the Single Index Model with SPY as market factor. Panel~(c), bottom-left: path-averaged correlation under the Gaussian copula on CHMM marginals. Panel~(d), bottom-right: path-averaged correlation under the Student-t copula on CHMM marginals, $\nu^* = 6$. Each simulated panel averages over 200 paths of length $T_{\text{IS}}$. All marginals are the per-asset CHMM-N fits at $K = 18$ from Table~\ref{tab:cross_asset}; color scale in $[-1, 1]$, red-white-blue (RdBu) diverging. Closer visual match to panel~(a) is better.}
 \label{fig:cross_asset_corr}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.85\textwidth]{figs/Fig-Cross-Asset-KS-Dist.pdf}
-\caption{\textbf{Per-asset IS KS pass rates after dependence injection} (Pipeline B sanity check for Table~\ref{tab:cross_asset_sim_copula}). For each of the six tickers and each of the three dependence constructions (SIM, Gaussian copula, Student-t copula with $\nu^* = 6$), the bar reports the percentage of 200 simulated paths whose marginal distribution passes the two-sample KS test against the observed IS series at $\alpha = 0.05$. The market-factor asset SPY is approximately tied across constructions (it is the SIM engine). For non-market assets the copulas dominate because rank reordering preserves each CHMM marginal exactly; the SIM's affine propagation visibly degrades JPM and AAPL.}
-\label{fig:cross_asset_ks}
 \end{figure}
 
 \paragraph{Interpretation.}
@@ -579,9 +504,17 @@ For the practitioner the downstream object of interest is often the \emph{price}
 For each of the six main-study tickers (SPY, NVDA, JNJ, JPM, AAPL, QQQ) we re-train the three CHMM families at $K = 18$ on the full IS window and simulate $n_{\text{paths}} = 500$ price paths of length $T_{\text{OoS}} = 572$ days, converting simulated returns to prices via $\widetilde P_t = \widetilde P_{t-1} \cdot \exp((\widetilde G_t + r_f)\,\Delta t)$ with $\Delta t = 1/252$, $r_f = 0$, and $S_0$ the last IS VWAP.
 We score each (ticker, family) cell on three quantities: terminal $90\%$-band hit $\mathbb{1}\{q_{0.05} \le P^{\text{obs}}_T \le q_{0.95}\}$; horizon-average band coverage $\overline{C}_{0.90} = T_{\text{OoS}}^{-1} \sum_t \mathbb{1}\{q_{0.05}(t) \le P^{\text{obs}}_t \le q_{0.95}(t)\}$; and the bias-corrected sample CRPS of \citet{gneiting2007strictly}, normalised by $S_0$ for cross-ticker comparability.
 
-\begin{table}[t]
+\paragraph{Headline results.}
+Table~\ref{tab:price_sim_oos} reports the CHMM-N column for each ticker; per-family detail (CHMM-t, CHMM-L) and full path-level metrics are in Appendix~\ref{sec:price_sim_oos_appendix} (Table~\ref{tab:price_sim_path_metrics}).
+Two findings stand out.
+\emph{(i)~Terminal-band coverage is $18/18$ across all (ticker, family) pairs}, including the atypical $4.15\times$ NVDA rally.
+\emph{(ii)~Horizon-wide calibration is near-perfect on five of six tickers}: $\overline{C}_{0.90} \ge 0.995$ on $17$ of the $18$ cells, a far stronger statement than terminal coverage because it requires the simulated envelope to track the observed path \emph{at every} OoS day.
+NVDA is the lone outlier ($\overline{C}_{0.90} \in [0.64, 0.70]$, $\widehat{\text{CRPS}}/S_0 \approx 0.64$--$0.77$), exposing a 2024--2025 drift-regime shift beyond the prior-decade IS window; walk-forward re-estimation is the natural remedy (Section~\ref{sec:walk_forward}; \citealp{diebold1995comparing}).
+No emission family dominates uniformly, consistent with the return-space finding in Section~\ref{sec:model_comparison} that family differences live in the tails and only weakly propagate into aggregated price scores.
+
+\begin{table}[H]
 \centering
-\caption{\textbf{OoS price-simulation summary, CHMM-N reference family} ($K = 18$, $500$ paths, $T_{\text{OoS}} = 572$; global seed policy in Section~\ref{sec:metrics}). $P^{\text{obs}}_T$: realised OoS terminal. $q_{0.50}$: simulated terminal median. \textsc{Hit}$_{90}$: terminal $90\%$-band coverage indicator. $\overline{C}_{0.90}$: horizon-wide band coverage. $\overline{\text{CRPS}}/S_0$: $S_0$-normalised CRPS, lower is better. Per-family rows (CHMM-t, CHMM-L), full path-level metrics, and per-ticker price fans for NVDA, JNJ, JPM, AAPL, QQQ are in Appendix~\ref{sec:price_sim_oos_appendix}. \textbf{Headline:} $18/18$ terminal coverage across all (ticker, family) cells; $\overline{C}_{0.90} \ge 0.995$ on $17/18$.}
+\caption{\textbf{OoS price-simulation summary, CHMM-N reference family} ($K = 18$, $500$ paths, $T_{\text{OoS}} = 572$). $P^{\text{obs}}_T$: realised terminal; $q_{0.50}$: simulated median; \textsc{Hit}$_{90}$: terminal $90\%$-band hit; $\overline{C}_{0.90}$: horizon-wide band coverage; $\overline{\text{CRPS}}/S_0$: $S_0$-normalised CRPS (lower better). Per-family detail and per-ticker fans in Appendix~\ref{sec:price_sim_oos_appendix} (Table~\ref{tab:price_sim_path_metrics}). \textbf{Headline:} $18/18$ terminal coverage; $\overline{C}_{0.90} \ge 0.995$ on $17/18$.}
 \label{tab:price_sim_oos}
 \small
 \begin{tabular}{l r r c r r}
@@ -597,14 +530,6 @@ QQQ  & 649.02 & 584.70 & \checkmark & 0.998 & 0.076 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\paragraph{Headline results.}
-Table~\ref{tab:price_sim_oos} reports the CHMM-N column for each ticker; per-family detail (CHMM-t, CHMM-L) and full path-level metrics are in Appendix~\ref{sec:price_sim_oos_appendix} (Table~\ref{tab:price_sim_path_metrics}).
-Two findings stand out.
-\emph{(i)~Terminal-band coverage is $18/18$ across all (ticker, family) pairs}, including the atypical $4.15\times$ NVDA rally.
-\emph{(ii)~Horizon-wide calibration is near-perfect on five of six tickers}: $\overline{C}_{0.90} \ge 0.995$ on $17$ of the $18$ cells, a far stronger statement than terminal coverage because it requires the simulated envelope to track the observed path \emph{at every} OoS day.
-NVDA is the lone outlier ($\overline{C}_{0.90} \in [0.64, 0.70]$, $\widehat{\text{CRPS}}/S_0 \approx 0.64$--$0.77$), exposing a 2024--2025 drift-regime shift beyond the prior-decade IS window; walk-forward re-estimation is the natural remedy (Section~\ref{sec:walk_forward}; \citealp{diebold1995comparing}).
-No emission family dominates uniformly, consistent with the return-space finding in Section~\ref{sec:model_comparison} that family differences live in the tails and only weakly propagate into aggregated price scores.
 
 \begin{figure}[t]
 \centering

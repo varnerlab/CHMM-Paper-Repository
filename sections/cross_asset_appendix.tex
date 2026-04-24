@@ -72,3 +72,15 @@ The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum 
 \label{fig:copula_profile}
 \end{figure}
 
+\subsection{Per-Asset KS Bar Chart (Pipeline B, Sanity Check for Table~\ref{tab:cross_asset_sim_copula})}
+\label{sec:cross_asset_ks_supp}
+
+Visualisation of the per-asset KS pass rates from Table~\ref{tab:cross_asset_sim_copula}; the SIM-vs-copula gap on JPM and AAPL is the visual headline.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figs/Fig-Cross-Asset-KS-Dist.pdf}
+\caption{\textbf{Per-asset IS KS pass rates after dependence injection} (Pipeline B sanity check for Table~\ref{tab:cross_asset_sim_copula}). For each of the six tickers and each of the three dependence constructions (SIM, Gaussian copula, Student-t copula with $\nu^* = 6$), the bar reports the percentage of 200 simulated paths whose marginal distribution passes the two-sample KS test against the observed IS series at $\alpha = 0.05$. The market-factor asset SPY is approximately tied across constructions (it is the SIM engine). For non-market assets the copulas dominate because rank reordering preserves each CHMM marginal exactly; the SIM's affine propagation visibly degrades JPM and AAPL.}
+\label{fig:cross_asset_ks}
+\end{figure}
+

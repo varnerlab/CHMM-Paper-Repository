@@ -24,6 +24,17 @@
 \usepackage{caption}
 \usepackage{subcaption}
 
+% --- Aggressive float packing (relaxed defaults to avoid sparse pages) ---
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.75}
+\renewcommand{\dbltopfraction}{0.95}
+\renewcommand{\dblfloatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+
 % --- Algorithms, lists, color ---
 \usepackage{algorithm}
 \usepackage{algorithmic}
