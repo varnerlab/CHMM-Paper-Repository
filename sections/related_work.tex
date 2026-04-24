@@ -17,7 +17,7 @@ The present work resolves the Ryd\'{e}n limitation through a third route: increa
 At $K \geq 3$ with quantile-based initialization, high-volatility states develop enough self-persistence that the resulting mixture of $K$ geometric sojourn-time distributions approximates slow ACF decay, effectively recovering the HSMM behavior within an ordinary Markov chain.
 
 \paragraph{Discrete HMM with jumps.}
-The immediate predecessor of this paper, \citet{alswaidan2026hybrid}, discretizes returns into Laplace quantile bins, estimates $\mathbf{T}$ by frequency counting, fits bin-conditional Student-$t$ emissions, and adds a Poisson jump-duration process with two grid-calibrated hyperparameters ($\epsilon, \lambda$).
+The immediate predecessor of this paper, \citet{alswaidan2026hybrid}, discretizes returns into Laplace quantile bins, estimates $\mathbf{T}$ by frequency counting, fits bin-conditional Student-t emissions, and adds a Poisson jump-duration process with two grid-calibrated hyperparameters ($\epsilon, \lambda$).
 The continuous model presented here eliminates all three sources of complexity: no binning, no separate emission fit (Baum-Welch jointly learns transitions and emissions), and no jump mechanism at moderate $K$.
 
 \paragraph{Cross-asset dependence.}

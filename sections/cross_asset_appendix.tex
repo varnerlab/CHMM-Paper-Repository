@@ -1,7 +1,7 @@
-\subsection{Cross-Asset Dependence Models: Derivations and Diagnostics (Pipeline B)}
+\subsection{Cross-Asset Dependence Models: Derivations and Diagnostics (Pipeline~B)}
 \label{sec:cross_asset_supp}
 
-This appendix provides the technical background for the SIM and copula constructions used in Section~\ref{sec:cross_asset} of the main text. These constructions constitute \emph{Pipeline B}: per-asset marginals come from the independent CHMMs of Pipeline A (Section~\ref{sec:cross_asset_univariate}) and joint dependence is overlaid on top. Pipeline A stays purely univariate; Pipeline B is the sole multi-asset pipeline in the paper.
+This appendix provides the technical background for the SIM and copula constructions used in Section~\ref{sec:cross_asset} of the main text. These constructions constitute \emph{Pipeline~B}: per-asset marginals come from the independent CHMMs of Pipeline~A (Section~\ref{sec:cross_asset_univariate}) and joint dependence is overlaid on top. Pipeline~A stays purely univariate; Pipeline~B is the sole multi-asset pipeline in the paper.
 
 \paragraph{Sklar's theorem and the rank-reordering simulator.}
 Sklar's theorem \cite{sklar1959fonctions, nelsen2006introduction} states that any $d$-dimensional joint CDF $H(g_1, \dots, g_d)$ with continuous marginals $F_1, \dots, F_d$ can be written as $H = C(F_1, \dots, F_d)$ for a unique copula $C$.
@@ -59,20 +59,20 @@ QQQ  & $0.047$   & $1.122$ & $0.840$ \\
 \end{tabular}
 \end{table}
 
-\subsection{Student-t Copula Profile Log-Likelihood (Pipeline B)}
+\subsection{Student-t Copula Profile Log-Likelihood (Pipeline~B)}
 \label{sec:copula_profile_supp}
 
-Figure~\ref{fig:copula_profile} plots the profile log-likelihood of the Student-t copula used inside Pipeline B, computed on the six-asset SPY cross-section over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ used in Section~\ref{sec:cross_asset}.
+Figure~\ref{fig:copula_profile} plots the profile log-likelihood of the Student-t copula used inside Pipeline~B, computed on the six-asset SPY cross-section over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ used in Section~\ref{sec:cross_asset}.
 The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum profile log-likelihood ($6157.47$), and the neighbouring grid points $\nu = 5$ ($6143.37$) and $\nu = 8$ ($6148.37$) each within $15$ profile-log-likelihood units of the peak, indicating a shallow-but-clean optimum that agrees with the $4$--$10$ range typically reported for equity-portfolio Student-t copulas in the risk-management literature.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.70\textwidth]{figs/Fig-Copula-Profile.pdf}
-\caption{\textbf{Profile log-likelihood of the Student-t copula} used inside Pipeline B on the six-asset SPY cross-section (SPY, NVDA, JNJ, JPM, AAPL, QQQ; IS window 2014-01-03 through 2024-01-03). The vertical axis is the profile log-likelihood evaluated at each degrees-of-freedom value $\nu$ on the grid $\{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$; the dashed red line marks the profile MLE $\nu^{*} = 6$ (peak value 6157.47). The CHMM-N marginals are held fixed at the Pipeline A per-asset fits while $\nu$ is varied.}
+\caption{\textbf{Profile log-likelihood of the Student-t copula} used inside Pipeline~B on the six-asset SPY cross-section (SPY, NVDA, JNJ, JPM, AAPL, QQQ; IS window 2014-01-03 through 2024-01-03). The vertical axis is the profile log-likelihood evaluated at each degrees-of-freedom value $\nu$ on the grid $\{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$; the dashed red line marks the profile MLE $\nu^{*} = 6$ (peak value 6157.47). The CHMM-N marginals are held fixed at the Pipeline~A per-asset fits while $\nu$ is varied.}
 \label{fig:copula_profile}
 \end{figure}
 
-\subsection{Cross-Asset Correlation Heat Maps (Pipeline B, Companion to Table~\ref{tab:cross_asset_sim_copula})}
+\subsection{Cross-Asset Correlation Heat Maps (Pipeline~B, Companion to Table~\ref{tab:cross_asset_sim_copula})}
 \label{sec:cross_asset_corr_supp}
 
 Figure~\ref{fig:cross_asset_corr} visualises the observed and path-averaged simulated correlation matrices for the dependence models of Section~\ref{sec:cross_asset}.
@@ -82,11 +82,11 @@ All five panels share the six-asset SPY cross-section and the same CHMM-N margin
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{figs/Fig-Cross-Asset-Correlation.pdf}
-\caption{\textbf{Cross-asset IS correlation reproduction across dependence models} (Pipeline B, companion to Table~\ref{tab:cross_asset_sim_copula}). Panel~(a), top-left: \emph{observed} correlation matrix on 2014-01-03 through 2024-01-03 daily excess log returns for SPY, NVDA, JNJ, JPM, AAPL, QQQ (IS window, $T_{\text{IS}} = 2{,}516$). Panel~(b), top-right: path-averaged correlation under the Single Index Model with SPY as market factor. Panel~(c), middle-left: path-averaged correlation under the Gaussian copula on CHMM marginals. Panel~(d), middle-right: path-averaged correlation under the Student-t copula on CHMM marginals, $\nu^* = 6$. Panel~(e), bottom-left: path-averaged correlation under a truncated C-vine copula with SPY as root. Each simulated panel averages over 200 paths of length $T_{\text{IS}}$. All marginals are the per-asset CHMM-N fits at $K = 18$ from Table~\ref{tab:cross_asset}; color scale in $[-1, 1]$, red-white-blue (RdBu) diverging. Closer visual match to panel~(a) is better.}
+\caption{\textbf{Cross-asset IS correlation reproduction across dependence models} (Pipeline~B, companion to Table~\ref{tab:cross_asset_sim_copula}). Panel~(a), top-left: \emph{observed} correlation matrix on 2014-01-03 through 2024-01-03 daily excess log returns for SPY, NVDA, JNJ, JPM, AAPL, QQQ (IS window, $T_{\text{IS}} = 2{,}516$). Panel~(b), top-right: path-averaged correlation under the Single Index Model with SPY as market factor. Panel~(c), middle-left: path-averaged correlation under the Gaussian copula on CHMM marginals. Panel~(d), middle-right: path-averaged correlation under the Student-t copula on CHMM marginals, $\nu^* = 6$. Panel~(e), bottom-left: path-averaged correlation under a truncated C-vine copula with SPY as root. Each simulated panel averages over 200 paths of length $T_{\text{IS}}$. All marginals are the per-asset CHMM-N fits at $K = 18$ from Table~\ref{tab:cross_asset}; color scale in $[-1, 1]$, red-white-blue (RdBu) diverging. Closer visual match to panel~(a) is better.}
 \label{fig:cross_asset_corr}
 \end{figure}
 
-\subsection{Per-Asset KS Bar Chart (Pipeline B, Sanity Check for Table~\ref{tab:cross_asset_sim_copula})}
+\subsection{Per-Asset KS Bar Chart (Pipeline~B, Sanity Check for Table~\ref{tab:cross_asset_sim_copula})}
 \label{sec:cross_asset_ks_supp}
 
 Visualisation of the per-asset KS pass rates from Table~\ref{tab:cross_asset_sim_copula}; the SIM-vs-copula gap on JPM and AAPL is the visual headline.
@@ -94,7 +94,7 @@ Visualisation of the per-asset KS pass rates from Table~\ref{tab:cross_asset_sim
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figs/Fig-Cross-Asset-KS-Dist.pdf}
-\caption{\textbf{Per-asset IS KS pass rates after dependence injection} (Pipeline B sanity check for Table~\ref{tab:cross_asset_sim_copula}). For each of the six tickers and each of the three dependence constructions (SIM, Gaussian copula, Student-t copula with $\nu^* = 6$), the bar reports the percentage of 200 simulated paths whose marginal distribution passes the two-sample KS test against the observed IS series at $\alpha = 0.05$. The market-factor asset SPY is approximately tied across constructions (it is the SIM engine). For non-market assets the copulas dominate because rank reordering preserves each CHMM marginal exactly; the SIM's affine propagation visibly degrades JPM and AAPL.}
+\caption{\textbf{Per-asset IS KS pass rates after dependence injection} (Pipeline~B sanity check for Table~\ref{tab:cross_asset_sim_copula}). For each of the six tickers and each of the three dependence constructions (SIM, Gaussian copula, Student-t copula with $\nu^* = 6$), the bar reports the percentage of 200 simulated paths whose marginal distribution passes the two-sample KS test against the observed IS series at $\alpha = 0.05$. The market-factor asset SPY is approximately tied across constructions (it is the SIM engine). For non-market assets the copulas dominate because rank reordering preserves each CHMM marginal exactly; the SIM's affine propagation visibly degrades JPM and AAPL.}
 \label{fig:cross_asset_ks}
 \end{figure}
 

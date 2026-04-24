@@ -27,17 +27,17 @@ For ticker $i$ and trading day $j$, the annualized excess growth rate is
     lbl/.style={font=\scriptsize\itshape, black!60, inner sep=1pt},
 ]
 
-% ---------- Pipeline A: single-asset (top row) ----------
+% ---------- Pipeline~A: single-asset (top row) ----------
 \node[font=\small\bfseries, anchor=west] (paTitle) at (0, 0) {Pipeline~A (single-asset, Section~\ref{sec:model_comparison}):};
 \node[data, below=2mm of paTitle.south west, anchor=north west] (paData) {Observed\\ returns $G_t$};
-\node[model, right=of paData] (paFit) {Fit CHMM\\ (Baum--Welch,\\ $K = 18$)};
+\node[model, right=of paData] (paFit) {Fit CHMM\\ (Baum-Welch,\\ $K = 18$)};
 \node[sim, right=of paFit] (paSim) {Simulate\\ $1{,}000$ paths};
 \node[metric, right=of paSim] (paMet) {Per-asset\\ metrics\\ (Table~\ref{tab:model_comparison})};
 \draw[flow] (paData) -- (paFit);
 \draw[flow] (paFit) -- (paSim);
 \draw[flow] (paSim) -- (paMet);
 
-% ---------- Pipeline B: cross-asset (bottom row) ----------
+% ---------- Pipeline~B: cross-asset (bottom row) ----------
 \node[font=\small\bfseries, anchor=west, below=9mm of paData.south west] (pbTitle) {Pipeline~B (cross-asset, Section~\ref{sec:cross_asset}):};
 \node[data, below=10mm of pbTitle.south west, anchor=north west] (pbData) {$d$ tickers\\ returns $G^{(i)}_t$};
 \node[model, right=of pbData] (pbMarg) {Per-asset\\ CHMM fits};
@@ -60,7 +60,7 @@ For ticker $i$ and trading day $j$, the annualized excess growth rate is
     node[midway, lbl, above=3pt] {dependence};
 
 \end{tikzpicture}
-\caption{\textbf{Schematic of Pipeline~A (single-asset) and Pipeline~B (cross-asset).} Pipeline~A fits a CHMM per ticker independently and evaluates single-asset marginal / temporal metrics. Pipeline~B reuses the per-asset CHMM fits as \emph{marginals} and injects cross-asset \emph{dependence} through a rank-based copula (Gaussian or Student-$t$), preserving each asset's fitted CHMM distribution exactly while coupling asset ranks to match observed multi-asset correlation structure. Headline: the two pipelines share the single-asset scaffold, so improvements to the CHMM at the marginal step propagate into Pipeline~B without any changes to the dependence layer.}
+\caption{\textbf{Schematic of Pipeline~A (single-asset) and Pipeline~B (cross-asset).} Pipeline~A fits a CHMM per ticker independently and evaluates single-asset marginal / temporal metrics. Pipeline~B reuses the per-asset CHMM fits as \emph{marginals} and injects cross-asset \emph{dependence} through a rank-based copula (Gaussian or Student-t), preserving each asset's fitted CHMM distribution exactly while coupling asset ranks to match observed multi-asset correlation structure. Headline: the two pipelines share the single-asset scaffold, so improvements to the CHMM at the marginal step propagate into Pipeline~B without any changes to the dependence layer.}
 \label{fig:pipeline_schematic}
 \end{figure}
 
@@ -147,7 +147,7 @@ in Section~\ref{sec:estimation}.
 \node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
 
 \end{tikzpicture}
-\caption{\textbf{CHMM architecture and training loop.} \textsc{Top}: a $K$-state latent Markov chain with transition matrix $\mathbf{T} \in \mathbb{R}^{K \times K}$ (entries $T_{ij} = \Pr(s_{t+1} = j \mid s_t = i)$) generates the regime sequence $s_t$; each $s_t$ conditionally emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}(\cdot; \boldsymbol\theta_{s_t})$. \textsc{Bottom left}: the three CHMM variants share everything except the emission family --- Gaussian (CHMM-N), Student-$t$ with per-state degrees of freedom $\nu_k$ (CHMM-t), or Laplace (CHMM-L). \textsc{Bottom right}: joint estimation of $(\mathbf{T}, \{\boldsymbol\theta_k\}, \boldsymbol\pi)$ alternates an E-step (log-space forward--backward on $\gamma_t(k), \xi_t(i,j)$) and a family-specific M-step until the log-likelihood change falls below $10^{-4}$ or $\mathrm{max\_iter} = 60$. The emission-family swap is the only architectural difference across the three variants in this paper.}
+\caption{\textbf{CHMM architecture and training loop.} \textsc{Top}: a $K$-state latent Markov chain with transition matrix $\mathbf{T} \in \mathbb{R}^{K \times K}$ (entries $T_{ij} = \Pr(s_{t+1} = j \mid s_t = i)$) generates the regime sequence $s_t$; each $s_t$ conditionally emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}(\cdot; \boldsymbol\theta_{s_t})$. \textsc{Bottom left}: the three CHMM variants share everything except the emission family --- Gaussian (CHMM-N), Student-t with per-state degrees of freedom $\nu_k$ (CHMM-t), or Laplace (CHMM-L). \textsc{Bottom right}: joint estimation of $(\mathbf{T}, \{\boldsymbol\theta_k\}, \boldsymbol\pi)$ alternates an E-step (log-space forward--backward on $\gamma_t(k), \xi_t(i,j)$) and a family-specific M-step until the log-likelihood change falls below $10^{-4}$ or $\mathrm{max\_iter} = 60$. The emission-family swap is the only architectural difference across the three variants in this paper.}
 \label{fig:chmm_architecture}
 \end{figure}
 
@@ -212,10 +212,10 @@ We use the path-independent HMP 2004 recursion with a Hamilton filter for the re
 The fitted calm regime has unconditional $\sigma \approx 0.97$ and expected sojourn $\sim 12$ days ($p_{11} = 0.914$); the stress regime has unconditional $\sigma \approx 12.67$ and expected sojourn $\sim 2$ days ($p_{22} = 0.547$).
 MS-GARCH provides the variance-regime reference point for the Kupiec VaR calibration discussion in Section~\ref{sec:extended_evaluation} and Section~\ref{sec:sm_ablation}: it attains best-in-panel unconditional VaR calibration at $1\%$ ($\text{LR}_{\text{uc}} = 0.01$, breach rate exactly $1.0\%$) and at $5\%$ ($\text{LR}_{\text{uc}} = 0.26$, breach rate $4.5\%$), and its $\text{LR}_{\text{ind}} = 4.79$ at $5\%$ is the closest to the $3.84$ independence-pass threshold of any unconditional-VaR row.
 
-\subsection{Cross-Asset Dependence (Pipeline B)}
+\subsection{Cross-Asset Dependence (Pipeline~B)}
 \label{sec:cross_asset_methods}
 
-The univariate evaluation of Section~\ref{sec:model_comparison} fits a separate CHMM to each ticker independently; we refer to this as \emph{Pipeline A} throughout the paper. The present subsection introduces \emph{Pipeline B}, which reuses the per-asset CHMM marginals from Pipeline A and adds joint dependence across assets. Pipeline A is tested in Table~\ref{tab:cross_asset} (univariate); Pipeline B is tested in Table~\ref{tab:cross_asset_sim_copula} (cross-asset) and Figure~\ref{fig:cross_asset_corr}.
+The univariate evaluation of Section~\ref{sec:model_comparison} fits a separate CHMM to each ticker independently; we refer to this as \emph{Pipeline~A} throughout the paper. The present subsection introduces \emph{Pipeline~B}, which reuses the per-asset CHMM marginals from Pipeline~A and adds joint dependence across assets. Pipeline~A is tested in Table~\ref{tab:cross_asset} (univariate); Pipeline~B is tested in Table~\ref{tab:cross_asset_sim_copula} (cross-asset) and Figure~\ref{fig:cross_asset_corr}.
 
 Let $\mathbf{R}_{\text{IS}} \in \mathbb{R}^{T \times d}$ denote the IS return matrix for $d$ assets, with the market-factor column indexed by $m$.
 Both constructions below preserve each asset's fitted CHMM marginal and differ in how cross-asset dependence is imposed.

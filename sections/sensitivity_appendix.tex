@@ -425,17 +425,17 @@ The CHMM-t and CHMM-L curves inherit the monotone increase of the classical EM g
 \label{fig:convergence_families}
 \end{figure}
 
-\subsection{Ryd\'en K = 2 Replication}
+\subsection{Ryd\'{e}n K = 2 Replication}
 \label{sec:ryden_replication}
 
-Table~\ref{tab:ryden_init} reports the direct replication of Ryd\'en et al.'s 1998 $K = 2$ setting on SPY IS under both initialization strategies, as discussed in Section~\ref{sec:discussion}.
+Table~\ref{tab:ryden_init} reports the direct replication of Ryd\'{e}n et al.'s 1998 $K = 2$ setting on SPY IS under both initialization strategies, as discussed in Section~\ref{sec:discussion}.
 The quantile-based initialization used in the main body is row 1; five independent random-seed initializations are rows 2--6.
 Random init here draws per-state $(\mu_k, \sigma_k)$ from a moderate perturbation of the sample moments, which is representative of the random-init practice common in the 1990s HMM literature.
 
 \begin{table}[h]
 \centering
 \small
-\caption{Ryd\'en replication: $K = 2$ CHMM-N on SPY IS under quantile vs random initialization (seed sub-index varies the random init).}
+\caption{Ryd\'{e}n replication: $K = 2$ CHMM-N on SPY IS under quantile vs random initialization (seed sub-index varies the random init).}
 \label{tab:ryden_init}
 \begin{tabular}{l c c c c c}
 \toprule
@@ -453,5 +453,5 @@ Random seed = 2024   & 76.4 & 69.8 & 0.0499 & 2.54 & 72.9 \\
 
 The key observation is that ACF-MAE is essentially constant at $\approx 0.050$ across all six rows, matching the $K = 18$ CHMM-N of the main body.
 IS KS pass rate remains below the $K = 18$ operating point ($75.3$--$79.0\%$) because two Gaussian components cannot tile the full multi-regime return distribution.
-The combination confirms that the Ryd\'en low-$K$ limitation is a distributional (not temporal) artefact: the ACF is already well reproduced at $K = 2$, and it is distributional fidelity that drives the preference for $K = 18$.
+The combination confirms that the Ryd\'{e}n low-$K$ limitation is a distributional (not temporal) artefact: the ACF is already well reproduced at $K = 2$, and it is distributional fidelity that drives the preference for $K = 18$.
 

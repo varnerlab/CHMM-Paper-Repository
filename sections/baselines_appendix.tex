@@ -7,7 +7,7 @@ For each of $1{,}000$ Monte Carlo replications (seed = 20260420), a simulated se
 \begin{table}[h]
 \centering
 \small
-\caption{OoS KS pass-rate calibration (1000 replications, seed = 20260420).}
+\caption{OoS KS pass-rate calibration (1{,}000 replications, seed = 20260420).}
 \label{tab:ks_power}
 \begin{tabular}{l c}
 \toprule
@@ -22,17 +22,17 @@ Gaussian$(\hat\mu_{\text{IS}}, \hat\sigma_{\text{IS}})$ at length $T_{\text{IS}}
 
 The $90.0\%$ "nearly correct" rate is the practical ceiling for the CHMM OoS KS pass rates reported in Section~\ref{sec:oos} ($80$--$84\%$); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
 
-\subsection{Walk-Forward Rolling-Window Re-Estimation (Pipeline A)}
+\subsection{Walk-Forward Rolling-Window Re-Estimation (Pipeline~A)}
 \label{sec:walk_forward}
 
-This robustness check lives inside Pipeline A: the CHMM-N is still fit per ticker independently, only the fit window rolls forward. It does not introduce cross-asset coupling, and therefore should not be interpreted alongside the Pipeline B results in Section~\ref{sec:cross_asset}. Table~\ref{tab:walk_forward} reports the quarterly walk-forward re-estimation results referenced in Section~\ref{sec:cross_asset_univariate}.
+This robustness check lives inside Pipeline~A: the CHMM-N is still fit per ticker independently, only the fit window rolls forward. It does not introduce cross-asset coupling, and therefore should not be interpreted alongside the Pipeline~B results in Section~\ref{sec:cross_asset}. Table~\ref{tab:walk_forward} reports the quarterly walk-forward re-estimation results referenced in Section~\ref{sec:cross_asset_univariate}.
 The walk-forward protocol refits the CHMM-N every $63$ trading days (one quarter) across the $572$-day OoS window, feeding the realized returns of the prior quarter into the training set before each refit.
 The rolling protocol recovers a modest $\sim 1$ percentage point on JNJ and a substantial $\sim 15$ percentage points on JPM relative to the fixed-IS baseline, confirming that the stationarity assumption is the principal contributor to the JPM OoS gap while JNJ's OoS gap is already small under the fixed fit.
 
 \begin{table}[h]
 \centering
 \small
-\caption{\textbf{Walk-forward (quarterly CHMM-N refit) vs fixed-IS CHMM-N on JNJ and JPM} (Pipeline A, per-ticker independent fits; walk-forward only rolls the fit window, it does not introduce cross-asset dependence). $K = 18$, 1000 simulated paths per (ticker, mode), seed = 20260420. IS window 2014-01-03 through 2024-01-03; OoS window 2024-01-04 through 2026-04-17 ($T_{\text{OoS}} = 572$). The walk-forward mode refits the CHMM-N every 63 trading days across the OoS window, feeding each completed quarter's realized returns back into the training set before the next refit. Columns report percent KS / AD pass rate at $\alpha = 0.05$, excess kurtosis, ACF-MAE of $|G_t|$, Wasserstein-1, and Hellinger distance.}
+\caption{\textbf{Walk-forward (quarterly CHMM-N refit) vs fixed-IS CHMM-N on JNJ and JPM} (Pipeline~A, per-ticker independent fits; walk-forward only rolls the fit window, it does not introduce cross-asset dependence). $K = 18$, 1{,}000 simulated paths per (ticker, mode), seed = 20260420. IS window 2014-01-03 through 2024-01-03; OoS window 2024-01-04 through 2026-04-17 ($T_{\text{OoS}} = 572$). The walk-forward mode refits the CHMM-N every 63 trading days across the OoS window, feeding each completed quarter's realized returns back into the training set before the next refit. Columns report percent KS / AD pass rate at $\alpha = 0.05$, excess kurtosis, ACF-MAE of $|G_t|$, Wasserstein-1, and Hellinger distance.}
 \label{tab:walk_forward}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{l cc cc cc c c c}
@@ -56,7 +56,7 @@ Table~\ref{tab:block_bootstrap} reports the full seven-metric panel for the stat
 \begin{table}[h]
 \centering
 \small
-\caption{Stationary block bootstrap (block length $b = 10$ trading days) on SPY (1000 paths, seed = 20260420).}
+\caption{Stationary block bootstrap (block length $b = 10$ trading days) on SPY (1{,}000 paths, seed = 20260420).}
 \label{tab:block_bootstrap}
 \begin{tabular}{l cc cc c c c c}
 \toprule
@@ -76,7 +76,7 @@ Table~\ref{tab:bin_t} reports the full seven-metric panel for the Bin-T NJ varia
 \begin{table}[h]
 \centering
 \small
-\caption{Discrete HMM with bin-conditional Student-t emissions on SPY (no jumps, $K_{\text{disc}} = 13$, 1000 paths, seed = 20260420).}
+\caption{Discrete HMM with bin-conditional Student-t emissions on SPY (no jumps, $K_{\text{disc}} = 13$, 1{,}000 paths, seed = 20260420).}
 \label{tab:bin_t}
 \begin{tabular}{l cc cc c c c c}
 \toprule

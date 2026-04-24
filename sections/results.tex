@@ -61,14 +61,14 @@ Critically, the quantile-based initialization ensures that the Baum-Welch algori
     \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18.pdf}
     \caption{Transition matrix (log$_{10}$ scale)}
 \end{subfigure}
-\caption{\textbf{Fitted CHMM internals on SPY} (Pipeline A, CHMM-N Gaussian emissions, $K = 18$). Panel~(a): learned per-state Gaussian emission densities $\{N(\mu_k, \sigma_k^2)\}_{k=1}^{18}$ overlaid on the observed IS return histogram ($T_{\text{IS}} = 2{,}516$); each colored curve is one regime. Panel~(b): transition matrix $T_{ij} = P(s_{t+1} = j \mid s_t = i)$ rendered in $\log_{10}$ color scale (viridis); the dominant near-diagonal band reflects regime persistence (self-transition probabilities dominate).}
+\caption{\textbf{Fitted CHMM internals on SPY} (Pipeline~A, CHMM-N Gaussian emissions, $K = 18$). Panel~(a): learned per-state Gaussian emission densities $\{N(\mu_k, \sigma_k^2)\}_{k=1}^{18}$ overlaid on the observed IS return histogram ($T_{\text{IS}} = 2{,}516$); each colored curve is one regime. Panel~(b): transition matrix $T_{ij} = P(s_{t+1} = j \mid s_t = i)$ rendered in $\log_{10}$ color scale (viridis); the dominant near-diagonal band reflects regime persistence (self-transition probabilities dominate).}
 \label{fig:model_internals}
 \end{figure}
 
-\subsection{Twelve-Generator Comparison (Pipeline A)}
+\subsection{Twelve-Generator Comparison (Pipeline~A)}
 \label{sec:model_comparison}
 
-\emph{Pipeline note.} This subsection operates under Pipeline A on the SPY ticker only. Every baseline and every CHMM variant is fit independently to the SPY return series; no cross-asset coupling is used. Readers who want the six-ticker generalization should proceed to Section~\ref{sec:cross_asset_univariate} (still Pipeline A); those who want the joint multi-asset extension should proceed to Section~\ref{sec:cross_asset} (Pipeline B).
+\emph{Pipeline note.} This subsection operates under Pipeline~A on the SPY ticker only. Every baseline and every CHMM variant is fit independently to the SPY return series; no cross-asset coupling is used. Readers who want the six-ticker generalization should proceed to Section~\ref{sec:cross_asset_univariate} (still Pipeline~A); those who want the joint multi-asset extension should proceed to Section~\ref{sec:cross_asset} (Pipeline~B).
 
 Table~\ref{tab:model_comparison} and Figure~\ref{fig:is_comparison} present the IS and OoS validation results for the twelve generators (Bootstrap, Block-BS $b = 10$, Gaussian i.i.d., Laplace i.i.d., Discrete NJ and WJ at \Kdisc{90}, Bin-T NJ, GARCH(1,1), GRU, and CHMM-N / -t / -L at $K = 18$).
 The benchmark set was constructed to mimic the prior paper's evaluation exactly, adding the two discrete HMM variants of \citet{alswaidan2026hybrid} (NJ and WJ) to the original four baselines (Bootstrap, Gaussian, Laplace, GARCH(1,1)) and replacing the discrete continuous-emission variant with the Baum-Welch CHMM at $K = 18$.
@@ -170,7 +170,7 @@ Cleanest IS kurtosis match; highest AD pass rate; no shape parameter & CHMM-L \\
 
 \begin{table}[t]
 \centering
-\caption{\textbf{Twelve-model comparison on SPY} (single-index trained: Pipeline A). Only SPY is evaluated here; the six-ticker generalization of the CHMM variants is in Table~\ref{tab:cross_asset}, and the cross-asset dependence extension is in Table~\ref{tab:cross_asset_sim_copula}. 1{,}000 simulated paths per model, $\alpha = 0.05$, $K = 18$.
+\caption{\textbf{Twelve-model comparison on SPY} (single-index trained: Pipeline~A). Only SPY is evaluated here; the six-ticker generalization of the CHMM variants is in Table~\ref{tab:cross_asset}, and the cross-asset dependence extension is in Table~\ref{tab:cross_asset_sim_copula}. 1{,}000 simulated paths per model, $\alpha = 0.05$, $K = 18$.
 IS: $2014$-$01$-$03$ through $2024$-$01$-$03$ ($T = 2{,}516$); OoS: $2024$-$01$-$04$ through $2026$-$04$-$20$ ($T = 572$).
 The two discrete HMM rows reproduce \citet{alswaidan2026hybrid} at the authoritative prior-paper SPY hyperparameters: \Kdisc{90} quantile bins; WJ jump parameters $(\epsilon, \lambda) = (5 \times 10^{-5}, 67)$.
 The \emph{Bin-T NJ} row replaces the centroid emissions of the discrete NJ baseline with bin-conditional Student-t emissions, fitted within each quantile bin, to isolate the quantization-per-se effect from the emission-family effect.
@@ -198,9 +198,9 @@ Discrete WJ ($K_{\text{disc}} = 90$) & 97.9  & 83.9  & 96.5  & 85.4  & 3.49    &
 Bin-T NJ            & 95.4  & 86.7  & 92.1  & 93.2  & 26.18   & 10.76   & 0.0619 & 0.116 & 0.0929 & 89.9  & 93.9  \\
 GARCH(1,1)          & 25.9  & 58.2  & 10.0  & 56.0  & 6.97    & 2.88    & 0.0484 & 0.248 & 0.1033 & 51.5  & 87.9  \\
 GRU                 & 18.1  & 52.5  & 13.7  & 55.0  & 2.85    & 2.21    & 0.0518 & 0.196 & 0.0966 & 37.4  & 69.7  \\
-CHMM-N ($K=18$)     & 93.8  & 84.2  & 86.6  & 77.9  & 4.99    & 4.51    & 0.0507 & 0.112 & 0.0810 & 100.0 & 90.9  \\
-\textbf{CHMM-t ($K=18$)} & 93.7  & 85.9  & 88.9  & 80.0  & 14.57   & 9.74    & 0.0548 & \textbf{0.103} & \textbf{0.0762} & \textbf{100.0} & \textbf{93.9} \\
-\textbf{CHMM-L ($K=18$)} & 93.2  & 79.3 & 91.2  & 79.3  & \textbf{6.75} & \textbf{6.29} & 0.0565 & 0.101 & 0.0795 & \textbf{100.0} & 81.8  \\
+CHMM-N ($K = 18$)& 93.8  & 84.2  & 86.6  & 77.9  & 4.99    & 4.51    & 0.0507 & 0.112 & 0.0810 & 100.0 & 90.9  \\
+\textbf{CHMM-t ($K = 18$)} & 93.7  & 85.9  & 88.9  & 80.0  & 14.57   & 9.74    & 0.0548 & \textbf{0.103} & \textbf{0.0762} & \textbf{100.0} & \textbf{93.9} \\
+\textbf{CHMM-L ($K = 18$)} & 93.2  & 79.3 & 91.2  & 79.3  & \textbf{6.75} & \textbf{6.29} & 0.0565 & 0.101 & 0.0795 & \textbf{100.0} & 81.8  \\
 \bottomrule
 \end{tabular}%
 }
@@ -209,7 +209,7 @@ CHMM-N ($K=18$)     & 93.8  & 84.2  & 86.6  & 77.9  & 4.99    & 4.51    & 0.0507
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18.pdf}
-\caption{\textbf{IS CHMM validation on SPY} (Pipeline A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths). Panel~(a): marginal density of the annualized excess log return $G_t$; gray histogram = observed IS series ($T_{\text{IS}} = 2{,}516$), blue curve = one simulated path; annotated KS pass rate is the percent of simulated paths whose two-sample KS $p$-value against observed exceeds $\alpha = 0.05$. Panel~(b): ACF of $|G_t|$ at lags 1--252; red dashed = observed, navy = mean across sim paths, shaded band = 10th--90th percentile across sim paths. Panel~(c): tail Q-Q plot at 200 quantile levels (0.1\% to 99.9\%); blue points = simulated pooled over paths, black dashed = identity line.}
+\caption{\textbf{IS CHMM validation on SPY} (Pipeline~A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths). Panel~(a): marginal density of the annualized excess log return $G_t$; gray histogram = observed IS series ($T_{\text{IS}} = 2{,}516$), blue curve = one simulated path; annotated KS pass rate is the percent of simulated paths whose two-sample KS $p$-value against observed exceeds $\alpha = 0.05$. Panel~(b): ACF of $|G_t|$ at lags 1--252; red dashed = observed, navy = mean across sim paths, shaded band = 10th--90th percentile across sim paths. Panel~(c): tail Q-Q plot at 200 quantile levels (0.1\% to 99.9\%); blue points = simulated pooled over paths, black dashed = identity line.}
 \label{fig:is_comparison}
 \end{figure}
 
@@ -225,18 +225,18 @@ The same pattern holds for AD (79.2\% $\to$ 88.3\% IS and 84.9\% $\to$ 88.7\% Oo
 This plateau is consistent with an upper bound imposed by the Gaussian emission family: once the mixture has enough components to resolve the bulk and near-tail regions, additional components do not recover the extreme tails that remain light under any Gaussian mixture.
 
 \paragraph{Temporal Fidelity Is Flat Across the Sweep.}
-ACF-MAE was 0.0453 ($K=3$) to 0.0505 ($K=18$) and 0.0503 ($K=21$) for CHMM-N, a total swing of 0.005 across the entire sweep.
+ACF-MAE was 0.0453 ($K = 3$) to 0.0505 ($K = 18$) and 0.0503 ($K = 21$) for CHMM-N, a total swing of 0.005 across the entire sweep.
 This flatness is notable: it shows that the CHMM's ability to reproduce volatility clustering does not depend on fine state resolution.
 Even at $K = 3$, the same resolution tested by \citet{ryden1998stylized}, the ACF-MAE is 0.0453, comparable to GARCH(1,1) at 0.047.
 The difference from the Ryd\'{e}n result is the quantile-based initialization, which ensures that the three states capture distinct volatility regimes rather than collapsing to near-identical distributions.
 
 \paragraph{Kurtosis Is Non-Monotonic and Peaks Early at $K = 6$.}
-Simulated kurtosis under CHMM-N ranged from 3.70 ($K=9$) to 5.13 ($K=6$), with $K=18$ at 5.03; the peak sits at $K = 6$, below the $K \in \{15, 18, 21\}$ distributional-fidelity band, and at higher $K$ the mixture kurtosis oscillates within the 4.5--5.1 range.
+Simulated kurtosis under CHMM-N ranged from 3.70 ($K = 9$) to 5.13 ($K = 6$), with $K = 18$ at 5.03; the peak sits at $K = 6$, below the $K \in \{15, 18, 21\}$ distributional-fidelity band, and at higher $K$ the mixture kurtosis oscillates within the 4.5--5.1 range.
 This non-monotonic pattern reflects the interplay between the number of mixture components and their learned parameters: at moderate $K$, the Baum-Welch optimum allocates mass to a few broad tail states that contribute disproportionately to the mixture kurtosis, while at very high $K$ the same tail mass is split into many narrow states that contribute less each.
 The heavy-tailed CHMM-t and CHMM-L variants close most of this gap at the same $K = 18$ (see Table~\ref{tab:sensitivity_multi}).
 
 \paragraph{Wasserstein and Hellinger Improve Net Across the Sweep; Coverage is Saturated at 100\%.}
-$W_1$ improves from 0.119 ($K=3$) to 0.101 ($K=18$) and Hellinger from 0.079 to 0.077; both exhibit minor non-monotone oscillations of less than $0.005$ at intermediate $K$ (Table~\ref{tab:sensitivity}) but neither deteriorates from endpoint to endpoint.
+$W_1$ improves from 0.119 ($K = 3$) to 0.101 ($K = 18$) and Hellinger from 0.079 to 0.077; both exhibit minor non-monotone oscillations of less than $0.005$ at intermediate $K$ (Table~\ref{tab:sensitivity}) but neither deteriorates from endpoint to endpoint.
 IS coverage is saturated at 100\% at every $K$, so it does not discriminate among state counts and serves only as a floor check.
 Together these provide a consistent signal that $K = 18$ is the sensible operating point.
 
@@ -253,7 +253,7 @@ The CHMM's regime structure, learned from the full range of IS observations incl
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18.pdf}
-\caption{\textbf{OoS CHMM validation on SPY} (Pipeline A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths, $\alpha = 0.05$, OoS window $T_{\text{OoS}} = 572$). Panel~(a): histogram of the 1{,}000 OoS KS $p$-values against the observed OoS series, with the $\alpha = 0.05$ threshold as a red dashed line. Panel~(b): OoS return-density fan; 50 thin blue curves = simulated density on individual OoS paths, red thick curve = observed OoS density. Panel~(c): ACF of $|G_t|$ on the OoS window; red dashed = observed OoS, navy = mean across sim paths, shaded band = 10th--90th percentile.}
+\caption{\textbf{OoS CHMM validation on SPY} (Pipeline~A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths, $\alpha = 0.05$, OoS window $T_{\text{OoS}} = 572$). Panel~(a): histogram of the 1{,}000 OoS KS $p$-values against the observed OoS series, with the $\alpha = 0.05$ threshold as a red dashed line. Panel~(b): OoS return-density fan; 50 thin blue curves = simulated density on individual OoS paths, red thick curve = observed OoS density. Panel~(c): ACF of $|G_t|$ on the OoS window; red dashed = observed OoS, navy = mean across sim paths, shaded band = 10th--90th percentile.}
 \label{fig:oos_validation}
 \end{figure}
 
@@ -309,7 +309,7 @@ On OoS, CHMM-L leads at $0.692$ (CHMM-t $0.661$, CHMM-N $0.539$); all three sit 
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Extended evaluation panel} (Pipeline A, SPY, \TIS{2{,}516}, \TOoS{572}, \NPaths{1{,}000}). Nine-model Track A subset of the twelve-row Table~\ref{tab:model_comparison}: Block-BS, Bin-T NJ, and GRU are dropped here because the Track A window-feature pipeline requires stationary i.i.d.\ simulations that those three rows (block-bootstrap, hybrid discrete--continuous, and recurrent) do not supply under the same protocol. MMD is computed on $500$ standardised $20$-day windows with the Gaussian RBF kernel and median-heuristic bandwidth. Signature-MMD is depth $3$ on the time-lifted $2$D path $(t/W, r_t / \operatorname{std}(r))$. Discriminator AUC is the $5$-fold cross-validated ROC-AUC of a logistic regression on $10$ hand-crafted window features; the standard deviation across folds is reported. Lower MMD and Signature-MMD is better; discriminator AUC closer to $0.50$ is better. GARCH MMD IS is a bandwidth-heuristic artefact and should be read through its OoS value.}
+\caption{\textbf{Extended evaluation panel} (Pipeline~A, SPY, \TIS{2{,}516}, \TOoS{572}, \NPaths{1{,}000}). Nine-model Track A subset of the twelve-row Table~\ref{tab:model_comparison}: Block-BS, Bin-T NJ, and GRU are dropped here because the Track A window-feature pipeline requires stationary i.i.d.\ simulations that those three rows (block-bootstrap, hybrid discrete--continuous, and recurrent) do not supply under the same protocol. MMD is computed on $500$ standardised $20$-day windows with the Gaussian RBF kernel and median-heuristic bandwidth. Signature-MMD is depth $3$ on the time-lifted $2$D path $(t/W, r_t / \operatorname{std}(r))$. Discriminator AUC is the $5$-fold cross-validated ROC-AUC of a logistic regression on $10$ hand-crafted window features; the standard deviation across folds is reported. Lower MMD and Signature-MMD is better; discriminator AUC closer to $0.50$ is better. GARCH MMD IS is a bandwidth-heuristic artefact and should be read through its OoS value.}
 \label{tab:extended_metrics}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrr}
@@ -339,10 +339,10 @@ Two-regime MS-GARCH (Section~\ref{sec:msgarch_methods}) is the variance-regime r
 CHMM-t sets the distributional-fidelity frontier (MMD, AUC, aggregational kurtosis); CHMM-N wins OoS leverage; CHMM-L wins OoS joint $p$-value coverage.
 MS-GARCH leads unconditional VaR and diffusion leads local-window deep-generative metrics, but neither displaces flat CHMM-t on the combined distributional panel.
 The discrete HMM baselines of \citet{alswaidan2026hybrid} fail discriminator AUC, leverage, aggregational kurtosis, joint $p$-values, and the $5\%$ Kupiec test.
-\subsection{Cross-Asset Univariate Generalization (Pipeline A)}
+\subsection{Cross-Asset Univariate Generalization (Pipeline~A)}
 \label{sec:cross_asset_univariate}
 
-\emph{Pipeline note.} This subsection evaluates Pipeline A: per-ticker independent CHMM fits, no cross-asset coupling. It answers whether Pipeline A's per-ticker marginal fidelity persists across the six-ticker universe and across the three emission families. The complementary cross-asset dependence extension (Pipeline B, Section~\ref{sec:cross_asset}) reuses the CHMM-N marginals established here and evaluates joint correlation reproduction.
+\emph{Pipeline note.} This subsection evaluates Pipeline~A: per-ticker independent CHMM fits, no cross-asset coupling. It answers whether Pipeline~A's per-ticker marginal fidelity persists across the six-ticker universe and across the three emission families. The complementary cross-asset dependence extension (Pipeline~B, Section~\ref{sec:cross_asset}) reuses the CHMM-N marginals established here and evaluates joint correlation reproduction.
 
 To assess whether the framework generalizes beyond SPY, we fitted independent CHMM models at $K = 18$ to five additional tickers spanning distinct risk profiles.
 Table~\ref{tab:cross_asset} reports the results.
@@ -369,7 +369,7 @@ Despite this spread in simulated kurtosis, all three variants achieve IS KS pass
 
 \begin{table}[t]
 \centering
-\caption{\textbf{Per-ticker marginal fidelity across CHMM emission families} (single-index trained: Pipeline A). Each of the six tickers is fit \emph{independently}, with no cross-asset coupling. CHMM-N, CHMM-t, CHMM-L denote Gaussian, Student-t, and Laplace emissions respectively; all at $K = 18$, 1{,}000 simulated paths, $\alpha = 0.05$. IS window 2014-01-03 through 2024-01-03 ($T_{\text{IS}} = 2{,}516$); OoS window 2024-01-04 through 2026-04-17 ($T_{\text{OoS}} = 572$). KS / AD = percent of paths that pass the two-sample KS / Anderson-Darling test; Kurt = excess kurtosis; ACF-MAE = lag-1 to lag-252 mean absolute error of the ACF of $|G_t|$; $W_1$ = Wasserstein-1 distance; $H$ = Hellinger distance; Cov = 99-level quantile coverage inside the 5-95 percentile envelope. Complementary table: Table~\ref{tab:cross_asset_sim_copula} reuses these CHMM-N marginals and evaluates cross-asset \emph{dependence} on top of them.}
+\caption{\textbf{Per-ticker marginal fidelity across CHMM emission families} (single-index trained: Pipeline~A). Each of the six tickers is fit \emph{independently}, with no cross-asset coupling. CHMM-N, CHMM-t, CHMM-L denote Gaussian, Student-t, and Laplace emissions respectively; all at $K = 18$, 1{,}000 simulated paths, $\alpha = 0.05$. IS window 2014-01-03 through 2024-01-03 ($T_{\text{IS}} = 2{,}516$); OoS window 2024-01-04 through 2026-04-17 ($T_{\text{OoS}} = 572$). KS / AD = percent of paths that pass the two-sample KS / Anderson--Darling test; Kurt = excess kurtosis; ACF-MAE = lag-1 to lag-252 mean absolute error of the ACF of $|G_t|$; $W_1$ = Wasserstein-1 distance; $H$ = Hellinger distance; Cov = 99-level quantile coverage inside the 5-95 percentile envelope. Complementary table: Table~\ref{tab:cross_asset_sim_copula} reuses these CHMM-N marginals and evaluates cross-asset \emph{dependence} on top of them.}
 \label{tab:cross_asset}
 \resizebox{\textwidth}{!}{%
 \small
@@ -407,10 +407,10 @@ QQQ  & CHMM-N & 95.5 & 92.3 & 87.8 & 3.4 & 2.02  & 0.0558 & 0.127 & 0.0735 & 100
 }
 \end{table}
 
-\subsection{Cross-Asset Dependence: SIM and Copula Extensions (Pipeline B)}
+\subsection{Cross-Asset Dependence: SIM and Copula Extensions (Pipeline~B)}
 \label{sec:cross_asset}
 
-\emph{Pipeline note.} This subsection is the sole home of Pipeline B in the main text. The per-asset marginals are reused verbatim from the Pipeline A CHMM-N fits of Section~\ref{sec:cross_asset_univariate}; only the \emph{dependence} construction (SIM, Gaussian copula, Student-t copula) varies here. Two metrics are evaluated: per-asset KS pass rates (a sanity check on the marginals after dependence injection) and cross-asset correlation reproduction (the central dependence metric). The per-asset KS column in Table~\ref{tab:cross_asset_sim_copula} is not a substitute for Table~\ref{tab:cross_asset}; the two tables answer different questions.
+\emph{Pipeline note.} This subsection is the sole home of Pipeline~B in the main text. The per-asset marginals are reused verbatim from the Pipeline~A CHMM-N fits of Section~\ref{sec:cross_asset_univariate}; only the \emph{dependence} construction (SIM, Gaussian copula, Student-t copula) varies here. Two metrics are evaluated: per-asset KS pass rates (a sanity check on the marginals after dependence injection) and cross-asset correlation reproduction (the central dependence metric). The per-asset KS column in Table~\ref{tab:cross_asset_sim_copula} is not a substitute for Table~\ref{tab:cross_asset}; the two tables answer different questions.
 
 Section~\ref{sec:cross_asset_univariate} established that the CHMM provides strong per-asset univariate fidelity across distinct risk profiles.
 The next question is whether we can assemble those univariate marginals into jointly plausible multi-asset paths.
@@ -443,7 +443,7 @@ On correlation reproduction, the Gaussian copula leads the OoS pass rate (off-di
 
 \begin{table}[t]
 \centering
-\caption{\textbf{Cross-asset dependence models on fixed CHMM marginals} (cross-asset extension: Pipeline B). The per-asset \emph{marginals} are the same CHMM-N fits used in Table~\ref{tab:cross_asset}; this table varies only the \emph{dependence} construction. Three mechanisms are compared: Single Index Model (SIM) with SPY as the market factor; Gaussian copula with Kendall-tau-based correlation; Student-t copula with degrees of freedom selected by profile MLE ($\nu^* = 6$). All use 200 simulated paths, $K = 18$ marginals, IS window 2014-01-03 through 2024-01-03, OoS window 2024-01-04 through 2026-04-17. Upper block: per-asset KS pass rates in percent at $\alpha = 0.05$ (a sanity check on the marginals after dependence injection). Lower block: cross-asset correlation reproduction measured by $\|\hat{\Sigma}_{\text{sim}} - \hat{\Sigma}_{\text{obs}}\|_F$ (Frobenius norm) and the off-diagonal MAE, each averaged over paths. \textbf{Bold} entries mark the best dependence model per row.}
+\caption{\textbf{Cross-asset dependence models on fixed CHMM marginals} (cross-asset extension: Pipeline~B). The per-asset \emph{marginals} are the same CHMM-N fits used in Table~\ref{tab:cross_asset}; this table varies only the \emph{dependence} construction. Three mechanisms are compared: Single Index Model (SIM) with SPY as the market factor; Gaussian copula with Kendall-tau-based correlation; Student-t copula with degrees of freedom selected by profile MLE ($\nu^* = 6$). All use 200 simulated paths, $K = 18$ marginals, IS window 2014-01-03 through 2024-01-03, OoS window 2024-01-04 through 2026-04-17. Upper block: per-asset KS pass rates in percent at $\alpha = 0.05$ (a sanity check on the marginals after dependence injection). Lower block: cross-asset correlation reproduction measured by $\|\hat{\Sigma}_{\text{sim}} - \hat{\Sigma}_{\text{obs}}\|_F$ (Frobenius norm) and the off-diagonal MAE, each averaged over paths. \textbf{Bold} entries mark the best dependence model per row.}
 \label{tab:cross_asset_sim_copula}
 \small
 \begin{tabular}{l cc cc cc}
@@ -477,7 +477,7 @@ The visual ordering of the path-averaged correlation heat maps (Figure~\ref{fig:
 The cross-asset results mirror the ordering reported by \citet{alswaidan2026hybrid} for the discrete HMM marginals: copulas beat SIM on per-asset distributional accuracy by construction (rank reordering preserves marginals, an affine map does not), and the Student-t copula beats the Gaussian copula when asset co-movement has meaningful tail dependence (here, $\nu^* = 6$).
 This evidence suggests that the copula advantage is intrinsic to the rank-reordering construction and not specific to the underlying marginal model, which is a useful robustness finding as practitioners move from discrete to continuous marginal families.
 
-\subsection{OoS Equity Price Simulation (Pipeline A)}
+\subsection{OoS Equity Price Simulation (Pipeline~A)}
 \label{sec:price_sim_oos}
 
 \emph{Pipeline note.} Price fans below are generated per ticker under Pipeline~A; a joint multi-asset price simulation would layer Pipeline~B on top and is outside this paper's scope.

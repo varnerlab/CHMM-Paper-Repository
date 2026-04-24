@@ -4,15 +4,15 @@ The cross-asset extension then shows that the univariate CHMM composes cleanly w
 
 \paragraph{Resolving the Ryd\'{e}n et al.\ Limitation.}
 The CHMM achieves ACF-MAE of $0.047$--$0.053$ on $|G_t|$ across $K \in \{3,\ldots,21\}$, comparable to GARCH(1,1) ($0.049$), directly contradicting \citet{ryden1998stylized} who reported failure at $K = 2$--$3$.
-The mechanism is that at $K \geq 3$ with quantile-initialised Baum--Welch, the absolute-return ACF is a mixture
+The mechanism is that at $K \geq 3$ with quantile-initialised Baum-Welch, the absolute-return ACF is a mixture
 \begin{equation}
     \rho_{|G|}(\tau) \approx \sum_{k=1}^{K} w_k \, \lambda_k^{\tau},
     \label{eq:acf_mixture}
 \end{equation}
 of $K$ exponential decays with rates $\lambda_k$ the non-unit eigenvalues of $\mathbf{T}$, recovering the slow quasi-hyperbolic decay observed empirically without requiring modified sojourn times \citep{bulla2006stylized}.
 Two issues compound at low $K$: a single self-transition rate produces a single exponential mode that cannot be simultaneously fast (good marginal) and slow (good ACF), and the random initialisations standard in the 1990s often converge to degenerate local optima with overlapping states.
-Our $K=2$ replication on SPY (Appendix~\ref{sec:ryden_replication}, Table~\ref{tab:ryden_init}) clarifies the mechanism: ACF-MAE on $|G_t|$ is essentially constant at $\approx 0.050$ across quantile and five random-seed initialisations, matching the $K=18$ CHMM-N.
-The Ryd\'en limitation is therefore a \emph{distributional} low-$K$ artefact (KS at $K=2$ drops to $67$--$72\%$), not a temporal one: with modern initialisation the ACF is reproduced at any $K \geq 2$, while distributional fidelity is what actually requires moderate state resolution.
+Our $K = 2$ replication on SPY (Appendix~\ref{sec:ryden_replication}, Table~\ref{tab:ryden_init}) clarifies the mechanism: ACF-MAE on $|G_t|$ is essentially constant at $\approx 0.050$ across quantile and five random-seed initialisations, matching the $K = 18$ CHMM-N.
+The Ryd\'{e}n limitation is therefore a \emph{distributional} low-$K$ artefact (KS at $K = 2$ drops to $67$--$72\%$), not a temporal one: with modern initialisation the ACF is reproduced at any $K \geq 2$, while distributional fidelity is what actually requires moderate state resolution.
 
 \paragraph{OoS KS Pass Rates Against the Test-Power Ceiling.}
 At $T_{\text{OoS}} = 572$ the two-sample KS test does not reach $100\%$ on truly-correct generators; CHMM pass rates must be read against this ceiling.
@@ -23,7 +23,7 @@ The CHMM-N / CHMM-t / CHMM-L OoS KS pass rates of $79$--$86\%$ sit just below th
 With the prior-paper hyperparameters, NJ / WJ reach $97.9$--$98.3\%$ IS KS, comparable to the CHMM family: at this state resolution a bin-centroid discrete HMM is not a straw man on coarse pass rates.
 Correcting the bin count therefore re-centers the continuous-vs.-discrete claim on three structural dimensions where the centroid scaffold cannot follow the data (Tables~\ref{tab:model_comparison}, \ref{tab:agg_kurt}, \ref{tab:sm_var}): \emph{tail weight} (NJ / WJ kurtosis clamps near $3.5$ vs.\ observed $7.68$ and CHMM-t $14.57$); \emph{aggregational Gaussianity} (NJ / WJ kurtosis collapses to $\le 0.47$ at $h=10,21$, missing the slow-decay signature CHMM tracks); and \emph{$5\%$ VaR calibration} (both discrete variants produce a $1.7\%$ breach rate against a $5\%$ target, rejecting Kupiec with $\text{LR}_{\text{uc}} = 16.81$, $p < 10^{-3}$, while all CHMM variants pass).
 At $\epsilon = 5 \times 10^{-5}$ and $\lambda = 67$ the Poisson jump triggers on $\sim 0.005\%$ of steps, so WJ is a slight perturbation of NJ rather than a meaningful tail mechanism.
-This is not a criticism of \citet{alswaidan2026hybrid} on its own terms (jumps were framed there as an ACF corrective and bin-conditional Student-$t$ emissions mitigate the centroid tail loss), but it is a sign that for tail-aware return-space metrics the joint optimisation of transitions and continuous emissions is essential.
+This is not a criticism of \citet{alswaidan2026hybrid} on its own terms (jumps were framed there as an ACF corrective and bin-conditional Student-t emissions mitigate the centroid tail loss), but it is a sign that for tail-aware return-space metrics the joint optimisation of transitions and continuous emissions is essential.
 
 \paragraph{The Temporal--Distributional Tradeoff.}
 The twelve-model comparison of Table~\ref{tab:model_comparison} confirms the temporal-distributional tradeoff identified in \citet{alswaidan2026hybrid}: GARCH wins ACF ($0.048$) but fails KS ($25.9\%$); the bootstrap wins KS ($99.9\%$) but is the worst on ACF ($0.063$).
@@ -37,27 +37,27 @@ Because all three variants share the same forward-backward scaffold, the KS/AD/A
 \paragraph{Diagnosing the CHMM-t IS Kurtosis Overshoot.}
 CHMM-t's IS mixture kurtosis of $14.57$ overshoots the observed $7.68$ by $\sim 90\%$.
 The bracket sweep $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0\}$ in Appendix~\ref{sec:nu_diagnostics} shows the fit does \emph{not} pile against the lower bracket (median $\nu_k = 50$, only $2/18$ states near the lower edge), and lifting $\nu_{\min}$ does not reduce the overshoot because the fit shifts posterior mass into the newly-recentred tail states.
-Only the $\nu = \infty$ Gaussian limit brings simulated kurtosis down to CHMM-N's $5.03$, confirming the overshoot is a feature of the Student-t family at $K=18$ rather than a bracket artefact; the downstream consequence (Section~\ref{sec:utility}) is that CHMM-t's $5$--$95\%$ envelopes still bracket observed VaR / ES, so a risk consumer incurs a widened uncertainty band rather than a systematic over-statement of tail risk.
+Only the $\nu = \infty$ Gaussian limit brings simulated kurtosis down to CHMM-N's $5.03$, confirming the overshoot is a feature of the Student-t family at $K = 18$ rather than a bracket artefact; the downstream consequence (Section~\ref{sec:utility}) is that CHMM-t's $5$--$95\%$ envelopes still bracket observed VaR / ES, so a risk consumer incurs a widened uncertainty band rather than a systematic over-statement of tail risk.
 
 \paragraph{Why Jumps Are Unnecessary.}
-The discrete framework of \citet{alswaidan2026hybrid} estimates emissions \emph{after} the transition matrix in a three-stage procedure (binning $\to$ frequency-counted $\mathbf{T}$ $\to$ within-bin Student-$t$), so $\mathbf{T}$ is not jointly optimised with emissions and the jump mechanism becomes a corrective for insufficient tail-state persistence.
+The discrete framework of \citet{alswaidan2026hybrid} estimates emissions \emph{after} the transition matrix in a three-stage procedure (binning $\to$ frequency-counted $\mathbf{T}$ $\to$ within-bin Student-t), so $\mathbf{T}$ is not jointly optimised with emissions and the jump mechanism becomes a corrective for insufficient tail-state persistence.
 Baum-Welch jointly optimises $\mathbf{T}$ and $\{(\mu_k, \sigma_k)\}$: emissions and transitions co-adapt so that tail states with distinctive emission shapes also accumulate the self-transition probability $T_{kk}$ that reflects empirical clustering of extremes.
 Eliminating jumps removes two hyperparameters $(\epsilon, \lambda)$ and the $48 \times 200 = 9{,}600$ simulations per $K$ that the prior paper's grid search required; CHMM needs only $20$--$40$ Baum-Welch iterations to convergence.
 
 \paragraph{State Resolution and the Choice of $K = 18$.}
-Sensitivity analysis (Section~\ref{sec:k_sensitivity}) shows ACF-MAE flat across $K$ (the dominant eigenvalue $\lambda_2$ is determined by the maximum self-transition probability, which Baum-Welch always learns to be near unity) while KS / AD pass rates rise from $K=3$ to $K=18$ and saturate.
+Sensitivity analysis (Section~\ref{sec:k_sensitivity}) shows ACF-MAE flat across $K$ (the dominant eigenvalue $\lambda_2$ is determined by the maximum self-transition probability, which Baum-Welch always learns to be near unity) while KS / AD pass rates rise from $K = 3$ to $K = 18$ and saturate.
 The practical recommendation is $K = 18$ for distributional-fidelity-sensitive applications; $K = 3$ only when the downstream task is regime identification.
 
-\paragraph{Cross-Asset Robustness and OoS Degradation on NVDA and JPM (Pipeline A).}
-The Pipeline A cross-asset univariate results confirm generalisation across diverse risk profiles (SPY $95.5\%$, NVDA $96.7\%$, JNJ $99.4\%$, AAPL $98.3\%$, QQQ $95.5\%$ IS KS).
+\paragraph{Cross-Asset Robustness and OoS Degradation on NVDA and JPM (Pipeline~A).}
+The Pipeline~A cross-asset univariate results confirm generalisation across diverse risk profiles (SPY $95.5\%$, NVDA $96.7\%$, JNJ $99.4\%$, AAPL $98.3\%$, QQQ $95.5\%$ IS KS).
 At $K = 18$, OoS degradation concentrates on NVDA ($55.8\%$) and JPM ($49.8\%$), a stationarity artefact: the IS-fixed transitions and emissions cannot capture sector-specific regime shifts (the AI-driven NVDA regime; the rate-repricing cycle for financials).
 The pattern persists at every $K$ in the sweep, so it is not a model-selection issue; rolling-window re-estimation or Bayesian online learning of $\mathbf{T}$ is the natural remedy.
 
-\paragraph{Why Copulas Beat SIM on Cross-Asset Fidelity (Pipeline B).}
-The two copula constructions dominate the SIM factor baseline on per-asset KS ($97.5\%$ / $96.2\%$ vs.\ $72.1\%$) and correlation reproduction (off-diagonal MAE $0.031$ / $0.027$ vs.\ $0.076$); all three sit on the same Pipeline A CHMM-N marginals so only the coupling differs.
+\paragraph{Why Copulas Beat SIM on Cross-Asset Fidelity (Pipeline~B).}
+The two copula constructions dominate the SIM factor baseline on per-asset KS ($97.5\%$ / $96.2\%$ vs.\ $72.1\%$) and correlation reproduction (off-diagonal MAE $0.031$ / $0.027$ vs.\ $0.076$); all three sit on the same Pipeline~A CHMM-N marginals so only the coupling differs.
 Two structural reasons.
 First, rank reordering preserves marginals by construction (the simulated $\hat{G}_{j,1:T}^{(p)}$ is a permutation of the stand-alone CHMM path so its empirical CDF coincides with the CHMM marginal), whereas SIM's affine combination $\alpha_j + \beta_j G_{m,t} + \eta_{j,t}$ convolves the market factor with idiosyncratic residuals, distorting the marginal whenever $\beta_j \ne 1$ or residuals are heavy (JPM's $\hat\beta = 1.22$ produces the dramatic $31.5\%$ IS KS).
-Second, the Student-$t$ copula's edge over Gaussian on correlation MAE ($0.027$ vs.\ $0.031$) reflects joint tail dependence: profile MLE selects $\nu^* = 6$, in the range typically reported for equity indices \citep{demarta2005tcopula, mcneil2015quantitative}, implying non-trivial tail-coupling that injects rare concordant extreme moves the Gaussian copula never produces.
+Second, the Student-t copula's edge over Gaussian on correlation MAE ($0.027$ vs.\ $0.031$) reflects joint tail dependence: profile MLE selects $\nu^* = 6$, in the range typically reported for equity indices \citep{demarta2005tcopula, mcneil2015quantitative}, implying non-trivial tail-coupling that injects rare concordant extreme moves the Gaussian copula never produces.
 The same ordering holds in \citet{alswaidan2026hybrid} with discrete marginals, evidence that the copula advantage is robust to the marginal family: practitioners can swap in richer marginals without revisiting the dependence structure.
 
 \paragraph{Three-Way Operational Split: Distribution, Unconditional VaR, Conditional VaR.}
