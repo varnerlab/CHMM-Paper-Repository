@@ -41,7 +41,7 @@ Goal: eliminate every contradiction between section / subsection / paragraph tit
 ## Implementation progress
 
 - [x] **Task 1** — Create `refining-paper.md` plan file.
-- [ ] **Task 2 (Fix #1)** — Rename *Seven-Model Comparison* → *Twelve-Generator Comparison*.
+- [x] **Task 2 (Fix #1)** — Rename *Seven-Model Comparison* → *Twelve-Generator Comparison*.
 - [ ] **Task 3 (Fix #2)** — Extend title and fix "six" → "seven" for Extended Evaluation.
 - [ ] **Task 4 (Fix #3)** — Rename Wasserstein/Hellinger/Coverage monotonicity paragraph.
 - [ ] **Task 5 (Fix #4)** — Rename kurtosis peak paragraph.
@@ -60,3 +60,4 @@ After each fix:
 ## Outcomes log
 
 - Task 1: plan file created.
+- Task 2: `results_v10.tex:75` — subsection title changed to `Twelve-Generator Comparison (Pipeline A)`. Body ("twelve generators", line 80) and table caption ("Twelve-model comparison", line 180) now agree with the header. Label `sec:model_comparison` preserved, so all `\ref{}` and `\cref{}` call sites are unaffected.
