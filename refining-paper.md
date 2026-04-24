@@ -45,7 +45,7 @@ Goal: eliminate every contradiction between section / subsection / paragraph tit
 - [x] **Task 3 (Fix #2)** — Extend title and fix "six" → "seven" for Extended Evaluation.
 - [x] **Task 4 (Fix #3)** — Rename Wasserstein/Hellinger/Coverage monotonicity paragraph.
 - [x] **Task 5 (Fix #4)** — Rename kurtosis peak paragraph.
-- [ ] **Task 6 (Fix #5)** — Body: "four of six" → "three of six" for CHMM-L.
+- [x] **Task 6 (Fix #5)** — Body: "four of six" → "three of six" for CHMM-L.
 - [ ] **Task 7 (Fix #6)** — Soften "Saturates" → "Plateaus".
 
 ---
@@ -64,3 +64,4 @@ After each fix:
 - Task 3: `results_v10.tex:266` — subsection title extended with `Unconditional VaR (Kupiec/Christoffersen)` so the header lists all seven paragraphs in the body (MMD, Signature-MMD, Discriminator AUC, Leverage, Aggregational Gaussianity, Unconditional VaR, Simulation p-Values). Line 271 updated from "six evaluation axes" → "seven evaluation axes" with the Kupiec/Christoffersen axis named explicitly. Label `sec:extended_evaluation` preserved.
 - Task 4: `results_v10.tex:245` — paragraph title replaced with `Wasserstein and Hellinger Improve Net Across the Sweep; Coverage is Saturated at 100\%`. The body is rewritten to (a) acknowledge minor non-monotone oscillations of $W_1$ and H at intermediate $K$ (per `supplemental_v10.tex` Table `tab:sensitivity`), (b) keep the net endpoint-to-endpoint improvement claim, and (c) clarify that 100% coverage is a floor check, not a monotonic signal.
 - Task 5: `results_v10.tex:240` — paragraph title changed from `Kurtosis Is Non-Monotonic and Peaks in the Plateau Band` → `Kurtosis Is Non-Monotonic and Peaks Early at $K = 6$`. Body now states explicitly that the peak at $K = 6$ sits below the distributional-fidelity plateau band $K \in \{15, 18, 21\}$. Matches both the numbers in the paragraph and supplemental Table `tab:sensitivity`.
+- Task 6: `results_v10.tex:664` — "closest to observed on four of six assets" → "three of six assets (SPY, JNJ, AAPL), with CHMM-N closest on NVDA and JPM and CHMM-t closest on QQQ". The per-ticker tally now matches Table `tab:cross_asset` kurtosis column exactly (L wins 3, N wins 2, t wins 1).
