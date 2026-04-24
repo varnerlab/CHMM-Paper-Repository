@@ -1,33 +1,57 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[11pt]{article}
 
-% --- Packages ---
+% --- Encoding & fonts ---
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{hyperref}
-\usepackage[numbers,sort&compress]{natbib}
+\usepackage{microtype}
+
+% --- Math ---
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\newtheorem{theorem}{Theorem}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+
+% --- Layout ---
 \usepackage[margin=1in]{geometry}
-\usepackage{algorithm}
-\usepackage{algorithmic}
+\usepackage[section]{placeins}
+\setlength{\emergencystretch}{3em}
+
+% --- Floats, tables, figures ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{caption}
 \usepackage{subcaption}
+
+% --- Algorithms, lists, color ---
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{enumitem}
 \usepackage{xcolor}
-\usepackage{float}
+
+% --- TikZ ---
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,calc,decorations.pathreplacing}
-\usepackage{microtype}
-\usepackage[section]{placeins}
 
-% --- Hyperref setup ---
+% --- Bibliography ---
+\usepackage[numbers,sort&compress]{natbib}
+
+% --- Links (load last) ---
+\usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
     citecolor=blue,
-    urlcolor=blue
+    urlcolor=blue,
+    pdftitle={A Regime-Switching Continuous Hidden Markov Model as a Reference Synthetic-Data Generator for Equity Returns},
+    pdfauthor={Abdulrahman Alswaidan, Cade Jin, Jeffrey D. Varner},
+    pdfsubject={Regime-switching CHMM synthetic-data generator for equity returns},
+    pdfkeywords={CHMM, Baum-Welch, Student-t emissions, semi-Markov, stylized facts, copula, Value-at-Risk, Kupiec, Christoffersen, MMD, synthetic data}
 }
+\makeatletter
+\g@addto@macro\UrlBreaks{\do\-\do\_}
+\makeatother
 
 % --- Caption style (V10/V11, 2026-04-22) ---
 % Top-of-table labels, bold table/figure tags, small font for captions and subcaptions.
