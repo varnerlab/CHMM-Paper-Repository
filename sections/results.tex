@@ -208,7 +208,7 @@ CHMM-N ($K=18$)     & 93.8  & 84.2  & 86.6  & 77.9  & 4.99    & 4.51    & 0.0507
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.80\textwidth]{figs/Fig-3-IS-Comparison-K18.pdf}
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18.pdf}
 \caption{\textbf{In-sample CHMM validation on SPY} (Pipeline A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths). Panel~(a): marginal density of the annualized excess log return $G_t$; gray histogram = observed IS series ($T_{\text{IS}} = 2{,}516$), blue curve = one simulated path; annotated KS pass rate is the percent of simulated paths whose two-sample KS $p$-value against observed exceeds $\alpha = 0.05$. Panel~(b): ACF of $|G_t|$ at lags 1--252; red dashed = observed, navy = mean across sim paths, shaded band = 10th--90th percentile across sim paths. Panel~(c): tail Q-Q plot at 200 quantile levels (0.1\% to 99.9\%); blue points = simulated pooled over paths, black dashed = identity line.}
 \label{fig:is_comparison}
 \end{figure}
@@ -252,7 +252,7 @@ The CHMM's regime structure, learned from the full range of IS observations incl
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.80\textwidth]{figs/Fig-4-OoS-Validation-K18.pdf}
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18.pdf}
 \caption{\textbf{Out-of-sample CHMM validation on SPY} (Pipeline A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths, $\alpha = 0.05$, OoS window $T_{\text{OoS}} = 572$). Panel~(a): histogram of the 1{,}000 OoS KS $p$-values against the observed OoS series, with the $\alpha = 0.05$ threshold as a red dashed line. Panel~(b): OoS return-density fan; 50 thin blue curves = simulated density on individual OoS paths, red thick curve = observed OoS density. Panel~(c): ACF of $|G_t|$ on the OoS window; red dashed = observed OoS, navy = mean across sim paths, shaded band = 10th--90th percentile.}
 \label{fig:oos_validation}
 \end{figure}
