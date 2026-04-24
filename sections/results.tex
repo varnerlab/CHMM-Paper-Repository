@@ -306,7 +306,7 @@ CHMM-t produces the cleanest monotone decay through this band ($8.46 \to 2.65 \t
 
 \paragraph{Unconditional $1\%$ / $5\%$ VaR: Kupiec and Christoffersen.}
 We test unconditional coverage \citep{kupiec1995techniques} and independence \citep{christoffersen1998evaluating} on the OoS window at $\alpha \in \{0.01, 0.05\}$.
-All continuous generators clear $1\%$ Kupiec ($\text{LR}_{\text{uc}} < 3.84$); the $K_{\text{disc}} = 90$ discrete variants of \citet{alswaidan2026hybrid} (with and without jumps) over-conservatively produce a $1.7\%$ breach rate against a $5\%$ target and reject Kupiec decisively ($\text{LR}_{\text{uc}} = 16.81$, $p < 10^{-3}$) --- a concrete negative finding the envelope diagnostic of Section~\ref{sec:utility} does not surface.
+All continuous generators clear $1\%$ Kupiec ($\text{LR}_{\text{uc}} < 3.84$); the $K_{\text{disc}} = 90$ discrete variants of \citet{alswaidan2026hybrid} (with and without jumps) over-conservatively produce a $1.7\%$ breach rate against a $5\%$ target and reject Kupiec decisively ($\text{LR}_{\text{uc}} = 16.81$, $p < 10^{-3}$), a concrete negative finding the envelope diagnostic of Section~\ref{sec:utility} does not surface.
 Every row fails Christoffersen $\text{LR}_{\text{ind}}$ at both levels because of the $2024$--$2026$ breach-clustering structure; Section~\ref{sec:conditional_var} closes this gap with a regime-conditional CHMM-t VaR.
 
 \paragraph{Joint simulation-based $p$-value coverage.}
@@ -408,7 +408,7 @@ CHMM-t      & $0.872$ & $0.000$ & $0.000$ & $0.196$ & $0.228$ & $0.324$ & $0.661
 \paragraph{Where the added baselines land.}
 QuantGAN (Section~\ref{sec:quantgan_methods}) is a clear deep-generative negative control under the reproducible first-pass setup ($\text{MMD IS} = 6.4 \times 10^{-2}$, AUC IS $= 0.963$, $\bar{pv}_{\text{OoS}} = 0.289$), matching the variance-collapse pattern \citet{kwon2024can} and \citet{takahashi2019modeling} document for untuned GANs.
 Window-diffusion (Section~\ref{sec:diffusion_methods}) wins local short-window matching (second-smallest MMD IS at $9.0 \times 10^{-5}$, AUC IS $= 0.565$ closer to $0.5$ than any CHMM) but collapses on global coverage ($\bar{pv}_{\text{OoS}} = 0.204$) and fails Christoffersen at both VaR levels ($\text{LR}_{\text{ind}} = 16.4, 7.4$).
-Two-regime MS-GARCH (Section~\ref{sec:msgarch_methods}) is the variance-regime reference: best non-CHMM MMD IS ($4.8 \times 10^{-4}$), best-in-panel unconditional VaR calibration at both $\alpha$, and the closest unconditional row to the Christoffersen threshold ($\text{LR}_{\text{ind}} = 4.79$ at $5\%$) --- still failing independence and superseded by the Viterbi-decoded conditional CHMM-t of Section~\ref{sec:conditional_var}.
+Two-regime MS-GARCH (Section~\ref{sec:msgarch_methods}) is the variance-regime reference: best non-CHMM MMD IS ($4.8 \times 10^{-4}$), best-in-panel unconditional VaR calibration at both $\alpha$, and the closest unconditional row to the Christoffersen threshold ($\text{LR}_{\text{ind}} = 4.79$ at $5\%$), still failing independence and superseded by the Viterbi-decoded conditional CHMM-t of Section~\ref{sec:conditional_var}.
 
 \paragraph{Summary.}
 CHMM-t sets the distributional-fidelity frontier (MMD, AUC, aggregational kurtosis); CHMM-N wins OoS leverage; CHMM-L wins OoS joint $p$-value coverage.
@@ -573,19 +573,11 @@ This evidence suggests that the copula advantage is intrinsic to the rank-reorde
 \emph{Pipeline note.} Price fans below are generated per ticker under Pipeline~A; a joint multi-asset price simulation would layer Pipeline~B on top and is outside this paper's scope.
 
 The preceding subsections evaluated CHMM in \emph{return} space.
-For the practitioner the downstream object of interest is often the \emph{price} path itself --- Monte Carlo P\&L, terminal-value stress, trading-rule backtests --- so we report a price-level evaluation that ties the return-based fits to observed equity price trajectories over the OoS window.
+For the practitioner the downstream object of interest is often the \emph{price} path itself (Monte Carlo P\&L, terminal-value stress, trading-rule backtests), so we report a price-level evaluation that ties the return-based fits to observed equity price trajectories over the OoS window.
 
 \paragraph{Setup.}
 For each of the six main-study tickers (SPY, NVDA, JNJ, JPM, AAPL, QQQ) we re-train the three CHMM families at $K = 18$ on the full IS window and simulate $n_{\text{paths}} = 500$ price paths of length $T_{\text{OoS}} = 572$ days, converting simulated returns to prices via $\widetilde P_t = \widetilde P_{t-1} \cdot \exp((\widetilde G_t + r_f)\,\Delta t)$ with $\Delta t = 1/252$, $r_f = 0$, and $S_0$ the last IS VWAP.
 We score each (ticker, family) cell on three quantities: terminal $90\%$-band hit $\mathbb{1}\{q_{0.05} \le P^{\text{obs}}_T \le q_{0.95}\}$; horizon-average band coverage $\overline{C}_{0.90} = T_{\text{OoS}}^{-1} \sum_t \mathbb{1}\{q_{0.05}(t) \le P^{\text{obs}}_t \le q_{0.95}(t)\}$; and the bias-corrected sample CRPS of \citet{gneiting2007strictly}, normalised by $S_0$ for cross-ticker comparability.
-
-\paragraph{Headline results.}
-Table~\ref{tab:price_sim_oos} reports the CHMM-N column for each ticker; per-family detail (CHMM-t, CHMM-L) and full path-level metrics are in Appendix~\ref{sec:price_sim_oos_appendix} (Table~\ref{tab:price_sim_path_metrics}).
-Two findings stand out.
-\emph{(i)~Terminal-band coverage is $18/18$ across all (ticker, family) pairs}, including the atypical $4.15\times$ NVDA rally.
-\emph{(ii)~Horizon-wide calibration is near-perfect on five of six tickers}: $\overline{C}_{0.90} \ge 0.995$ on $17$ of the $18$ cells --- a far stronger statement than terminal coverage because it requires the simulated envelope to track the observed path \emph{at every} OoS day.
-NVDA is the lone outlier ($\overline{C}_{0.90} \in [0.64, 0.70]$, $\widehat{\text{CRPS}}/S_0 \approx 0.64$--$0.77$), exposing a 2024--2025 drift-regime shift beyond the prior-decade IS window; walk-forward re-estimation is the natural remedy (Section~\ref{sec:walk_forward}; \citealp{diebold1995comparing}).
-No emission family dominates uniformly, consistent with the return-space finding in Section~\ref{sec:model_comparison} that family differences live in the tails and only weakly propagate into aggregated price scores.
 
 \begin{table}[t]
 \centering
@@ -606,6 +598,14 @@ QQQ  & 649.02 & 584.70 & \checkmark & 0.998 & 0.076 \\
 \end{tabular}
 \end{table}
 
+\paragraph{Headline results.}
+Table~\ref{tab:price_sim_oos} reports the CHMM-N column for each ticker; per-family detail (CHMM-t, CHMM-L) and full path-level metrics are in Appendix~\ref{sec:price_sim_oos_appendix} (Table~\ref{tab:price_sim_path_metrics}).
+Two findings stand out.
+\emph{(i)~Terminal-band coverage is $18/18$ across all (ticker, family) pairs}, including the atypical $4.15\times$ NVDA rally.
+\emph{(ii)~Horizon-wide calibration is near-perfect on five of six tickers}: $\overline{C}_{0.90} \ge 0.995$ on $17$ of the $18$ cells, a far stronger statement than terminal coverage because it requires the simulated envelope to track the observed path \emph{at every} OoS day.
+NVDA is the lone outlier ($\overline{C}_{0.90} \in [0.64, 0.70]$, $\widehat{\text{CRPS}}/S_0 \approx 0.64$--$0.77$), exposing a 2024--2025 drift-regime shift beyond the prior-decade IS window; walk-forward re-estimation is the natural remedy (Section~\ref{sec:walk_forward}; \citealp{diebold1995comparing}).
+No emission family dominates uniformly, consistent with the return-space finding in Section~\ref{sec:model_comparison} that family differences live in the tails and only weakly propagate into aggregated price scores.
+
 \begin{figure}[t]
 \centering
 \begin{subfigure}[t]{0.32\textwidth}
@@ -620,7 +620,7 @@ QQQ  & 649.02 & 584.70 & \checkmark & 0.998 & 0.076 \\
     \includegraphics[width=\textwidth]{figs/Fig-SPY-PriceFan-L.pdf}
     \caption{CHMM-L.}
 \end{subfigure}
-\caption{\textbf{SPY out-of-sample price fan, three CHMM emission families} (Pipeline~A, $K = 18$, 500 paths, $T_{\text{OoS}} = 572$). Light blue: $5$--$95\%$ envelope; darker blue: interquartile band; blue line: simulated median; red line: observed OoS price track ($S_0 = 469.90 \to P^{\text{obs}}_T = 710.13$). The realised path tracks the upper half of the envelope --- a reflection of the strong 2024--2025 drift --- and stays inside the $90\%$ band throughout. NVDA, JNJ, JPM, AAPL, and QQQ price fans and terminal histograms are in Appendix~\ref{sec:price_sim_oos_appendix}; raw path metrics in \texttt{results/equity\_price\_sim/}.}
+\caption{\textbf{SPY out-of-sample price fan, three CHMM emission families} (Pipeline~A, $K = 18$, 500 paths, $T_{\text{OoS}} = 572$). Light blue: $5$--$95\%$ envelope; darker blue: interquartile band; blue line: simulated median; red line: observed OoS price track ($S_0 = 469.90 \to P^{\text{obs}}_T = 710.13$). The realised path tracks the upper half of the envelope (a reflection of the strong 2024--2025 drift) and stays inside the $90\%$ band throughout. NVDA, JNJ, JPM, AAPL, and QQQ price fans and terminal histograms are in Appendix~\ref{sec:price_sim_oos_appendix}; raw path metrics in \texttt{results/equity\_price\_sim/}.}
 \label{fig:price_fan_spy}
 \end{figure}
 
