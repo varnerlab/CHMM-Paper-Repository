@@ -96,7 +96,7 @@ Both baselines are re-implemented inside the present pipeline (not invoked as th
 At this state resolution both discrete variants match the CHMM family on coarse distributional fidelity: $98.3\%$ KS IS / $85.2\%$ KS OoS and $98.3\%$ AD IS / $89.9\%$ AD OoS for NJ, and $97.9\%$ KS IS / $83.9\%$ KS OoS and $96.5\%$ AD IS / $85.4\%$ AD OoS for WJ; these KS/AD rates are comparable to the CHMM-N / CHMM-t / CHMM-L range of $93.2$--$93.8\%$ IS KS and $79.3$--$85.9\%$ OoS KS.
 Where the discrete variants fall short is on \emph{higher-order} distributional structure: simulated kurtosis is $3.49$ (WJ) and $3.53$ (NJ) against an observed $7.68$, Hellinger distance is roughly double that of the CHMMs ($0.1605$ / $0.1621$ vs.\ $0.0762$--$0.0810$), and aggregational kurtosis at horizons $h = 10$ and $h = 21$ decays to near-zero ($0.39$ / $0.47$ and $0.01$ / $0.01$) against the CHMM-N / CHMM-t values of $3.27$ / $2.06$ and $2.38$ / $1.35$ (Section~\ref{sec:extended_evaluation}, Table~\ref{tab:agg_kurt}).
 The discrete variants' simulated kurtosis is clamped from above by the $K_{\text{disc}}$-atom structure of the bin-centroid emission: tail mass is represented only by the two tail bins, which together account for roughly $2/K_{\text{disc}}$ of the stationary distribution, so no amount of jump augmentation can produce a sample fourth moment above the observed centroid-mix kurtosis of $\approx 3.5$.
-The Poisson jump augmentation (WJ) with $\epsilon = 5 \times 10^{-5}$ and $\lambda = 67$ (the prior-paper SPY values) triggers on roughly $0.005\%$ of time steps and therefore leaves the IS and OoS marginal metrics essentially unchanged from the NJ baseline, making the WJ row a slight perturbation rather than a meaningful variance-regime addition at this sample size.
+The Poisson jump augmentation (WJ) with $\epsilon = 5 \times 10^{-5}$ and $\lambda = 67$ (the prior-paper SPY values) triggers on $0.005\%$ of time steps, giving an expected trigger count of $\epsilon T \approx 0.13$ per IS window ($T = 2{,}516$) and $\approx 0.03$ per OoS window ($T = 572$), so the WJ row is a slight perturbation of NJ rather than a meaningful variance-regime addition at this sample size.
 The central empirical contrast for our paper is therefore not on coarse KS/AD pass rates (where the discrete baselines at $K_{\text{disc}} = 90$ are competitive) but on tail structure, aggregational Gaussianity decay, and VaR calibration: Section~\ref{sec:utility} and Section~\ref{sec:extended_evaluation} document that both discrete variants fail the Kupiec $5\%$ VaR test with $\text{LR}_{\text{uc}} = 16.81$ (breach rate $1.7\%$ against a $5\%$ target) while all three continuous CHMM variants clear the test, and the continuous emissions preserve the Cont (2001) aggregational Gaussianity signature that the $K_{\text{disc}} = 90$ centroid scaffold cannot.
 
 \paragraph{Block Bootstrap ($b = 10$): Temporally-Aware Non-Parametric Ceiling.}
@@ -130,7 +130,7 @@ The takeaway for the comparison is that adding a deep-generative row does not di
 \paragraph{CHMM-N ($K = 18$, Gaussian emissions).}
 The Gaussian CHMM achieved $93.8\%$ KS and $86.6\%$ AD IS, competitive with the bootstrap ($99.9\%$), Laplace i.i.d.\ ($99.1\%$), and the $K_{\text{disc}} = 90$ Discrete NJ / WJ variants ($98.3\%$ / $97.9\%$) on KS, and substantially outperforming GARCH ($25.9\%$).
 ACF-MAE of $0.0507$ was essentially on par with GARCH ($0.0484$), demonstrating that the CHMM reproduces volatility clustering \emph{without} a dedicated jump mechanism or conditional variance equation.
-This is the central finding of this paper: the Ryd\'{e}n et al.\ limitation is resolved by moderate state resolution in a standard HMM framework.
+This is the first of two headline findings in the paper: the Ryd\'{e}n et al.\ limitation is resolved by moderate state resolution in a standard HMM framework; the second (Section~\ref{sec:conditional_var}) is that a Viterbi-decoded conditional quantile of CHMM-t closes the breach-clustering gap on regime-conditional VaR.
 The Wasserstein-1 (0.110) is well below the GARCH figure (0.245); Hellinger (0.0808) is four times smaller than either discrete HMM; IS quantile coverage is 100\% matching the bootstrap ceiling.
 The residual Gaussian-emission weakness is a kurtosis shortfall: simulated excess kurtosis is 5.02 IS and 4.42 OoS against observed values of 7.68 / 5.29.
 
@@ -144,7 +144,7 @@ The slight ACF-MAE increase ($0.0548$ vs.\ $0.0507$) is consistent with the heav
 \paragraph{CHMM-L ($K = 18$, Laplace emissions).}
 The Laplace variant produces the most \emph{kurtosis-aligned} fit: simulated excess kurtosis is 6.76 IS and 6.27 OoS against observed 7.68 / 5.29, closing most of the CHMM-N IS shortfall (without the CHMM-t over-correction) and even overshooting the OoS target by $\sim 1$.
 CHMM-L attains the strongest IS AD fit among the continuous CHMMs ($91.2\%$ IS AD, $4.6$ percentage points ahead of CHMM-N and $2.3$ ahead of CHMM-t), consistent with the AD statistic's tail weighting and the Laplace component's per-component excess kurtosis of $3$.
-ACF-MAE (0.0564) and $W_1$ (0.102) are within 10\% of the CHMM-N values, and IS quantile coverage is 100\%.
+ACF-MAE (0.0565) and $W_1$ (0.101) sit within $0.006$ and $0.010$ of the CHMM-N values, and IS quantile coverage is 100\%.
 Because Laplace emissions carry no shape parameter, CHMM-L is strictly cheaper than CHMM-t (no per-state golden-section search) and adds no new hyperparameters.
 
 \paragraph{Summary of the three CHMM variants: a one-row decision guide.}
@@ -220,23 +220,23 @@ The full seven-metric $K$-sweep is reported in Table~\ref{tab:sensitivity} (Appe
 We briefly note four structural patterns that justify the choice of $K = 18$ for the main results.
 
 \paragraph{Distributional Fidelity Plateaus in the $K \in \{15, 18, 21\}$ Band.}
-The IS KS pass rate increased from 88.7\% ($K = 3$) to 95.2\% ($K = 18$) and 96.5\% ($K = 21$); the OoS KS from 92.8\% to 94.0\% at $K = 18$ and 94.9\% at $K = 21$. The 2.2 percentage-point spread across the plateau band is small relative to the 6.5-point gain from $K = 3$, so additional state resolution beyond $K = 18$ delivers diminishing returns rather than strict saturation.
-The same pattern holds for AD (79.2\% $\to$ 88.3\% IS and 84.9\% $\to$ 88.7\% OoS at $K = 18$).
+Drawing from Table~\ref{tab:sensitivity}, the IS KS pass rate increases from 88.8\% ($K = 3$) to 95.6\% ($K = 18$) and 96.1\% ($K = 21$); the OoS KS rises from 77.1\% to 81.7\% at $K = 18$ and 86.6\% at $K = 21$. The 2.2 percentage-point spread across the plateau band is small relative to the 6.8-point IS gain from $K = 3$, so additional state resolution beyond $K = 18$ delivers diminishing returns rather than strict saturation.
+The same pattern holds for AD (79.2\% $\to$ 88.4\% IS and 67.9\% $\to$ 73.2\% OoS at $K = 18$).
 This plateau is consistent with an upper bound imposed by the Gaussian emission family: once the mixture has enough components to resolve the bulk and near-tail regions, additional components do not recover the extreme tails that remain light under any Gaussian mixture.
 
 \paragraph{Temporal Fidelity Is Flat Across the Sweep.}
-ACF-MAE was 0.0453 ($K = 3$) to 0.0505 ($K = 18$) and 0.0503 ($K = 21$) for CHMM-N, a total swing of 0.005 across the entire sweep.
+ACF-MAE was 0.0466 ($K = 3$) to 0.0509 ($K = 18$) and 0.0532 ($K = 21$) for CHMM-N, a total swing under 0.007 across the entire sweep.
 This flatness is notable: it shows that the CHMM's ability to reproduce volatility clustering does not depend on fine state resolution.
-Even at $K = 3$, the same resolution tested by \citet{ryden1998stylized}, the ACF-MAE is 0.0453, comparable to GARCH(1,1) at 0.047.
+Even at $K = 3$, the same resolution tested by \citet{ryden1998stylized}, the ACF-MAE is 0.0466, comparable to GARCH(1,1) at 0.0484.
 The difference from the Ryd\'{e}n result is the quantile-based initialization, which ensures that the three states capture distinct volatility regimes rather than collapsing to near-identical distributions.
 
 \paragraph{Kurtosis Is Non-Monotonic and Peaks Early at $K = 6$.}
-Simulated kurtosis under CHMM-N ranged from 3.70 ($K = 9$) to 5.13 ($K = 6$), with $K = 18$ at 5.03; the peak sits at $K = 6$, below the $K \in \{15, 18, 21\}$ distributional-fidelity band, and at higher $K$ the mixture kurtosis oscillates within the 4.5--5.1 range.
+Simulated kurtosis under CHMM-N ranged from 3.80 ($K = 3$) to 5.26 ($K = 6$), with $K = 18$ at 4.98; the peak sits at $K = 6$, below the $K \in \{15, 18, 21\}$ distributional-fidelity band, and at higher $K$ the mixture kurtosis oscillates within the 3.8--5.0 range.
 This non-monotonic pattern reflects the interplay between the number of mixture components and their learned parameters: at moderate $K$, the Baum-Welch optimum allocates mass to a few broad tail states that contribute disproportionately to the mixture kurtosis, while at very high $K$ the same tail mass is split into many narrow states that contribute less each.
 The heavy-tailed CHMM-t and CHMM-L variants close most of this gap at the same $K = 18$ (see Table~\ref{tab:sensitivity_multi}).
 
 \paragraph{Wasserstein and Hellinger Improve Net Across the Sweep; Coverage is Saturated at 100\%.}
-$W_1$ improves from 0.119 ($K = 3$) to 0.101 ($K = 18$) and Hellinger from 0.079 to 0.077; both exhibit minor non-monotone oscillations of less than $0.005$ at intermediate $K$ (Table~\ref{tab:sensitivity}) but neither deteriorates from endpoint to endpoint.
+$W_1$ improves from 0.130 ($K = 3$) to 0.110 ($K = 18$) and Hellinger from 0.0836 to 0.0805; both exhibit minor non-monotone oscillations of less than $0.005$ at intermediate $K$ (Table~\ref{tab:sensitivity}) but neither deteriorates from endpoint to endpoint.
 IS coverage is saturated at 100\% at every $K$, so it does not discriminate among state counts and serves only as a floor check.
 Together these provide a consistent signal that $K = 18$ is the sensible operating point.
 
@@ -267,7 +267,7 @@ All rows are computed at \NPaths{1{,}000} simulated paths on both the \TIS{2{,}5
 \paragraph{MMD (RBF kernel, 20-day windows).}
 We compute empirical $\text{MMD}^2$ \citep{gretton2012kernel} between $500$ observed and $500$ simulated $20$-day windows with median-heuristic bandwidth.
 Flat CHMM-t wins IS ($2.0 \times 10^{-5}$, an order of magnitude ahead of any other row).
-GARCH's $\text{MMD}^2 = 0.0$ on IS is a bandwidth-heuristic artefact (the median heuristic widens to accommodate GARCH's overdispersed windows); the OoS comparison ($\text{GARCH} = 7.5 \times 10^{-4}$ vs.\ CHMM-N $6.1 \times 10^{-4}$) resolves it.
+GARCH's IS $\text{MMD}^2$ is displayed as $0.0$ because it falls below the table's three-significant-digit precision ($<10^{-4}$) when the median-heuristic bandwidth widens to accommodate GARCH's overdispersed windows; the OoS comparison ($\text{GARCH} = 7.5 \times 10^{-4}$ vs.\ CHMM-N $6.1 \times 10^{-4}$) is not affected by the bandwidth collapse and resolves the ordering.
 
 \paragraph{Signature-MMD (depth $3$ time-lifted path).}
 Each $W$-day window $r_{1:W}$ is lifted to the time-augmented path
@@ -339,6 +339,7 @@ Two-regime MS-GARCH (Section~\ref{sec:msgarch_methods}) is the variance-regime r
 CHMM-t sets the distributional-fidelity frontier (MMD, AUC, aggregational kurtosis); CHMM-N wins OoS leverage; CHMM-L wins OoS joint $p$-value coverage.
 MS-GARCH leads unconditional VaR and diffusion leads local-window deep-generative metrics, but neither displaces flat CHMM-t on the combined distributional panel.
 The discrete HMM baselines of \citet{alswaidan2026hybrid} fail discriminator AUC, leverage, aggregational kurtosis, joint $p$-values, and the $5\%$ Kupiec test.
+With the single-asset panel established on SPY, we next ask whether the per-asset marginal fidelity generalizes across tickers and emission families.
 \subsection{Cross-Asset Univariate Generalization (Pipeline~A)}
 \label{sec:cross_asset_univariate}
 
@@ -354,7 +355,7 @@ The technology-heavy names have lower observed kurtosis (3.2--5.5) than the broa
 
 \paragraph{OoS Pain Points on Some Single Names.}
 Under the longer $2024$--$2026$ OoS window, two tickers show the largest IS-to-OoS degradation: NVDA (96.7\% IS / 55.8\% OoS KS) and JPM (97.8\% IS / 49.8\% OoS KS).
-These two names experienced substantial distributional shifts relative to the IS window -- NVDA the dominant high-volatility driver of the AI trade, and JPM the financials bell-wether during an interest-rate re-pricing -- and the stationary IS-calibrated parameters cannot fully track this shift.
+These two names experienced substantial distributional shifts relative to the IS window (higher realized volatility on NVDA, a different realized drift on JPM), and the stationary IS-calibrated parameters cannot fully track the shift.
 We return to this finding in Section~\ref{sec:discussion}, where we argue that it is not a consequence of over- or under-fitting $K$ (it reproduces at every $K$ in the sweep) but rather of the stationarity assumption imposed by a single-pass Baum-Welch fit.
 
 \paragraph{Walk-Forward Rolling-Window Re-Estimation on JPM and JNJ.}
