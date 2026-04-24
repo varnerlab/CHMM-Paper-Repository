@@ -263,12 +263,12 @@ The CHMM's regime structure, learned from the full range of IS observations incl
 \label{fig:oos_validation}
 \end{figure}
 
-\subsection{Extended Evaluation: MMD, Signature-MMD, Discriminator AUC, Leverage, Aggregational Gaussianity, and Simulation $p$-Values}
+\subsection{Extended Evaluation: MMD, Signature-MMD, Discriminator AUC, Leverage, Aggregational Gaussianity, Unconditional VaR (Kupiec/Christoffersen), and Simulation $p$-Values}
 \label{sec:extended_evaluation}
 
 The seven-metric panel of Section~\ref{sec:model_comparison} reports marginal and autocorrelation fidelity.
 For a reference synthetic-data generator, the community has converged on a broader metric set since \citet{gretton2012kernel, chevyrev2016primer, yoon2019timegan, ni2020conditional}.
-We therefore add six evaluation axes that probe joint window distributions, path geometry, learned discriminability, tail coupling, aggregational scaling behaviour, and multi-statistic coverage.
+We therefore add seven evaluation axes that probe joint window distributions, path geometry, learned discriminability, tail coupling, aggregational scaling behaviour, unconditional Value-at-Risk under Kupiec and Christoffersen likelihood-ratio tests, and multi-statistic coverage.
 All rows are computed at \NPaths{1{,}000} simulated paths on both the \TIS{2{,}516} and \TOoS{572} SPY windows, under the global seed policy stated in Section~\ref{sec:metrics}.
 The full numerical panel is in Tables~\ref{tab:extended_metrics}, \ref{tab:leverage}, \ref{tab:agg_kurt}, and \ref{tab:sim_pvalues}; we summarise the headline findings here.
 

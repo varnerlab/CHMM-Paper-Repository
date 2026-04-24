@@ -42,7 +42,7 @@ Goal: eliminate every contradiction between section / subsection / paragraph tit
 
 - [x] **Task 1** — Create `refining-paper.md` plan file.
 - [x] **Task 2 (Fix #1)** — Rename *Seven-Model Comparison* → *Twelve-Generator Comparison*.
-- [ ] **Task 3 (Fix #2)** — Extend title and fix "six" → "seven" for Extended Evaluation.
+- [x] **Task 3 (Fix #2)** — Extend title and fix "six" → "seven" for Extended Evaluation.
 - [ ] **Task 4 (Fix #3)** — Rename Wasserstein/Hellinger/Coverage monotonicity paragraph.
 - [ ] **Task 5 (Fix #4)** — Rename kurtosis peak paragraph.
 - [ ] **Task 6 (Fix #5)** — Body: "four of six" → "three of six" for CHMM-L.
@@ -61,3 +61,4 @@ After each fix:
 
 - Task 1: plan file created.
 - Task 2: `results_v10.tex:75` — subsection title changed to `Twelve-Generator Comparison (Pipeline A)`. Body ("twelve generators", line 80) and table caption ("Twelve-model comparison", line 180) now agree with the header. Label `sec:model_comparison` preserved, so all `\ref{}` and `\cref{}` call sites are unaffected.
+- Task 3: `results_v10.tex:266` — subsection title extended with `Unconditional VaR (Kupiec/Christoffersen)` so the header lists all seven paragraphs in the body (MMD, Signature-MMD, Discriminator AUC, Leverage, Aggregational Gaussianity, Unconditional VaR, Simulation p-Values). Line 271 updated from "six evaluation axes" → "seven evaluation axes" with the Kupiec/Christoffersen axis named explicitly. Label `sec:extended_evaluation` preserved.
