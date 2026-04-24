@@ -160,6 +160,7 @@ OoS & 52.5 & 55.0 & 2.21 & 0.0500 & 0.293 & 0.1603 & 69.7 \\
 This appendix collects (i) the full per-family path-level probabilistic-forecast metrics deferred from Table~\ref{tab:price_sim_oos} in Section~\ref{sec:price_sim_oos}, and (ii) the per-ticker price-fan and terminal-distribution figures for the five non-body tickers NVDA, JNJ, JPM, AAPL, and QQQ.
 All figures use the same plotting conventions as Figure~\ref{fig:price_fan_spy} in the main body: blue shaded bands are the $5$--$95\%$ and $25$--$75\%$ quantile envelopes of the $500$ simulated paths, blue solid line is the simulated median, red solid line is the observed OoS price track.
 Terminal-histogram panels show the cross-path distribution of $\widetilde P_T$ at $T_{\text{OoS}}$ in gray, with the observed terminal $P^{\text{obs}}_T$ as a red vertical line and the simulated median as a blue dashed line.
+For brevity, the figures show CHMM-N only (the representative family; differences across the three emission families in the price-level metrics are small, see Table~\ref{tab:price_sim_path_metrics}).
 
 \begin{table}[h]
 \centering
@@ -199,19 +200,8 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-NVDA-PriceFan-N.pdf}
-    \caption{CHMM-N.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-NVDA-PriceFan-t.pdf}
-    \caption{CHMM-t.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-NVDA-PriceFan-L.pdf}
-    \caption{CHMM-L.}
-\end{subfigure}
-\caption{NVDA out-of-sample price fan, unconditional CHMM sampler ($S_0 = 47.67 \to P^{\text{obs}}_T = 198.07$, a $4.15\times$ rally). The observed path exits the $25$--$75\%$ interquartile band by mid-horizon but remains inside the $5$--$95\%$ envelope under all three emission families; horizon-wide coverage drops to $0.64$--$0.70$, the lone calibration outlier in the panel.}
+\includegraphics[width=0.55\textwidth]{figs/Fig-NVDA-PriceFan-N.pdf}
+\caption{NVDA out-of-sample price fan, CHMM-N ($S_0 = 47.67 \to P^{\text{obs}}_T = 198.07$, a $4.15\times$ rally). The observed path exits the $25$--$75\%$ interquartile band by mid-horizon but remains inside the $5$--$95\%$ envelope; horizon-wide coverage under CHMM-N is $0.70$ (CHMM-t: $0.64$, CHMM-L: $0.67$; Table~\ref{tab:price_sim_path_metrics}), the lone calibration outlier in the panel.}
 \label{fig:price_fan_nvda}
 \end{figure}
 
@@ -231,146 +221,58 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[t]{0.32\textwidth}
+\begin{subfigure}[t]{0.45\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-JNJ-PriceFan-N.pdf}
-    \caption{CHMM-N.}
+    \caption{Price fan.}
 \end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-JNJ-PriceFan-t.pdf}
-    \caption{CHMM-t.}
+\begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-JNJ-TerminalDist-N.pdf}
+    \caption{Terminal distribution.}
 \end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-JNJ-PriceFan-L.pdf}
-    \caption{CHMM-L.}
-\end{subfigure}
-\caption{JNJ out-of-sample price fan, unconditional CHMM sampler.}
+\caption{JNJ out-of-sample price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
 \label{fig:price_fan_jnj_appendix}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-JNJ-TerminalDist-N.pdf}
-    \caption{CHMM-N.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-JNJ-TerminalDist-t.pdf}
-    \caption{CHMM-t.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-JNJ-TerminalDist-L.pdf}
-    \caption{CHMM-L.}
-\end{subfigure}
-\caption{JNJ terminal-price distribution, unconditional CHMM sampler.}
-\label{fig:terminal_jnj_appendix}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\begin{subfigure}[t]{0.32\textwidth}
+\begin{subfigure}[t]{0.45\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-JPM-PriceFan-N.pdf}
-    \caption{CHMM-N.}
+    \caption{Price fan.}
 \end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-JPM-PriceFan-t.pdf}
-    \caption{CHMM-t.}
+\begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-JPM-TerminalDist-N.pdf}
+    \caption{Terminal distribution.}
 \end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-JPM-PriceFan-L.pdf}
-    \caption{CHMM-L.}
-\end{subfigure}
-\caption{JPM out-of-sample price fan, unconditional CHMM sampler.}
+\caption{JPM out-of-sample price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
 \label{fig:price_fan_jpm_appendix}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-JPM-TerminalDist-N.pdf}
-    \caption{CHMM-N.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-JPM-TerminalDist-t.pdf}
-    \caption{CHMM-t.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-JPM-TerminalDist-L.pdf}
-    \caption{CHMM-L.}
-\end{subfigure}
-\caption{JPM terminal-price distribution, unconditional CHMM sampler.}
-\label{fig:terminal_jpm_appendix}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\begin{subfigure}[t]{0.32\textwidth}
+\begin{subfigure}[t]{0.45\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-AAPL-PriceFan-N.pdf}
-    \caption{CHMM-N.}
+    \caption{Price fan.}
 \end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-AAPL-PriceFan-t.pdf}
-    \caption{CHMM-t.}
+\begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-AAPL-TerminalDist-N.pdf}
+    \caption{Terminal distribution.}
 \end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-AAPL-PriceFan-L.pdf}
-    \caption{CHMM-L.}
-\end{subfigure}
-\caption{AAPL out-of-sample price fan, unconditional CHMM sampler.}
+\caption{AAPL out-of-sample price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
 \label{fig:price_fan_aapl_appendix}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-AAPL-TerminalDist-N.pdf}
-    \caption{CHMM-N.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-AAPL-TerminalDist-t.pdf}
-    \caption{CHMM-t.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-AAPL-TerminalDist-L.pdf}
-    \caption{CHMM-L.}
-\end{subfigure}
-\caption{AAPL terminal-price distribution, unconditional CHMM sampler.}
-\label{fig:terminal_aapl_appendix}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\begin{subfigure}[t]{0.32\textwidth}
+\begin{subfigure}[t]{0.45\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-QQQ-PriceFan-N.pdf}
-    \caption{CHMM-N.}
+    \caption{Price fan.}
 \end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-QQQ-PriceFan-t.pdf}
-    \caption{CHMM-t.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-QQQ-PriceFan-L.pdf}
-    \caption{CHMM-L.}
-\end{subfigure}
-\caption{QQQ out-of-sample price fan, unconditional CHMM sampler.}
-\label{fig:price_fan_qqq_appendix}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\begin{subfigure}[t]{0.32\textwidth}
+\begin{subfigure}[t]{0.45\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-QQQ-TerminalDist-N.pdf}
-    \caption{CHMM-N.}
+    \caption{Terminal distribution.}
 \end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-QQQ-TerminalDist-t.pdf}
-    \caption{CHMM-t.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-QQQ-TerminalDist-L.pdf}
-    \caption{CHMM-L.}
-\end{subfigure}
-\caption{QQQ terminal-price distribution, unconditional CHMM sampler.}
-\label{fig:terminal_qqq_appendix}
+\caption{QQQ out-of-sample price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
+\label{fig:price_fan_qqq_appendix}
 \end{figure}
 
 
