@@ -43,7 +43,7 @@ In-sample the three CHMMs are therefore well calibrated as risk consumers and ca
 Second, CHMM-t -- despite overshooting the empirical kurtosis by $\sim 126\%$ in-sample -- does \emph{not} produce a systematically more conservative VaR/ES estimate: its in-sample median VaR$_{0.01}$ of $-6.58$ is almost identical to CHMM-N's $-6.64$, and its envelope width is comparable.
 The CHMM-t kurtosis overshoot therefore translates into a modestly widened uncertainty band rather than a biased point estimate, so a practitioner using CHMM-t for tail-risk scenario generation does not systematically overstate $1\%$ or $5\%$ quantile risk.
 A useful out-of-sample check: the $2024$--$2026$ observed VaR$_{0.01}$ is $-5.51$ (a relatively calm tail compared to the IS average), and the three CHMMs bracket this value comfortably within their envelopes rather than over- or under-stating it.
-Figure~\ref{fig:var_es} visualizes the envelopes alongside the historical observations.
+Figure~\ref{fig:var_es} (Appendix~\ref{sec:var_es_supp}) visualizes the envelopes alongside the historical observations.
 
 \paragraph{Explicit Kupiec failure of the Discrete HMM baseline of \citet{alswaidan2026hybrid} at $5\%$ VaR.}
 \label{par:discrete_var_failure}%
@@ -54,13 +54,6 @@ The Poisson-jump augmentation does not remedy the failure: no-jump and with-jump
 A risk manager who uses the prior-paper discrete generator to size a $5\%$ VaR position is therefore committed to holding materially more capital than the empirical breach process requires and would fail a standard VaR back-test if audited.
 The continuous CHMM family of the present paper eliminates this failure at the $5\%$ level (all three variants attain $\text{LR}_{\text{uc}} \le 3.83$, with CHMM-N, CHMM-t, and CHMM-L at $3.83$, $3.83$, and $3.03$ respectively) and the Viterbi-decoded conditional VaR of Section~\ref{sec:conditional_var} additionally passes Christoffersen independence.
 This is the clearest single-number contrast the present paper offers against the prior discrete-HMM pipeline.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.98\textwidth]{figs/Fig-VaR-ES.pdf}
-\caption{\textbf{VaR / ES envelope diagnostic} (SPY, \NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each subplot shows the simulated median (dot) and $[5\%, 95\%]$ envelope (error bar) across paths against the observed historical value (dashed red line); columns are IS / OoS, rows are the three CHMM emission families and the $1\%$ / $5\%$ confidence levels. Headline: every observed red line falls inside the corresponding simulated envelope, confirming that the CHMM family passes the coverage leg of the back-test complementary to the Kupiec / Christoffersen likelihood-ratio leg in Section~\ref{sec:utility}.}
-\label{fig:var_es}
-\end{figure}
 
 \subsection{Semi-Markov Ablation: Heavy-Tailed Sojourn Distributions}
 \label{sec:sm_ablation}

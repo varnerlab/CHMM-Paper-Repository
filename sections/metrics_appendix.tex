@@ -123,3 +123,15 @@ CHMM-t      & $0.872$ & $0.000$ & $0.000$ & $0.196$ & $0.228$ & $0.324$ & $0.661
 \end{tabular}
 \end{table}
 
+\subsection{VaR / ES Envelope Visualization (Companion to Table~\ref{tab:var_es})}
+\label{sec:var_es_supp}
+
+Figure~\ref{fig:var_es} visualizes the median and $[5\%, 95\%]$ envelopes across simulated paths whose numeric values are reported in Table~\ref{tab:var_es}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{figs/Fig-VaR-ES.pdf}
+\caption{\textbf{VaR / ES envelope diagnostic} (SPY, \NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each subplot shows the simulated median (dot) and $[5\%, 95\%]$ envelope (error bar) across paths against the observed historical value (dashed red line); columns are IS / OoS, rows are the three CHMM emission families and the $1\%$ / $5\%$ confidence levels. Headline: every observed red line falls inside the corresponding simulated envelope, confirming that the CHMM family passes the coverage leg of the back-test complementary to the Kupiec / Christoffersen likelihood-ratio leg in Section~\ref{sec:utility}.}
+\label{fig:var_es}
+\end{figure}
+

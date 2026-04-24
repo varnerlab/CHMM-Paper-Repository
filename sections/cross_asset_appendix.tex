@@ -72,6 +72,20 @@ The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum 
 \label{fig:copula_profile}
 \end{figure}
 
+\subsection{Cross-Asset Correlation Heat Maps (Pipeline B, Companion to Table~\ref{tab:cross_asset_sim_copula})}
+\label{sec:cross_asset_corr_supp}
+
+Figure~\ref{fig:cross_asset_corr} visualises the observed and path-averaged simulated correlation matrices for the dependence models of Section~\ref{sec:cross_asset}.
+The panel ordering is SIM, Gaussian copula, Student-t copula (each reported quantitatively in Table~\ref{tab:cross_asset_sim_copula}), plus a truncated C-vine variant with SPY as root for visual comparison.
+All five panels share the six-asset SPY cross-section and the same CHMM-N marginals at $K = 18$, so any visible differences between the simulated panels reflect only the dependence construction.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figs/Fig-Cross-Asset-Correlation.pdf}
+\caption{\textbf{Cross-asset IS correlation reproduction across dependence models} (Pipeline B, companion to Table~\ref{tab:cross_asset_sim_copula}). Panel~(a), top-left: \emph{observed} correlation matrix on 2014-01-03 through 2024-01-03 daily excess log returns for SPY, NVDA, JNJ, JPM, AAPL, QQQ (IS window, $T_{\text{IS}} = 2{,}516$). Panel~(b), top-right: path-averaged correlation under the Single Index Model with SPY as market factor. Panel~(c), middle-left: path-averaged correlation under the Gaussian copula on CHMM marginals. Panel~(d), middle-right: path-averaged correlation under the Student-t copula on CHMM marginals, $\nu^* = 6$. Panel~(e), bottom-left: path-averaged correlation under a truncated C-vine copula with SPY as root. Each simulated panel averages over 200 paths of length $T_{\text{IS}}$. All marginals are the per-asset CHMM-N fits at $K = 18$ from Table~\ref{tab:cross_asset}; color scale in $[-1, 1]$, red-white-blue (RdBu) diverging. Closer visual match to panel~(a) is better.}
+\label{fig:cross_asset_corr}
+\end{figure}
+
 \subsection{Per-Asset KS Bar Chart (Pipeline B, Sanity Check for Table~\ref{tab:cross_asset_sim_copula})}
 \label{sec:cross_asset_ks_supp}
 

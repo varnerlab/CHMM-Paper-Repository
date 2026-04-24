@@ -8,7 +8,7 @@ The Ljung--Box test on raw returns also rejected ($\text{LB} = 130.2$), reflecti
 
 The out-of-sample window exhibited similar properties: excess kurtosis of $5.294$, moderate negative skewness ($-0.733$), and a Jarque--Bera statistic of $719.1$.
 The Ljung--Box test on raw OoS returns also rejected ($\text{LB} = 47.2$), and the test on absolute returns rejected more strongly ($\text{LB} = 250.6$), confirming that both mild serial dependence and volatility clustering persisted into the test period.
-These properties are visualized in Figure~\ref{fig:stylized_facts}.
+These properties are visualized in Figure~\ref{fig:stylized_facts} (Appendix~\ref{sec:stylized_facts_supp}).
 
 \begin{table}[t]
 \centering
@@ -29,13 +29,6 @@ LB test on $|G_t|$ (lag 20) & reject$^*$ (2959.3) & reject$^*$ (250.6) \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts.pdf}
-\caption{Empirical stylized facts of SPY daily excess growth rates (in-sample, 2014-01-03 through 2024-01-03). Panel~(a): leptokurtic marginal distribution with Gaussian and Laplace fits. Panel~(b): normal Q-Q plot confirming heavy tails. Panel~(c): near-zero autocorrelation of raw returns. Panel~(d): persistent autocorrelation of absolute returns characterizing volatility clustering.}
-\label{fig:stylized_facts}
-\end{figure}
 
 \subsection{Model Selection: Why $K = 18$}
 \label{sec:model_selection}
@@ -478,15 +471,7 @@ Off-diag MAE OoS     & \multicolumn{2}{c}{0.261} & \multicolumn{2}{c}{\textbf{0.
 \end{tabular}
 \end{table}
 
-Figure~\ref{fig:cross_asset_corr} visualises the observed and path-averaged simulated correlation matrices for the three dependence models; the per-asset in-sample KS pass rates as a grouped bar chart (Figure~\ref{fig:cross_asset_ks}) are deferred to Appendix~\ref{sec:cross_asset_ks_supp}.
-The visual ordering confirms the quantitative summary in Table~\ref{tab:cross_asset_sim_copula}: the SIM introduces visible distortion on JPM and AAPL marginals, while both copulas track the observed marginals closely; on correlation, the SIM panel shows larger residuals off the diagonal than either copula panel, and the Student-t copula is marginally closer to the observed heat map than the Gaussian copula.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.85\textwidth, trim=0 430 0 0, clip]{figs/Fig-Cross-Asset-Correlation.pdf}
-\caption{\textbf{Cross-asset IS correlation reproduction across dependence models} (Pipeline B, companion to Table~\ref{tab:cross_asset_sim_copula}). Panel~(a), top-left: \emph{observed} correlation matrix on 2014-01-03 through 2024-01-03 daily excess log returns for SPY, NVDA, JNJ, JPM, AAPL, QQQ (IS window, $T_{\text{IS}} = 2{,}516$). Panel~(b), top-right: path-averaged correlation under the Single Index Model with SPY as market factor. Panel~(c), bottom-left: path-averaged correlation under the Gaussian copula on CHMM marginals. Panel~(d), bottom-right: path-averaged correlation under the Student-t copula on CHMM marginals, $\nu^* = 6$. Each simulated panel averages over 200 paths of length $T_{\text{IS}}$. All marginals are the per-asset CHMM-N fits at $K = 18$ from Table~\ref{tab:cross_asset}; color scale in $[-1, 1]$, red-white-blue (RdBu) diverging. Closer visual match to panel~(a) is better.}
-\label{fig:cross_asset_corr}
-\end{figure}
+The visual ordering of the path-averaged correlation heat maps (Figure~\ref{fig:cross_asset_corr}, deferred to Appendix~\ref{sec:cross_asset_corr_supp}; the per-asset KS bar chart is in Figure~\ref{fig:cross_asset_ks}, Appendix~\ref{sec:cross_asset_ks_supp}) confirms the quantitative summary in Table~\ref{tab:cross_asset_sim_copula}: the SIM introduces visible distortion on JPM and AAPL marginals, while both copulas track the observed marginals closely; on correlation, the SIM panel shows larger residuals off the diagonal than either copula panel, and the Student-t copula is marginally closer to the observed heat map than the Gaussian copula.
 
 \paragraph{Interpretation.}
 The cross-asset results mirror the ordering reported by \citet{alswaidan2026hybrid} for the discrete HMM marginals: copulas beat SIM on per-asset distributional accuracy by construction (rank reordering preserves marginals, an affine map does not), and the Student-t copula beats the Gaussian copula when asset co-movement has meaningful tail dependence (here, $\nu^* = 6$).
