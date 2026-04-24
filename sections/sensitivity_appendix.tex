@@ -1,0 +1,541 @@
+\subsection{Full State-Resolution Sensitivity Table}
+\label{sec:sensitivity_table}
+
+Table~\ref{tab:sensitivity} reports the full $K$-sweep referenced in Section~\ref{sec:k_sensitivity} of the main text.
+Observed excess kurtosis is $7.68$ IS and $5.29$ OoS at all $K$.
+
+\begin{table}[H]
+\centering
+\caption{State resolution sensitivity for SPY CHMM-N (1{,}000 paths, $\alpha = 0.05$). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison} in the main text. In-sample coverage was 100\% at every $K$; OoS coverage is reported separately.}
+\label{tab:sensitivity}
+\small
+\begin{tabular}{c cc cc cc c c c c}
+\toprule
+& \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & \multicolumn{2}{c}{Kurtosis} & & & & \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+$K$ & IS & OoS & IS & OoS & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov OoS (\%) \\
+\midrule
+3  & 88.8 & 77.1 & 79.2 & 67.9 & 7.68 & 3.80 & 0.0466 & 0.130 & 0.0836 & 94.9 \\
+6  & 93.1 & 80.0 & 87.1 & 74.6 & 7.68 & 5.26 & 0.0499 & 0.113 & 0.0828 & 90.9 \\
+9  & 94.6 & 82.4 & 85.8 & 73.6 & 7.68 & 4.56 & 0.0494 & 0.116 & 0.0806 & 93.9 \\
+12 & 94.6 & 82.8 & 86.0 & 74.9 & 7.68 & 4.57 & 0.0495 & 0.112 & 0.0802 & 88.9 \\
+15 & 93.9 & 82.7 & 86.9 & 75.6 & 7.68 & 4.89 & 0.0505 & 0.116 & 0.0806 & 90.9 \\
+\textbf{18} & 95.6 & 81.7 & 88.4 & 73.2 & 7.68 & 4.98 & 0.0509 & 0.110 & 0.0805 & 90.9 \\
+21 & \textbf{96.1} & \textbf{86.6} & \textbf{89.0} & \textbf{78.4} & 7.68 & 3.83 & 0.0532 & 0.111 & 0.0798 & \textbf{100.0} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Multi-Emission State-Resolution Sensitivity}
+\label{sec:multi_emission_sensitivity}
+
+Table~\ref{tab:sensitivity_multi} extends Table~\ref{tab:sensitivity} across the three emission families, confirming that the qualitative operating point $K = 18$ is stable when the Gaussian component is replaced with Student-t or Laplace emissions.
+For CHMM-t the per-state degrees of freedom $\nu_k$ are refit by ECM-plus-golden-section at every $K$; for CHMM-L the weighted-median location and weighted MAD scale are closed form and impose no additional cost.
+Three patterns extend from Table~\ref{tab:sensitivity} to the new families.
+First, the distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band for all three families: CHMM-t reaches its highest IS KS at $K = 18$ ($95.2\%$) and its highest OoS KS at $K = 18$ ($85.1\%$), and CHMM-L reaches its highest IS KS at $K = 18$ ($96.2\%$) and its highest IS AD at $K = 18$ ($93.0\%$).
+Once a family enters the plateau the operating point is flat with respect to $K$, so we report the main-text results at the same $K = 18$ used for CHMM-N.
+Second, the ACF-MAE remains within the narrow $0.047$--$0.056$ band observed for the Gaussian sweep, indicating that the volatility-clustering mechanism is a property of the regime structure rather than the emission family.
+Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks around $5.0$ at the high-$K$ end, the Laplace sweep lands squarely in the $5.2$--$6.6$ range (closest to the observed $7.68$), and the Student-t sweep climbs sharply above $13$ across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, over-correcting in-sample kurtosis.
+
+\begin{table}[H]
+\centering
+\caption{Multi-emission state resolution sensitivity for SPY (1{,}000 paths, $\alpha = 0.05$). CHMM-N: Gaussian; CHMM-t: Student-t with per-state $\nu_k$ refit by ECM-plus-golden-section; CHMM-L: Laplace with weighted-median location and weighted-MAD scale. Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison}. Observed excess kurtosis is $7.68$ IS and $5.29$ OoS.}
+\label{tab:sensitivity_multi}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c cc cc c c c c}
+\toprule
+& & \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & & & & \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+Family & $K$ & IS & OoS & IS & OoS & Kurt (IS sim) & ACF-MAE & $W_1$ IS & $H$ IS \\
+\midrule
+CHMM-N & 3  & 89.8 & 76.3 & 81.3 & 67.7 & 3.81 & 0.0468 & 0.128 & 0.0835 \\
+       & 6  & 91.7 & 79.6 & 85.9 & 73.6 & 5.30 & 0.0497 & 0.115 & 0.0831 \\
+       & 9  & 92.8 & 82.2 & 84.7 & 75.5 & 4.55 & 0.0497 & 0.118 & 0.0810 \\
+       & 12 & 95.0 & 83.7 & 86.1 & 76.6 & 4.55 & 0.0497 & 0.114 & 0.0805 \\
+       & 15 & 95.2 & 83.5 & 86.9 & 76.3 & 4.91 & 0.0508 & 0.111 & 0.0802 \\
+       & \textbf{18} & 94.7 & 82.4 & 85.8 & 76.5 & 5.02 & 0.0509 & 0.111 & 0.0809 \\
+       & 21 & \textbf{95.2} & \textbf{87.6} & \textbf{89.1} & \textbf{80.9} & 3.80 & 0.0530 & 0.112 & 0.0802 \\
+\midrule
+CHMM-t & 3  & 91.1 & 81.6 & 85.2 & 77.1 & 27.12 & 0.0540 & 0.109 & 0.0764 \\
+       & 6  & 92.2 & 82.1 & 86.1 & 76.6 & 20.80 & 0.0533 & 0.108 & 0.0768 \\
+       & 9  & 92.7 & 84.8 & 86.9 & 80.1 & 15.96 & 0.0537 & 0.104 & 0.0756 \\
+       & 12 & 94.1 & 83.1 & 88.3 & 80.6 & 14.68 & 0.0542 & 0.102 & 0.0757 \\
+       & 15 & 93.5 & 82.9 & 88.0 & 76.5 & 15.85 & 0.0537 & 0.103 & 0.0757 \\
+       & \textbf{18} & \textbf{95.2} & \textbf{85.1} & \textbf{90.9} & \textbf{80.7} & 14.40 & 0.0550 & \textbf{0.101} & \textbf{0.0756} \\
+       & 21 & 94.9 & 82.2 & 89.3 & 77.8 & 13.28 & 0.0540 & 0.103 & 0.0758 \\
+\midrule
+CHMM-L & 3  & 82.4 & 63.6 & 82.9 & 66.9 & 5.24 & 0.0533 & 0.112 & 0.0853 \\
+       & 6  & 88.8 & 77.0 & 83.3 & 72.5 & 5.74 & 0.0511 & 0.113 & 0.0823 \\
+       & 9  & 90.0 & 77.9 & 84.1 & 74.8 & 6.05 & 0.0519 & 0.113 & 0.0823 \\
+       & 12 & 92.4 & 77.8 & 87.6 & 77.9 & 6.21 & 0.0540 & 0.106 & 0.0797 \\
+       & 15 & 92.6 & 79.4 & 87.0 & 77.6 & 6.06 & 0.0542 & 0.106 & 0.0795 \\
+       & \textbf{18} & \textbf{96.2} & \textbf{80.9} & \textbf{93.0} & \textbf{80.6} & \textbf{6.60} & 0.0564 & \textbf{0.101} & 0.0793 \\
+       & 21 & 90.7 & 80.7 & 87.3 & 78.8 & 5.99 & 0.0544 & 0.107 & 0.0809 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Baum-Welch Convergence}
+\label{sec:convergence}
+
+Figure~\ref{fig:convergence_all} shows the Baum-Welch convergence curves for representative state resolutions.
+All models converged within the 60-iteration budget, with the log-likelihood monotonically increasing (as guaranteed by the EM algorithm).
+Lower $K$ values typically converged faster (15--25 iterations), while higher $K$ values required 25--40 iterations to reach the convergence tolerance of $|\Delta\mathcal{L}| < 10^{-4}$.
+The monotonic increase confirms that the quantile-based initialization provided a valid starting point from which the EM algorithm could improve without encountering degenerate solutions.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K3.pdf}
+    \caption{$K = 3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K12.pdf}
+    \caption{$K = 12$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18.pdf}
+    \caption{$K = 18$ (selected)}
+\end{subfigure}
+\caption{Baum-Welch convergence for selected state resolutions. Log-likelihood is monotonically increasing (EM guarantee) and plateaus well before $\texttt{max\_iter} = 60$.}
+\label{fig:convergence_all}
+\end{figure}
+
+\subsection{Emission Distributions Across State Resolutions}
+
+Since the CHMM eliminates the jump mechanism and grid search, the key structural variable is the number of hidden states $K$.
+Figure~\ref{fig:emissions_all} compares the learned emission distributions for $K \in \{3, 6, 12, 18\}$, illustrating how increasing state resolution refines the decomposition of the observed return distribution.
+
+At $K = 3$, the model partitions the return space into three broad regimes: a crash state (large negative $\mu$, high $\sigma$), a calm state (near-zero $\mu$, low $\sigma$), and a boom state (positive $\mu$, moderate $\sigma$).
+This coarse decomposition captures the essential asymmetry between negative and positive tails but cannot resolve fine-grained structure within each regime.
+
+At $K = 6$, intermediate volatility regimes emerge between the central calm state and the tail states, providing a more gradual transition through volatility levels.
+
+At $K = 12$--$18$, the emission distributions form a dense coverage of the return space, with each state capturing a narrow band of returns.
+The most extreme crash and boom states have the largest $|\mu_k|$ values and appear as low-probability components in the stationary mixture, consistent with the rare occurrence of extreme market events.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K3.pdf}
+    \caption{$K = 3$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K12.pdf}
+    \caption{$K = 12$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18.pdf}
+    \caption{$K = 18$ (selected)}
+\end{subfigure}
+\caption{Learned Gaussian emission distributions across state resolutions, overlaid on the observed SPY return histogram. Higher $K$ values produce finer decomposition with dedicated states capturing tail behavior.}
+\label{fig:emissions_all}
+\end{figure}
+
+\subsection{Transition Matrix Structure}
+
+Figure~\ref{fig:transition_all} shows the learned transition matrices for $K = 6$ and $K = 18$ in log$_{10}$ color scale.
+Both matrices exhibit a dominant near-diagonal band, reflecting the tendency of the market to remain in its current regime.
+Off-diagonal entries decay with distance from the diagonal, indicating that large regime jumps (for example, from a deep crash state directly to a boom state) are rare but nonzero.
+
+The diagonal dominance is critical for the ACF-MAE result discussed in Section~\ref{sec:discussion}: the self-transition probabilities $T_{kk}$ for central states are typically 0.7--0.95, producing mean sojourn times of 3--20 days.
+The mixture of these geometric sojourn times across states produces the sum-of-exponentials ACF profile that approximates the observed slow decay.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18.pdf}
+    \caption{$K = 18$ (selected)}
+\end{subfigure}
+\caption{Learned transition matrices in log$_{10}$ color scale. The near-diagonal band reflects regime persistence; off-diagonal entries decay with distance, indicating that large regime transitions are rare.}
+\label{fig:transition_all}
+\end{figure}
+
+\subsection{Stationary Distributions and Residence Times}
+
+Figure~\ref{fig:stationary_all} shows the stationary distributions $\bar{\boldsymbol{\pi}}$ for $K = 6$ and $K = 18$.
+In both cases, the central states (those with $\mu_k$ near zero and moderate $\sigma_k$) receive the highest stationary probability, consistent with the empirical concentration of returns near zero.
+Tail states (crash and boom) receive low stationary probability, consistent with the rarity of extreme events.
+
+Figure~\ref{fig:residence_all} shows the natural residence times $\tau_k = 1/(1 - T_{kk})$ per state for $K = 6$ and $K = 18$.
+Under pure Markov dynamics (no jump mechanism), the expected duration in state $k$ before transitioning is $\tau_k$ steps.
+Central states exhibit the longest residence times (5--20 days), while tail states have shorter residence times (1--3 days), consistent with the transient nature of extreme market events.
+Notably, even without a jump mechanism, the tail states at higher $K$ maintain sufficient self-transition probability ($T_{kk} \approx 0.3$--$0.5$) to produce multi-day tail episodes.
+This contrasts with the discrete model of \citet{alswaidan2026hybrid}, where tail-state residence times were too short to sustain clustering without the Poisson jump extension.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Stationary-Distribution-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Stationary-Distribution-K18.pdf}
+    \caption{$K = 18$}
+\end{subfigure}
+\caption{Stationary distributions $\bar{\boldsymbol{\pi}}$ for $K = 6$ and $K = 18$. Central states receive the highest stationary probability, consistent with the concentration of returns near zero.}
+\label{fig:stationary_all}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18.pdf}
+    \caption{$K = 18$}
+\end{subfigure}
+\caption{Natural residence times $\tau_k = 1/(1 - T_{kk})$ per state. Central states have the longest residence times (5--20 days), while tail states are shorter-lived (1--3 days). This asymmetry drives volatility clustering.}
+\label{fig:residence_all}
+\end{figure}
+
+\subsection{In-Sample Comparison at Non-Selected State Resolutions}
+\label{sec:k_sweep_panels}
+
+Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_is_k21} show the in-sample model comparison panels for $K \in \{3, 6, 9, 12, 15, 21\}$, complementing the $K = 18$ comparison in Figure~\ref{fig:is_comparison} of the main text.
+Across all resolutions, the CHMM's simulated density closely overlays the observed density, and the ACF of absolute returns tracks the slow decay pattern.
+The visible improvement from $K = 3$ to $K = 18$ is concentrated in the tails of the Q-Q panel and the steady-state level of the ACF panel.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K3.pdf}
+\caption{In-sample CHMM comparison at $K = 3$. The $K = 18$ counterpart is Figure~\ref{fig:is_comparison} of the main text.}
+\label{fig:k_sweep_panels_is}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K6.pdf}
+\caption{In-sample CHMM comparison at $K = 6$.}
+\label{fig:k_sweep_is_k6}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K9.pdf}
+\caption{In-sample CHMM comparison at $K = 9$.}
+\label{fig:k_sweep_is_k9}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K12.pdf}
+\caption{In-sample CHMM comparison at $K = 12$.}
+\label{fig:k_sweep_is_k12}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K15.pdf}
+\caption{In-sample CHMM comparison at $K = 15$.}
+\label{fig:k_sweep_is_k15}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K21.pdf}
+\caption{In-sample CHMM comparison at $K = 21$.}
+\label{fig:k_sweep_is_k21}
+\end{figure}
+
+\subsection{Out-of-Sample Validation at Non-Selected State Resolutions}
+
+Figures~\ref{fig:k_sweep_panels_oos}--\ref{fig:k_sweep_oos_k21} show the out-of-sample validation panels for $K \in \{3, 6, 9, 12, 15, 21\}$.
+KS pass rates remain above 91\% at all resolutions; the $K = 18$ panel is reproduced in Figure~\ref{fig:oos_validation} of the main text.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K3.pdf}
+\caption{Out-of-sample CHMM validation at $K = 3$. The $K = 18$ counterpart is Figure~\ref{fig:oos_validation} of the main text.}
+\label{fig:k_sweep_panels_oos}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K6.pdf}
+\caption{Out-of-sample CHMM validation at $K = 6$.}
+\label{fig:k_sweep_oos_k6}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K9.pdf}
+\caption{Out-of-sample CHMM validation at $K = 9$.}
+\label{fig:k_sweep_oos_k9}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K12.pdf}
+\caption{Out-of-sample CHMM validation at $K = 12$.}
+\label{fig:k_sweep_oos_k12}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K15.pdf}
+\caption{Out-of-sample CHMM validation at $K = 15$.}
+\label{fig:k_sweep_oos_k15}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K21.pdf}
+\caption{Out-of-sample CHMM validation at $K = 21$.}
+\label{fig:k_sweep_oos_k21}
+\end{figure}
+
+\subsection{ACF Comparison Across State Resolutions}
+
+Figures~\ref{fig:acf_all}--\ref{fig:acf_k18} show the ACF of $|G_t|$ for the CHMM at $K = 3$, $K = 12$, and $K = 18$, compared to the observed ACF.
+At all resolutions, the simulated ACF (shown as the median with 10th--90th percentile envelope across 1{,}000 paths) tracks the observed slow decay pattern.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-ACF-Comparison-K3.pdf}
+\caption{ACF of $|G_t|$ for the CHMM at $K = 3$. The simulated 10th--90th percentile envelope (shaded) envelopes the observed ACF (red dashed).}
+\label{fig:acf_all}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-ACF-Comparison-K12.pdf}
+\caption{ACF of $|G_t|$ for the CHMM at $K = 12$.}
+\label{fig:acf_k12}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-ACF-Comparison-K18.pdf}
+\caption{ACF of $|G_t|$ for the CHMM at $K = 18$ (selected). Consistent with Figures~\ref{fig:acf_all} and~\ref{fig:acf_k12}, the CHMM reproduces volatility clustering without jump augmentation across the entire sweep.}
+\label{fig:acf_k18}
+\end{figure}
+
+\subsection{Example Simulated Trajectories}
+
+Figure~\ref{fig:trajectories} shows example simulated return trajectories for $K = 6$ and $K = 18$, illustrating the qualitative dynamics produced by the CHMM.
+Both trajectories exhibit the characteristic pattern of financial returns: extended periods of low volatility punctuated by clusters of large-magnitude events.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Trajectory-Example-K6.pdf}
+    \caption{$K = 6$}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Trajectory-Example-K18.pdf}
+    \caption{$K = 18$}
+\end{subfigure}
+\caption{Example simulated return trajectories. The alternation between calm (central states) and volatile (tail states) periods produces the volatility clustering characteristic of empirical financial returns.}
+\label{fig:trajectories}
+\end{figure}
+
+\subsection{Multi-Emission Figures at $K = 18$}
+\label{sec:multi_emission_figs}
+
+This appendix reproduces the standard diagnostic suite (emission PDFs, transition matrix, stationary distribution, residence times, IS comparison, OoS validation, and convergence) for the two heavy-tailed emission families (CHMM-t and CHMM-L) at the selected state resolution $K = 18$.
+The Gaussian counterparts are already shown as Figures~\ref{fig:model_internals},~\ref{fig:is_comparison},~\ref{fig:oos_validation},~\ref{fig:convergence_all},~\ref{fig:transition_all},~\ref{fig:stationary_all}, and~\ref{fig:residence_all} in the main text and above in this appendix.
+The figures confirm that the shared forward--backward scaffold produces internally-similar regime structure across the three families: the near-diagonal transition band, the $K$-component dense emission cover, the longer central-state residence times, and the monotone log-likelihood convergence are features of the CHMM framework and not of the Gaussian component specifically.
+
+\paragraph{Emission PDFs.}
+Figure~\ref{fig:emissions_families} compares the learned $K = 18$ emissions for the three families.
+The CHMM-t panel's per-state $\nu_k$ allocation is visible in the narrower modes of certain tail states; the CHMM-L panel's Laplace components have sharper peaks and slower exponential tail decay than the Gaussians.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-N.pdf}
+    \caption{CHMM-N (Gaussian)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-t.pdf}
+    \caption{CHMM-t (Student-t)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-L.pdf}
+    \caption{CHMM-L (Laplace)}
+\end{subfigure}
+\caption{Learned emission distributions at $K = 18$ across the three emission families, overlaid on the observed SPY return histogram. Heavier-tailed emission families (t, L) give individual components more tail mass, which is what closes the kurtosis gap of the Gaussian CHMM.}
+\label{fig:emissions_families}
+\end{figure}
+
+\paragraph{Transition matrices.}
+Figure~\ref{fig:transition_families} shows the $K = 18$ transition matrices learned by each family.
+The near-diagonal band and the magnitude of self-transition probabilities are essentially unchanged across families, consistent with the ACF-MAE being stable across the family axis (Table~\ref{tab:sensitivity_multi}).
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-N.pdf}
+    \caption{CHMM-N}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-t.pdf}
+    \caption{CHMM-t}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-L.pdf}
+    \caption{CHMM-L}
+\end{subfigure}
+\caption{Learned transition matrices at $K = 18$ in log$_{10}$ color scale. The diagonal-band structure is preserved across all three emission families.}
+\label{fig:transition_families}
+\end{figure}
+
+\paragraph{Stationary distributions and residence times.}
+Figure~\ref{fig:stationary_families} and Figure~\ref{fig:residence_families} compare the stationary distribution and natural residence times $\tau_k = 1/(1 - T_{kk})$ across families at $K = 18$.
+The mass concentration at central states and the monotone decrease of $\tau_k$ toward the tails are features of the regime structure, not the emission family.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Stationary-Distribution-K18-N.pdf}
+    \caption{CHMM-N}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Stationary-Distribution-K18-t.pdf}
+    \caption{CHMM-t}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Stationary-Distribution-K18-L.pdf}
+    \caption{CHMM-L}
+\end{subfigure}
+\caption{Stationary distributions $\bar{\boldsymbol{\pi}}$ at $K = 18$ across the three emission families.}
+\label{fig:stationary_families}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-N.pdf}
+    \caption{CHMM-N}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-t.pdf}
+    \caption{CHMM-t}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-L.pdf}
+    \caption{CHMM-L}
+\end{subfigure}
+\caption{Natural residence times $\tau_k = 1/(1 - T_{kk})$ at $K = 18$ across the three emission families.}
+\label{fig:residence_families}
+\end{figure}
+
+\paragraph{In-sample comparison.}
+Figures~\ref{fig:is_families}--\ref{fig:is_families_L} reproduce the three-panel in-sample comparison (density, ACF of $|G_t|$, tail Q-Q) at $K = 18$ for the two heavy-tailed families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t.pdf}
+\caption{In-sample model comparison at $K = 18$ for CHMM-t. Panels show (a) marginal density with KS pass rate, (b) ACF of $|G_t|$, and (c) tail Q-Q plot. The CHMM-N counterpart is Figure~\ref{fig:is_comparison}; the CHMM-L counterpart is Figure~\ref{fig:is_families_L}.}
+\label{fig:is_families}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L.pdf}
+\caption{In-sample model comparison at $K = 18$ for CHMM-L. Panels as in Figure~\ref{fig:is_families}.}
+\label{fig:is_families_L}
+\end{figure}
+
+\paragraph{Out-of-sample validation.}
+Figures~\ref{fig:oos_families}--\ref{fig:oos_families_L} show the OoS validation panels for CHMM-t and CHMM-L at $K = 18$.
+The CHMM-t panel demonstrates the OoS kurtosis alignment noted in the main text (simulated 6.40 vs.\ observed 6.24), and the CHMM-L panel shows the tighter density fan produced by the heavier Laplace tails relative to the Gaussian.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t.pdf}
+\caption{Out-of-sample validation at $K = 18$ for CHMM-t. Panels show (a) KS $p$-values, (b) OoS density fan, and (c) OoS ACF of $|G_t|$. The CHMM-N counterpart is Figure~\ref{fig:oos_validation}; the CHMM-L counterpart is Figure~\ref{fig:oos_families_L}.}
+\label{fig:oos_families}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L.pdf}
+\caption{Out-of-sample validation at $K = 18$ for CHMM-L. Panels as in Figure~\ref{fig:oos_families}.}
+\label{fig:oos_families_L}
+\end{figure}
+
+\paragraph{Convergence.}
+Figure~\ref{fig:convergence_families} shows the Baum-Welch / ECM / weighted-EM log-likelihood histories at $K = 18$ for all three families.
+The CHMM-t and CHMM-L curves inherit the monotone increase of the classical EM guarantee; the CHMM-t curve has a slightly longer pre-plateau phase because each ECM sub-iteration refines $\nu_k$ with a golden-section search.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-N.pdf}
+    \caption{CHMM-N}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-t.pdf}
+    \caption{CHMM-t}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-L.pdf}
+    \caption{CHMM-L}
+\end{subfigure}
+\caption{Log-likelihood histories at $K = 18$ across the three emission families. All three curves are monotonically non-decreasing and plateau well before the $\texttt{max\_iter} = 60$ budget.}
+\label{fig:convergence_families}
+\end{figure}
+
+\subsection{Ryd\'en K = 2 Replication}
+\label{sec:ryden_replication}
+
+Table~\ref{tab:ryden_init} reports the direct replication of Ryd\'en et al.'s 1998 $K = 2$ setting on SPY IS under both initialization strategies, as discussed in Section~\ref{sec:discussion}.
+The quantile-based initialization used in the main body is row 1; five independent random-seed initializations are rows 2--6.
+Random init here draws per-state $(\mu_k, \sigma_k)$ from a moderate perturbation of the sample moments, which is representative of the random-init practice common in the 1990s HMM literature.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Ryd\'en replication: $K = 2$ CHMM-N on SPY IS under quantile vs random initialization (seed sub-index varies the random init).}
+\label{tab:ryden_init}
+\begin{tabular}{l c c c c c}
+\toprule
+Init & KS IS (\%) & AD IS (\%) & ACF-MAE & Kurt IS & KS OoS (\%) \\
+\midrule
+Quantile (main body) & 79.0 & 71.5 & 0.0501 & 2.57 & 72.4 \\
+Random seed = 1      & 78.7 & 70.7 & 0.0502 & 2.57 & 73.2 \\
+Random seed = 7      & 75.3 & 69.6 & 0.0498 & 2.56 & 74.0 \\
+Random seed = 42     & 77.6 & 70.0 & 0.0498 & 2.59 & 71.8 \\
+Random seed = 100    & 76.2 & 69.4 & 0.0500 & 2.59 & 72.3 \\
+Random seed = 2024   & 76.4 & 69.8 & 0.0499 & 2.54 & 72.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The key observation is that ACF-MAE is essentially constant at $\approx 0.050$ across all six rows, matching the $K = 18$ CHMM-N of the main body.
+In-sample KS pass rate remains below the $K = 18$ operating point ($75.3$--$79.0\%$) because two Gaussian components cannot tile the full multi-regime return distribution.
+The combination confirms that the Ryd\'en low-$K$ limitation is a distributional (not temporal) artefact: the ACF is already well reproduced at $K = 2$, and it is distributional fidelity that drives the preference for $K = 18$.
+

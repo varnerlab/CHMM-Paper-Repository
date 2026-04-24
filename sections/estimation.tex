@@ -1,0 +1,75 @@
+Estimation of $(\mathbf{T}, \{\boldsymbol\theta_k\}, \boldsymbol\pi)$ proceeds by EM in log-space.
+This section gives the shared scaffold (Section~\ref{sec:em_scaffold}), the family-specific M-step updates (Section~\ref{sec:mstep}), and the state-count selection protocol (Section~\ref{sec:k_selection}).
+
+\subsection{Shared EM Scaffold}
+\label{sec:em_scaffold}
+
+All three emission families share the same log-space forward-backward
+recursions and the same quantile-based initialization \cite{bilmes1998gentle}:
+observations are sorted, partitioned into $K$ equal-sized chunks, and each
+state's initial location and scale are seeded from the corresponding chunk;
+$T_{ij}^{(0)} = \pi_k^{(0)} = 1/K$.
+EM iterates to tolerance $|\mathcal{L}^{(n)} - \mathcal{L}^{(n-1)}| < 10^{-4}$
+with $\texttt{max\_iter} = 60$; convergence is typically reached in
+20--40 iterations.
+Appendix~\ref{sec:baum_welch_supp} gives the forward-backward recursion,
+the posterior quantities $\gamma_t(k)$ and $\xi_t(i, j)$, and the
+family-specific M-step updates.
+
+\subsection{Family-Specific M-Step Updates}
+\label{sec:mstep}
+
+\paragraph{CHMM-N (Gaussian).}
+The classical Baum-Welch M-step \cite{baum1970maximization} is closed form:
+$\mu_k \leftarrow \sum_t \gamma_t(k) O_t / \sum_t \gamma_t(k)$ and
+$\sigma_k^2 \leftarrow \sum_t \gamma_t(k) (O_t - \mu_k)^2 / \sum_t \gamma_t(k)$.
+
+\paragraph{CHMM-t (Student-t via ECM).}
+We adopt the ECM formulation of \citet{peel2000robust} and \citet{liu1995ml}, the same family of heavy-tailed innovation choices studied outside the HMM framework by \citet{abantovalle2017svm} for stochastic-volatility-in-mean models:
+the latent precision
+\begin{equation}
+    u_{t,k} = \frac{\nu_k + 1}{\nu_k + ((O_t - \mu_k)/\sigma_k)^2}
+    \label{eq:tprecision}
+\end{equation}
+is treated as an augmented E-step quantity, and the M-step updates
+\begin{equation}
+    \mu_k \leftarrow \frac{\sum_t \gamma_t(k) u_{t,k} O_t}{\sum_t \gamma_t(k) u_{t,k}},
+    \qquad
+    \sigma_k^2 \leftarrow \frac{\sum_t \gamma_t(k) u_{t,k} (O_t - \mu_k)^2}{\sum_t \gamma_t(k)}
+    \label{eq:tupdate}
+\end{equation}
+have closed form conditional on $\nu_k$.
+The degrees of freedom $\nu_k$ are updated by a golden-section search
+maximizing the per-state $Q$-function
+$Q_k(\nu) = \sum_t \gamma_t(k) \log t_\nu(O_t; \mu_k, \sigma_k)$
+over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$.
+This M-step preserves the monotonicity of EM while avoiding the joint
+saddle-point issues of simultaneous $(\mu_k, \sigma_k, \nu_k)$ maximization.
+
+\paragraph{CHMM-L (Laplace).}
+The weighted maximum-likelihood estimators are in closed form:
+$\mu_k$ is the posterior-weighted median of the observations
+(weights $\gamma_t(k)$, computed by cumulative-weight bracketing with
+linear interpolation between neighboring order statistics), and
+$b_k \leftarrow \sum_t \gamma_t(k) |O_t - \mu_k| / \sum_t \gamma_t(k)$.
+
+\subsection{State-Count Selection}
+\label{sec:k_selection}
+
+We sweep $K \in \{3, 6, 9, 12, 15, 18, 21\}$ for CHMM-N and confirm on
+CHMM-t / CHMM-L that the selected $K$ sits inside the IC-minimizing band.
+We compute the four information criteria used for HMM state selection
+in \citet{nguyen2018hidden},
+\begin{equation}
+    \text{AIC} = -2\mathcal{L} + 2p,\quad
+    \text{BIC} = -2\mathcal{L} + p \ln T,\quad
+    \text{HQC} = -2\mathcal{L} + 2p \ln(\ln T),\quad
+    \text{CAIC} = -2\mathcal{L} + p(\ln T + 1),
+    \label{eq:information_criteria}
+\end{equation}
+with $p = K^2 + 2K - 1$ for CHMM-N and CHMM-L, and $p = K^2 + 3K - 1$
+for CHMM-t (one additional per-state degree-of-freedom parameter);
+$\mathcal{L}$ is the converged log-likelihood.
+The operating point is the $K$ that minimizes the average information-criterion
+rank and simultaneously wins or ties every in-sample and out-of-sample
+distributional pass-rate metric.

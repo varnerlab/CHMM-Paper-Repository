@@ -1,0 +1,52 @@
+\subsection{Validation Metric Details}
+\label{sec:metric_details}
+
+This appendix documents the precise form of the seven per-path metrics referenced in Section~\ref{sec:metrics}.
+For each model, 1{,}000 independent paths of length $T$ are simulated (200 paths for the cross-asset extension) and each metric is computed per path before aggregation.
+
+\paragraph{Kolmogorov--Smirnov (KS) pass rate.}
+The two-sample KS statistic \cite{kolmogorov1933, smirnov1948} measures the maximum vertical distance between two empirical CDFs,
+\begin{equation}
+    D_{n,m} = \sup_x |F_n(x) - G_m(x)|.
+    \label{eq:ks}
+\end{equation}
+The KS pass rate is the fraction of paths for which the test fails to reject distributional equivalence against the reference data at $\alpha = 0.05$.
+
+\paragraph{Anderson--Darling (AD) pass rate.}
+The AD test is the integrated squared CDF deviation with a quadratic tail weighting, making it more sensitive than KS to tail discrepancies.
+The AD pass rate is the fraction of paths for which the two-sample AD test fails to reject at $\alpha = 0.05$.
+
+\paragraph{Excess kurtosis.}
+Mean simulated excess kurtosis across paths, compared to the observed value.
+Given Gaussian emissions, the CHMM is expected to underestimate kurtosis relative to the heavy-tailed empirical distribution, and the shortfall is one of the reported diagnostics.
+
+\paragraph{ACF-MAE.}
+Mean absolute error between observed and mean-simulated autocorrelation functions of $|G_t|$ over $L = 252$ lags,
+\begin{equation}
+    \text{ACF-MAE} = \frac{1}{L}\sum_{\tau=1}^{L} \left| \hat\rho^{\text{obs}}_{|G|}(\tau) - \bar{\hat\rho}^{\,\text{sim}}_{|G|}(\tau) \right|.
+    \label{eq:acf_mae_supp}
+\end{equation}
+This is the direct diagnostic for the Ryd\'{e}n et al.\ limitation.
+
+\paragraph{Wasserstein-1 distance.}
+The mean absolute difference of sorted empirical quantiles, equivalent to the $L^1$ distance between the empirical CDFs \cite{glasserman2003monte},
+\begin{equation}
+    W_1(F, G) = \int_0^1 |F^{-1}(u) - G^{-1}(u)|\, du.
+    \label{eq:wasserstein}
+\end{equation}
+
+\paragraph{Hellinger distance.}
+A histogram-based overlap distance in $[0, 1]$,
+\begin{equation}
+    H(P, Q) = \frac{1}{\sqrt{2}}\sqrt{\sum_{i=1}^{B}\left(\sqrt{p_i} - \sqrt{q_i}\right)^2},
+    \label{eq:hellinger}
+\end{equation}
+with $B$ equal-width bins spanning the joint support and $p_i, q_i$ the observed and simulated bin probabilities.
+
+\paragraph{Quantile coverage.}
+The fraction of 99 equally-spaced observed quantiles (1st through 99th percentile) falling inside the 5th--95th percentile envelope of the corresponding simulated quantile across 1{,}000 paths.
+A coverage of 100\% indicates that the simulation envelope fully brackets the observed distribution at every percentile.
+
+\paragraph{Cross-asset metrics.}
+For the cross-asset extension we additionally track the mean Frobenius norm $\|\hat\Sigma_{\text{sim}}^{(p)} - \hat\Sigma_{\text{obs}}\|_F$ and the off-diagonal Pearson correlation MAE between simulated and observed return matrices, averaged over paths.
+

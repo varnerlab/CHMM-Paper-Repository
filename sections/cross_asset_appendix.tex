@@ -1,0 +1,74 @@
+\subsection{Cross-Asset Dependence Models: Derivations and Diagnostics (Pipeline B)}
+\label{sec:cross_asset_supp}
+
+This appendix provides the technical background for the SIM and copula constructions used in Section~\ref{sec:cross_asset} of the main text. These constructions constitute \emph{Pipeline B}: per-asset marginals come from the independent CHMMs of Pipeline A (Section~\ref{sec:cross_asset_univariate}) and joint dependence is overlaid on top. Pipeline A stays purely univariate; Pipeline B is the sole multi-asset pipeline in the paper.
+
+\paragraph{Sklar's theorem and the rank-reordering simulator.}
+Sklar's theorem \cite{sklar1959fonctions, nelsen2006introduction} states that any $d$-dimensional joint CDF $H(g_1, \dots, g_d)$ with continuous marginals $F_1, \dots, F_d$ can be written as $H = C(F_1, \dots, F_d)$ for a unique copula $C$.
+The rank-reordering simulator exploits this uniqueness.
+If $\tilde{\mathbf{G}}$ is a matrix whose $j$-th column is an i.i.d.\ sample from $F_j$, and $\mathbf{U}$ is an independent sample from $C$, then reordering each column of $\tilde{\mathbf{G}}$ so that its ranks match $\mathbf{U}$'s produces a sample from $H$, up to discrete approximation error in the empirical ranks.
+Crucially, reordering never creates new values: each column of the output is a permutation of the corresponding column of $\tilde{\mathbf{G}}$, so marginal distributions are preserved exactly \cite{iman1982distribution}.
+
+\paragraph{Kendall's $\tau$ inversion.}
+Given in-sample returns $\mathbf{R} \in \mathbb{R}^{T \times d}$, we estimate the pairwise Kendall's $\tau_{ij}$ from concordant/discordant pair counts and invert to the correlation scale via the analytic relationship $\rho_{ij} = \sin(\pi \tau_{ij} / 2)$, which holds exactly for the Gaussian copula family and is commonly used as a robust correlation estimator for the Student-t copula \cite{embrechts2002correlation, mcneil2015quantitative}.
+The resulting matrix $\hat{\Sigma}$ is symmetric but not guaranteed positive semi-definite; we project to the nearest PSD matrix by clipping negative eigenvalues to $10^{-8}$ and rescaling the diagonal to unity.
+
+\paragraph{Profile MLE for $\nu$.}
+The Student-t copula log-density at a single pseudo-uniform observation $\mathbf{u} \in [0,1]^d$, with $x_j = t_\nu^{-1}(u_j)$ and $\mathbf{x} = (x_1, \dots, x_d)^\top$, is
+\begin{align}
+    \log c_t(\mathbf{u}; \Sigma, \nu)
+    \;=\;&
+    \log \Gamma\!\left(\tfrac{\nu+d}{2}\right)
+    + (d-1)\,\log \Gamma\!\left(\tfrac{\nu}{2}\right)
+    - d\,\log \Gamma\!\left(\tfrac{\nu+1}{2}\right)
+    - \tfrac{1}{2} \log |\Sigma|
+    \notag \\
+    &\;
+    - \tfrac{\nu+d}{2}\,\log\!\left(1 + \tfrac{\mathbf{x}^{\!\top} \Sigma^{-1} \mathbf{x}}{\nu}\right)
+    + \sum_{j=1}^{d} \tfrac{\nu+1}{2}\,\log\!\left(1 + \tfrac{x_j^2}{\nu}\right).
+    \label{eq:tcop_ll}
+\end{align}
+Summing over $t = 1, \dots, T$ pseudo-observations yields the profile log-likelihood as a function of $\nu$ with $\Sigma$ held fixed at the Kendall's-$\tau$ estimate.
+We evaluate equation~\eqref{eq:tcop_ll} on the discrete grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ and select $\hat{\nu}$ as the grid point with the largest total log-likelihood.
+In Section~\ref{sec:cross_asset} the selected value was $\hat{\nu} = 6$ on the six-asset universe.
+
+\paragraph{Sampling the copula.}
+To sample $T$ rows from the $d$-dimensional Gaussian copula with correlation $\Sigma$, we (i) compute the Cholesky factor $\Sigma = L L^\top$, (ii) draw $Z \sim \mathcal{N}(0, I_d)$ i.i.d.\ and form $Y = L Z$, and (iii) return $U = \Phi(Y)$ componentwise.
+For the Student-t copula with degrees of freedom $\nu$, we draw $W \sim \chi^2_\nu / \nu$ independent of $Y$ and form the multivariate-$t$ variate $X = Y / \sqrt{W}$, then return $U = t_\nu(X)$ componentwise.
+
+\paragraph{SIM regression summary.}
+Table~\ref{tab:sim_regression} reports the fitted SIM regression coefficients and goodness-of-fit statistics for the non-market assets in Section~\ref{sec:cross_asset}.
+QQQ's high $R^2 = 0.840$ reflects that the Nasdaq-100 ETF is essentially a linear combination of large-cap technology names that also drive the S\&P~500 index, while JNJ's lower $R^2 = 0.260$ reflects the limited systematic exposure of low-beta healthcare stocks.
+These factor loadings and residual magnitudes are what the SIM simulation in equation~\eqref{eq:sim_sim} re-injects at simulation time, and they explain the uneven per-asset KS pass rates reported in Table~\ref{tab:cross_asset_sim_copula}.
+
+\begin{table}[H]
+\centering
+\caption{SIM regression $\hat{G}_{j,t} = \hat{\alpha}_j + \hat{\beta}_j G_{\text{SPY},t} + \hat{\eta}_{j,t}$ for the five non-market assets, fitted on the $2014$-$01$-$03$ through $2024$-$01$-$03$ in-sample window ($T = 2{,}516$). Coefficients $\hat{\alpha}, \hat{\beta}$ and $R^2$ are reported for the factor equation used in equation~\eqref{eq:sim_sim}.}
+\label{tab:sim_regression}
+\small
+\begin{tabular}{l ccc}
+\toprule
+Ticker & $\hat{\alpha}$ & $\hat{\beta}$ & $R^2$ \\
+\midrule
+NVDA & $0.321$   & $1.694$ & $0.371$ \\
+JNJ  & $0.002$   & $0.576$ & $0.260$ \\
+JPM  & $-0.008$  & $1.223$ & $0.507$ \\
+AAPL & $0.111$   & $1.205$ & $0.492$ \\
+QQQ  & $0.047$   & $1.122$ & $0.840$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Student-t Copula Profile Log-Likelihood (Pipeline B)}
+\label{sec:copula_profile_supp}
+
+Figure~\ref{fig:copula_profile} plots the profile log-likelihood of the Student-t copula used inside Pipeline B, computed on the six-asset SPY cross-section over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ used in Section~\ref{sec:cross_asset}.
+The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum profile log-likelihood ($6157.47$), and the neighbouring grid points $\nu = 5$ ($6143.37$) and $\nu = 8$ ($6148.37$) each within $15$ profile-log-likelihood units of the peak, indicating a shallow-but-clean optimum that agrees with the $4$--$10$ range typically reported for equity-portfolio Student-t copulas in the risk-management literature.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.70\textwidth]{figs/Fig-Copula-Profile.pdf}
+\caption{\textbf{Profile log-likelihood of the Student-t copula} used inside Pipeline B on the six-asset SPY cross-section (SPY, NVDA, JNJ, JPM, AAPL, QQQ; IS window 2014-01-03 through 2024-01-03). The vertical axis is the profile log-likelihood evaluated at each degrees-of-freedom value $\nu$ on the grid $\{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$; the dashed red line marks the profile MLE $\nu^{*} = 6$ (peak value 6157.47). The CHMM-N marginals are held fixed at the Pipeline A per-asset fits while $\nu$ is varied.}
+\label{fig:copula_profile}
+\end{figure}
+
