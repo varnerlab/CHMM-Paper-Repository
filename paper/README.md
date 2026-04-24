@@ -1,16 +1,30 @@
 # Paper
 
-LaTeX source for the manuscript. Figures are in `sections/figs/`.
+LaTeX source for the manuscript.
+
+- `paper.tex` — manuscript shell (preamble + `\input{sections/*}`).
+- `sections/` — one `.tex` per section (`introduction.tex`,
+  `related_work.tex`, `methods.tex`, `results.tex`, `discussion.tex`,
+  `conclusion.tex`, `supplemental.tex`).
+- `references.bib` — bibliography.
+- `figs/` — figure PDFs cited by the paper.
 
 ## Building
 
 ```bash
-cd paper
-pdflatex Paper_v1.tex
-bibtex Paper_v1
-pdflatex Paper_v1.tex
-pdflatex Paper_v1.tex
+make
 ```
+
+Or directly:
+
+```bash
+pdflatex -interaction=nonstopmode paper.tex
+bibtex paper
+pdflatex -interaction=nonstopmode paper.tex
+pdflatex -interaction=nonstopmode paper.tex
+```
+
+`make clean` removes LaTeX auxiliary files; `make distclean` also removes `paper.pdf`.
 
 ## Figure Naming Convention
 
