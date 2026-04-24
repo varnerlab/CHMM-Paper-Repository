@@ -106,13 +106,13 @@
 \begin{abstract}
 We develop a family of regime-switching continuous hidden Markov models (CHMMs) as a reference synthetic-data generator for daily equity returns and evaluate it against a broad panel of non-parametric, classical, discrete-state, and deep-generative baselines.
 The three CHMM variants share a log-space Expectation--Maximization (EM) scaffold with a common quantile-initialized transition matrix and differ only in their per-state emission law: Gaussian (CHMM-N), Student-t with data-selected per-state degrees of freedom (CHMM-t), and Laplace (CHMM-L).
-At a single moderate state resolution the continuous models reproduce the canonical Cont (2001) stylized-fact set (heavy tails, negligible linear autocorrelation, persistent volatility clustering, leverage effect, and aggregational Gaussianity) without any jump augmentation or return-space discretization.
+At a single moderate state resolution the continuous models reproduce the canonical stylized-fact set of daily equity returns (heavy tails, negligible linear autocorrelation, persistent volatility clustering, leverage effect, and aggregational Gaussianity) without any jump augmentation or return-space discretization.
 
 On ten years of daily SPDR S\&P~500 exchange-traded fund (ETF) data with ticker SPY, we benchmark the generator family along three operational axes.
 First, on distributional fidelity, flat CHMM-t attains the smallest Maximum Mean Discrepancy (MMD) and the discriminator Area Under the Curve (AUC) closest to $0.5$ of any row in the panel, ahead of generative adversarial, diffusion, and Markov-Switching GARCH (MS-GARCH) baselines.
-Second, on unconditional Value-at-Risk (VaR) calibration, a semi-Markov CHMM ablation ported from our companion volatility-index work \citep{alswaidan2026smchmm} and a two-regime MS-GARCH baseline jointly set the best-in-panel Kupiec likelihood-ratio statistics at the $1\%$ and $5\%$ levels.
+Second, on unconditional Value-at-Risk (VaR) calibration, a semi-Markov CHMM ablation and a two-regime MS-GARCH baseline jointly set the best-in-panel Kupiec likelihood-ratio statistics at the $1\%$ and $5\%$ levels.
 Third, on regime-conditional VaR, a Viterbi-decoded state-conditional quantile of flat CHMM-t passes both the Kupiec unconditional-coverage and the Christoffersen independence likelihood-ratio tests cleanly at $1\%$ and $5\%$ on a held-out $2024$ to $2026$ window, closing the breach-clustering gap that the unconditional panel leaves open.
-We also report a concrete negative finding against the discrete-state plus Poisson-jump baseline of \citet{alswaidan2026hybrid}, whose $5\%$ VaR breach rate is overly conservative at $1.75\%$ and fails Kupiec with a likelihood ratio of $16.81$.
+We also report a concrete negative finding against a discrete-state plus Poisson-jump baseline, whose $5\%$ VaR breach rate is overly conservative at $1.75\%$ and fails Kupiec with a likelihood ratio of $16.81$.
 We extend the framework to multi-asset synthesis through a Single Index Model, Gaussian and Student-t copulas on six equities, and a truncated C-vine copula at fifty assets; the flat Student-t copula remains the most competitive dependence layer in our setup.
 
 \bigskip\noindent
