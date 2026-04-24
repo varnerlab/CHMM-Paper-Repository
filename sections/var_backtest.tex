@@ -67,13 +67,13 @@ This is the clearest single-number contrast the present paper offers against the
 
 The flat CHMM assumes geometric sojourn times in every state, an implicit by-product of the Markov transition matrix.
 Empirically, equity returns exhibit crisis-regime sojourn tails that are heavier than geometric: the bottom-$3$ states of the CHMM partition, which hold the March $2020$ crash and the $2022$ rate-cycle stress, persist longer in the Viterbi decode than a geometric sojourn would predict.
-To quantify the effect of relaxing the geometric-sojourn assumption we port the explicit-duration forward-backward machinery of \citet{yu2010hidden} from our companion volatility-index work and fit a semi-Markov variant of each CHMM emission family.
+To quantify the effect of relaxing the geometric-sojourn assumption we fit a semi-Markov variant of each CHMM emission family using the explicit-duration forward-backward machinery of \citet{yu2010hidden}.
 Let $\mathrm{SM\text{-}CHMM\text{-}}F$ denote the semi-Markov extension of the corresponding flat CHMM-$F$ for $F \in \{\mathcal{N}, t, L\}$.
 
 \paragraph{Plug-in estimator and per-state sojourn family selection.}
 We fit the SM variants with the plug-in estimator: given the flat CHMM transition matrix and emission parameters, we (i) decode the most-likely state sequence under Viterbi, (ii) extract the empirical run-length distribution for each state, and (iii) fit one of a negative-binomial, geometric, or discrete truncated Pareto to each state's run-lengths by AIC, after which the SM generator samples sojourn times from the fitted family.
 The AIC-selected family per state is reported in Table~\ref{tab:sm_sojourn}: for all three emission families, $17$ of the $18$ states select a Pareto sojourn and $1$ selects a negative binomial.
-This matches the finding of the companion volatility-index paper, where Pareto sojourns dominated on daily log-$\mathrm{VIX}$: the heavy-tailed sojourn pattern is not specific to vol-index series but holds on equity returns at moderate state resolution.
+This matches the finding of \citet{alswaidan2026smchmm}, where Pareto sojourns dominated on daily log-$\mathrm{VIX}$: the heavy-tailed sojourn pattern is not specific to vol-index series but holds on equity returns at moderate state resolution.
 
 \begin{table}[t]
 \centering
