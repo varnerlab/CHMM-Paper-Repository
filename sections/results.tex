@@ -144,7 +144,7 @@ The slight ACF-MAE increase ($0.0548$ vs.\ $0.0507$) is consistent with the heav
 \paragraph{CHMM-L ($K = 18$, Laplace emissions).}
 The Laplace variant produces the most \emph{kurtosis-aligned} fit: simulated excess kurtosis is 6.76 IS and 6.27 OoS against observed 7.68 / 5.29, closing most of the CHMM-N IS shortfall (without the CHMM-t over-correction) and even overshooting the OoS target by $\sim 1$.
 CHMM-L attains the strongest IS AD fit among the continuous CHMMs ($91.2\%$ IS AD, $4.6$ percentage points ahead of CHMM-N and $2.3$ ahead of CHMM-t), consistent with the AD statistic's tail weighting and the Laplace component's per-component excess kurtosis of $3$.
-ACF-MAE (0.0564) and $W_1$ (0.102) are within 10\% of the CHMM-N values, and IS quantile coverage is 100\%.
+ACF-MAE (0.0565) and $W_1$ (0.101) sit within $0.006$ and $0.010$ of the CHMM-N values, and IS quantile coverage is 100\%.
 Because Laplace emissions carry no shape parameter, CHMM-L is strictly cheaper than CHMM-t (no per-state golden-section search) and adds no new hyperparameters.
 
 \paragraph{Summary of the three CHMM variants: a one-row decision guide.}
@@ -267,7 +267,7 @@ All rows are computed at \NPaths{1{,}000} simulated paths on both the \TIS{2{,}5
 \paragraph{MMD (RBF kernel, 20-day windows).}
 We compute empirical $\text{MMD}^2$ \citep{gretton2012kernel} between $500$ observed and $500$ simulated $20$-day windows with median-heuristic bandwidth.
 Flat CHMM-t wins IS ($2.0 \times 10^{-5}$, an order of magnitude ahead of any other row).
-GARCH's $\text{MMD}^2 = 0.0$ on IS is a bandwidth-heuristic artefact (the median heuristic widens to accommodate GARCH's overdispersed windows); the OoS comparison ($\text{GARCH} = 7.5 \times 10^{-4}$ vs.\ CHMM-N $6.1 \times 10^{-4}$) resolves it.
+GARCH's IS $\text{MMD}^2$ is displayed as $0.0$ because it falls below the table's three-significant-digit precision ($<10^{-4}$) when the median-heuristic bandwidth widens to accommodate GARCH's overdispersed windows; the OoS comparison ($\text{GARCH} = 7.5 \times 10^{-4}$ vs.\ CHMM-N $6.1 \times 10^{-4}$) is not affected by the bandwidth collapse and resolves the ordering.
 
 \paragraph{Signature-MMD (depth $3$ time-lifted path).}
 Each $W$-day window $r_{1:W}$ is lifted to the time-augmented path
@@ -339,6 +339,7 @@ Two-regime MS-GARCH (Section~\ref{sec:msgarch_methods}) is the variance-regime r
 CHMM-t sets the distributional-fidelity frontier (MMD, AUC, aggregational kurtosis); CHMM-N wins OoS leverage; CHMM-L wins OoS joint $p$-value coverage.
 MS-GARCH leads unconditional VaR and diffusion leads local-window deep-generative metrics, but neither displaces flat CHMM-t on the combined distributional panel.
 The discrete HMM baselines of \citet{alswaidan2026hybrid} fail discriminator AUC, leverage, aggregational kurtosis, joint $p$-values, and the $5\%$ Kupiec test.
+With the single-asset panel established on SPY, we next ask whether the per-asset marginal fidelity generalizes across tickers and emission families.
 \subsection{Cross-Asset Univariate Generalization (Pipeline~A)}
 \label{sec:cross_asset_univariate}
 
@@ -354,7 +355,7 @@ The technology-heavy names have lower observed kurtosis (3.2--5.5) than the broa
 
 \paragraph{OoS Pain Points on Some Single Names.}
 Under the longer $2024$--$2026$ OoS window, two tickers show the largest IS-to-OoS degradation: NVDA (96.7\% IS / 55.8\% OoS KS) and JPM (97.8\% IS / 49.8\% OoS KS).
-These two names experienced substantial distributional shifts relative to the IS window -- NVDA the dominant high-volatility driver of the AI trade, and JPM the financials bell-wether during an interest-rate re-pricing -- and the stationary IS-calibrated parameters cannot fully track this shift.
+These two names experienced substantial distributional shifts relative to the IS window (higher realized volatility on NVDA, a different realized drift on JPM), and the stationary IS-calibrated parameters cannot fully track the shift.
 We return to this finding in Section~\ref{sec:discussion}, where we argue that it is not a consequence of over- or under-fitting $K$ (it reproduces at every $K$ in the sweep) but rather of the stationarity assumption imposed by a single-pass Baum-Welch fit.
 
 \paragraph{Walk-Forward Rolling-Window Re-Estimation on JPM and JNJ.}
