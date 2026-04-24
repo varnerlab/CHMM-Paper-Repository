@@ -237,8 +237,8 @@ This flatness is notable: it shows that the CHMM's ability to reproduce volatili
 Even at $K = 3$, the same resolution tested by \citet{ryden1998stylized}, the ACF-MAE is 0.0453, comparable to GARCH(1,1) at 0.047.
 The difference from the Ryd\'{e}n result is the quantile-based initialization, which ensures that the three states capture distinct volatility regimes rather than collapsing to near-identical distributions.
 
-\paragraph{Kurtosis Is Non-Monotonic and Peaks in the Plateau Band.}
-Simulated kurtosis under CHMM-N ranged from 3.70 ($K=9$) to 5.13 ($K=6$), with $K=18$ at 5.03; at higher $K$ the mixture kurtosis oscillates within the 4.5--5.1 band.
+\paragraph{Kurtosis Is Non-Monotonic and Peaks Early at $K = 6$.}
+Simulated kurtosis under CHMM-N ranged from 3.70 ($K=9$) to 5.13 ($K=6$), with $K=18$ at 5.03; the peak sits at $K = 6$, below the $K \in \{15, 18, 21\}$ distributional-fidelity band, and at higher $K$ the mixture kurtosis oscillates within the 4.5--5.1 range.
 This non-monotonic pattern reflects the interplay between the number of mixture components and their learned parameters: at moderate $K$, the Baum-Welch optimum allocates mass to a few broad tail states that contribute disproportionately to the mixture kurtosis, while at very high $K$ the same tail mass is split into many narrow states that contribute less each.
 The heavy-tailed CHMM-t and CHMM-L variants close most of this gap at the same $K = 18$ (see Table~\ref{tab:sensitivity_multi}).
 
