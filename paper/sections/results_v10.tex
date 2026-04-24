@@ -226,10 +226,10 @@ CHMM-N ($K=18$)     & 93.8  & 84.2  & 86.6  & 77.9  & 4.99    & 4.51    & 0.0507
 The full seven-metric $K$-sweep is reported in Table~\ref{tab:sensitivity} (Appendix~\ref{sec:supplemental}); per-$K$ IS and OoS panels at each state count are reproduced in Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_panels_oos}.
 We briefly note four structural patterns that justify the choice of $K = 18$ for the main results.
 
-\paragraph{Distributional Fidelity Saturates in the $K \in \{15, 18, 21\}$ Band.}
-The IS KS pass rate increased from 88.7\% ($K = 3$) to 95.2\% ($K = 18$) and 96.5\% ($K = 21$); the OoS KS from 92.8\% to 94.0\% at $K = 18$ and 94.9\% at $K = 21$.
+\paragraph{Distributional Fidelity Plateaus in the $K \in \{15, 18, 21\}$ Band.}
+The IS KS pass rate increased from 88.7\% ($K = 3$) to 95.2\% ($K = 18$) and 96.5\% ($K = 21$); the OoS KS from 92.8\% to 94.0\% at $K = 18$ and 94.9\% at $K = 21$. The 2.2 percentage-point spread across the plateau band is small relative to the 6.5-point gain from $K = 3$, so additional state resolution beyond $K = 18$ delivers diminishing returns rather than strict saturation.
 The same pattern holds for AD (79.2\% $\to$ 88.3\% IS and 84.9\% $\to$ 88.7\% OoS at $K = 18$).
-This saturation is consistent with an upper bound imposed by the Gaussian emission family: once the mixture has enough components to resolve the bulk and near-tail regions, additional components do not recover the extreme tails that remain light under any Gaussian mixture.
+This plateau is consistent with an upper bound imposed by the Gaussian emission family: once the mixture has enough components to resolve the bulk and near-tail regions, additional components do not recover the extreme tails that remain light under any Gaussian mixture.
 
 \paragraph{Temporal Fidelity Is Flat Across the Sweep.}
 ACF-MAE was 0.0453 ($K=3$) to 0.0505 ($K=18$) and 0.0503 ($K=21$) for CHMM-N, a total swing of 0.005 across the entire sweep.
