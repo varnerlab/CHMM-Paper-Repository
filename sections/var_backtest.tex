@@ -40,7 +40,7 @@ CHMM-L    & $-6.69\ [-8.59, -4.91]$      & $-8.88\ [-11.48,\ -6.73]$    & $-3.27
 Two findings are central to the utility story.
 First, all three CHMM variants bracket the observed historical VaR and ES at both $1\%$ and $5\%$ levels within their $5\%$--$95\%$ envelopes on both IS and OoS windows; the IS CHMM-N median VaR$_{0.01}$ at $-6.64$ (observed $-6.38$) and the CHMM-N median ES$_{0.01}$ at $-8.80$ (observed $-9.00$) are the closest point estimates across the five generators.
 IS the three CHMMs are therefore well calibrated as risk consumers and carry narrower uncertainty bands than GARCH (whose $[-8.62, -4.52]$ VaR$_{0.01}$ envelope is roughly $1.7\times$ wider than the CHMMs').
-Second, CHMM-t -- despite overshooting the empirical kurtosis by $\sim 126\%$ IS -- does \emph{not} produce a systematically more conservative VaR/ES estimate: its IS median VaR$_{0.01}$ of $-6.58$ is almost identical to CHMM-N's $-6.64$, and its envelope width is comparable.
+Second, CHMM-t -- despite overshooting the empirical kurtosis by $\sim 90\%$ IS -- does \emph{not} produce a systematically more conservative VaR/ES estimate: its IS median VaR$_{0.01}$ of $-6.58$ is almost identical to CHMM-N's $-6.64$, and its envelope width is comparable.
 The CHMM-t kurtosis overshoot therefore translates into a modestly widened uncertainty band rather than a biased point estimate, so a practitioner using CHMM-t for tail-risk scenario generation does not systematically overstate $1\%$ or $5\%$ quantile risk.
 A useful OoS check: the $2024$--$2026$ observed VaR$_{0.01}$ is $-5.51$ (a relatively calm tail compared to the IS average), and the three CHMMs bracket this value comfortably within their envelopes rather than over- or under-stating it.
 Figure~\ref{fig:var_es} (Appendix~\ref{sec:var_es_supp}) visualizes the envelopes alongside the historical observations.
@@ -158,7 +158,7 @@ Both are clean passes.
 Crucially, on the independence side, Christoffersen $\text{LR}_{\text{ind}}$ drops from $15.53$ (unconditional) to $0.09$ at $1\%$ and from $5.26$ (unconditional) to $0.19$ at $5\%$: both are now far below the $\chi^2_1$ critical value of $3.84$.
 The breach-clustering structure of the $2024$-$2026$ OoS window that every unconditional row failed to capture is now accommodated.
 CHMM-N and CHMM-L each pass Christoffersen at $5\%$ (LR$_{\text{ind}}$ $= 1.39$ and $2.25$ respectively); CHMM-L also passes Christoffersen at $1\%$ ($\text{LR}_{\text{ind}} = 0.01$).
-CHMM-t is therefore the single CHMM family that passes both tests at both confidence levels simultaneously.
+CHMM-t is therefore the CHMM family that passes both tests at both confidence levels with margin; CHMM-L clears all four thresholds but marginally at the $5\%$ Kupiec ($\text{LR}_{\text{uc}} = 3.83$ against a $\chi^2_1$ critical value of $3.84$), while CHMM-N still fails Christoffersen independence at $1\%$ even after conditioning.
 
 \begin{table}[t]
 \centering
