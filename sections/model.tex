@@ -178,7 +178,7 @@ Because quantization onto discrete centroids strips within-bin tail mass, the st
 
 \paragraph{GRU deep generative baseline.}
 \label{sec:gru_methods}%
-We add a single-layer GRU generator following the deep-baseline tradition of \citet{yoon2019timegan} and the GRU baseline of \citet{alswaidan2026hybrid}.
+We add a single-layer GRU autoregressive density baseline following the GRU baseline of \citet{alswaidan2026hybrid}; recurrent-generator architectures for financial time series are also the subject of the TimeGAN family of \citet{yoon2019timegan}.
 The architecture is $\mathbf{h}_t = \mathrm{GRU}_{H}(\mathbf{x}_{t-w:t-1})$ followed by an affine head $(\mu_t, \log \sigma_t) = \mathbf{W} \mathbf{h}_t + \mathbf{b}$, with hidden dimension $H = 32$, context window $w = 20$ trading days, and a Gaussian next-step density $G_t \mid \mathcal{F}_{t-1} \sim \mathcal{N}(\mu_t, \sigma_t^2)$.
 The model is trained for $20$ epochs by Adam (learning rate $10^{-3}$) on the negative log-likelihood (NLL)
 \begin{equation}
@@ -195,8 +195,7 @@ The implementation is in Julia using \texttt{Flux.jl}~\cite{innes2018flux}; the 
 We add a repo-native QuantGAN-style baseline in the sense of \citet{wiese2020quantgan}: a $1$D convolutional generator and critic trained with the Wasserstein loss of \citet{arjovsky2017wasserstein} and critic weight clipping on standardised SPY returns, with rolling-window training and stitched-window path generation at inference time.
 The window length is $W = 64$, the latent dimension is $8$, and training runs for $15$ epochs.
 The generator is implemented in \texttt{Flux.jl} and is callable in the same \texttt{simulate} interface as the other generators.
-This is a deliberately reproducible first-pass design: no temporal convolutional network, no gradient-penalty, no rolling-origin re-training; it functions as a deep-generative negative control that reviewers at generator-oriented venues expect to see.
-The row therefore strengthens rather than threatens the CHMM narrative in Section~\ref{sec:extended_evaluation}.
+This is a deliberately reproducible first-pass design: no temporal convolutional network, no gradient-penalty, no rolling-origin re-training; it functions as a deep-generative negative control for Section~\ref{sec:extended_evaluation}.
 
 \paragraph{Window-diffusion deep baseline.}
 \label{sec:diffusion_methods}%

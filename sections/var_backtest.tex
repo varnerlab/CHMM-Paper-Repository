@@ -112,8 +112,8 @@ SM-CHMM-L    & $0.3$ & $3.26$ & $0.071$ & $\phantom{0}9.15$ & $3.5$ & $3.03$ & $
 \end{table}
 
 \paragraph{TSTR HAR vol-forecasting gain.}
-The train-on-synthetic-test-on-real HAR(1, 5, 22) vol forecaster, already introduced in the Extended Evaluation panel, also tightens under the SM ablation.
-The QLIKE ratio of the synthetic-trained forecaster to a real-trained benchmark tightens from $0.999$ to $1.000$ under CHMM-N $\to$ SM-CHMM-N, from $1.045$ to $1.014$ under CHMM-t $\to$ SM-CHMM-t, and from $1.027$ to $1.012$ under CHMM-L $\to$ SM-CHMM-L.
+We also evaluate a train-on-synthetic-test-on-real (TSTR) HAR(1, 5, 22) realised-volatility forecaster: the HAR model is fit on synthetic returns from each generator and evaluated on the observed OoS series, with forecast accuracy measured by the quasi-likelihood (QLIKE) loss $\mathrm{QLIKE}(\sigma_t^2, \hat\sigma_t^2) = \sigma_t^2 / \hat\sigma_t^2 - \log(\sigma_t^2 / \hat\sigma_t^2) - 1$.
+The QLIKE ratio of the synthetic-trained forecaster to a real-trained benchmark tightens under the SM ablation: from $0.999$ to $1.000$ under CHMM-N $\to$ SM-CHMM-N, from $1.045$ to $1.014$ under CHMM-t $\to$ SM-CHMM-t, and from $1.027$ to $1.012$ under CHMM-L $\to$ SM-CHMM-L.
 Closer to $1.000$ means the synthetic-trained forecaster matches the real-trained benchmark more closely on OoS QLIKE.
 SM-CHMM-N ties the real-trained benchmark exactly at $1.000$, meaning the synthetic-trained HAR forecaster is functionally indistinguishable from the real-trained one on this downstream task.
 The full TSTR panel is in \texttt{results/track\_c1/tstr\_vol\_forecaster\_c1.txt}.
