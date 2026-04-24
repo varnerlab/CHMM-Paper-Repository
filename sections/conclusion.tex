@@ -21,23 +21,12 @@ These findings replicate the ordering reported by \citet{alswaidan2026hybrid} wi
 
 Option pricing, implied-volatility-surface calibration, volatility-index generalization, and leverage-effect modelling are explicitly out of scope for this paper and are deferred to future work.
 
-Several directions for future work follow from these results:
-\begin{enumerate}
-    \item \textit{Skew-heavy-tailed emissions.}
-    This paper closes the kurtosis gap with Student-t and Laplace emissions; skew-$t$ or skew-Laplace emissions would additionally accommodate within-regime asymmetry and match the observed negative skewness of equity returns ($-0.75$ for SPY).
-
-    \item \textit{Time-varying transition dynamics.}
-    Estimating the transition matrix via rolling windows or Bayesian online learning would relax the stationarity assumption and should directly address the OoS cliff observed on NVDA and JPM over the $2024$--$2026$ OoS window.
-
-    \item \textit{Full-universe multi-asset generation via vine copulas.}
-    Scaling the copula construction from six assets to the 424-asset universe of \citet{alswaidan2026hybrid} requires vine or factor copulas for tractability and is a natural next step.
-
-    \item \textit{Principled state selection.}
-    Our $K = 18$ choice is a multi-metric score on top of a finite sweep; combining it with BIC or held-out log-likelihood (walk-forward) would yield a formally principled selection that plugs directly into the appendix Table~\ref{tab:sensitivity}.
-
-    \item \textit{Regime-aware dynamic asset allocation.}
-    The most immediate downstream application of the synthetic-data engine is regime-switching portfolio choice in the spirit of \citet{baekimmulvey2014}: using CHMM-decoded states as conditioning variables in a dynamic allocation model, and evaluating the realized utility of the resulting policy against policies calibrated on i.i.d.\ or GARCH generators.
-\end{enumerate}
+Several directions for future work follow from these results.
+\textit{Skew-heavy-tailed emissions} are the most immediate extension: this paper closes the kurtosis gap with Student-t and Laplace emissions, and skew-$t$ or skew-Laplace emissions would additionally accommodate within-regime asymmetry and match the observed negative skewness of equity returns ($-0.75$ for SPY).
+\textit{Time-varying transition dynamics}, estimated via rolling windows or Bayesian online learning of the transition matrix, would relax the stationarity assumption and should directly address the OoS cliff observed on NVDA and JPM over the $2024$--$2026$ OoS window.
+\textit{Full-universe multi-asset generation via vine copulas}, scaling the copula construction from six assets to the 424-asset universe of \citet{alswaidan2026hybrid}, requires vine or factor copulas for tractability and is a natural next step.
+\textit{Principled state selection} is a further refinement: our $K = 18$ choice is a multi-metric score on top of a finite sweep, and combining it with BIC or held-out log-likelihood (walk-forward) would yield a formally principled selection that plugs directly into the appendix Table~\ref{tab:sensitivity}.
+Finally, \textit{regime-aware dynamic asset allocation} is the most immediate downstream application of the synthetic-data engine, following the spirit of \citet{baekimmulvey2014} by using CHMM-decoded states as conditioning variables in a dynamic allocation model and evaluating the realized utility of the resulting policy against policies calibrated on i.i.d.\ or GARCH generators.
 
 \paragraph{Data and Code Availability.}
 The simulation scripts, training and test data, and all code to reproduce the results in this paper are available under an MIT license from the paper repository: \url{https://github.com/altashly1/CHMM-paper}.
