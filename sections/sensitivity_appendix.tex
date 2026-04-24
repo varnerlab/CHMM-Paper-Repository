@@ -6,7 +6,7 @@ Figure~\ref{fig:stylized_facts} visualizes the stylized facts of SPY daily exces
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts.pdf}
-\caption{Empirical stylized facts of SPY daily excess growth rates (in-sample, 2014-01-03 through 2024-01-03). Panel~(a): leptokurtic marginal distribution with Gaussian and Laplace fits. Panel~(b): normal Q-Q plot confirming heavy tails. Panel~(c): near-zero autocorrelation of raw returns. Panel~(d): persistent autocorrelation of absolute returns characterizing volatility clustering.}
+\caption{Empirical stylized facts of SPY daily excess growth rates (IS, 2014-01-03 through 2024-01-03). Panel~(a): leptokurtic marginal distribution with Gaussian and Laplace fits. Panel~(b): normal Q-Q plot confirming heavy tails. Panel~(c): near-zero autocorrelation of raw returns. Panel~(d): persistent autocorrelation of absolute returns characterizing volatility clustering.}
 \label{fig:stylized_facts}
 \end{figure}
 
@@ -18,7 +18,7 @@ Observed excess kurtosis is $7.68$ IS and $5.29$ OoS at all $K$.
 
 \begin{table}[H]
 \centering
-\caption{State resolution sensitivity for SPY CHMM-N (1{,}000 paths, $\alpha = 0.05$). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison} in the main text. In-sample coverage was 100\% at every $K$; OoS coverage is reported separately.}
+\caption{State resolution sensitivity for SPY CHMM-N (1{,}000 paths, $\alpha = 0.05$). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison} in the main text. IS coverage was 100\% at every $K$; OoS coverage is reported separately.}
 \label{tab:sensitivity}
 \small
 \begin{tabular}{c cc cc cc c c c c}
@@ -47,7 +47,7 @@ Three patterns extend from Table~\ref{tab:sensitivity} to the new families.
 First, the distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band for all three families: CHMM-t reaches its highest IS KS at $K = 18$ ($95.2\%$) and its highest OoS KS at $K = 18$ ($85.1\%$), and CHMM-L reaches its highest IS KS at $K = 18$ ($96.2\%$) and its highest IS AD at $K = 18$ ($93.0\%$).
 Once a family enters the plateau the operating point is flat with respect to $K$, so we report the main-text results at the same $K = 18$ used for CHMM-N.
 Second, the ACF-MAE remains within the narrow $0.047$--$0.056$ band observed for the Gaussian sweep, indicating that the volatility-clustering mechanism is a property of the regime structure rather than the emission family.
-Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks around $5.0$ at the high-$K$ end, the Laplace sweep lands squarely in the $5.2$--$6.6$ range (closest to the observed $7.68$), and the Student-t sweep climbs sharply above $13$ across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, over-correcting in-sample kurtosis.
+Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks around $5.0$ at the high-$K$ end, the Laplace sweep lands squarely in the $5.2$--$6.6$ range (closest to the observed $7.68$), and the Student-t sweep climbs sharply above $13$ across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, over-correcting IS kurtosis.
 
 \begin{table}[H]
 \centering
@@ -221,10 +221,10 @@ This contrasts with the discrete model of \citet{alswaidan2026hybrid}, where tai
 \label{fig:residence_all}
 \end{figure}
 
-\subsection{In-Sample Comparison at Non-Selected State Resolutions}
+\subsection{IS Comparison at Non-Selected State Resolutions}
 \label{sec:k_sweep_panels}
 
-Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_is_k21} show the in-sample model comparison panels for $K \in \{3, 6, 12, 21\}$, complementing the $K = 18$ comparison in Figure~\ref{fig:is_comparison} of the main text.
+Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_is_k21} show the IS model comparison panels for $K \in \{3, 6, 12, 21\}$, complementing the $K = 18$ comparison in Figure~\ref{fig:is_comparison} of the main text.
 Across all resolutions, the CHMM's simulated density closely overlays the observed density, and the ACF of absolute returns tracks the slow decay pattern.
 The visible improvement from $K = 3$ to $K = 18$ is concentrated in the tails of the Q-Q panel and the steady-state level of the ACF panel.
 $K = 9$ and $K = 15$ panels are omitted because they interpolate smoothly between the shown resolutions; their numerical metrics are in Table~\ref{tab:sensitivity}.
@@ -232,62 +232,62 @@ $K = 9$ and $K = 15$ panels are omitted because they interpolate smoothly betwee
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K3.pdf}
-\caption{In-sample SPY CHMM-N comparison at $K = 3$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}). The $K = 18$ counterpart is Figure~\ref{fig:is_comparison} of the main text.}
+\caption{IS SPY CHMM-N comparison at $K = 3$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}). The $K = 18$ counterpart is Figure~\ref{fig:is_comparison} of the main text.}
 \label{fig:k_sweep_panels_is}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K6.pdf}
-\caption{In-sample SPY CHMM-N comparison at $K = 6$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}).}
+\caption{IS SPY CHMM-N comparison at $K = 6$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}).}
 \label{fig:k_sweep_is_k6}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K12.pdf}
-\caption{In-sample SPY CHMM-N comparison at $K = 12$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}).}
+\caption{IS SPY CHMM-N comparison at $K = 12$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}).}
 \label{fig:k_sweep_is_k12}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K21.pdf}
-\caption{In-sample SPY CHMM-N comparison at $K = 21$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}).}
+\caption{IS SPY CHMM-N comparison at $K = 21$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}).}
 \label{fig:k_sweep_is_k21}
 \end{figure}
 
-\subsection{Out-of-Sample Validation at Non-Selected State Resolutions}
+\subsection{OoS Validation at Non-Selected State Resolutions}
 
-Figures~\ref{fig:k_sweep_panels_oos}--\ref{fig:k_sweep_oos_k21} show the out-of-sample validation panels for $K \in \{3, 6, 12, 21\}$.
+Figures~\ref{fig:k_sweep_panels_oos}--\ref{fig:k_sweep_oos_k21} show the OoS validation panels for $K \in \{3, 6, 12, 21\}$.
 KS pass rates remain above 91\% at all resolutions; the $K = 18$ panel is reproduced in Figure~\ref{fig:oos_validation} of the main text.
-As with the in-sample panels, $K = 9$ and $K = 15$ are omitted; numerical OoS KS pass rates are in Table~\ref{tab:sensitivity}.
+As with the IS panels, $K = 9$ and $K = 15$ are omitted; numerical OoS KS pass rates are in Table~\ref{tab:sensitivity}.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K3.pdf}
-\caption{Out-of-sample SPY CHMM-N validation at $K = 3$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}). The $K = 18$ counterpart is Figure~\ref{fig:oos_validation} of the main text.}
+\caption{OoS SPY CHMM-N validation at $K = 3$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}). The $K = 18$ counterpart is Figure~\ref{fig:oos_validation} of the main text.}
 \label{fig:k_sweep_panels_oos}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K6.pdf}
-\caption{Out-of-sample SPY CHMM-N validation at $K = 6$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}).}
+\caption{OoS SPY CHMM-N validation at $K = 6$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}).}
 \label{fig:k_sweep_oos_k6}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K12.pdf}
-\caption{Out-of-sample SPY CHMM-N validation at $K = 12$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}).}
+\caption{OoS SPY CHMM-N validation at $K = 12$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}).}
 \label{fig:k_sweep_oos_k12}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K21.pdf}
-\caption{Out-of-sample SPY CHMM-N validation at $K = 21$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}).}
+\caption{OoS SPY CHMM-N validation at $K = 21$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}).}
 \label{fig:k_sweep_oos_k21}
 \end{figure}
 
@@ -366,38 +366,38 @@ The $K = 18$ transition matrices and stationary distributions learned under CHMM
 \label{fig:residence_families}
 \end{figure}
 
-\paragraph{In-sample comparison.}
-Figures~\ref{fig:is_families}--\ref{fig:is_families_L} reproduce the three-panel in-sample comparison (density, ACF of $|G_t|$, tail Q-Q) at $K = 18$ for the two heavy-tailed families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
+\paragraph{IS comparison.}
+Figures~\ref{fig:is_families}--\ref{fig:is_families_L} reproduce the three-panel IS comparison (density, ACF of $|G_t|$, tail Q-Q) at $K = 18$ for the two heavy-tailed families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t.pdf}
-\caption{In-sample SPY model comparison at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) marginal density with KS pass rate, (b) ACF of $|G_t|$, and (c) tail Q-Q plot. The CHMM-N counterpart is Figure~\ref{fig:is_comparison}; the CHMM-L counterpart is Figure~\ref{fig:is_families_L}.}
+\caption{IS SPY model comparison at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) marginal density with KS pass rate, (b) ACF of $|G_t|$, and (c) tail Q-Q plot. The CHMM-N counterpart is Figure~\ref{fig:is_comparison}; the CHMM-L counterpart is Figure~\ref{fig:is_families_L}.}
 \label{fig:is_families}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L.pdf}
-\caption{In-sample SPY model comparison at $K = 18$ for CHMM-L Laplace emissions (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:is_families}.}
+\caption{IS SPY model comparison at $K = 18$ for CHMM-L Laplace emissions (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:is_families}.}
 \label{fig:is_families_L}
 \end{figure}
 
-\paragraph{Out-of-sample validation.}
+\paragraph{OoS validation.}
 Figures~\ref{fig:oos_families}--\ref{fig:oos_families_L} show the OoS validation panels for CHMM-t and CHMM-L at $K = 18$.
 The CHMM-t panel demonstrates the OoS kurtosis alignment noted in the main text (simulated 6.40 vs.\ observed 6.24), and the CHMM-L panel shows the tighter density fan produced by the heavier Laplace tails relative to the Gaussian.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t.pdf}
-\caption{Out-of-sample SPY validation at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) KS $p$-values, (b) OoS density fan, and (c) OoS ACF of $|G_t|$. The CHMM-N counterpart is Figure~\ref{fig:oos_validation}; the CHMM-L counterpart is Figure~\ref{fig:oos_families_L}.}
+\caption{OoS SPY validation at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) KS $p$-values, (b) OoS density fan, and (c) OoS ACF of $|G_t|$. The CHMM-N counterpart is Figure~\ref{fig:oos_validation}; the CHMM-L counterpart is Figure~\ref{fig:oos_families_L}.}
 \label{fig:oos_families}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L.pdf}
-\caption{Out-of-sample SPY validation at $K = 18$ for CHMM-L Laplace emissions (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:oos_families}.}
+\caption{OoS SPY validation at $K = 18$ for CHMM-L Laplace emissions (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:oos_families}.}
 \label{fig:oos_families_L}
 \end{figure}
 
@@ -452,6 +452,6 @@ Random seed = 2024   & 76.4 & 69.8 & 0.0499 & 2.54 & 72.9 \\
 \end{table}
 
 The key observation is that ACF-MAE is essentially constant at $\approx 0.050$ across all six rows, matching the $K = 18$ CHMM-N of the main body.
-In-sample KS pass rate remains below the $K = 18$ operating point ($75.3$--$79.0\%$) because two Gaussian components cannot tile the full multi-regime return distribution.
+IS KS pass rate remains below the $K = 18$ operating point ($75.3$--$79.0\%$) because two Gaussian components cannot tile the full multi-regime return distribution.
 The combination confirms that the Ryd\'en low-$K$ limitation is a distributional (not temporal) artefact: the ACF is already well reproduced at $K = 2$, and it is distributional fidelity that drives the preference for $K = 18$.
 

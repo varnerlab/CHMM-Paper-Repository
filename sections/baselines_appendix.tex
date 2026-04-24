@@ -88,7 +88,7 @@ OoS & 86.7 & 93.2 & 10.76 & 0.0538 & 0.177 & 0.1614 & 93.9 \\
 \end{tabular}
 \end{table}
 
-The bin-conditional Student-t fit picks $\nu \approx 2.71$ for the two extreme bins (bins $1$ and $13$, corresponding to the lower and upper quantile tails of the IS distribution) and $\nu = 50$ (upper bracket) for the eleven central bins, which explains both the large in-sample simulated kurtosis ($26.18$) and the very thin-scale central bins ($\sigma$ $\sim$ $0.06$--$0.28$).
+The bin-conditional Student-t fit picks $\nu \approx 2.71$ for the two extreme bins (bins $1$ and $13$, corresponding to the lower and upper quantile tails of the IS distribution) and $\nu = 50$ (upper bracket) for the eleven central bins, which explains both the large IS simulated kurtosis ($26.18$) and the very thin-scale central bins ($\sigma$ $\sim$ $0.06$--$0.28$).
 
 
 
@@ -119,10 +119,10 @@ Section~\ref{sec:model_comparison} are summarised here.
     observations.
 
     \item \textbf{Pre-processing.} The input return series is standardised
-    by its in-sample mean and standard deviation; predictions are
+    by its IS mean and standard deviation; predictions are
     re-scaled back at sampling time.
 
-    \item \textbf{Synthesis.} The trailing $w$ in-sample returns seed the
+    \item \textbf{Synthesis.} The trailing $w$ IS returns seed the
     recurrence; for each generation step the predicted Gaussian is
     sampled, the sample is appended to the context window, and the
     procedure rolls forward. The first $64$ steps are discarded as
@@ -201,7 +201,7 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.55\textwidth]{figs/Fig-NVDA-PriceFan-N.pdf}
-\caption{NVDA out-of-sample price fan, CHMM-N ($S_0 = 47.67 \to P^{\text{obs}}_T = 198.07$, a $4.15\times$ rally). The observed path exits the $25$--$75\%$ interquartile band by mid-horizon but remains inside the $5$--$95\%$ envelope; horizon-wide coverage under CHMM-N is $0.70$ (CHMM-t: $0.64$, CHMM-L: $0.67$; Table~\ref{tab:price_sim_path_metrics}), the lone calibration outlier in the panel.}
+\caption{NVDA OoS price fan, CHMM-N ($S_0 = 47.67 \to P^{\text{obs}}_T = 198.07$, a $4.15\times$ rally). The observed path exits the $25$--$75\%$ interquartile band by mid-horizon but remains inside the $5$--$95\%$ envelope; horizon-wide coverage under CHMM-N is $0.70$ (CHMM-t: $0.64$, CHMM-L: $0.67$; Table~\ref{tab:price_sim_path_metrics}), the lone calibration outlier in the panel.}
 \label{fig:price_fan_nvda}
 \end{figure}
 
@@ -229,7 +229,7 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
     \includegraphics[width=\textwidth]{figs/Fig-JNJ-TerminalDist-N.pdf}
     \caption{Terminal distribution.}
 \end{subfigure}
-\caption{JNJ out-of-sample price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
+\caption{JNJ OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
 \label{fig:price_fan_jnj_appendix}
 \end{figure}
 
@@ -243,7 +243,7 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
     \includegraphics[width=\textwidth]{figs/Fig-JPM-TerminalDist-N.pdf}
     \caption{Terminal distribution.}
 \end{subfigure}
-\caption{JPM out-of-sample price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
+\caption{JPM OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
 \label{fig:price_fan_jpm_appendix}
 \end{figure}
 
@@ -257,7 +257,7 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
     \includegraphics[width=\textwidth]{figs/Fig-AAPL-TerminalDist-N.pdf}
     \caption{Terminal distribution.}
 \end{subfigure}
-\caption{AAPL out-of-sample price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
+\caption{AAPL OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
 \label{fig:price_fan_aapl_appendix}
 \end{figure}
 
@@ -271,7 +271,7 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
     \includegraphics[width=\textwidth]{figs/Fig-QQQ-TerminalDist-N.pdf}
     \caption{Terminal distribution.}
 \end{subfigure}
-\caption{QQQ out-of-sample price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
+\caption{QQQ OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
 \label{fig:price_fan_qqq_appendix}
 \end{figure}
 

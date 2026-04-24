@@ -1,4 +1,4 @@
-The results demonstrate that a continuous Gaussian HMM trained via Baum-Welch at a single operating point ($K = 18$) achieves strong distributional fidelity ($93.8\%$ IS KS, $84.2\%$ OoS KS, $100\%$ in-sample quantile coverage) while retaining competitive temporal fidelity (ACF-MAE of $0.0507$), without requiring jump augmentation.
+The results demonstrate that a continuous Gaussian HMM trained via Baum-Welch at a single operating point ($K = 18$) achieves strong distributional fidelity ($93.8\%$ IS KS, $84.2\%$ OoS KS, $100\%$ IS quantile coverage) while retaining competitive temporal fidelity (ACF-MAE of $0.0507$), without requiring jump augmentation.
 The direct comparison against the discrete HMM of \citet{alswaidan2026hybrid}, reproduced with the authoritative $K_{\text{disc}} = 90$ / $\epsilon = 5 \times 10^{-5}$ / $\lambda = 67$ hyperparameters of the prior-paper final SPY run, shows that at that state resolution the discrete NJ and WJ baselines match the CHMM family on coarse KS/AD pass rates but miss the tail-structure, aggregational-Gaussianity, and VaR-calibration dimensions that distinguish a synthetic-data generator for downstream use.
 The cross-asset extension then shows that the univariate CHMM composes cleanly with rank-based copula dependence to produce multi-asset paths that preserve every per-asset marginal while outperforming a classical factor baseline on correlation reproduction.
 
@@ -27,15 +27,15 @@ This is not a criticism of \citet{alswaidan2026hybrid} on its own terms (jumps w
 
 \paragraph{The Temporal--Distributional Tradeoff.}
 The twelve-model comparison of Table~\ref{tab:model_comparison} confirms the temporal-distributional tradeoff identified in \citet{alswaidan2026hybrid}: GARCH wins ACF ($0.048$) but fails KS ($25.9\%$); the bootstrap wins KS ($99.9\%$) but is the worst on ACF ($0.063$).
-The CHMM at $K = 18$ occupies a distinctive corner (IS KS $93.2$--$93.8\%$, AD $86.6$--$91.2\%$, ACF-MAE within $0.002$--$0.008$ of GARCH, smallest Wasserstein-1 ($0.102$) among parametric models, and $100\%$ in-sample quantile coverage), a combination no other row in the comparison achieves.
+The CHMM at $K = 18$ occupies a distinctive corner (IS KS $93.2$--$93.8\%$, AD $86.6$--$91.2\%$, ACF-MAE within $0.002$--$0.008$ of GARCH, smallest Wasserstein-1 ($0.102$) among parametric models, and $100\%$ IS quantile coverage), a combination no other row in the comparison achieves.
 
 \paragraph{Closing the Kurtosis Gap with Heavy-Tailed Emissions.}
 CHMM-N produces excess kurtosis of $5.02$ against an observed $7.68$, a gap inherent to Gaussian emissions: a Gaussian mixture's kurtosis is bounded by the variance of component means relative to their variances, and pushing tail states out degrades the central fit.
 CHMM-t addresses this directly through per-state Student-t emissions whose $\nu_k$ is updated by ECM one-dimensional search, allowing tail states to carry arbitrarily high individual kurtosis; CHMM-L's Laplace emissions add per-component excess kurtosis of $3$ rather than $0$ at zero parameter cost.
 Because all three variants share the same forward-backward scaffold, the KS/AD/ACF-MAE fidelity of CHMM-N is preserved or improved without retuning $K$ or the transition structure; the AD pass rate (which weights tails more) shows the largest gain, confirming that the kurtosis gap was the residual source of AD failures.
 
-\paragraph{Diagnosing the CHMM-t In-Sample Kurtosis Overshoot.}
-CHMM-t's in-sample mixture kurtosis of $14.57$ overshoots the observed $7.68$ by $\sim 90\%$.
+\paragraph{Diagnosing the CHMM-t IS Kurtosis Overshoot.}
+CHMM-t's IS mixture kurtosis of $14.57$ overshoots the observed $7.68$ by $\sim 90\%$.
 The bracket sweep $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0\}$ in Appendix~\ref{sec:nu_diagnostics} shows the fit does \emph{not} pile against the lower bracket (median $\nu_k = 50$, only $2/18$ states near the lower edge), and lifting $\nu_{\min}$ does not reduce the overshoot because the fit shifts posterior mass into the newly-recentred tail states.
 Only the $\nu = \infty$ Gaussian limit brings simulated kurtosis down to CHMM-N's $5.03$, confirming the overshoot is a feature of the Student-t family at $K=18$ rather than a bracket artefact; the downstream consequence (Section~\ref{sec:utility}) is that CHMM-t's $5$--$95\%$ envelopes still bracket observed VaR / ES, so a risk consumer incurs a widened uncertainty band rather than a systematic over-statement of tail risk.
 

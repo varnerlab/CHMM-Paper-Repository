@@ -38,11 +38,11 @@ CHMM-L    & $-6.69\ [-8.59, -4.91]$      & $-8.88\ [-11.48,\ -6.73]$    & $-3.27
 \end{table}
 
 Two findings are central to the utility story.
-First, all three CHMM variants bracket the observed historical VaR and ES at both $1\%$ and $5\%$ levels within their $5\%$--$95\%$ envelopes on both IS and OoS windows; the in-sample CHMM-N median VaR$_{0.01}$ at $-6.64$ (observed $-6.38$) and the CHMM-N median ES$_{0.01}$ at $-8.80$ (observed $-9.00$) are the closest point estimates across the five generators.
-In-sample the three CHMMs are therefore well calibrated as risk consumers and carry narrower uncertainty bands than GARCH (whose $[-8.62, -4.52]$ VaR$_{0.01}$ envelope is roughly $1.7\times$ wider than the CHMMs').
-Second, CHMM-t -- despite overshooting the empirical kurtosis by $\sim 126\%$ in-sample -- does \emph{not} produce a systematically more conservative VaR/ES estimate: its in-sample median VaR$_{0.01}$ of $-6.58$ is almost identical to CHMM-N's $-6.64$, and its envelope width is comparable.
+First, all three CHMM variants bracket the observed historical VaR and ES at both $1\%$ and $5\%$ levels within their $5\%$--$95\%$ envelopes on both IS and OoS windows; the IS CHMM-N median VaR$_{0.01}$ at $-6.64$ (observed $-6.38$) and the CHMM-N median ES$_{0.01}$ at $-8.80$ (observed $-9.00$) are the closest point estimates across the five generators.
+IS the three CHMMs are therefore well calibrated as risk consumers and carry narrower uncertainty bands than GARCH (whose $[-8.62, -4.52]$ VaR$_{0.01}$ envelope is roughly $1.7\times$ wider than the CHMMs').
+Second, CHMM-t -- despite overshooting the empirical kurtosis by $\sim 126\%$ IS -- does \emph{not} produce a systematically more conservative VaR/ES estimate: its IS median VaR$_{0.01}$ of $-6.58$ is almost identical to CHMM-N's $-6.64$, and its envelope width is comparable.
 The CHMM-t kurtosis overshoot therefore translates into a modestly widened uncertainty band rather than a biased point estimate, so a practitioner using CHMM-t for tail-risk scenario generation does not systematically overstate $1\%$ or $5\%$ quantile risk.
-A useful out-of-sample check: the $2024$--$2026$ observed VaR$_{0.01}$ is $-5.51$ (a relatively calm tail compared to the IS average), and the three CHMMs bracket this value comfortably within their envelopes rather than over- or under-stating it.
+A useful OoS check: the $2024$--$2026$ observed VaR$_{0.01}$ is $-5.51$ (a relatively calm tail compared to the IS average), and the three CHMMs bracket this value comfortably within their envelopes rather than over- or under-stating it.
 Figure~\ref{fig:var_es} (Appendix~\ref{sec:var_es_supp}) visualizes the envelopes alongside the historical observations.
 
 \paragraph{Explicit Kupiec failure of the Discrete HMM baseline of \citet{alswaidan2026hybrid} at $5\%$ VaR.}
@@ -141,7 +141,7 @@ The common cause is that an unconditional VaR fixes the quantile at a single cal
 A natural remedy is to make the VaR quantile regime-conditional.
 
 \paragraph{Estimator.}
-For each CHMM family we fit a flat CHMM on the in-sample window and then, at each OoS time $t$, run the Viterbi algorithm once on the full OoS series $(r_1, \ldots, r_T)$ under the fitted flat model to obtain a most-likely state sequence $(\hat{s}_1, \ldots, \hat{s}_T)$.
+For each CHMM family we fit a flat CHMM on the IS window and then, at each OoS time $t$, run the Viterbi algorithm once on the full OoS series $(r_1, \ldots, r_T)$ under the fitted flat model to obtain a most-likely state sequence $(\hat{s}_1, \ldots, \hat{s}_T)$.
 The regime-conditional VaR at level $\alpha$ at time $t$ is then
 \begin{equation}
 \widehat{\mathrm{VaR}}^{\mathrm{cond}}_{t}(\alpha) \;=\; F^{-1}_{F_{\hat{s}_t}}(\alpha),

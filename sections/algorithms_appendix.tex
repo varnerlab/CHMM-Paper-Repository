@@ -237,7 +237,7 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \label{alg:sim_build}
 \small
 \begin{algorithmic}[1]
-\REQUIRE In-sample return matrix $\mathbf{R} \in \mathbb{R}^{T \times d}$, market-column index $m$, market CHMM $\mathcal{M}_m$, path length $T$, number of paths $P$
+\REQUIRE IS return matrix $\mathbf{R} \in \mathbb{R}^{T \times d}$, market-column index $m$, market CHMM $\mathcal{M}_m$, path length $T$, number of paths $P$
 \ENSURE Cross-asset path tensor $\{\hat{G}^{(p)}_{j,t}\}$ of shape $T \times d \times P$
 
 \STATE \textbf{OLS fit.} For $j \neq m$:
@@ -262,10 +262,10 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \subsection{CHMM-t Degrees-of-Freedom Diagnostics}
 \label{sec:nu_diagnostics}
 
-This appendix backs the discussion in Section~\ref{sec:discussion} of the CHMM-t in-sample kurtosis overshoot.
+This appendix backs the discussion in Section~\ref{sec:discussion} of the CHMM-t IS kurtosis overshoot.
 Figure~\ref{fig:nu_hist} plots the per-state $\nu_k$ histogram for the $K = 18$ CHMM-t fit on SPY IS (seed = $20260420$).
 Thirteen of the eighteen states rest at the upper ECM bracket ($\nu_k = 50$), and only two states lie near the lower bracket ($\nu_2 = 2.19$, $\nu_4 = 2.10$).
-The simulated in-sample mixture kurtosis of $17.34$ is driven by the posterior mass routed to those two very heavy-tailed states, not by a systemic collapse to the lower bracket.
+The simulated IS mixture kurtosis of $17.34$ is driven by the posterior mass routed to those two very heavy-tailed states, not by a systemic collapse to the lower bracket.
 
 \begin{figure}[h]
 \centering
@@ -275,7 +275,7 @@ The simulated in-sample mixture kurtosis of $17.34$ is driven by the posterior m
 \end{figure}
 
 Table~\ref{tab:nu_bracket} reports the seven-metric panel for CHMM-t fits whose ECM bracket lower bound is lifted from $\nu_{\min} = 2.1$ through $\{2.5, 3.0, 4.0\}$, plus the Gaussian limit ($\nu = \infty$, equivalent to CHMM-N).
-Lifting the bracket does not reduce the in-sample kurtosis overshoot: the simulated kurtosis moves within the $12.5$--$14.0$ band across bracket floors and only collapses to $5.05$ in the full Gaussian limit.
+Lifting the bracket does not reduce the IS kurtosis overshoot: the simulated kurtosis moves within the $12.5$--$14.0$ band across bracket floors and only collapses to $5.05$ in the full Gaussian limit.
 The overshoot is therefore a feature of the Student-t emission family at $K = 18$ and not a lower-bracket artefact.
 
 \begin{table}[h]

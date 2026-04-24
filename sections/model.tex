@@ -165,14 +165,14 @@ The heavier-than-Gaussian Laplace tail (excess kurtosis $3$ per component) provi
 \subsection{Benchmark Generators}
 \label{sec:benchmarks}
 
-We benchmark the CHMM against eight alternatives fitted on the same in-sample window.
+We benchmark the CHMM against eight alternatives fitted on the same IS window.
 The \textit{i.i.d.\ bootstrap} samples $T$ returns uniformly with replacement, preserving the empirical marginal exactly and serving as the non-parametric distributional ceiling.
 The \textit{stationary block bootstrap} \cite{politis1994stationary} resamples blocks of expected length $b = 10$ trading days, preserving short-range volatility clustering while keeping the marginal empirical; it is a temporally-aware non-parametric ceiling.
 The \textit{Gaussian} i.i.d.\ generator draws $G_t \sim \mathcal{N}(\hat\mu, \hat\sigma^2)$ from the sample moments; the \textit{Laplace} i.i.d.\ generator draws $G_t \sim \text{Laplace}(\hat m, \hat b)$ from the sample median and mean-absolute deviation.
 \textit{GARCH(1,1)} \cite{bollerslev1986generalized} uses $G_t = \mu + \sigma_t z_t$, $\sigma_t^2 = \omega + \alpha(G_{t-1} - \mu)^2 + \beta \sigma_{t-1}^2$ with $z_t \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 1)$, fitted by Nelder--Mead maximum likelihood.
 \label{sec:discrete_hmm}%
 The \textit{discrete HMM} of \citet{alswaidan2026hybrid} is reproduced in both no-jump (NJ) and Poisson-jump (WJ) variants at the final SPY hyperparameters reported therein: returns are partitioned into $K_{\text{disc}} = 90$ quantile bins, transitions are estimated by frequency counting, and simulation returns bin centroids; the WJ variant additionally triggers, with probability $\epsilon = 5 \times 10^{-5}$, a forced residence in tail states for Poisson$(\lambda = 67)$ steps, matching the values of \citet{alswaidan2026hybrid}.
-The \textit{Bin-T NJ} variant replaces those bin centroids with bin-conditional Student-t emissions to approximately isolate the quantization-per-se effect from the emission-family effect; because per-bin Student-t MLE is under-identified at $K = 90$ (only $T/K \approx 28$ observations per bin over $T \approx 2{,}516$ in-sample days), we use a coarser $K_{\text{disc}} = 13$ for Bin-T NJ so that each bin carries enough mass to estimate its tail parameters.
+The \textit{Bin-T NJ} variant replaces those bin centroids with bin-conditional Student-t emissions to approximately isolate the quantization-per-se effect from the emission-family effect; because per-bin Student-t MLE is under-identified at $K = 90$ (only $T/K \approx 28$ observations per bin over $T \approx 2{,}516$ IS days), we use a coarser $K_{\text{disc}} = 13$ for Bin-T NJ so that each bin carries enough mass to estimate its tail parameters.
 The comparison with the NJ row therefore varies both the bin count and the emission family; we flag this confound in Section~\ref{sec:discussion} and treat Bin-T NJ as an approximate rather than exact quantization ablation.
 Because quantization onto discrete centroids strips within-bin tail mass, the standard discrete baselines provide a direct upper bound on how much of the CHMM's fidelity is attributable to continuous emissions rather than to regime structure per se.
 
@@ -185,8 +185,8 @@ The model is trained for $20$ epochs by Adam (learning rate $10^{-3}$) on the ne
     \ell_t = \log \sigma_t + \tfrac{1}{2}\!\left(\frac{G_t - \mu_t}{\sigma_t}\right)^2
     \label{eq:gru_nll}
 \end{equation}
-of the standardised in-sample series, with $\log \sigma_t$ clamped to $[-6, 4]$ for numerical stability.
-Synthesis is auto-regressive: the trailing $w$ in-sample returns seed the recurrence, the predicted Gaussian is sampled, the sample is appended to the context window, and the procedure rolls forward.
+of the standardised IS series, with $\log \sigma_t$ clamped to $[-6, 4]$ for numerical stability.
+Synthesis is auto-regressive: the trailing $w$ IS returns seed the recurrence, the predicted Gaussian is sampled, the sample is appended to the context window, and the procedure rolls forward.
 A $64$-step burn-in is discarded.
 The implementation is in Julia using \texttt{Flux.jl}~\cite{innes2018flux}; the trained model is callable in the same \texttt{simulate} interface as the CHMM and discrete-HMM models.
 
@@ -208,7 +208,7 @@ Like the QuantGAN row, this is a first-pass reproducible design; it is the stron
 \label{sec:msgarch_methods}%
 We add a two-regime Markov-switching GARCH(1,1) baseline in the sense of \citet{haas2004new}.
 The observable evolves as $G_t = \mu + \sigma_t z_t$ with a regime-specific variance recursion $\sigma_t^2(k) = \omega_k + \alpha_k (G_{t-1} - \mu)^2 + \beta_k \sigma_{t-1}^2(k)$, where $k \in \{1, 2\}$ is a hidden regime with transition matrix $P = \{p_{ij}\}$.
-We use the path-independent HMP 2004 recursion with a Hamilton filter for the regime likelihood and fit the eight parameters $(\mu, \omega_{1:2}, \alpha_{1:2}, \beta_{1:2}, p_{11}, p_{22})$ by Nelder-Mead maximum likelihood on the in-sample SPY window.
+We use the path-independent HMP 2004 recursion with a Hamilton filter for the regime likelihood and fit the eight parameters $(\mu, \omega_{1:2}, \alpha_{1:2}, \beta_{1:2}, p_{11}, p_{22})$ by Nelder-Mead maximum likelihood on the IS SPY window.
 The fitted calm regime has unconditional $\sigma \approx 0.97$ and expected sojourn $\sim 12$ days ($p_{11} = 0.914$); the stress regime has unconditional $\sigma \approx 12.67$ and expected sojourn $\sim 2$ days ($p_{22} = 0.547$).
 MS-GARCH provides the variance-regime reference point for the Kupiec VaR calibration discussion in Section~\ref{sec:extended_evaluation} and Section~\ref{sec:sm_ablation}: it attains best-in-panel unconditional VaR calibration at $1\%$ ($\text{LR}_{\text{uc}} = 0.01$, breach rate exactly $1.0\%$) and at $5\%$ ($\text{LR}_{\text{uc}} = 0.26$, breach rate $4.5\%$), and its $\text{LR}_{\text{ind}} = 4.79$ at $5\%$ is the closest to the $3.84$ independence-pass threshold of any unconditional-VaR row.
 
@@ -217,7 +217,7 @@ MS-GARCH provides the variance-regime reference point for the Kupiec VaR calibra
 
 The univariate evaluation of Section~\ref{sec:model_comparison} fits a separate CHMM to each ticker independently; we refer to this as \emph{Pipeline A} throughout the paper. The present subsection introduces \emph{Pipeline B}, which reuses the per-asset CHMM marginals from Pipeline A and adds joint dependence across assets. Pipeline A is tested in Table~\ref{tab:cross_asset} (univariate); Pipeline B is tested in Table~\ref{tab:cross_asset_sim_copula} (cross-asset) and Figure~\ref{fig:cross_asset_corr}.
 
-Let $\mathbf{R}_{\text{IS}} \in \mathbb{R}^{T \times d}$ denote the in-sample return matrix for $d$ assets, with the market-factor column indexed by $m$.
+Let $\mathbf{R}_{\text{IS}} \in \mathbb{R}^{T \times d}$ denote the IS return matrix for $d$ assets, with the market-factor column indexed by $m$.
 Both constructions below preserve each asset's fitted CHMM marginal and differ in how cross-asset dependence is imposed.
 
 \paragraph{Single Index Model.}

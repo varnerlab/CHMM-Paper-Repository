@@ -1,12 +1,12 @@
 \subsection{Descriptive Statistics and Stylized Facts}
 \label{sec:descriptive}
 
-Descriptive statistics confirmed that all three canonical stylized facts were present in both the in-sample ($2014$-$01$-$03$ through $2024$-$01$-$03$, $T = 2{,}516$) and out-of-sample ($2024$-$01$-$04$ through $2026$-$04$-$20$, $T = 572$) windows (Table~\ref{tab:descriptive}).
-The in-sample excess growth rates exhibited excess kurtosis of $7.678$, strong negative skewness ($-0.751$), and a Jarque--Bera statistic of $6416.6$, decisively rejecting the null hypothesis of normality ($p < 0.001$).
+Descriptive statistics confirmed that all three canonical stylized facts were present in both the IS ($2014$-$01$-$03$ through $2024$-$01$-$03$, $T = 2{,}516$) and OoS ($2024$-$01$-$04$ through $2026$-$04$-$20$, $T = 572$) windows (Table~\ref{tab:descriptive}).
+The IS excess growth rates exhibited excess kurtosis of $7.678$, strong negative skewness ($-0.751$), and a Jarque--Bera statistic of $6416.6$, decisively rejecting the null hypothesis of normality ($p < 0.001$).
 The Ljung--Box test on absolute returns rejected the null of no autocorrelation ($\text{LB} = 2959.3$, $p < 0.001$), confirming pronounced volatility clustering.
 The Ljung--Box test on raw returns also rejected ($\text{LB} = 130.2$), reflecting mild serial dependence in the level series.
 
-The out-of-sample window exhibited similar properties: excess kurtosis of $5.294$, moderate negative skewness ($-0.733$), and a Jarque--Bera statistic of $719.1$.
+The OoS window exhibited similar properties: excess kurtosis of $5.294$, moderate negative skewness ($-0.733$), and a Jarque--Bera statistic of $719.1$.
 The Ljung--Box test on raw OoS returns also rejected ($\text{LB} = 47.2$), and the test on absolute returns rejected more strongly ($\text{LB} = 250.6$), confirming that both mild serial dependence and volatility clustering persisted into the test period.
 These properties are visualized in Figure~\ref{fig:stylized_facts} (Appendix~\ref{sec:stylized_facts_supp}).
 
@@ -33,7 +33,7 @@ LB test on $|G_t|$ (lag 20) & reject$^*$ (2959.3) & reject$^*$ (250.6) \\
 \subsection{Model Selection: Why $K = 18$}
 \label{sec:model_selection}
 
-We trained continuous Gaussian HMMs for $K \in \{3, 6, 9, 12, 15, 18, 21\}$ states on the SPY in-sample window using the Baum-Welch algorithm with $\texttt{max\_iter} = 60$ and quantile-based initialization, and evaluated every fitted model on (i) the four information criteria of equation~\eqref{eq:information_criteria}, following the HMM state-selection methodology of \citet{nguyen2018hidden}, and (ii) the full seven-metric distributional battery.
+We trained continuous Gaussian HMMs for $K \in \{3, 6, 9, 12, 15, 18, 21\}$ states on the SPY IS window using the Baum-Welch algorithm with $\texttt{max\_iter} = 60$ and quantile-based initialization, and evaluated every fitted model on (i) the four information criteria of equation~\eqref{eq:information_criteria}, following the HMM state-selection methodology of \citet{nguyen2018hidden}, and (ii) the full seven-metric distributional battery.
 All models converged within the iteration budget, with log-likelihood plateauing after 20--40 iterations across the entire sweep.
 The full sensitivity table is reproduced in Appendix~\ref{sec:sensitivity_appendix} (Table~\ref{tab:sensitivity}), with per-$K$ IS and OoS panels in Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_panels_oos}.
 
@@ -70,27 +70,27 @@ Critically, the quantile-based initialization ensures that the Baum-Welch algori
 
 \emph{Pipeline note.} This subsection operates under Pipeline A on the SPY ticker only. Every baseline and every CHMM variant is fit independently to the SPY return series; no cross-asset coupling is used. Readers who want the six-ticker generalization should proceed to Section~\ref{sec:cross_asset_univariate} (still Pipeline A); those who want the joint multi-asset extension should proceed to Section~\ref{sec:cross_asset} (Pipeline B).
 
-Table~\ref{tab:model_comparison} and Figure~\ref{fig:is_comparison} present the in-sample and out-of-sample validation results for the twelve generators (Bootstrap, Block-BS $b = 10$, Gaussian i.i.d., Laplace i.i.d., Discrete NJ and WJ at \Kdisc{90}, Bin-T NJ, GARCH(1,1), GRU, and CHMM-N / -t / -L at $K = 18$).
+Table~\ref{tab:model_comparison} and Figure~\ref{fig:is_comparison} present the IS and OoS validation results for the twelve generators (Bootstrap, Block-BS $b = 10$, Gaussian i.i.d., Laplace i.i.d., Discrete NJ and WJ at \Kdisc{90}, Bin-T NJ, GARCH(1,1), GRU, and CHMM-N / -t / -L at $K = 18$).
 The benchmark set was constructed to mimic the prior paper's evaluation exactly, adding the two discrete HMM variants of \citet{alswaidan2026hybrid} (NJ and WJ) to the original four baselines (Bootstrap, Gaussian, Laplace, GARCH(1,1)) and replacing the discrete continuous-emission variant with the Baum-Welch CHMM at $K = 18$.
 
 \paragraph{Bootstrap (Non-Parametric Ceiling).}
-Bootstrap resampling achieved 99.6\% KS and 99.4\% AD pass rates in-sample, confirming it as the distributional ceiling.
-It produced simulated kurtosis (7.43) closest to observed (7.68) and 100\% in-sample quantile coverage.
+Bootstrap resampling achieved 99.6\% KS and 99.4\% AD pass rates IS, confirming it as the distributional ceiling.
+It produced simulated kurtosis (7.43) closest to observed (7.68) and 100\% IS quantile coverage.
 However, the bootstrap's ACF-MAE (0.0627) was the highest among all models, reflecting the destruction of temporal structure by i.i.d.\ resampling.
 The Wasserstein-1 (0.065) and Hellinger (0.050) distances were the lowest, as expected.
 
 \paragraph{Gaussian i.i.d.\ (Negative Control).}
-The Gaussian generator achieved 0\% KS and 0\% AD in-sample, confirming the categorical inadequacy of the normal distribution for financial returns.
+The Gaussian generator achieved 0\% KS and 0\% AD IS, confirming the categorical inadequacy of the normal distribution for financial returns.
 Its simulated kurtosis was $-0.00$ (i.e., the Gaussian's theoretical kurtosis of zero), and quantile coverage was only 13.1\%.
 The \TOoS{572} window of over two years preserves enough KS-test power to correctly reject the Gaussian generator OoS as well ($1.2\%$ KS, $0.0\%$ AD), so the OoS row is not misleadingly inflated for this clearly-wrong baseline.
 
 \paragraph{Laplace i.i.d.}
-The Laplace generator achieved 98.9\% KS and 97.2\% AD in-sample, demonstrating that the Laplace distribution provides a reasonable approximation to the marginal distribution of equity returns.
+The Laplace generator achieved 98.9\% KS and 97.2\% AD IS, demonstrating that the Laplace distribution provides a reasonable approximation to the marginal distribution of equity returns.
 However, its simulated kurtosis (2.96) fell well short of the observed 7.68, and as an i.i.d.\ generator it produced flat ACF profiles (ACF-MAE $= 0.0627$, comparable to the i.i.d.\ bootstrap).
-The 77.8\% in-sample quantile coverage indicates that the Laplace distribution's fixed tail decay rate cannot fully envelop the observed quantile range.
+The 77.8\% IS quantile coverage indicates that the Laplace distribution's fixed tail decay rate cannot fully envelop the observed quantile range.
 
 \paragraph{Discrete HMM: No Jumps (NJ) and With Jumps (WJ).}
-Throughout this paper, \emph{NJ} denotes the no-jump discrete HMM of \citet{alswaidan2026hybrid}: observations are first partitioned into $K_{\text{disc}} = 90$ equal-probability quantile bins of the in-sample return distribution, the transition matrix is estimated by frequency counting on the resulting discrete state sequence, and simulation returns the bin centroid at the decoded state.
+Throughout this paper, \emph{NJ} denotes the no-jump discrete HMM of \citet{alswaidan2026hybrid}: observations are first partitioned into $K_{\text{disc}} = 90$ equal-probability quantile bins of the IS return distribution, the transition matrix is estimated by frequency counting on the resulting discrete state sequence, and simulation returns the bin centroid at the decoded state.
 \emph{WJ} is the same construction augmented with the Poisson jump-duration process of \citet{alswaidan2026hybrid}, which with probability $\epsilon = 5 \times 10^{-5}$ forces a residence in the tail bins for $\text{Poisson}(\lambda = 67)$ steps.
 Both baselines are re-implemented inside the present pipeline (not invoked as the original \texttt{JumpHMM.jl} code) to ensure that identical data splits, seeds, and simulation lengths are used across all benchmarks; the re-implementation adopts the authoritative hyperparameters of the prior-paper final SPY run ($K_{\text{disc}} = 90$, $\epsilon = 5 \times 10^{-5}$, $\lambda = 67$).
 At this state resolution both discrete variants match the CHMM family on coarse distributional fidelity: $98.3\%$ KS IS / $85.2\%$ KS OoS and $98.3\%$ AD IS / $89.9\%$ AD OoS for NJ, and $97.9\%$ KS IS / $83.9\%$ KS OoS and $96.5\%$ AD IS / $85.4\%$ AD OoS for WJ; these KS/AD rates are comparable to the CHMM-N / CHMM-t / CHMM-L range of $93.2$--$93.8\%$ IS KS and $79.3$--$85.9\%$ OoS KS.
@@ -101,7 +101,7 @@ The central empirical contrast for our paper is therefore not on coarse KS/AD pa
 
 \paragraph{Block Bootstrap ($b = 10$): Temporally-Aware Non-Parametric Ceiling.}
 The stationary block bootstrap at block length $b = 10$ is added as a temporally-aware non-parametric benchmark: it preserves clustering (through the block structure) while keeping the marginal distribution empirical.
-On the SPY in-sample series it attains $99.2\%$ KS and $96.4\%$ AD with simulated kurtosis of $7.07$ (observed $7.68$) and ACF-MAE of $0.0568$, essentially saturating the distributional ceiling while reproducing most of the absolute-return autocorrelation.
+On the SPY IS series it attains $99.2\%$ KS and $96.4\%$ AD with simulated kurtosis of $7.07$ (observed $7.68$) and ACF-MAE of $0.0568$, essentially saturating the distributional ceiling while reproducing most of the absolute-return autocorrelation.
 The i.i.d.\ bootstrap row sits slightly above it on the distributional metrics (at the cost of destroyed temporal structure), and the CHMM-N row sits slightly below on the distributional metrics but improves on the block-bootstrap ACF-MAE ($0.0507$ vs.\ $0.0568$).
 The $b = 10$ block bootstrap is therefore a stronger ceiling than the i.i.d.\ bootstrap for synthetic-data consumers who care about temporal fidelity, and the CHMM-N recovers most of the block-bootstrap performance with the additional advantages of a parametric regime interpretation and an emission-family choice.
 
@@ -115,36 +115,36 @@ The takeaway for the prior-paper loop is that, once the discrete pipeline is giv
 
 \paragraph{GARCH(1,1).}
 GARCH achieved ACF-MAE of 0.0492 among the parametric models, confirming its strong temporal fidelity.
-However, it failed the distributional tests: 23.1\% KS and 8.5\% AD in-sample.
-The simulated kurtosis (6.97 IS, 3.08 OoS) was reasonably close to observed in-sample but attenuated out-of-sample, and the Wasserstein-1 distance (0.245) and Hellinger distance (0.103) were substantially worse than the CHMM.
-In-sample quantile coverage was only 50.5\%.
+However, it failed the distributional tests: 23.1\% KS and 8.5\% AD IS.
+The simulated kurtosis (6.97 IS, 3.08 OoS) was reasonably close to observed IS but attenuated OoS, and the Wasserstein-1 distance (0.245) and Hellinger distance (0.103) were substantially worse than the CHMM.
+IS quantile coverage was only 50.5\%.
 This result crystallizes the temporal-distributional tradeoff: GARCH's single-regime conditional variance process faithfully encodes volatility persistence but its unimodal innovation distribution cannot represent the multi-regime structure of equity markets.
 
 \paragraph{GRU (Deep-Generative Baseline).}
 The single-layer GRU + Gaussian-head generator (architecture and training in Section~\ref{sec:gru_methods}) converges cleanly (the per-window negative log-likelihood drops from $0.340$ at epoch $1$ to $0.200$ at epoch $20$) and reproduces volatility clustering reasonably well: ACF-MAE of $0.0518$ on $|G_t|$ is within $0.001$ of CHMM-N ($0.0507$) and within $0.004$ of GARCH ($0.0484$).
-On distributional fidelity the GRU collapses, however: in-sample KS pass rate $18.1\%$, AD pass rate $13.7\%$, simulated kurtosis $2.85$ against an observed $7.68$, $W_1 = 0.196$, $H = 0.0966$, and quantile coverage $37.4\%$.
+On distributional fidelity the GRU collapses, however: IS KS pass rate $18.1\%$, AD pass rate $13.7\%$, simulated kurtosis $2.85$ against an observed $7.68$, $W_1 = 0.196$, $H = 0.0966$, and quantile coverage $37.4\%$.
 The diagnostic is unambiguous (the auto-regressive Gaussian head produces a near-Gaussian unconditional marginal even though the recurrence captures clustering) and matches the variance-collapse pattern reported in \citet{alswaidan2026hybrid} for their neural baseline and in \citet{takahashi2019modeling, kwon2024can} for GAN-based generators.
 The OoS KS rate of $52.5\%$ (AD $55.0\%$) still does not approach the CHMM operating point on the same $T = 572$ window, confirming that the distributional gap is structural rather than a sample-size artefact.
 The takeaway for the comparison is that adding a deep-generative row does not displace the CHMM operating point: among parametric and deep generators, the CHMM-N is the only one that achieves both $\geq 85\%$ IS KS \emph{and} ACF-MAE within $0.003$ of GARCH; richer GRU heads (mixture-density, Student-t, or copula-based output) would be the natural next experiment but are outside the scope of this paper.
 
 \paragraph{CHMM-N ($K = 18$, Gaussian emissions).}
-The Gaussian CHMM achieved $93.8\%$ KS and $86.6\%$ AD in-sample, competitive with the bootstrap ($99.9\%$), Laplace i.i.d.\ ($99.1\%$), and the $K_{\text{disc}} = 90$ Discrete NJ / WJ variants ($98.3\%$ / $97.9\%$) on KS, and substantially outperforming GARCH ($25.9\%$).
+The Gaussian CHMM achieved $93.8\%$ KS and $86.6\%$ AD IS, competitive with the bootstrap ($99.9\%$), Laplace i.i.d.\ ($99.1\%$), and the $K_{\text{disc}} = 90$ Discrete NJ / WJ variants ($98.3\%$ / $97.9\%$) on KS, and substantially outperforming GARCH ($25.9\%$).
 ACF-MAE of $0.0507$ was essentially on par with GARCH ($0.0484$), demonstrating that the CHMM reproduces volatility clustering \emph{without} a dedicated jump mechanism or conditional variance equation.
 This is the central finding of this paper: the Ryd\'{e}n et al.\ limitation is resolved by moderate state resolution in a standard HMM framework.
-The Wasserstein-1 (0.110) is well below the GARCH figure (0.245); Hellinger (0.0808) is four times smaller than either discrete HMM; in-sample quantile coverage is 100\% matching the bootstrap ceiling.
+The Wasserstein-1 (0.110) is well below the GARCH figure (0.245); Hellinger (0.0808) is four times smaller than either discrete HMM; IS quantile coverage is 100\% matching the bootstrap ceiling.
 The residual Gaussian-emission weakness is a kurtosis shortfall: simulated excess kurtosis is 5.02 IS and 4.42 OoS against observed values of 7.68 / 5.29.
 
 \paragraph{CHMM-t ($K = 18$, Student-t emissions).}
-Replacing the Gaussian component with a per-state Student-t matches the CHMM-N in-sample KS ($93.7\%$ vs.\ $93.8\%$) and raises AD to $88.9\%$ (vs.\ $86.6\%$ for CHMM-N); OoS AD rises from $77.9\%$ to $80.0\%$, and OoS KS rises from $84.2\%$ to $85.9\%$.
+Replacing the Gaussian component with a per-state Student-t matches the CHMM-N IS KS ($93.7\%$ vs.\ $93.8\%$) and raises AD to $88.9\%$ (vs.\ $86.6\%$ for CHMM-N); OoS AD rises from $77.9\%$ to $80.0\%$, and OoS KS rises from $84.2\%$ to $85.9\%$.
 The CHMM-t is the best non-bootstrap entry on Wasserstein-1 (0.102) and Hellinger (0.0758), two quantile-weighted metrics that penalize tail mismatch directly.
-Simulated excess kurtosis rises to $14.57$ IS and $9.74$ OoS: the ECM search allocates small $\nu_k$ to a subset of tail states, which over-corrects both the in-sample and out-of-sample mixture kurtosis (observed $7.68$ IS and $5.29$ OoS).
+Simulated excess kurtosis rises to $14.57$ IS and $9.74$ OoS: the ECM search allocates small $\nu_k$ to a subset of tail states, which over-corrects both the IS and OoS mixture kurtosis (observed $7.68$ IS and $5.29$ OoS).
 We diagnose this overshoot in Section~\ref{sec:discussion} via the per-state $\nu_k$ histogram and the $\nu_{\min}$ bracket-sensitivity study.
 The slight ACF-MAE increase ($0.0548$ vs.\ $0.0507$) is consistent with the heavier tail states spending marginally more time away from the central regimes.
 
 \paragraph{CHMM-L ($K = 18$, Laplace emissions).}
 The Laplace variant produces the most \emph{kurtosis-aligned} fit: simulated excess kurtosis is 6.76 IS and 6.27 OoS against observed 7.68 / 5.29, closing most of the CHMM-N IS shortfall (without the CHMM-t over-correction) and even overshooting the OoS target by $\sim 1$.
 CHMM-L attains the strongest IS AD fit among the continuous CHMMs ($91.2\%$ IS AD, $4.6$ percentage points ahead of CHMM-N and $2.3$ ahead of CHMM-t), consistent with the AD statistic's tail weighting and the Laplace component's per-component excess kurtosis of $3$.
-ACF-MAE (0.0564) and $W_1$ (0.102) are within 10\% of the CHMM-N values, and in-sample quantile coverage is 100\%.
+ACF-MAE (0.0564) and $W_1$ (0.102) are within 10\% of the CHMM-N values, and IS quantile coverage is 100\%.
 Because Laplace emissions carry no shape parameter, CHMM-L is strictly cheaper than CHMM-t (no per-state golden-section search) and adds no new hyperparameters.
 
 \paragraph{Summary of the three CHMM variants: a one-row decision guide.}
@@ -161,7 +161,7 @@ Table~\ref{tab:variant_choice} summarizes the practical choice.
 \toprule
 Use-case priority & Recommended variant \\
 \midrule
-Best KS + minimal in-sample kurtosis overshoot, tightest ACF-MAE & CHMM-N \\
+Best KS + minimal IS kurtosis overshoot, tightest ACF-MAE & CHMM-N \\
 Tightest $W_1$ and $H$; OoS kurtosis aligned with observed OoS     & CHMM-t \\
 Cleanest IS kurtosis match; highest AD pass rate; no shape parameter & CHMM-L \\
 \bottomrule
@@ -209,7 +209,7 @@ CHMM-N ($K=18$)     & 93.8  & 84.2  & 86.6  & 77.9  & 4.99    & 4.51    & 0.0507
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18.pdf}
-\caption{\textbf{In-sample CHMM validation on SPY} (Pipeline A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths). Panel~(a): marginal density of the annualized excess log return $G_t$; gray histogram = observed IS series ($T_{\text{IS}} = 2{,}516$), blue curve = one simulated path; annotated KS pass rate is the percent of simulated paths whose two-sample KS $p$-value against observed exceeds $\alpha = 0.05$. Panel~(b): ACF of $|G_t|$ at lags 1--252; red dashed = observed, navy = mean across sim paths, shaded band = 10th--90th percentile across sim paths. Panel~(c): tail Q-Q plot at 200 quantile levels (0.1\% to 99.9\%); blue points = simulated pooled over paths, black dashed = identity line.}
+\caption{\textbf{IS CHMM validation on SPY} (Pipeline A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths). Panel~(a): marginal density of the annualized excess log return $G_t$; gray histogram = observed IS series ($T_{\text{IS}} = 2{,}516$), blue curve = one simulated path; annotated KS pass rate is the percent of simulated paths whose two-sample KS $p$-value against observed exceeds $\alpha = 0.05$. Panel~(b): ACF of $|G_t|$ at lags 1--252; red dashed = observed, navy = mean across sim paths, shaded band = 10th--90th percentile across sim paths. Panel~(c): tail Q-Q plot at 200 quantile levels (0.1\% to 99.9\%); blue points = simulated pooled over paths, black dashed = identity line.}
 \label{fig:is_comparison}
 \end{figure}
 
@@ -237,10 +237,10 @@ The heavy-tailed CHMM-t and CHMM-L variants close most of this gap at the same $
 
 \paragraph{Wasserstein and Hellinger Improve Net Across the Sweep; Coverage is Saturated at 100\%.}
 $W_1$ improves from 0.119 ($K=3$) to 0.101 ($K=18$) and Hellinger from 0.079 to 0.077; both exhibit minor non-monotone oscillations of less than $0.005$ at intermediate $K$ (Table~\ref{tab:sensitivity}) but neither deteriorates from endpoint to endpoint.
-In-sample coverage is saturated at 100\% at every $K$, so it does not discriminate among state counts and serves only as a floor check.
+IS coverage is saturated at 100\% at every $K$, so it does not discriminate among state counts and serves only as a floor check.
 Together these provide a consistent signal that $K = 18$ is the sensible operating point.
 
-\subsection{Out-of-Sample Evaluation}
+\subsection{OoS Evaluation}
 \label{sec:oos}
 
 At the selected state resolution $K = 18$ the CHMM-N achieves $84.2\%$ OoS KS pass rate, $77.9\%$ OoS AD pass rate, and $90.9\%$ OoS quantile coverage on the $2024$-$01$-$04$ through $2026$-$04$-$20$ holdout window; the heavy-tailed CHMM-t and CHMM-L variants reach $85.9\%/80.0\%$ and $79.3\%/79.3\%$ OoS KS/AD, respectively.
@@ -253,7 +253,7 @@ The CHMM's regime structure, learned from the full range of IS observations incl
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18.pdf}
-\caption{\textbf{Out-of-sample CHMM validation on SPY} (Pipeline A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths, $\alpha = 0.05$, OoS window $T_{\text{OoS}} = 572$). Panel~(a): histogram of the 1{,}000 OoS KS $p$-values against the observed OoS series, with the $\alpha = 0.05$ threshold as a red dashed line. Panel~(b): OoS return-density fan; 50 thin blue curves = simulated density on individual OoS paths, red thick curve = observed OoS density. Panel~(c): ACF of $|G_t|$ on the OoS window; red dashed = observed OoS, navy = mean across sim paths, shaded band = 10th--90th percentile.}
+\caption{\textbf{OoS CHMM validation on SPY} (Pipeline A, $K = 18$, CHMM-N Gaussian emissions, 1{,}000 simulated paths, $\alpha = 0.05$, OoS window $T_{\text{OoS}} = 572$). Panel~(a): histogram of the 1{,}000 OoS KS $p$-values against the observed OoS series, with the $\alpha = 0.05$ threshold as a red dashed line. Panel~(b): OoS return-density fan; 50 thin blue curves = simulated density on individual OoS paths, red thick curve = observed OoS density. Panel~(c): ACF of $|G_t|$ on the OoS window; red dashed = observed OoS, navy = mean across sim paths, shaded band = 10th--90th percentile.}
 \label{fig:oos_validation}
 \end{figure}
 
@@ -414,7 +414,7 @@ QQQ  & CHMM-N & 95.5 & 92.3 & 87.8 & 3.4 & 2.02  & 0.0558 & 0.127 & 0.0735 & 100
 
 Section~\ref{sec:cross_asset_univariate} established that the CHMM provides strong per-asset univariate fidelity across distinct risk profiles.
 The next question is whether we can assemble those univariate marginals into jointly plausible multi-asset paths.
-We instantiated the two constructions described in Section~\ref{sec:cross_asset_methods} on a six-asset universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ) with SPY as the market engine, using the common in-sample window ($2014$-$01$-$03$ through $2024$-$01$-$03$, $T = 2{,}516$) and CHMM marginals refitted at $K = 18$.
+We instantiated the two constructions described in Section~\ref{sec:cross_asset_methods} on a six-asset universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ) with SPY as the market engine, using the common IS window ($2014$-$01$-$03$ through $2024$-$01$-$03$, $T = 2{,}516$) and CHMM marginals refitted at $K = 18$.
 Table~\ref{tab:cross_asset_sim_copula} reports the per-asset KS pass rates and cross-sectional correlation reproduction across 200 simulated paths.
 
 \paragraph{SIM (Single Index Model).}
@@ -426,7 +426,7 @@ The severe JPM degradation (31.5\% IS KS) reflects the fact that the affine map 
 Cross-sectional correlation reproduction was acceptable on average (off-diagonal MAE 0.076) but visibly worse than both copulas, consistent with SIM's rank-one decomposition discarding joint information beyond the market factor.
 
 \paragraph{Gaussian copula.}
-The Gaussian copula achieved a median per-asset in-sample KS pass rate of 97.8\% and a mean of 97.5\%, with every asset above 93\% (the minimum was 93.5\% for QQQ).
+The Gaussian copula achieved a median per-asset IS KS pass rate of 97.8\% and a mean of 97.5\%, with every asset above 93\% (the minimum was 93.5\% for QQQ).
 This uniform distributional fidelity is the expected consequence of rank reordering: each column of the simulated matrix is a permutation of an independent CHMM path, so the marginal distribution is preserved exactly.
 The off-diagonal correlation MAE of 0.031 improved by a factor of 2.5 over the SIM baseline.
 
@@ -436,7 +436,7 @@ The Student-t copula's median IS KS pass rate of 96.0\% is essentially tied with
 It achieves the best correlation reproduction overall, with off-diagonal MAE of 0.027 and Frobenius norm of 0.184 (versus 0.031 and 0.206 for the Gaussian copula).
 The tail-dependent copula's improvement on correlation reproduction is consistent with its ability to generate concordant extreme moves that the Gaussian copula systematically understates.
 
-\paragraph{Out-of-sample.}
+\paragraph{OoS.}
 All three dependence models degraded on the longer $T_{\text{OoS}} = 572$ OoS window, but the ordering was largely preserved (Table~\ref{tab:cross_asset_sim_copula}).
 The Gaussian copula achieved 87.2\% median OoS KS, the Student-t copula 89.8\%, and the SIM 85.0\%.
 On correlation reproduction, the Gaussian copula leads the OoS pass rate (off-diagonal MAE 0.202) with the Student-t copula essentially tied (0.208) and the SIM trailing (0.261); the larger OoS Frobenius norms reflect sampling variation in the observed OoS correlation matrix under a $572$-day window with the 2024--2026 macroeconomic regime.
@@ -477,7 +477,7 @@ The visual ordering of the path-averaged correlation heat maps (Figure~\ref{fig:
 The cross-asset results mirror the ordering reported by \citet{alswaidan2026hybrid} for the discrete HMM marginals: copulas beat SIM on per-asset distributional accuracy by construction (rank reordering preserves marginals, an affine map does not), and the Student-t copula beats the Gaussian copula when asset co-movement has meaningful tail dependence (here, $\nu^* = 6$).
 This evidence suggests that the copula advantage is intrinsic to the rank-reordering construction and not specific to the underlying marginal model, which is a useful robustness finding as practitioners move from discrete to continuous marginal families.
 
-\subsection{Out-of-Sample Equity Price Simulation (Pipeline A)}
+\subsection{OoS Equity Price Simulation (Pipeline A)}
 \label{sec:price_sim_oos}
 
 \emph{Pipeline note.} Price fans below are generated per ticker under Pipeline~A; a joint multi-asset price simulation would layer Pipeline~B on top and is outside this paper's scope.
@@ -530,7 +530,7 @@ QQQ  & 649.02 & 584.70 & \checkmark & 0.998 & 0.076 \\
     \includegraphics[width=\textwidth]{figs/Fig-SPY-PriceFan-L.pdf}
     \caption{CHMM-L.}
 \end{subfigure}
-\caption{\textbf{SPY out-of-sample price fan, three CHMM emission families} (Pipeline~A, $K = 18$, 500 paths, $T_{\text{OoS}} = 572$). Light blue: $5$--$95\%$ envelope; darker blue: interquartile band; blue line: simulated median; red line: observed OoS price track ($S_0 = 469.90 \to P^{\text{obs}}_T = 710.13$). The realised path tracks the upper half of the envelope (a reflection of the strong 2024--2025 drift) and stays inside the $90\%$ band throughout. NVDA, JNJ, JPM, AAPL, and QQQ price fans and terminal histograms are in Appendix~\ref{sec:price_sim_oos_appendix}; raw path metrics in \texttt{results/equity\_price\_sim/}.}
+\caption{\textbf{SPY OoS price fan, three CHMM emission families} (Pipeline~A, $K = 18$, 500 paths, $T_{\text{OoS}} = 572$). Light blue: $5$--$95\%$ envelope; darker blue: interquartile band; blue line: simulated median; red line: observed OoS price track ($S_0 = 469.90 \to P^{\text{obs}}_T = 710.13$). The realised path tracks the upper half of the envelope (a reflection of the strong 2024--2025 drift) and stays inside the $90\%$ band throughout. NVDA, JNJ, JPM, AAPL, and QQQ price fans and terminal histograms are in Appendix~\ref{sec:price_sim_oos_appendix}; raw path metrics in \texttt{results/equity\_price\_sim/}.}
 \label{fig:price_fan_spy}
 \end{figure}
 
