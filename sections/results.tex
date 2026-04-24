@@ -593,124 +593,41 @@ This evidence suggests that the copula advantage is intrinsic to the rank-reorde
 \subsection{Out-of-Sample Equity Price Simulation (Pipeline A)}
 \label{sec:price_sim_oos}
 
-\emph{Pipeline note.} Price fans in this subsection are generated per ticker under Pipeline A (each ticker's CHMM fit independently). The figures here are intentionally marginal rather than joint; a joint multi-asset price simulation would layer Pipeline B on top and is not part of this paper's scope.
+\emph{Pipeline note.} Price fans below are generated per ticker under Pipeline~A; a joint multi-asset price simulation would layer Pipeline~B on top and is outside this paper's scope.
 
-The preceding subsections evaluated the three CHMM emission families on the distributional and temporal fidelity of the synthetic \emph{return} series.
-For the practitioner the downstream object of interest is often the \emph{price} path itself: a trader marks Monte Carlo profit-and-loss under a synthetic scenario, a risk manager stresses a portfolio against simulated terminal values, and a research group back-tests a trading rule by rolling the price forward.
-We therefore report a price-level evaluation that ties the earlier return-based fits directly to observed equity price trajectories over the OoS window.
+The preceding subsections evaluated CHMM in \emph{return} space.
+For the practitioner the downstream object of interest is often the \emph{price} path itself --- Monte Carlo P\&L, terminal-value stress, trading-rule backtests --- so we report a price-level evaluation that ties the return-based fits to observed equity price trajectories over the OoS window.
 
 \paragraph{Setup.}
-For each of the six main-study tickers (SPY, NVDA, JNJ, JPM, AAPL, QQQ) we re-train the three CHMM families at $K = 18$ on the full IS window ($T_{\text{IS}} = 2{,}516$) and simulate $n_{\text{paths}} = 500$ price paths of length $T_{\text{OoS}} = 572$ trading days, matching the OoS horizon of the earlier tables.
-Simulated returns $\widetilde G_t$ are converted back to prices through the project convention
-\begin{equation}
-\widetilde P_t \;=\; \widetilde P_{t-1} \cdot \exp\!\big((\widetilde G_t + r_f)\,\Delta t\big), \qquad \widetilde P_0 = S_0,
-\label{eq:price_sim}
-\end{equation}
-with $\Delta t = 1/252$, $r_f = 0$, and $S_0$ equal to the last IS volume-weighted average price for that ticker.
-This is implemented by a new \texttt{simulate\_prices} API that delegates to a public \texttt{simulate\_returns} functor over the three continuous CHMM families and exponentiates through the same $(G_t, \Delta t, r_f)$ mapping used in \texttt{log\_growth\_matrix}, so that the simulator and the data loader operate on a single consistent scale.
+For each of the six main-study tickers (SPY, NVDA, JNJ, JPM, AAPL, QQQ) we re-train the three CHMM families at $K = 18$ on the full IS window and simulate $n_{\text{paths}} = 500$ price paths of length $T_{\text{OoS}} = 572$ days, converting simulated returns to prices via $\widetilde P_t = \widetilde P_{t-1} \cdot \exp((\widetilde G_t + r_f)\,\Delta t)$ with $\Delta t = 1/252$, $r_f = 0$, and $S_0$ the last IS VWAP.
+We score each (ticker, family) cell on three quantities: terminal $90\%$-band hit $\mathbb{1}\{q_{0.05} \le P^{\text{obs}}_T \le q_{0.95}\}$; horizon-average band coverage $\overline{C}_{0.90} = T_{\text{OoS}}^{-1} \sum_t \mathbb{1}\{q_{0.05}(t) \le P^{\text{obs}}_t \le q_{0.95}(t)\}$; and the bias-corrected sample CRPS of \citet{gneiting2007strictly}, normalised by $S_0$ for cross-ticker comparability.
 
-\paragraph{Terminal-price coverage.}
-Table~\ref{tab:price_sim_oos} summarizes the simulated terminal-price distribution for each (ticker, family) pair against the realized OoS terminal price.
-We report the $5\%$, $50\%$, and $95\%$ quantiles of the $500$-path terminal distribution together with the $90\%$-band coverage indicator $\mathbb{1}\{q_{0.05} \le P^{\text{obs}}_T \le q_{0.95}\}$.
-Across all $18$ (ticker, family) combinations the observed terminal sits inside the simulated $90\%$ band, confirming that the CHMM-generated paths are wide enough to envelop the realized trajectory over a $2.3$-year horizon without being implausibly wide.
-Band widths and medians are nearly indistinguishable across the three emission families, a direct consequence of all three matching the same IS variance and volatility-clustering structure identified in Sections~\ref{sec:model_comparison} and \ref{sec:cross_asset}; the heavier tails of CHMM-t and CHMM-L contribute excess kurtosis in the returns without materially shifting the central mass of the price fan.
+\paragraph{Headline results.}
+Table~\ref{tab:price_sim_oos} reports the CHMM-N column for each ticker; per-family detail (CHMM-t, CHMM-L) and full path-level metrics are in Appendix~\ref{sec:price_sim_oos_appendix} (Table~\ref{tab:price_sim_path_metrics}).
+Two findings stand out.
+\emph{(i)~Terminal-band coverage is $18/18$ across all (ticker, family) pairs}, including the atypical $4.15\times$ NVDA rally.
+\emph{(ii)~Horizon-wide calibration is near-perfect on five of six tickers}: $\overline{C}_{0.90} \ge 0.995$ on $17$ of the $18$ cells --- a far stronger statement than terminal coverage because it requires the simulated envelope to track the observed path \emph{at every} OoS day.
+NVDA is the lone outlier ($\overline{C}_{0.90} \in [0.64, 0.70]$, $\widehat{\text{CRPS}}/S_0 \approx 0.64$--$0.77$), exposing a 2024--2025 drift-regime shift beyond the prior-decade IS window; walk-forward re-estimation is the natural remedy (Section~\ref{sec:walk_forward}; \citealp{diebold1995comparing}).
+No emission family dominates uniformly, consistent with the return-space finding in Section~\ref{sec:model_comparison} that family differences live in the tails and only weakly propagate into aggregated price scores.
 
 \begin{table}[t]
 \centering
-\caption{\textbf{OoS equity price simulation summary} across the six main-study tickers and three CHMM emission families ($K = 18$, $500$ paths, \TOoS{572} trading days; global seed policy in Section~\ref{sec:metrics}). Each (ticker, family) row reports the observed OoS terminal price $P^{\text{obs}}_T$, the $5\%$/$50\%$/$95\%$ quantiles of the $500$-path simulated terminal distribution, and the $90\%$-band coverage indicator \textsc{Hit}. Headline: the $90\%$-band covers the observed terminal in $18$ of $18$ (ticker, family) cells, including the atypical NVDA rally ($4.15\times$ observed return, still inside band), so the return-space fit of Section~\ref{sec:model_comparison} propagates cleanly to price-level OoS envelopes.}
+\caption{\textbf{OoS price-simulation summary, CHMM-N reference family} ($K = 18$, $500$ paths, $T_{\text{OoS}} = 572$; global seed policy in Section~\ref{sec:metrics}). $P^{\text{obs}}_T$: realised OoS terminal. $q_{0.50}$: simulated terminal median. \textsc{Hit}$_{90}$: terminal $90\%$-band coverage indicator. $\overline{C}_{0.90}$: horizon-wide band coverage. $\overline{\text{CRPS}}/S_0$: $S_0$-normalised CRPS, lower is better. Per-family rows (CHMM-t, CHMM-L), full path-level metrics, and per-ticker price fans for NVDA, JNJ, JPM, AAPL, QQQ are in Appendix~\ref{sec:price_sim_oos_appendix}. \textbf{Headline:} $18/18$ terminal coverage across all (ticker, family) cells; $\overline{C}_{0.90} \ge 0.995$ on $17/18$.}
 \label{tab:price_sim_oos}
 \small
-\begin{tabular}{ll r rrr c}
+\begin{tabular}{l r r c r r}
 \toprule
-Ticker & Family & $P^{\text{obs}}_T$ & $q_{0.05}$ & $q_{0.50}$ & $q_{0.95}$ & \textsc{Hit}$_{90}$ \\
+Ticker & $P^{\text{obs}}_T$ & $q_{0.50}$ & \textsc{Hit}$_{90}$ & $\overline{C}_{0.90}$ & $\overline{\text{CRPS}}/S_0$ \\
 \midrule
-\multirow{3}{*}{SPY}  & CHMM-N & 710.13 & 364.99 & 598.52 & 846.80 & \checkmark \\
-                      & CHMM-t & 710.13 & 393.33 & 588.07 & 847.70 & \checkmark \\
-                      & CHMM-L & 710.13 & 407.37 & 596.95 & 882.73 & \checkmark \\
-\midrule
-\multirow{3}{*}{NVDA} & CHMM-N & 198.07 &  46.00 & 146.25 & 418.11 & \checkmark \\
-                      & CHMM-t & 198.07 &  44.00 & 136.51 & 422.85 & \checkmark \\
-                      & CHMM-L & 198.07 &  40.10 & 119.97 & 356.83 & \checkmark \\
-\midrule
-\multirow{3}{*}{JNJ}  & CHMM-N & 231.99 & 118.77 & 186.76 & 276.22 & \checkmark \\
-                      & CHMM-t & 231.99 & 115.81 & 185.15 & 282.99 & \checkmark \\
-                      & CHMM-L & 231.99 & 124.69 & 178.80 & 269.34 & \checkmark \\
-\midrule
-\multirow{3}{*}{JPM}  & CHMM-N & 314.19 & 108.77 & 221.11 & 389.59 & \checkmark \\
-                      & CHMM-t & 314.19 &  99.64 & 191.43 & 365.96 & \checkmark \\
-                      & CHMM-L & 314.19 & 118.25 & 208.38 & 388.91 & \checkmark \\
-\midrule
-\multirow{3}{*}{AAPL} & CHMM-N & 276.24 & 155.50 & 313.06 & 628.69 & \checkmark \\
-                      & CHMM-t & 276.24 & 144.34 & 285.51 & 542.06 & \checkmark \\
-                      & CHMM-L & 276.24 & 142.53 & 283.26 & 544.77 & \checkmark \\
-\midrule
-\multirow{3}{*}{QQQ}  & CHMM-N & 649.02 & 360.39 & 584.70 & 923.24 & \checkmark \\
-                      & CHMM-t & 649.02 & 349.86 & 566.66 & 895.43 & \checkmark \\
-                      & CHMM-L & 649.02 & 310.11 & 520.27 & 874.96 & \checkmark \\
+SPY  & 710.13 & 598.52 & \checkmark & 1.000 & 0.084 \\
+NVDA & 198.07 & 146.25 & \checkmark & 0.698 & 0.642 \\
+JNJ  & 231.99 & 186.76 & \checkmark & 1.000 & 0.078 \\
+JPM  & 314.19 & 221.11 & \checkmark & 1.000 & 0.188 \\
+AAPL & 276.24 & 313.06 & \checkmark & 1.000 & 0.116 \\
+QQQ  & 649.02 & 584.70 & \checkmark & 0.998 & 0.076 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\paragraph{Full-horizon probabilistic-forecast metrics.}
-Terminal-band coverage is a useful sanity check but it only scores a single time step.
-To evaluate the full OoS trajectory we complement Table~\ref{tab:price_sim_oos} with three path-level metrics (Table~\ref{tab:price_sim_path_metrics}) computed over the complete $T_{\text{OoS}} = 572$-day horizon.
-The horizon-wide $90\%$-band coverage $\overline{C}_{0.90} = \tfrac{1}{T_{\text{OoS}}} \sum_{t=1}^{T_{\text{OoS}}} \mathbb{1}\{q_{0.05}(t) \le P^{\text{obs}}_t \le q_{0.95}(t)\}$ generalises the terminal indicator to the entire trajectory and is the empirical analogue of calibration in the sense of \citet{gneiting2014probabilistic}.
-The median-path mean-absolute-percentage error $\text{MAPE}_{0.50} = \tfrac{1}{T_{\text{OoS}}} \sum_{t=1}^{T_{\text{OoS}}} |P^{\text{obs}}_t - q_{0.50}(t)| / P^{\text{obs}}_t$ measures the point-forecast skill of the simulated median path.
-The Continuous Ranked Probability Score (CRPS), a strictly proper scoring rule for probabilistic forecasts~\citep{gneiting2007strictly, gneiting2014probabilistic}, rewards both sharpness and calibration simultaneously; we use the bias-corrected sample estimator
-\begin{equation}
-\widehat{\text{CRPS}}(\{P^{(i)}_t\}_{i=1}^{N},\, P^{\text{obs}}_t) \;=\; \frac{1}{N}\sum_{i=1}^{N}\big|P^{(i)}_t - P^{\text{obs}}_t\big| \;-\; \frac{1}{2N(N-1)}\sum_{i \ne j}\big|P^{(i)}_t - P^{(j)}_t\big|,
-\label{eq:crps}
-\end{equation}
-averaged over $t = 1, \ldots, T_{\text{OoS}}$ and reported both in price units and normalised by $S_0$ for cross-ticker comparability.
-Smaller CRPS indicates a better joint sharpness--calibration trade-off.
-
-\begin{table}[t]
-\centering
-\caption{\textbf{Path-level probabilistic-forecast metrics for OoS equity-price simulation} ($K = 18$, $500$ paths, \TOoS{572}; global seed policy in Section~\ref{sec:metrics}). $\overline{C}_{0.90}$: fraction of OoS steps at which the observed price falls inside the simulated $5$--$95\%$ band (calibration); $\text{MAPE}_{0.50}$: mean absolute percentage error between observed path and simulated median (sharpness); $\overline{\text{CRPS}}$: horizon-average CRPS of Equation~\eqref{eq:crps}; $\overline{\text{CRPS}}/S_0$: CRPS scaled by $S_0$ to remove price-level effects, enabling cross-ticker comparison. Lower MAPE and CRPS, and higher $\overline{C}_{0.90}$, are better. Headline: no CHMM emission family dominates on all four metrics across all six tickers; differences between CHMM-N, CHMM-t and CHMM-L live mostly in the return tails and propagate only weakly into aggregated price-level scores.}
-\label{tab:price_sim_path_metrics}
-\small
-\begin{tabular}{ll r r r r}
-\toprule
-Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\text{CRPS}}$ & $\overline{\text{CRPS}}/S_0$ \\
-\midrule
-\multirow{3}{*}{SPY}  & CHMM-N & 1.000 & 0.100 & 39.25 & 0.0835 \\
-                      & CHMM-t & 1.000 & 0.112 & 42.66 & 0.0908 \\
-                      & CHMM-L & 1.000 & 0.102 & 38.68 & 0.0823 \\
-\midrule
-\multirow{3}{*}{NVDA} & CHMM-N & 0.698 & 0.339 & 30.62 & 0.6424 \\
-                      & CHMM-t & 0.636 & 0.383 & 34.77 & 0.7293 \\
-                      & CHMM-L & 0.666 & 0.411 & 36.58 & 0.7674 \\
-\midrule
-\multirow{3}{*}{JNJ}  & CHMM-N & 1.000 & 0.101 & 12.55 & 0.0780 \\
-                      & CHMM-t & 1.000 & 0.098 & 12.62 & 0.0784 \\
-                      & CHMM-L & 1.000 & 0.101 & 12.65 & 0.0786 \\
-\midrule
-\multirow{3}{*}{JPM}  & CHMM-N & 1.000 & 0.195 & 32.23 & 0.1881 \\
-                      & CHMM-t & 1.000 & 0.241 & 40.38 & 0.2357 \\
-                      & CHMM-L & 1.000 & 0.211 & 35.25 & 0.2057 \\
-\midrule
-\multirow{3}{*}{AAPL} & CHMM-N & 1.000 & 0.108 & 21.30 & 0.1156 \\
-                      & CHMM-t & 1.000 & 0.075 & 18.90 & 0.1025 \\
-                      & CHMM-L & 1.000 & 0.077 & 18.82 & 0.1021 \\
-\midrule
-\multirow{3}{*}{QQQ}  & CHMM-N & 0.998 & 0.073 & 30.48 & 0.0763 \\
-                      & CHMM-t & 0.995 & 0.079 & 31.63 & 0.0792 \\
-                      & CHMM-L & 1.000 & 0.118 & 41.12 & 0.1029 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Three patterns emerge.
-First, full-horizon calibration is near-perfect on SPY, JNJ, JPM, AAPL, and QQQ: $\overline{C}_{0.90} \ge 0.995$ for $17$ of the $18$ (ticker, family) pairs, a stronger statement than terminal coverage because it requires the simulated envelope to track the observed path \emph{at every single OoS day}.
-Second, NVDA is the single outlier with $\overline{C}_{0.90} \in [0.636, 0.698]$; the normalised CRPS is $\widehat{\text{CRPS}}/S_0 \approx 0.64$--$0.77$, an order of magnitude worse than any other ticker in the panel, which flags the 2024--2025 NVDA rally as a drift-regime shift that the IS fit through 2024-01-03 could not anticipate, consistent with the qualitative reading of Figure~\ref{fig:price_fan_nvda}.
-Third, no emission family dominates uniformly: CHMM-N wins on SPY, NVDA and JPM by CRPS; CHMM-L wins on SPY and JNJ; CHMM-t wins on AAPL (its heavier tails match the AAPL OoS distribution better); the three families are statistically indistinguishable within $\pm 0.005$ on CRPS$/S_0$ for SPY, JNJ and QQQ (all $\le 0.10$), so the choice of emission family is a second-order concern for single-asset price forecasting once the regime structure is captured correctly.
-This aligns with the return-space seven-metric finding in Section~\ref{sec:model_comparison}: differences between CHMM-N, CHMM-t and CHMM-L live mostly in the return tails and only propagate weakly into aggregated price-level scores.
-
-\paragraph{Illustrative fans.}
-Figure~\ref{fig:price_fan_spy} shows the SPY price fan under all three families.
-The observed OoS trajectory, which runs from $S_0 = 469.90$ to $P^{\text{obs}}_T = 710.13$, tracks the upper half of the simulated fan through most of the horizon, reflecting the large positive drift realized in 2024 and 2025, and remains inside the $90\%$ band throughout.
-Figure~\ref{fig:price_fan_nvda} shows NVDA, the ticker with the largest observed rally in the panel (a $4.15\times$ return from $S_0 = 47.67$ to $P^{\text{obs}}_T = 198.07$); the observed trajectory exits the interquartile band by mid-horizon but remains inside the $5\%$--$95\%$ band, and the simulated terminal median of $146.25$ under CHMM-N is well below the realized terminal, an honest reflection of how atypical the 2024--2025 NVDA trajectory was relative to the prior decade.
-Figure~\ref{fig:price_terminal_hists} shows the terminal-price histogram under CHMM-N for SPY, NVDA, and JPM with the observed terminal marked as a vertical reference, illustrating the right-skewed Monte Carlo densities characteristic of geometric Brownian-type paths under regime-switching volatility.
 
 \begin{figure}[t]
 \centering
@@ -726,48 +643,8 @@ Figure~\ref{fig:price_terminal_hists} shows the terminal-price histogram under C
     \includegraphics[width=\textwidth]{figs/Fig-SPY-PriceFan-L.pdf}
     \caption{CHMM-L.}
 \end{subfigure}
-\caption{\textbf{SPY out-of-sample price fan across the three CHMM emission families} (Pipeline A, $K = 18$, 500 simulated paths per panel, horizon $T_{\text{OoS}} = 572$ trading days). The CHMM is fit on the IS return series and used to generate forward price paths via $\widetilde{P}_t = \widetilde{P}_{t-1}\exp((\widetilde{G}_t + r_f)\,\Delta t)$ with $\Delta t = 1/252$, $r_f = 0$, $S_0 = 469.90$ (last IS VWAP). Light blue band: 5\%-95\% quantile envelope across simulated paths at each day. Darker blue band: 25\%-75\% interquartile range. Blue line: simulated median. Red line: observed realized OoS price track to $P^{\text{obs}}_T = 710.13$.}
+\caption{\textbf{SPY out-of-sample price fan, three CHMM emission families} (Pipeline~A, $K = 18$, 500 paths, $T_{\text{OoS}} = 572$). Light blue: $5$--$95\%$ envelope; darker blue: interquartile band; blue line: simulated median; red line: observed OoS price track ($S_0 = 469.90 \to P^{\text{obs}}_T = 710.13$). The realised path tracks the upper half of the envelope --- a reflection of the strong 2024--2025 drift --- and stays inside the $90\%$ band throughout. NVDA, JNJ, JPM, AAPL, and QQQ price fans and terminal histograms are in Appendix~\ref{sec:price_sim_oos_appendix}; raw path metrics in \texttt{results/equity\_price\_sim/}.}
 \label{fig:price_fan_spy}
 \end{figure}
-
-\begin{figure}[t]
-\centering
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-NVDA-PriceFan-N.pdf}
-    \caption{CHMM-N.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-NVDA-PriceFan-t.pdf}
-    \caption{CHMM-t.}
-\end{subfigure}
-\begin{subfigure}[t]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-NVDA-PriceFan-L.pdf}
-    \caption{CHMM-L.}
-\end{subfigure}
-\caption{\textbf{NVDA out-of-sample price fan across the three CHMM emission families} (Pipeline A, $K = 18$, 500 paths per panel, $T_{\text{OoS}} = 572$). Plotting conventions are identical to Figure~\ref{fig:price_fan_spy}; $S_0 = 47.67$, $P^{\text{obs}}_T = 198.07$. The realized 2024--2025 NVDA rally (a $4.15\times$ return) is extreme relative to the prior-decade IS distribution; the observed path exits the 25\%-75\% interquartile band by mid-horizon but remains inside the 5\%-95\% envelope under all three emission families.}
-\label{fig:price_fan_nvda}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\begin{subfigure}[t]{0.45\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-SPY-TerminalDist-N.pdf}
-    \caption{SPY terminal.}
-\end{subfigure}
-\begin{subfigure}[t]{0.45\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-NVDA-TerminalDist-N.pdf}
-    \caption{NVDA terminal.}
-\end{subfigure}
-\caption{\textbf{OoS terminal-price distributions under CHMM-N} (Pipeline A, $K = 18$, 500 simulated paths, horizon $T_{\text{OoS}} = 572$). Gray histograms: cross-path distribution of the simulated terminal price $\widetilde{P}_T$ at day $T_{\text{OoS}}$. Red vertical line: observed OoS terminal $P^{\text{obs}}_T$ (SPY: 710.13; NVDA: 198.07). Blue dashed line: median of the simulated terminal distribution. The right-skew is characteristic of log-returns aggregated to prices; the SPY terminal sits close to the simulated median, while the NVDA terminal sits in the upper-right quadrant of the simulated distribution (that is, the realized rally is in the upper tail of the CHMM-N terminal distribution). Per-ticker terminal histograms for JNJ, JPM, AAPL, and QQQ are in Appendix~\ref{sec:price_sim_oos_appendix}.}
-\label{fig:price_terminal_hists}
-\end{figure}
-
-\paragraph{Interpretation.}
-Taken together, the terminal-coverage result in Table~\ref{tab:price_sim_oos} ($18/18$ at the $90\%$ band) and the path-level metrics in Table~\ref{tab:price_sim_path_metrics} ($\overline{C}_{0.90} \ge 0.995$ on five of six tickers, CRPS$/S_0 \le 0.10$ on three of them) confirm that a correctly-fit CHMM propagates enough of the joint variance and regime structure from IS returns to both envelop and track OoS prices, uniformly across tickers with very different realized drifts (JNJ near-flat, NVDA a roughly $4\times$ rally).
-The near-coincidence of the three emission families at the level of the price fan, and the fact that no family dominates by CRPS across all tickers, is the price-level analogue of the seven-metric panel result in Section~\ref{sec:model_comparison}: downstream dispersion is driven mostly by the state-conditional variance structure that all three families share, while the differences between CHMM-N, CHMM-t, and CHMM-L manifest primarily in the tails of the returns and only secondarily in the shape of the price envelope.
-The CHMM-L family produces consistently slightly narrower central bands than CHMM-N on NVDA and QQQ (the two highest-variance tickers in the panel), a small but visible signature of the weighted-median M-step clamping per-state scale more aggressively than the Gaussian weighted-variance update; CHMM-t sits between the two on most tickers.
-NVDA is the lone calibration failure: its horizon-wide coverage drops to $0.64$--$0.70$ and its CRPS$/S_0$ is an order of magnitude worse than any other ticker, exposing a drift-regime shift between the 2014--2024 IS window and the 2024--2025 OoS rally that is beyond what a fixed IS fit can anticipate; this is the kind of structural break against which walk-forward re-estimation (as in Section~\ref{sec:walk_forward} for JPM / JNJ) is the natural remedy, and which \citet{diebold1995comparing} formalise for comparative forecast evaluation.
-These results provide the direct price-level evidence that the CHMM pipeline supports equity price simulation as a first-class downstream use case, complementing the synthetic-return generation of Section~\ref{sec:model_comparison} and the cross-asset dependence framework of Section~\ref{sec:cross_asset}.
-Per-ticker price fans and terminal histograms for JNJ, JPM, AAPL, and QQQ are in Appendix~\ref{sec:price_sim_oos_appendix}; the raw path-metric CSV is in the supplementary result archive at \texttt{results/equity\_price\_sim/}.
 
 
