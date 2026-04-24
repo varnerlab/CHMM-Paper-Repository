@@ -264,71 +264,54 @@ The CHMM's regime structure, learned from the full range of IS observations incl
 \label{fig:oos_validation}
 \end{figure}
 
-\subsection{Extended Evaluation: MMD, Signature-MMD, Discriminator AUC, Leverage, Aggregational Gaussianity, Unconditional VaR (Kupiec/Christoffersen), and Simulation $p$-Values}
+\subsection{Extended Evaluation}
 \label{sec:extended_evaluation}
 
-The seven-metric panel of Section~\ref{sec:model_comparison} reports marginal and autocorrelation fidelity.
-For a reference synthetic-data generator, the community has converged on a broader metric set since \citet{gretton2012kernel, chevyrev2016primer, yoon2019timegan, ni2020conditional}.
-We therefore add seven evaluation axes that probe joint window distributions, path geometry, learned discriminability, tail coupling, aggregational scaling behaviour, unconditional Value-at-Risk under Kupiec and Christoffersen likelihood-ratio tests, and multi-statistic coverage.
-All rows are computed at \NPaths{1{,}000} simulated paths on both the \TIS{2{,}516} and \TOoS{572} SPY windows, under the global seed policy stated in Section~\ref{sec:metrics}.
-The full numerical panel is in Tables~\ref{tab:extended_metrics}, \ref{tab:leverage}, \ref{tab:agg_kurt}, and \ref{tab:sim_pvalues}; we summarise the headline findings here.
+The seven-metric panel of Section~\ref{sec:model_comparison} covers marginal and autocorrelation fidelity.
+We add seven axes that probe joint window distributions, path geometry, learned discriminability, tail coupling, aggregational scaling, unconditional VaR under Kupiec / Christoffersen, and multi-statistic coverage \citep{gretton2012kernel, chevyrev2016primer, yoon2019timegan, ni2020conditional}.
+All rows are computed at \NPaths{1{,}000} simulated paths on both the \TIS{2{,}516} and \TOoS{572} SPY windows under the seed policy of Section~\ref{sec:metrics}; full numerical panels in Tables~\ref{tab:extended_metrics}--\ref{tab:sim_pvalues}.
 
 \paragraph{MMD (RBF kernel, 20-day windows).}
-The $20$-day rolling return window, standardised by in-sample volatility, is the natural path-distribution object for a daily generator.
-We compute the empirical Maximum Mean Discrepancy of \citet{gretton2012kernel} between $500$ observed and $500$ simulated windows with the Gaussian RBF kernel and bandwidth set by the median heuristic on the pooled sample.
-Flat CHMM-t wins IS at $\text{MMD}^2 = 2.0 \times 10^{-5}$, ahead of CHMM-N ($1.5 \times 10^{-4}$), CHMM-L ($8.9 \times 10^{-4}$), the bin-conditional Student-t discrete variant ($2.7 \times 10^{-3}$), and the Gaussian and Laplace i.i.d.\ rows ($9.4 \times 10^{-3}$ and $3.5 \times 10^{-3}$ respectively).
-The single-regime GARCH(1,1) attains $\text{MMD}^2 = 0.0$ numerically because the median-heuristic bandwidth widens to accommodate its overdispersed simulated windows and the empirical kernel saturates; we flag this as a bandwidth-heuristic artefact rather than a genuine tie, and report the OoS panel where GARCH lands at $7.5 \times 10^{-4}$ (CHMM-N $6.1 \times 10^{-4}$, CHMM-t $2.2 \times 10^{-3}$) to resolve the comparison.
+We compute empirical $\text{MMD}^2$ \citep{gretton2012kernel} between $500$ observed and $500$ simulated $20$-day windows with median-heuristic bandwidth.
+Flat CHMM-t wins IS ($2.0 \times 10^{-5}$, an order of magnitude ahead of any other row).
+GARCH's $\text{MMD}^2 = 0.0$ on IS is a bandwidth-heuristic artefact (the median heuristic widens to accommodate GARCH's overdispersed windows); the OoS comparison ($\text{GARCH} = 7.5 \times 10^{-4}$ vs.\ CHMM-N $6.1 \times 10^{-4}$) resolves it.
 
 \paragraph{Signature-MMD (depth $3$ time-lifted path).}
-Each $W$-day return window $r_{1:W}$ is lifted to the two-dimensional time-augmented path
+Each $W$-day window $r_{1:W}$ is lifted to the time-augmented path
 \begin{equation}
-    \gamma: [0, 1] \to \mathbb{R}^2,
-    \qquad \gamma(t/W) = \bigl( t/W,\; r_t / \operatorname{std}(r_{1:W}) \bigr),
-    \qquad t = 1, \ldots, W,
+    \gamma(t/W) = \bigl( t/W,\; r_t / \operatorname{std}(r_{1:W}) \bigr), \qquad t = 1, \ldots, W,
     \label{eq:path_lift}
 \end{equation}
-and we compute the depth-$3$ truncated path signature of $\gamma$ in the sense of \citet{chevyrev2016primer}, then evaluate MMD with the signature feature as the kernel embedding.
-CHMM-L attains the smallest IS signature-MMD at $4.3 \times 10^{-3}$, essentially tied with CHMM-t ($4.7 \times 10^{-3}$); CHMM-N follows at $7.2 \times 10^{-3}$.
-The i.i.d.\ baselines land an order of magnitude worse ($2.7$ to $3.3 \times 10^{-2}$), confirming that path-geometric distinguishability separates regime-switching generators from memoryless ones.
-The Discrete NJ and WJ variants at $K_{\text{disc}} = 90$ score $1.5 \times 10^{-3}$ on the IS signature-MMD: lower than the i.i.d.\ baselines but larger than any CHMM row, consistent with the 90-atom bin-centroid emission producing a piecewise-constant path whose depth-$3$ path signature has reduced expressiveness relative to a continuous-emission trajectory.
+and the depth-$3$ truncated path signature \citep{chevyrev2016primer} embeds it for MMD.
+CHMM-L and CHMM-t lead IS at $4.3$ and $4.7 \times 10^{-3}$, an order of magnitude better than i.i.d.\ baselines ($2.7$--$3.3 \times 10^{-2}$); the $K_{\text{disc}} = 90$ discrete variants at $1.5 \times 10^{-3}$ sit between, consistent with their bin-centroid path having reduced depth-$3$ expressiveness.
 
-\paragraph{Discriminator AUC (logistic regression on hand-crafted window features).}
-Following \citet{yoon2019timegan} we train a logistic regression classifier on $10$ window features (mean, std, skew, kurt, min, max, first- and second-order autocorrelation, absolute-return first-order autocorrelation, and realised volatility) to distinguish $500$ real and $500$ simulated $20$-day windows, with $5$-fold cross-validated area under the ROC curve as the summary statistic.
-An AUC near $0.5$ indicates indistinguishability.
-CHMM-t attains the smallest AUC at $0.607 \pm 0.027$ IS (CHMM-L $0.623 \pm 0.051$, CHMM-N $0.646 \pm 0.024$), ahead of every non-CHMM row in the panel (GARCH $0.766 \pm 0.025$, i.i.d.\ baselines $0.728$ to $0.796$, bootstrap $0.779 \pm 0.038$).
-On OoS the ordering holds: CHMM-t $0.644 \pm 0.044$, Bin-T NJ $0.690$ area not shown, CHMM-L $0.671 \pm 0.047$, CHMM-N $0.709 \pm 0.016$, all below every i.i.d.\ and single-regime baseline.
-We read these numbers honestly: the $10$-feature discriminator at $N = 500$ windows is powerful, so AUC values near $0.6$ do not mean indistinguishable, but they do mean closest-to-indistinguishable among the rows in this panel.
+\paragraph{Discriminator AUC (logistic regression on $10$ window features).}
+Following \citet{yoon2019timegan} we train a logistic regression on mean, std, skew, kurt, min, max, $\rho_1$, $\rho_2$, $\rho_1(|r|)$, and realised volatility, with $5$-fold cross-validated AUC; AUC near $0.5$ indicates indistinguishability.
+CHMM-t leads IS at $0.607 \pm 0.027$ (CHMM-L $0.623$, CHMM-N $0.646$), ahead of every non-CHMM row (GARCH $0.766$, bootstrap $0.779$, i.i.d.\ $0.728$--$0.796$); the OoS ordering holds.
+The $10$-feature discriminator at $N = 500$ is powerful enough that $0.6$ is not indistinguishable, but it is the closest-to-indistinguishable among the panel.
 
 \paragraph{Leverage effect.}
-Let $\bar\rho_{\text{lev}}$ denote the short-lag average of squared-return autocorrelation on returns,
+With
 \begin{equation}
     \bar\rho_{\text{lev}} = \frac{1}{20} \sum_{k=1}^{20} \operatorname{corr}\!\bigl(r_t^2,\; r_{t-k}\bigr),
     \label{eq:leverage}
 \end{equation}
-and let the down-vs-up asymmetry be the gap in mean absolute next-day return conditional on the sign of $r_t$.
-On the IS window the observed statistics are $\bar\rho_{\text{lev}} = -0.088$ and asymmetry $0.358$.
-CHMM-N reproduces the sign and magnitude most closely (average $-0.038$, asymmetry $0.292$), followed by CHMM-t ($-0.025$, $0.281$) and CHMM-L ($-0.024$, $0.322$).
-GARCH produces essentially no leverage asymmetry ($-0.0007$, $0.064$) because its conditional variance process is symmetric in the sign of past returns.
-On OoS, CHMM-N also attains the highest simulation-based $p$-value for coverage of the observed leverage statistic at $p = 0.205$, meaning its sampling distribution over $1{,}000$ paths brackets the observed value; GARCH and the i.i.d.\ baselines all fail coverage at $p < 0.07$.
+the IS observed statistic is $-0.088$ with down-vs-up asymmetry $0.358$.
+CHMM-N reproduces both most closely ($-0.038$, $0.292$); GARCH produces essentially no asymmetry ($-0.001$, $0.064$) because its variance process is sign-symmetric in past returns.
+On OoS, CHMM-N attains the highest simulation-based coverage $p$-value at $p = 0.205$, while GARCH and i.i.d.\ baselines all fail at $p < 0.07$.
 
 \paragraph{Aggregational Gaussianity.}
-Cont (2001) observes that equity-return kurtosis declines toward the Gaussian value as the aggregation horizon $h$ increases.
-On SPY IS, observed kurtosis is $7.68$ at $h = 1$, $4.34$ at $h = 5$, $6.82$ at $h = 10$, and $2.63$ at $h = 21$.
-CHMM-t produces the cleanest monotone decay through the observed band ($8.46 \to 2.65 \to 2.06 \to 1.35$); CHMM-L matches $h = 1$ closely at $6.33$; GARCH starts at $4.35$ and decays slowly ($4.79, 3.74, 2.55$); i.i.d.\ baselines flatten to near zero by $h = 21$.
-Under the OoS series the pattern is preserved with CHMM-t at $h = 1$ of $5.55$ against an observed $5.29$.
+Cont (2001) predicts kurtosis decays toward Gaussian as $h$ grows; SPY IS observed kurtosis is $\{7.68, 4.34, 6.82, 2.63\}$ at $h \in \{1, 5, 10, 21\}$.
+CHMM-t produces the cleanest monotone decay through this band ($8.46 \to 2.65 \to 2.06 \to 1.35$); i.i.d.\ baselines flatten to zero by $h = 21$ and discrete NJ / WJ collapse to $\le 0.47$ at $h = 10, 21$, missing the slow-decay signature.
 
-\paragraph{Unconditional $1\%$ and $5\%$ VaR: Kupiec and Christoffersen tests.}
-We complement the VaR envelope diagnostic of Section~\ref{sec:utility} with the unconditional-coverage likelihood-ratio test of \citet{kupiec1995techniques} and the independence likelihood-ratio test of \citet{christoffersen1998evaluating}, both evaluated on the $T_{\text{OoS}} = 572$ OoS window at $\alpha \in \{0.01, 0.05\}$.
-At the $1\%$ level all continuous generators pass Kupiec with $\text{LR}_{\text{uc}} < 3.84$ (the $\chi^2_1$ critical value).
-At the $5\%$ level, the discrete HMM with Poisson jumps baseline of \citet{alswaidan2026hybrid} and its no-jump variant both over-conservatively produce a breach rate of $1.7\%$ against a target of $5\%$, which rejects Kupiec decisively with $\text{LR}_{\text{uc}} = 16.81$ and $p < 0.001$.
-This is a concrete negative finding against the discrete baseline of \citet{alswaidan2026hybrid} that the VaR envelope diagnostic of Section~\ref{sec:utility} does not surface on its own: the discrete quantization both wastes capital (breach rate far below target) and statistically fails the $5\%$ VaR test.
-Independence is harder: every row of the panel fails Christoffersen $\text{LR}_{\text{ind}}$ at both $1\%$ and $5\%$ on this OoS window, reflecting the breach-clustering structure of the $2024$-$2026$ stress subperiod.
-Section~\ref{sec:conditional_var} shows that a regime-conditional VaR closes this gap for the flat CHMM-t generator.
+\paragraph{Unconditional $1\%$ / $5\%$ VaR: Kupiec and Christoffersen.}
+We test unconditional coverage \citep{kupiec1995techniques} and independence \citep{christoffersen1998evaluating} on the OoS window at $\alpha \in \{0.01, 0.05\}$.
+All continuous generators clear $1\%$ Kupiec ($\text{LR}_{\text{uc}} < 3.84$); the $K_{\text{disc}} = 90$ discrete variants of \citet{alswaidan2026hybrid} (with and without jumps) over-conservatively produce a $1.7\%$ breach rate against a $5\%$ target and reject Kupiec decisively ($\text{LR}_{\text{uc}} = 16.81$, $p < 10^{-3}$) --- a concrete negative finding the envelope diagnostic of Section~\ref{sec:utility} does not surface.
+Every row fails Christoffersen $\text{LR}_{\text{ind}}$ at both levels because of the $2024$--$2026$ breach-clustering structure; Section~\ref{sec:conditional_var} closes this gap with a regime-conditional CHMM-t VaR.
 
 \paragraph{Joint simulation-based $p$-value coverage.}
-Following the predictive-distribution literature \citep{gneiting2007strictly}, we summarise the full simulation panel through a joint coverage statistic $\bar{pv}$: the mean two-sided simulation-based $p$-value across five stylised-fact statistics (unconditional kurtosis, avg leverage, and aggregational kurtosis at $h \in \{5, 21\}$, plus avg ACF of $|r|$).
-On the OoS window CHMM-L attains $\bar{pv}_{\text{OoS}} = 0.692$, CHMM-t $0.661$, and CHMM-N $0.539$: all three CHMM variants sit above $0.5$ and all three generators sit above the GARCH baseline at $0.468$ and the stationary bootstrap at $0.466$, while every i.i.d.\ and discrete baseline lies below $0.17$.
-On the IS window, the $\bar{pv}$ scores are tighter because the IS horizon exposes the per-path kurtosis and aggregational kurtosis to larger observed spread, but the relative ordering of the three CHMM variants is preserved.
+$\bar{pv}$ averages the two-sided coverage $p$-value across $\{$kurtosis, avg leverage, agg kurtosis at $h = 5$ and $21$, avg ACF of $|r|\}$ \citep{gneiting2007strictly}.
+On OoS, CHMM-L leads at $0.692$ (CHMM-t $0.661$, CHMM-N $0.539$); all three sit above GARCH ($0.468$) and the bootstrap ($0.466$) while every i.i.d.\ and discrete row falls below $0.17$.
 
 \begin{table}[t]
 \centering
@@ -422,21 +405,15 @@ CHMM-t      & $0.872$ & $0.000$ & $0.000$ & $0.196$ & $0.228$ & $0.324$ & $0.661
 \end{tabular}
 \end{table}
 
-\paragraph{Where the added baselines land on the extended panel.}
-The QuantGAN deep-generative baseline of Section~\ref{sec:quantgan_methods} is a clear deep-generative negative control under the reproducible first-pass setup: $\text{MMD IS} = 6.4 \times 10^{-2}$, $\text{sig-MMD IS} = 1.29 \times 10^{-1}$, discriminator AUC IS $= 0.963$, and $\bar{pv}$ OoS $= 0.289$, all worse than every CHMM row.
-This matches the variance-collapse pattern that \citet{kwon2024can} and \citet{takahashi2019modeling} document for untuned GAN-based generators and shows that adding a GAN comparator to the panel strengthens rather than threatens the CHMM narrative.
-The window-diffusion baseline of Section~\ref{sec:diffusion_methods} is materially stronger: $\text{MMD IS} = 9.0 \times 10^{-5}$ (second-smallest after CHMM-t), $\text{sig-MMD IS} = 2.6 \times 10^{-3}$, and discriminator AUC IS $= 0.565$ (closer to $0.5$ than any CHMM row on IS windows).
-However, on the joint coverage axis diffusion collapses ($\bar{pv}_{\text{OoS}} = 0.204$) and on unconditional VaR it fails Christoffersen at both levels ($\text{LR}_{\text{ind}} = 16.4, 7.4$ at $1\%$, $5\%$ respectively).
-The correct reading is that diffusion wins local distributional matching on short windows but loses on global stylised-fact coverage and on risk calibration.
-The two-regime MS-GARCH baseline of Section~\ref{sec:msgarch_methods} is the variance-regime reference row: its MMD IS is $4.8 \times 10^{-4}$ (best non-CHMM, bracketing GARCH's bandwidth-heuristic artefact), its discriminator AUC IS is $0.734$ (better than single-regime GARCH at $0.766$, worse than every CHMM row), and its unconditional VaR calibration is best-in-panel at both $\alpha \in \{0.01, 0.05\}$.
-MS-GARCH's unconditional $\text{LR}_{\text{ind}} = 4.79$ at $5\%$ is also the closest any generator in the unconditional panel gets to the independence-pass threshold, but it still fails independence and is superseded by the Viterbi-decoded flat CHMM-t conditional VaR in Section~\ref{sec:conditional_var}.
+\paragraph{Where the added baselines land.}
+QuantGAN (Section~\ref{sec:quantgan_methods}) is a clear deep-generative negative control under the reproducible first-pass setup ($\text{MMD IS} = 6.4 \times 10^{-2}$, AUC IS $= 0.963$, $\bar{pv}_{\text{OoS}} = 0.289$), matching the variance-collapse pattern \citet{kwon2024can} and \citet{takahashi2019modeling} document for untuned GANs.
+Window-diffusion (Section~\ref{sec:diffusion_methods}) wins local short-window matching (second-smallest MMD IS at $9.0 \times 10^{-5}$, AUC IS $= 0.565$ closer to $0.5$ than any CHMM) but collapses on global coverage ($\bar{pv}_{\text{OoS}} = 0.204$) and fails Christoffersen at both VaR levels ($\text{LR}_{\text{ind}} = 16.4, 7.4$).
+Two-regime MS-GARCH (Section~\ref{sec:msgarch_methods}) is the variance-regime reference: best non-CHMM MMD IS ($4.8 \times 10^{-4}$), best-in-panel unconditional VaR calibration at both $\alpha$, and the closest unconditional row to the Christoffersen threshold ($\text{LR}_{\text{ind}} = 4.79$ at $5\%$) --- still failing independence and superseded by the Viterbi-decoded conditional CHMM-t of Section~\ref{sec:conditional_var}.
 
-\paragraph{Summary of the extended panel.}
-CHMM-t sets the distributional-fidelity frontier: smallest MMD, discriminator AUC closest to $0.5$, and cleanest monotone aggregational kurtosis decay.
-CHMM-N is the best leverage-effect generator on OoS, and CHMM-L is the best joint $p$-value coverage generator on OoS.
-The single-regime GARCH baseline performs competitively on aggregational kurtosis $p$-values (because its simulated tails are wide and envelop the observed point), but fails the leverage and joint-coverage axes.
-MS-GARCH is the best unconditional-VaR generator and the window-diffusion baseline is the best local-window deep-generative row, but neither displaces flat CHMM-t on the combined distributional panel.
-The discrete HMM baselines of \citet{alswaidan2026hybrid} fail the discriminator AUC, leverage, aggregational kurtosis, and joint $p$-value axes, and additionally fail the $5\%$ Kupiec VaR test as noted above.
+\paragraph{Summary.}
+CHMM-t sets the distributional-fidelity frontier (MMD, AUC, aggregational kurtosis); CHMM-N wins OoS leverage; CHMM-L wins OoS joint $p$-value coverage.
+MS-GARCH leads unconditional VaR and diffusion leads local-window deep-generative metrics, but neither displaces flat CHMM-t on the combined distributional panel.
+The discrete HMM baselines of \citet{alswaidan2026hybrid} fail discriminator AUC, leverage, aggregational kurtosis, joint $p$-values, and the $5\%$ Kupiec test.
 \subsection{Cross-Asset Univariate Generalization (Pipeline A)}
 \label{sec:cross_asset_univariate}
 
