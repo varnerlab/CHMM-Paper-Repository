@@ -242,9 +242,10 @@ Simulated kurtosis under CHMM-N ranged from 3.70 ($K=9$) to 5.13 ($K=6$), with $
 This non-monotonic pattern reflects the interplay between the number of mixture components and their learned parameters: at moderate $K$, the Baum-Welch optimum allocates mass to a few broad tail states that contribute disproportionately to the mixture kurtosis, while at very high $K$ the same tail mass is split into many narrow states that contribute less each.
 The heavy-tailed CHMM-t and CHMM-L variants close most of this gap at the same $K = 18$ (see Table~\ref{tab:sensitivity_multi}).
 
-\paragraph{Wasserstein, Hellinger, and Coverage Are Monotonic.}
-$W_1$ improved monotonically from 0.119 ($K=3$) to 0.101 ($K=18$), Hellinger from 0.079 to 0.077, and Coverage was 100\% at every $K$.
-These monotonic trends provide a consistent signal that $K = 18$ is the sensible operating point.
+\paragraph{Wasserstein and Hellinger Improve Net Across the Sweep; Coverage is Saturated at 100\%.}
+$W_1$ improves from 0.119 ($K=3$) to 0.101 ($K=18$) and Hellinger from 0.079 to 0.077; both exhibit minor non-monotone oscillations of less than $0.005$ at intermediate $K$ (Table~\ref{tab:sensitivity}) but neither deteriorates from endpoint to endpoint.
+In-sample coverage is saturated at 100\% at every $K$, so it does not discriminate among state counts and serves only as a floor check.
+Together these provide a consistent signal that $K = 18$ is the sensible operating point.
 
 \subsection{Out-of-Sample Evaluation}
 \label{sec:oos}
