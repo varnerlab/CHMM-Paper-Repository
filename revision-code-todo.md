@@ -28,7 +28,7 @@ touching the relevant section):
 **Implementation.** `CHMM-Model/run_track_c3_filter_var.jl`. Log-space rescaled
 forward filter $\pi_t(k) = P(s_t = k \mid r_{1:t}, \hat\theta_{\text{IS}})$ +
 bisection-based mixture-quantile. Writes `results/track_c3/VaR_filter_LR_tests.txt`
-and `CHMM-paper/results/revision/M3_filter_var_backtest.csv`.
+and `CHMM-paper/results/robustness/filter_var_backtest.csv`.
 
 **Result (SPY OoS, $T_{\text{OoS}} = 572$, seed `20260422`).** All three
 emission families fail Kupiec at both $\alpha$ levels:
@@ -60,7 +60,7 @@ work needed.
 
 ### M8. Pre-OoS validation K-selection — **DONE (2026-04-24)**
 
-**Implementation.** `CHMM-Model/run_track_m8_k_selection.jl`. Estimation
+**Implementation.** `CHMM-Model/run_k_selection_validation.jl`. Estimation
 slice 2014-01-03 through 2021-12-31 ($n = 2{,}013$); validation slice
 2022-01-03 through 2024-01-03 ($n = 502$). Forward-algorithm held-out
 log-likelihood on the validation slice is the primary criterion; BIC /
@@ -82,11 +82,11 @@ referee's contamination concern is confirmed; $K = 18$ is kept as the
 main-panel operating point because the paper's contribution is the
 multi-metric evaluation (distributional + tail + VaR) rather than a pure
 likelihood-optimal single-emission fit; a reader optimising for held-out
-log-lik alone would pick $K = 3$. CSV at `M8_k_selection.csv`.
+log-lik alone would pick $K = 3$. CSV at `k_selection_validation.csv`.
 
 ### M4. Broaden empirical base — **PARTIAL DONE (2026-04-24); multi-index follow-up pending**
 
-**Implementation (done).** `CHMM-Model/run_track_m4_rolling_and_weekly.jl`
+**Implementation (done).** `CHMM-Model/run_rolling_and_weekly.jl`
 covers two of three M4 sub-asks on SPY (no new data fetch).
 
 1. **Rolling-origin OoS (sub-ask 2).** Five rolling windows with 8-year
@@ -96,12 +96,12 @@ covers two of three M4 sub-asks on SPY (no new data fetch).
    $\text{LR}_{\text{uc}}^{5\%} = 31$--$41$) because the rate-hike regime
    is a structural break outside the IS support; $2023$--$2026$ windows
    are in the $87$--$97\%$ OoS KS range consistent with the paper's
-   single-window claim. CSV at `M4_rolling_origin.csv`.
+   single-window claim. CSV at `rolling_origin_oos.csv`.
 2. **Weekly sampling frequency (sub-ask 3).** Five-day non-overlapping
    sum of daily log growth rates, $T_{\text{weekly}} = 503$, $K \in \{6,
    12\}$. All three emission families reach $98$--$99.6\%$ IS KS; CHMM-t
    at $K=6$ matches observed weekly kurtosis most closely. CSV at
-   `M4_weekly.csv`.
+   `weekly_frequency.csv`.
 
 **Paper integration (done).** New §sec:rolling\_and\_weekly in
 `sections/results.tex` with tables `tab:m4_rolling` and `tab:m4_weekly`;
@@ -143,13 +143,13 @@ grid-initialised Nelder-Mead style as the existing `_fit_garch11`:
    `src/MSGARCH.jl` via `fit_msgarch_k3`, with six off-diagonal logits
    for the transition-matrix rows.
 
-`run_track_m7_garch_suite.jl` fits all five new baselines plus the
+`run_garch_suite.jl` fits all five new baselines plus the
 existing GARCH(1,1) and MS-GARCH K=2 references, simulates $N_{\text{paths}}
 = 1{,}000$ IS and OoS paths, and scores the full panel (IS/OoS KS, AD,
 simulated kurtosis, ACF-MAE on $|r|$, Kupiec / Christoffersen VaR).
 
 **Result (SPY IS $= 2{,}516$, OoS $= 572$, seed `20260422`).** See
-`CHMM-paper/results/revision/M7_garch_suite.csv`. Headline rows:
+`CHMM-paper/results/robustness/garch_suite.csv`. Headline rows:
 GARCH-t $\hat\nu = 6.89$ reaches IS KS $57.3\%$, OoS KS $80.8\%$,
 kurtosis $15.13$; GJR-GARCH $\hat\gamma = 0.225$ quantifies leverage;
 MS-GARCH K=3 attains the best panel ACF-MAE ($0.0284$). HAR-RV is
@@ -177,7 +177,7 @@ and reported as an additional row in `tab:garch_suite`.
 
 ### M2. Block-bootstrap KS recalibration + mean p-value distribution — **DONE (2026-04-24)**
 
-**Implementation.** `CHMM-Model/run_track_m2_ks_bootstrap.jl`. Stationary
+**Implementation.** `CHMM-Model/run_ks_block_bootstrap.jl`. Stationary
 block bootstrap (Politis-Romano 1994) of the SPY IS at mean block
 lengths $L \in \{5, 10, 20\}$, $B = 1{,}000$ replications. Per
 generator (CHMM-N/-t/-L, GARCH(1,1), iid bootstrap): asymptotic pass
@@ -196,11 +196,11 @@ cross-generator gap that the binary pass rate exaggerates.
 **Paper integration.** New §sec:ks\_block\_bootstrap in
 `sections/baselines_appendix.tex` after the existing KS power
 calibration subsection, with Table~\ref{tab:m2_ks_bootstrap}. CSV at
-`M2_ks_bootstrap.csv`.
+`ks_block_bootstrap.csv`.
 
 ### M5. Christoffersen LR_ind bootstrap null at $n = 572$ — **DONE (2026-04-24)**
 
-**Implementation.** `CHMM-Model/run_track_m5_lr_ind_null.jl`. B = 10,000
+**Implementation.** `CHMM-Model/run_lr_ind_bootstrap_null.jl`. B = 10,000
 i.i.d. Bernoulli$(\alpha)$ breach sequences of length 572 at each $\alpha
 \in \{0.01, 0.05\}$; Christoffersen LR_ind computed on each; observed
 CHMM smoother and filter LR_ind statistics from M3 located within the
@@ -224,11 +224,11 @@ empirical null.
 **Paper integration.** New paragraph inside
 `sections/var_backtest.tex` §sec:conditional\_var with bootstrap
 quantiles, per-construction p-values, and the degeneracy caveat. CSV at
-`M5_lr_ind_null.csv`.
+`lr_ind_bootstrap_null.csv`.
 
 ### M6. Sub-ask (b): MC CI on the Kupiec gain — **DONE (2026-04-24)**
 
-**Implementation.** `CHMM-Model/run_track_m6_var_ci.jl` parametric-
+**Implementation.** `CHMM-Model/run_kupiec_mc_ci.jl` parametric-
 bootstraps LR_uc at $n = 572$, $\alpha = 0.05$ under each (model,
 observed breach rate $\hat p$) pair, $B = 10{,}000$.
 
@@ -242,7 +242,7 @@ suggests.
 
 **Paper integration.** New "MC confidence band on the Kupiec gain"
 paragraph in `sections/var_backtest.tex` §sm_ablation, immediately after
-the existing tab:sm_var. CSV at `M6_var_ci.csv`.
+the existing tab:sm_var. CSV at `kupiec_mc_ci.csv`.
 
 ### M6. Sub-ask (a): Yu 2010 explicit-duration MLE — **PENDING**
 
@@ -278,7 +278,7 @@ SM-aware filter VaR rows for `tab:conditional_var`.
 **Implementation.** New `CHMM-Model/src/SkewEmissions.jl` adds
 Fernandez-Steel skew-t and skew-Laplace log-densities, samplers, and a
 weighted-MLE fitter for the skew parameter $\gamma$ via golden-section
-on $\log \gamma$. `run_track_m9_skew_emissions.jl` runs two ablations:
+on $\log \gamma$. `run_skew_emissions_ablation.jl` runs two ablations:
 
 1. **K = 1 single-emission MLE:** symmetric t vs skew-t MLE on the full
    SPY IS. The skew $\gamma$ is fit by 1D MLE with $(\mu, \sigma, \nu)$
@@ -301,11 +301,11 @@ skewness.
 
 **Paper integration.** Limitations bullet in
 `sections/discussion.tex` rewritten to report the ablation. CSV at
-`M9_skew_emissions.csv`.
+`skew_emissions_ablation.csv`.
 
 ### M10. $\nu_k$ shrinkage via penalised ECM — **DONE (2026-04-24)**
 
-**Implementation.** `CHMM-Model/run_track_m10_nu_shrinkage.jl` implements
+**Implementation.** `CHMM-Model/run_nu_shrinkage_sweep.jl` implements
 the exponential shrinkage prior on $1/\nu_k$, corresponding to the
 penalised objective $Q_k^{\text{pen}}(\nu) = Q_k(\nu) - \lambda / \nu$
 maximised by the existing golden-section search. The penalty is threaded
@@ -342,7 +342,7 @@ concentration-constrained posterior).
 rewritten around the rate sweep; `sections/var_backtest.tex` §sec:conditional_var
 filter paragraph adds the shrinkage-does-not-rescue observation;
 `sections/algorithms_appendix.tex` adds the penalised objective as
-`eq:nu_pen`. CSV at `CHMM-paper/results/revision/M10_nu_shrinkage.csv`.
+`eq:nu_pen`. CSV at `CHMM-paper/results/robustness/nu_shrinkage_sweep.csv`.
 
 ---
 
@@ -350,29 +350,29 @@ filter paragraph adds the shrinkage-does-not-rescue observation;
 
 ### Minor 4. MMD bandwidth fix — **DONE (2026-04-24)**
 
-**Implementation.** `CHMM-Model/run_track_minor4_mmd_bandwidth.jl`
+**Implementation.** `CHMM-Model/run_mmd_fixed_bandwidth.jl`
 recomputes MMD across the M7 generator panel under a fixed $\gamma_{\text{obs}}$
 from observed 20-day windows. Legacy and fixed MMDs differ in the
 3rd-4th decimal; cross-generator ranking preserved.
 
 **Paper integration.** New paragraph in §sec:tier3\_robustness (`sections/baselines_appendix.tex`).
 
-**Output.** `minor4_mmd_bandwidth.csv`.
+**Output.** `mmd_fixed_bandwidth.csv`.
 
 ### Minor 6. $K_{\text{disc}} = 13$ centroid ablation — **DONE (2026-04-24)**
 
-**Implementation.** `CHMM-Model/run_track_minor6_kdisc13_centroid.jl`
+**Implementation.** `CHMM-Model/run_kdisc13_centroid_ablation.jl`
 fits Discrete NJ at $K_{\text{disc}} = 13$ with centroid emissions. IS KS
 $0.0\%$ vs Bin-T NJ's $95.4\%$ at the same bin count, cleanly isolating
 the within-bin emission-family contribution.
 
 **Paper integration.** New paragraph in §sec:tier3\_robustness.
 
-**Output.** `minor6_kdisc13_centroid.csv`.
+**Output.** `kdisc13_centroid_ablation.csv`.
 
 ### Minor 10. Multi-seed Monte Carlo — **DONE (2026-04-24)**
 
-**Implementation.** `CHMM-Model/run_track_minor10_multiseed.jl` re-runs
+**Implementation.** `CHMM-Model/run_multiseed_headline.jl` re-runs
 CHMM-N/-t/-L at K=18 across 10 alternative seeds. Seed-to-seed std:
 IS KS ±1.2-1.8%; OoS KS ±1.8-3.6%; CHMM-N kurt ±0.06; CHMM-t kurt ±1.95.
 Headline single-seed numbers sit comfortably within multi-seed bands.
@@ -380,27 +380,27 @@ Headline single-seed numbers sit comfortably within multi-seed bands.
 **Paper integration.** New paragraph + Table~\ref{tab:m10_multiseed} in
 §sec:tier3\_robustness.
 
-**Output.** `minor10_multiseed.csv`.
+**Output.** `multiseed_headline.csv`.
 
 ---
 
 ## Deliverable format (per item, when re-imported)
 
-Place every output CSV in `CHMM-paper/results/revision/` (create if it
-does not exist) with filenames matching the referee item:
+Place every output CSV in `CHMM-paper/results/robustness/` (create if it
+does not exist) with descriptive filenames:
 
-- `M3_filter_var_backtest.csv`
-- `M4_index_panel.csv`, `M4_rolling_origin.csv`, `M4_weekly.csv`
-- `M7_garch_suite.csv`
-- `M8_k_selection.csv`
-- `M2_ks_bootstrap.csv`
-- `M5_lr_ind_null.csv`
-- `M6_sm_mle.csv`
-- `M9_skew_emissions.csv`
-- `M10_nu_shrinkage.csv`
-- `minor4_mmd_bandwidth.csv`
-- `minor6_kdisc13_centroid.csv`
-- `minor10_multiseed.csv`
+- `filter_var_backtest.csv` (M3)
+- `index_panel.csv` (M4 multi-index, planned), `rolling_origin_oos.csv` (M4), `weekly_frequency.csv` (M4)
+- `garch_suite.csv` (M7)
+- `k_selection_validation.csv` (M8)
+- `ks_block_bootstrap.csv` (M2)
+- `lr_ind_bootstrap_null.csv` (M5)
+- `sm_mle.csv` (M6 sub-ask a, planned)
+- `skew_emissions_ablation.csv` (M9)
+- `nu_shrinkage_sweep.csv` (M10)
+- `mmd_fixed_bandwidth.csv` (Minor 4)
+- `kdisc13_centroid_ablation.csv` (Minor 6)
+- `multiseed_headline.csv` (Minor 10)
 
 When swapping numbers into LaTeX, remove every corresponding
 `\revtodo{...}` marker so the final build has zero `[TODO (revision):
