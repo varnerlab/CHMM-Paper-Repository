@@ -168,7 +168,7 @@ The heavier-than-Gaussian Laplace tail (excess kurtosis $3$ per component) provi
 We benchmark the CHMM against eight alternatives fitted on the same IS window.
 The \textit{i.i.d.\ bootstrap} samples $T$ returns uniformly with replacement, preserving the empirical marginal exactly and serving as the non-parametric distributional ceiling.
 The \textit{stationary block bootstrap} \cite{politis1994stationary} resamples blocks of expected length $b = 10$ trading days, preserving short-range volatility clustering while keeping the marginal empirical; it is a temporally-aware non-parametric ceiling.
-The \textit{Gaussian} i.i.d.\ generator draws $G_t \sim \mathcal{N}(\hat\mu, \hat\sigma^2)$ from the sample moments; the \textit{Laplace} i.i.d.\ generator draws $G_t \sim \text{Laplace}(\hat m, \hat b)$ from the sample median and mean-absolute deviation.
+The \textit{Gaussian} i.i.d.\ generator draws $G_t \sim \mathcal{N}(\hat\mu, \hat\sigma^2)$ from the sample moments; the \textit{Laplace} i.i.d.\ generator draws $G_t \sim \text{Laplace}(\hat m, \hat b)$ from the sample median and mean absolute deviation (MAD).
 \textit{GARCH(1,1)} \cite{bollerslev1986generalized} uses $G_t = \mu + \sigma_t z_t$, $\sigma_t^2 = \omega + \alpha(G_{t-1} - \mu)^2 + \beta \sigma_{t-1}^2$ with $z_t \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 1)$, fitted by Nelder--Mead maximum likelihood.
 \label{sec:discrete_hmm}%
 The \textit{discrete HMM} of \citet{alswaidan2026hybrid} is reproduced in both no-jump (NJ) and Poisson-jump (WJ) variants at the final SPY hyperparameters reported therein: returns are partitioned into $K_{\text{disc}} = 90$ quantile bins, transitions are estimated by frequency counting, and simulation returns bin centroids; the WJ variant additionally triggers, with probability $\epsilon = 5 \times 10^{-5}$, a forced residence in tail states for Poisson$(\lambda = 67)$ steps, matching the values of \citet{alswaidan2026hybrid}.
@@ -199,7 +199,7 @@ This is a deliberately reproducible first-pass design: no temporal convolutional
 
 \paragraph{Window-diffusion deep baseline.}
 \label{sec:diffusion_methods}%
-We add a DDPM-style window-diffusion baseline following \citet{ho2020denoising, rasul2021autoregressive}: a conditional denoising UNet trained to reverse a $T = 50$-step Gaussian noise schedule on standardised SPY return windows of length $W = 64$, with stitched-window generation at inference.
+We add a denoising diffusion probabilistic model (DDPM) style window-diffusion baseline following \citet{ho2020denoising, rasul2021autoregressive}: a conditional denoising UNet trained to reverse a $T = 50$-step Gaussian noise schedule on standardised SPY return windows of length $W = 64$, with stitched-window generation at inference.
 Training runs for $18$ epochs with final denoising loss $0.736$.
 Like the QuantGAN row, this is a first-pass reproducible design; it is the strongest deep-generative row on local $20$-day window distributional metrics and the second-strongest overall row on MMD after the flat CHMM-t, and it serves as a distributional stress test for the CHMM family in Section~\ref{sec:extended_evaluation}.
 
@@ -233,7 +233,7 @@ and simulate paths by drawing an independent market-factor path $G_{m,t}^{(p)}$ 
 The affine map distorts each non-market marginal and imposes a rank-one correlation structure.
 
 \paragraph{Copulas.}
-By Sklar's theorem \cite{sklar1959fonctions}, any joint CDF with continuous marginals $F_1, \dots, F_d$ factors as $H = C(F_1, \dots, F_d)$ for a unique copula $C : [0, 1]^d \to [0, 1]$; this lets us fix each marginal at the per-asset CHMM and estimate only $C$ from the cross-sectional co-movement.
+By Sklar's theorem \cite{sklar1959fonctions}, any joint cumulative distribution function (CDF) with continuous marginals $F_1, \dots, F_d$ factors as $H = C(F_1, \dots, F_d)$ for a unique copula $C : [0, 1]^d \to [0, 1]$; this lets us fix each marginal at the per-asset CHMM and estimate only $C$ from the cross-sectional co-movement.
 We use the nonparametric probability integral transform $u_{j, t} = \text{rank}(g_{j, t}) / (T + 1)$, estimate the copula correlation matrix $\Sigma$ by the analytic Kendall's-$\tau$ inversion $\rho_{ij} = \sin(\pi \tau_{ij} / 2)$ \cite{embrechts2002correlation, mcneil2015quantitative}, and project to the nearest positive semi-definite matrix when needed.
 For the Student-t copula \cite{demarta2005tcopula}, the degrees-of-freedom parameter $\nu$ is selected by profile maximum likelihood over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$.
 Cross-asset simulation follows the rank-reordering construction of \citet{iman1982distribution}: (i) draw $T$ independent paths from each per-asset CHMM, (ii) sample $T$ copula variates, and (iii) reorder each column of the CHMM matrix to match the ranks of the copula sample.

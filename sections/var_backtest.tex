@@ -66,7 +66,7 @@ Let $\mathrm{SM\text{-}CHMM\text{-}}F$ denote the semi-Markov extension of the c
 \paragraph{Plug-in estimator and per-state sojourn family selection.}
 We fit the SM variants with the plug-in estimator: given the flat CHMM transition matrix and emission parameters, we (i) decode the most-likely state sequence under Viterbi, (ii) extract the empirical run-length distribution for each state, and (iii) fit one of a negative-binomial, geometric, or discrete truncated Pareto to each state's run-lengths by AIC, after which the SM generator samples sojourn times from the fitted family.
 The AIC-selected family per state is reported in Table~\ref{tab:sm_sojourn}: for all three emission families, $17$ of the $18$ states select a Pareto sojourn and $1$ selects a negative binomial.
-This is consistent with preliminary results we report for the CBOE Volatility Index in a companion paper in preparation \citep{alswaidan2026smchmm}, where Pareto sojourns dominated on daily log-$\mathrm{VIX}$: the heavy-tailed sojourn pattern is not specific to vol-index series but holds on equity returns at moderate state resolution.
+This is consistent with preliminary results we report for the Chicago Board Options Exchange (CBOE) Volatility Index (VIX) in a companion paper in preparation \citep{alswaidan2026smchmm}, where Pareto sojourns dominated on daily log-$\mathrm{VIX}$: the heavy-tailed sojourn pattern is not specific to vol-index series but holds on equity returns at moderate state resolution.
 
 \begin{table}[t]
 \centering

@@ -233,7 +233,7 @@ CHMM-N ($K = 18$)& 93.8  & 84.2  & 86.6  & 77.9  & 4.99    & 4.51    & 0.0507 & 
 
 \begin{table}[t]
 \centering
-\caption{\textbf{Expanded GARCH-family baseline panel on SPY} (revision response to referee M7). Five additional conditional-volatility baselines fit on the same IS window used in Table~\ref{tab:model_comparison}: EGARCH(1,1) and GJR-GARCH(1,1) Gaussian (asymmetric leverage), GARCH(1,1) Student-t (heavy-tailed competitor to CHMM-t), HAR-RV on daily squared returns (long-memory volatility), and Markov-switching GARCH at $K = 3$ (extending the two-regime MS-GARCH already in Table~\ref{tab:extended_metrics}). Numbers are re-run under the revision seed \texttt{20260422} with $N_{\text{paths}} = 1{,}000$; the panel is reported alongside, not replacing, Table~\ref{tab:model_comparison}. FIGARCH is deferred to a follow-up pass (see \texttt{revision-code-todo.md}).}
+\caption{\textbf{Expanded GARCH-family baseline panel on SPY} (revision response to referee M7). Five additional conditional-volatility baselines fit on the same IS window used in Table~\ref{tab:model_comparison}: exponential GARCH (EGARCH(1,1)) and Glosten-Jagannathan-Runkle GARCH (GJR-GARCH(1,1)) Gaussian (asymmetric leverage), GARCH(1,1) Student-t (heavy-tailed competitor to CHMM-t), heterogeneous autoregressive realised volatility (HAR-RV) on daily squared returns (long-memory volatility), and Markov-switching GARCH at $K = 3$ (extending the two-regime MS-GARCH already in Table~\ref{tab:extended_metrics}). Numbers are re-run under the revision seed \texttt{20260422} with $N_{\text{paths}} = 1{,}000$; the panel is reported alongside, not replacing, Table~\ref{tab:model_comparison}. FIGARCH is deferred to a follow-up pass (see \texttt{revision-code-todo.md}).}
 \label{tab:garch_suite}
 \small
 \begin{tabular}{l cc cc c c cc cc}
@@ -317,7 +317,7 @@ We add seven axes that probe joint window distributions, path geometry, learned 
 All rows are computed at \NPaths{1{,}000} simulated paths on both the \TIS{2{,}516} and \TOoS{572} SPY windows under the seed policy of Section~\ref{sec:metrics}; the headline panel is Table~\ref{tab:extended_metrics} below, with the per-generator detail panels for leverage, aggregational kurtosis, and joint $p$-value coverage (Tables~\ref{tab:leverage}, \ref{tab:agg_kurt}, \ref{tab:sim_pvalues}) deferred to Appendix~\ref{sec:extended_eval_detail}.
 
 \paragraph{MMD (RBF kernel, 20-day windows).}
-We compute empirical $\text{MMD}^2$ \citep{gretton2012kernel} between $500$ observed and $500$ simulated $20$-day windows with median-heuristic bandwidth.
+We compute empirical $\text{MMD}^2$ \citep{gretton2012kernel} between $500$ observed and $500$ simulated $20$-day windows under a Gaussian radial basis function (RBF) kernel with median-heuristic bandwidth.
 Flat CHMM-t wins IS ($2.0 \times 10^{-5}$, an order of magnitude ahead of any other row).
 GARCH's IS $\text{MMD}^2$ is displayed as $0.0$ because it falls below the table's three-significant-digit precision ($<10^{-4}$) when the median-heuristic bandwidth widens to accommodate GARCH's overdispersed windows; the OoS comparison ($\text{GARCH} = 7.5 \times 10^{-4}$ vs.\ CHMM-N $6.1 \times 10^{-4}$) is not affected by the bandwidth collapse and resolves the ordering.
 
@@ -606,8 +606,8 @@ The preceding subsections evaluated CHMM in \emph{return} space.
 For the practitioner the downstream object of interest is often the \emph{price} path itself (Monte Carlo P\&L, terminal-value stress, trading-rule backtests), so we report a price-level evaluation that ties the return-based fits to observed equity price trajectories over the OoS window.
 
 \paragraph{Setup.}
-For each of the six main-study tickers (SPY, NVDA, JNJ, JPM, AAPL, QQQ) we re-train the three CHMM families at $K = 18$ on the full IS window and simulate $n_{\text{paths}} = 500$ price paths of length $T_{\text{OoS}} = 572$ days, converting simulated returns to prices via $\widetilde P_t = \widetilde P_{t-1} \cdot \exp((\widetilde G_t + r_f)\,\Delta t)$ with $\Delta t = 1/252$, $r_f = 0$, and $S_0$ the last IS VWAP.
-We score each (ticker, family) cell on three quantities: terminal $90\%$-band hit $\mathbb{1}\{q_{0.05} \le P^{\text{obs}}_T \le q_{0.95}\}$; horizon-average band coverage $\overline{C}_{0.90} = T_{\text{OoS}}^{-1} \sum_t \mathbb{1}\{q_{0.05}(t) \le P^{\text{obs}}_t \le q_{0.95}(t)\}$; and the bias-corrected sample CRPS of \citet{gneiting2007strictly}, normalised by $S_0$ for cross-ticker comparability.
+For each of the six main-study tickers (SPY, NVDA, JNJ, JPM, AAPL, QQQ) we re-train the three CHMM families at $K = 18$ on the full IS window and simulate $n_{\text{paths}} = 500$ price paths of length $T_{\text{OoS}} = 572$ days, converting simulated returns to prices via $\widetilde P_t = \widetilde P_{t-1} \cdot \exp((\widetilde G_t + r_f)\,\Delta t)$ with $\Delta t = 1/252$, $r_f = 0$, and $S_0$ the last IS volume-weighted average price (VWAP).
+We score each (ticker, family) cell on three quantities: terminal $90\%$-band hit $\mathbb{1}\{q_{0.05} \le P^{\text{obs}}_T \le q_{0.95}\}$; horizon-average band coverage $\overline{C}_{0.90} = T_{\text{OoS}}^{-1} \sum_t \mathbb{1}\{q_{0.05}(t) \le P^{\text{obs}}_t \le q_{0.95}(t)\}$; and the bias-corrected sample continuous ranked probability score (CRPS) of \citet{gneiting2007strictly}, normalised by $S_0$ for cross-ticker comparability.
 
 \paragraph{Headline results.}
 Table~\ref{tab:price_sim_oos} reports the CHMM-N column for each ticker; per-family detail (CHMM-t, CHMM-L) and full path-level metrics are in Appendix~\ref{sec:price_sim_oos_appendix} (Table~\ref{tab:price_sim_path_metrics}).
