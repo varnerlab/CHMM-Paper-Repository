@@ -1,0 +1,2 @@
+model,K_disc,IS_KS_pct,OoS_KS_pct,IS_AD_pct,OoS_AD_pct,sim_kurt,ACF_MAE
+Discrete NJ centroid,13,0.0,35.4,0.0,63.4,0.632,0.05964

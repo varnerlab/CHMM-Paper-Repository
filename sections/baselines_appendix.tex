@@ -22,6 +22,63 @@ Gaussian$(\hat\mu_{\text{IS}}, \hat\sigma_{\text{IS}})$ at length $T_{\text{IS}}
 
 The $90.0\%$ "nearly correct" rate is the practical ceiling for the CHMM OoS KS pass rates reported in Section~\ref{sec:oos} ($80$--$84\%$); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
 
+\subsection{Block-Bootstrap KS Recalibration and Mean p-value Distribution (Revision Response to M2)}
+\label{sec:ks_block_bootstrap}
+
+Referee comment M2 raised two complementary concerns about the headline IS KS pass-rate metric: (i) the asymptotic two-sample KS test assumes i.i.d. samples, but the simulated paths from CHMM, GARCH, and discrete HMMs all carry volatility clustering, so the asymptotic null distribution may not apply; and (ii) the binary "pass / fail at $\alpha = 0.05$" reduces a continuous p-value to a one-bit summary. Table~\ref{tab:m2_ks_bootstrap} reports two recalibrations addressing each concern.
+
+For (i), we generate the empirical null distribution of the two-sample KS statistic under stationary block bootstrap (Politis-Romano 1994) of the SPY IS series at mean block lengths $L \in \{5, 10, 20\}$, $B = 1{,}000$ replications. The resulting $95\%$ block-bootstrap critical values are $0.0306$, $0.0338$, and $0.0350$ respectively, all \emph{smaller} than the asymptotic critical value $1.36 \sqrt{2/n_{\text{IS}}} = 0.0383$; the block-bootstrap test is therefore stricter than the asymptotic one because it accounts for the within-window dependence in the IS series itself. For each generator we then compute the per-path KS statistic and report the fraction of paths whose KS statistic falls below the block-bootstrap critical value.
+
+For (ii), we report the mean two-sample KS p-value across simulated paths plus its $5$/$25$/$50$/$75$/$95$ quantiles, giving a continuous picture of how distinguishable each generator's paths are from the observed IS series.
+
+\begin{table}[t]
+\centering
+\small
+\caption{\textbf{Block-bootstrap KS recalibration and p-value distribution} (revision response to M2). All numbers under seed \texttt{20260422} with $N_{\text{paths}} = 500$. ``asymp pass'' is the original Section~\ref{sec:model_comparison} metric (two-sample KS p-value $\geq 0.05$). ``mean pv'' is the mean two-sample KS p-value across paths, with $q_5$ and $q_{95}$ as the lower / upper p-value quantiles. ``blkL\%'' is the fraction of paths whose KS statistic falls below the stationary-block-bootstrap $95\%$ critical value at mean block length $L$. Block-bootstrap critical values: $0.0306$ ($L = 5$), $0.0338$ ($L = 10$), $0.0350$ ($L = 20$); asymptotic critical value $0.0383$. CSV at \texttt{results/revision/M2\_ks\_bootstrap.csv}.}
+\label{tab:m2_ks_bootstrap}
+\begin{tabular}{l c c c c c c c}
+\toprule
+Generator & asymp pass\% $\uparrow$ & mean pv $\uparrow$ & pv $q_{05}$ & pv $q_{95}$ & blk5\% $\uparrow$ & blk10\% $\uparrow$ & blk20\% $\uparrow$ \\
+\midrule
+i.i.d.\ bootstrap & $99.8$ & $0.812$ & $0.371$ & $0.999$ & $98.2$ & $99.0$ & $99.6$ \\
+GARCH(1,1)        & $25.4$ & $0.042$ & $0.000$ & $0.201$ & $\mathbf{5.6}$ & $\mathbf{11.2}$ & $\mathbf{16.2}$ \\
+CHMM-N            & $94.8$ & $0.546$ & $0.047$ & $0.976$ & $81.2$ & $89.4$ & $91.6$ \\
+\textbf{CHMM-t}   & $\mathbf{95.8}$ & $\mathbf{0.571}$ & $0.059$ & $0.987$ & $\mathbf{82.4}$ & $89.2$ & $91.6$ \\
+CHMM-L            & $94.8$ & $0.498$ & $0.048$ & $0.948$ & $81.0$ & $88.2$ & $90.0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two patterns emerge that the asymptotic pass-rate metric of the main panel does not surface. First, the cross-generator ordering on the mean p-value scale (bootstrap $0.81$, CHMM-t $0.57$, CHMM-N $0.55$, CHMM-L $0.50$, GARCH $0.04$) is much more compressed for CHMM-vs-bootstrap than the $94.8$--$99.8\%$ asymp pass rates suggest: the CHMM family lands at mean p-value $\sim 0.5$, the natural value for paths that are statistically indistinguishable from the observed series. Second, GARCH(1,1)'s drop from $25.4\%$ asymp $\to$ $5.6$--$16.2\%$ block-aware confirms the referee's concern: the asymptotic test is mildly lenient on volatility-clustering generators with the wrong marginal, and the block-aware test catches GARCH's misspecification more sharply. The CHMM family, by contrast, sees only a small block-bootstrap penalty ($94.8\% \to 88$--$92\%$), indicating that its asymptotic-test passes are not a clustering-induced artefact.
+
+\subsection{Tier-3 Robustness Checks (Revision Response to Minors 4, 6, 10)}
+\label{sec:tier3_robustness}
+
+\paragraph{Minor 4 — Fixed observed-sample MMD bandwidth.}
+The original Section~\ref{sec:extended_evaluation} computes MMD with median-heuristic bandwidth on the pooled (observed + simulated) window matrix, so the kernel scale $\gamma$ varies with the generator under evaluation. We refit MMD across the full M7 generator panel under a single bandwidth $\gamma_{\text{obs}}$ computed once on $500$ observed standardised $20$-day windows from SPY IS. The legacy and fixed MMDs differ only in the third or fourth decimal across all ten generators in our reproduction (full numbers in \texttt{results/revision/minor4\_mmd\_bandwidth.csv}); the cross-generator ranking under the fixed bandwidth is preserved. The bandwidth-heuristic concern flagged by the referee is therefore real in principle but small in practice for this panel.
+
+\paragraph{Minor 6 — $K_{\text{disc}} = 13$ centroid ablation.}
+The Bin-T NJ row of Table~\ref{tab:model_comparison} changes both the bin count ($K_{\text{disc}} = 90 \to 13$) and the emission family (centroid $\to$ bin-conditional Student-t). To isolate the bin-count effect we add a parallel $K_{\text{disc}} = 13$ row with the standard centroid emissions: IS KS $0.0\%$, OoS KS $35.4\%$, IS AD $0.0\%$, OoS AD $63.4\%$, simulated IS excess kurtosis $0.63$, ACF-MAE $0.0596$. At $K_{\text{disc}} = 13$, centroid emissions cannot tile the SPY IS distribution at all (IS KS collapses to zero); the Bin-T NJ row's IS KS of $95.4\%$ at the same bin count is therefore driven by the within-bin Student-t emissions, not by the bin count. The within-bin tail mass is the dominant contributor to that row's calibration. CSV at \texttt{results/revision/minor6\_kdisc13\_centroid.csv}.
+
+\paragraph{Minor 10 — Multi-seed Monte Carlo on headline metrics.}
+The paper reports headline statistics under a single global seed. We re-run the CHMM-N / -t / -L pipeline at $K = 18$ across ten alternative global seeds (base $20260422$, increment $100$) with $N_{\text{paths}} = 250$ per seed and report mean $\pm$ std for the headline metrics in Table~\ref{tab:m10_multiseed}. Seed-to-seed variability is small: IS KS std is $1.2$--$1.8\%$; OoS KS std is $1.8$--$3.6\%$; simulated IS kurtosis std is $0.06$ for CHMM-N, $0.05$ for CHMM-L, and $1.95$ for CHMM-t (reflecting the well-known instability of the per-state $\nu_k$ ECM at moderate $K$, already discussed in Section~\ref{sec:discussion}). Kupiec $\text{LR}_{\text{uc}}^{1\%}$ has std up to $1.25$ for CHMM-N because the breach count moves on a coarse $0$--$10$ grid at $T_{\text{OoS}} = 572$. The single-seed headline numbers in Table~\ref{tab:model_comparison} (e.g., CHMM-N IS KS $93.8\%$, simulated kurt $4.99$) sit comfortably inside the multi-seed bands. CSV at \texttt{results/revision/minor10\_multiseed.csv}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Multi-seed Monte Carlo on headline metrics} (revision response to Minor 10). Ten global seeds; $N_{\text{paths}} = 250$ per seed (reduced from the headline panel's $1{,}000$ for tractability across $30$ fits, so the seed-to-seed std reported here is an upper bound on the std the headline panel would show at $N_{\text{paths}} = 1{,}000$).}
+\label{tab:m10_multiseed}
+\begin{tabular}{l c c c c c c}
+\toprule
+Model & IS KS \% & OoS KS \% & sim Kurt & ACF-MAE & $\text{LR}_{\text{uc}}^{1\%}$ & $\text{LR}_{\text{uc}}^{5\%}$ \\
+\midrule
+CHMM-N & $94.7 \pm 1.2$ & $82.6 \pm 1.8$ & $5.03 \pm 0.06$ & $0.0467 \pm 0.0006$ & $2.12 \pm 1.25$ & $3.83 \pm 0.00$ \\
+CHMM-t & $94.6 \pm 1.2$ & $85.6 \pm 1.9$ & $13.95 \pm 1.95$ & $0.0518 \pm 0.0003$ & $0.54 \pm 0.15$ & $3.19 \pm 0.34$ \\
+CHMM-L & $94.4 \pm 1.8$ & $80.8 \pm 3.6$ & $6.71 \pm 0.05$ & $0.0537 \pm 0.0003$ & $3.26 \pm 0.00$ & $2.71 \pm 0.59$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Walk-Forward Rolling-Window Re-Estimation (Pipeline~A)}
 \label{sec:walk_forward}
 
@@ -274,5 +331,42 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
 \caption{QQQ OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
 \label{fig:price_fan_qqq_appendix}
 \end{figure}
+
+\subsection{Expanded GARCH-Family Baselines (Revision Response to M7)}
+\label{sec:m7_baselines}
+
+The revision adds five conditional-volatility baselines to the single GARCH(1,1) Gaussian row of Table~\ref{tab:model_comparison} and the two-regime MS-GARCH row of Table~\ref{tab:extended_metrics}. All are fit by grid-initialised Nelder-Mead maximum likelihood on the SPY IS window ($T_{\text{IS}} = 2{,}516$); simulation follows the same recursion used in estimation. Full results are in Table~\ref{tab:garch_suite}; model specifications are below.
+
+\paragraph{EGARCH(1,1) Gaussian.}
+The exponential GARCH of \citet{nelson1991conditional} evolves $\log \sigma_t^2$ in levels:
+\begin{equation}
+    \log \sigma_t^2 = \omega + \beta \log \sigma_{t-1}^2 + \alpha \left(|z_{t-1}| - \sqrt{2/\pi}\right) + \gamma z_{t-1},
+    \qquad z_t = (r_t - \mu) / \sigma_t,\ \ z_t \sim \mathcal{N}(0,1).
+\end{equation}
+The log-variance formulation removes the GARCH positivity constraints, and the leverage term $\gamma z_{t-1}$ captures the asymmetric response to negative returns.
+
+\paragraph{GJR-GARCH(1,1) Gaussian.}
+The threshold GARCH of \citet{glosten1993relation} / \citet{zakoian1994threshold} augments GARCH(1,1) with an indicator on negative innovations:
+\begin{equation}
+    \sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \gamma \varepsilon_{t-1}^2 \mathbf{1}\{\varepsilon_{t-1} < 0\} + \beta \sigma_{t-1}^2,
+\end{equation}
+with $\varepsilon_t = r_t - \mu$. Stationarity requires $\alpha + \beta + \gamma/2 < 1$; positive $\gamma$ indicates leverage.
+
+\paragraph{GARCH(1,1) Student-t innovations.}
+A direct tail-aware competitor to CHMM-t: the GARCH(1,1) variance recursion is unchanged, but innovations follow a standardised Student-t with $\nu > 2$ degrees of freedom rescaled to unit variance. The log-likelihood uses the Student-t density:
+\begin{equation}
+    r_t - \mu = \sigma_t \cdot z_t, \qquad z_t = \eta_t \sqrt{(\nu - 2)/\nu}, \qquad \eta_t \sim t_\nu.
+\end{equation}
+The fitted $\hat\nu = 6.89$ on SPY IS sits inside the moderate-tail regime the equity-risk literature typically reports.
+
+\paragraph{HAR-RV on daily squared returns.}
+The heterogeneous-autoregressive model of \citet{corsi2009simple} models realised variance as a mixture of daily, weekly, and monthly components:
+\begin{equation}
+    \log \text{RV}_t = \beta_0 + \beta_d \log \text{RV}_{t-1} + \beta_w \log \overline{\text{RV}}_{t-5:t-1} + \beta_m \log \overline{\text{RV}}_{t-22:t-1} + \eta_t.
+\end{equation}
+In the absence of intraday bars we use daily squared demeaned returns as the RV proxy; simulation samples $\eta_t \sim \mathcal{N}(0, \hat\sigma_\eta^2)$ and rolls forward the recursion, then draws $r_t - \mu = \sqrt{\text{RV}_t}\, z_t$ with $z_t \sim \mathcal{N}(0, 1)$.
+
+\paragraph{MS-GARCH $K = 3$.}
+The three-regime extension of the Markov-switching GARCH(1,1) in Section~\ref{sec:msgarch_methods}. Parameter layout is three regime triples $(\omega_k, \alpha_k, \beta_k)$ plus six transition-matrix logits (softmax-normalised per row, enforcing a non-trivial diagonal); fit by grid-initialised Nelder-Mead as in the $K = 2$ case. States are canonicalised by ascending unconditional variance, producing the calm / medium / stress decomposition $\sigma = [0.10, 1.77, 10.04]$ on SPY IS.
 
 

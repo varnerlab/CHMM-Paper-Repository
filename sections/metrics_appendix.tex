@@ -48,7 +48,10 @@ The fraction of 99 equally-spaced observed quantiles (1st through 99th percentil
 A coverage of 100\% indicates that the simulation envelope fully brackets the observed distribution at every percentile.
 
 \paragraph{Cross-asset metrics.}
-For the cross-asset extension we additionally track the mean Frobenius norm $\|\hat\Sigma_{\text{sim}}^{(p)} - \hat\Sigma_{\text{obs}}\|_F$ and the off-diagonal Pearson correlation MAE between simulated and observed return matrices, averaged over paths.
+For the cross-asset extension we additionally track the mean Frobenius norm $\|\hat\Sigma_{\text{sim}}^{(p)} - \hat\Sigma_{\text{obs}}\|_F$ and the off-diagonal Pearson correlation MAE between simulated and observed return matrices, averaged over paths. The off-diagonal MAE is averaged over the $d(d-1)/2$ unique upper-triangular entries of the symmetric correlation matrix (so $15$ entries for the six-asset cross-section of Section~\ref{sec:cross_asset}), not double-counted across both triangles:
+\begin{equation*}
+    \text{MAE}_{\text{off-diag}} \;=\; \frac{1}{P}\sum_{p=1}^{P} \frac{2}{d(d-1)} \sum_{1 \leq i < j \leq d} \left| \hat\Sigma^{(p)}_{\text{sim},\,ij} - \hat\Sigma_{\text{obs},\,ij} \right|.
+\end{equation*}
 
 \subsection{Extended Evaluation: Detail Panels}
 \label{sec:extended_eval_detail}

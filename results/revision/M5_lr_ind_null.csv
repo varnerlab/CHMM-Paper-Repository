@@ -1,0 +1,17 @@
+alpha,q50,q90,q95,q99,empirical_size_at_3_84,frac_zero_lr,zero_breach_count,one_breach_count
+0.01,0.1274,0.3565,1.6462,4.7415,0.0207,0.0035,35,174
+0.05,0.5207,3.1048,3.8019,5.5796,0.042,0.0,0,0
+
+alpha,construction,observed_LR,bootstrap_pvalue
+0.01,CHMM-L filter (forward),0.0,1.0
+0.01,CHMM-L smoother (Viterbi),0.01,0.9787
+0.01,CHMM-N filter (forward),0.0,1.0
+0.01,CHMM-N smoother (Viterbi),5.73,0.0026
+0.01,CHMM-t filter (forward),0.0,1.0
+0.01,CHMM-t smoother (Viterbi),0.09,0.5188
+0.05,CHMM-L filter (forward),9.95,0.0005
+0.05,CHMM-L smoother (Viterbi),2.25,0.2098
+0.05,CHMM-N filter (forward),2.81,0.1282
+0.05,CHMM-N smoother (Viterbi),1.39,0.3402
+0.05,CHMM-t filter (forward),8.74,0.0015
+0.05,CHMM-t smoother (Viterbi),0.19,0.6673

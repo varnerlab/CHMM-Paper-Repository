@@ -147,7 +147,7 @@ in Section~\ref{sec:estimation}.
 \node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
 
 \end{tikzpicture}
-\caption{\textbf{CHMM architecture and training loop.} \textsc{Top}: a $K$-state latent Markov chain with transition matrix $\mathbf{T} \in \mathbb{R}^{K \times K}$ (entries $T_{ij} = \Pr(s_{t+1} = j \mid s_t = i)$) generates the regime sequence $s_t$; each $s_t$ conditionally emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}(\cdot; \boldsymbol\theta_{s_t})$. \textsc{Bottom left}: the three CHMM variants share everything except the emission family --- Gaussian (CHMM-N), Student-t with per-state degrees of freedom $\nu_k$ (CHMM-t), or Laplace (CHMM-L). \textsc{Bottom right}: joint estimation of $(\mathbf{T}, \{\boldsymbol\theta_k\}, \boldsymbol\pi)$ alternates an E-step (log-space forward--backward on $\gamma_t(k), \xi_t(i,j)$) and a family-specific M-step until the log-likelihood change falls below $10^{-4}$ or $\mathrm{max\_iter} = 60$. The emission-family swap is the only architectural difference across the three variants in this paper.}
+\caption{\textbf{CHMM architecture and training loop.} \textsc{Top}: a $K$-state latent Markov chain with transition matrix $\mathbf{T} \in \mathbb{R}^{K \times K}$ (entries $T_{ij} = \Pr(s_{t+1} = j \mid s_t = i)$) generates the regime sequence $s_t$; each $s_t$ conditionally emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}(\cdot; \boldsymbol\theta_{s_t})$. \textsc{Bottom left}: the three CHMM variants share everything except the emission family, namely Gaussian (CHMM-N), Student-t with per-state degrees of freedom $\nu_k$ (CHMM-t), or Laplace (CHMM-L). \textsc{Bottom right}: joint estimation of $(\mathbf{T}, \{\boldsymbol\theta_k\}, \boldsymbol\pi)$ alternates an E-step (log-space forward--backward on $\gamma_t(k), \xi_t(i,j)$) and a family-specific M-step until the log-likelihood change falls below $10^{-4}$ or $\mathrm{max\_iter} = 60$. The emission-family swap is the only architectural difference across the three variants in this paper.}
 \label{fig:chmm_architecture}
 \end{figure}
 
@@ -205,7 +205,7 @@ Like the QuantGAN row, this is a first-pass reproducible design; it is the stron
 
 \paragraph{MS-GARCH variance-regime baseline.}
 \label{sec:msgarch_methods}%
-We add a two-regime Markov-switching GARCH(1,1) baseline in the sense of \citet{haas2004new}.
+We add a two-regime Markov-switching GARCH(1,1) baseline in the sense of \citet{haas2004new}; the MLE behaviour of Markov-switching parametric models is discussed in \citet{psaradakis1998finite} and \citet{augustyniak2014maximum}, and the moment structure of Markov-switching models in \citet{timmermann2000moments}.
 The observable evolves as $G_t = \mu + \sigma_t z_t$ with a regime-specific variance recursion $\sigma_t^2(k) = \omega_k + \alpha_k (G_{t-1} - \mu)^2 + \beta_k \sigma_{t-1}^2(k)$, where $k \in \{1, 2\}$ is a hidden regime with transition matrix $P = \{p_{ij}\}$.
 We use the path-independent HMP 2004 recursion with a Hamilton filter for the regime likelihood and fit the eight parameters $(\mu, \omega_{1:2}, \alpha_{1:2}, \beta_{1:2}, p_{11}, p_{22})$ by Nelder-Mead maximum likelihood on the IS SPY window.
 The fitted calm regime has unconditional $\sigma \approx 0.97$ and expected sojourn $\sim 12$ days ($p_{11} = 0.914$); the stress regime has unconditional $\sigma \approx 12.67$ and expected sojourn $\sim 2$ days ($p_{22} = 0.547$).

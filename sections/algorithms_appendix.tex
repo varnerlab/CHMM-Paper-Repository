@@ -41,6 +41,12 @@ so that conditional on $\nu_k$ the location and scale admit closed-form weighted
 \end{equation}
 The degrees-of-freedom parameter $\nu_k$ is then refined by a one-dimensional golden-section search on the per-state $Q$-function $Q_k(\nu) = \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k)$ over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$.
 This two-block ECM preserves the monotonicity of the standard EM guarantee.
+In the revision we extend this M-step with an optional exponential shrinkage prior on $1/\nu_k$, corresponding to the penalised objective
+\begin{equation}
+    Q_k^{\text{pen}}(\nu) \;=\; \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k) \;-\; \lambda \, / \, \nu,
+    \label{eq:nu_pen}
+\end{equation}
+maximised by the same golden-section search ($\lambda = 0$ recovers the unpenalised \citet{peel2000robust, liu1995ml} ECM; the rate sweep and its effect on simulated IS kurtosis are in Section~\ref{sec:discussion}).
 
 \paragraph{CHMM-L M-step (closed-form weighted Laplace MLE).}
 For Laplace emissions $b_k(x) = \tfrac{1}{2 b_k} \exp(-|x - \mu_k|/b_k)$ the weighted-MLE estimators are available in closed form:
