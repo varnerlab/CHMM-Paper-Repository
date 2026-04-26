@@ -71,6 +71,19 @@ Let $\boldsymbol\pi \in [0,1]^K$ be a probability vector, $F_1, \ldots, F_K$ per
 \label{sec:supp_cross_asset}
 \input{sections/cross_asset_appendix}
 
+\subsection{Filter-Based Regime-Conditional VaR: Open Question}
+\label{sec:supp_filter_var}
+
+The body of Section~\ref{sec:filter_var_note} flags the failure of the regime-conditional filter-VaR rule and defers the operational detail here.
+
+\paragraph{Construction.} Under the IS-fitted parameters $\hat\theta$, the forward filter posterior is $\pi_t(k) = \Prob(s_t = k \mid r_{1:t}, \hat\theta)$. The one-step-ahead predictive density at time $t$ is the mixture $f_{r_{t+1} \mid r_{1:t}}(x) = \sum_k \pi_t(k) \, f_k(x; \hat\theta)$, and the filter-based regime-conditional VaR at level $\alpha$ is the mixture quantile $\widehat{\text{VaR}}_t(\alpha) = F^{-1}_{\sum_k \pi_t(k) F_k}(\alpha)$.
+
+\paragraph{Failure-rate breakdown on the $2024$--$2026$ OoS window.} For the headline $K = 18$ fits the realised breach rates (target in parentheses) are: CHMM-N $0.18\%$ ($1\%$) and $1.22\%$ ($5\%$); CHMM-t $0.18\%$ ($1\%$) and $1.40\%$ ($5\%$); CHMM-L $0.18\%$ ($1\%$) and $1.22\%$ ($5\%$). All six (model, level) cells reject Kupiec at the $5\%$ significance threshold. The rule is systematically over-conservative.
+
+\paragraph{Mechanism.} Proposition~\ref{prop:filter_var} above gives the structural mixture-quantile inequality: when the filter places non-trivial posterior mass on at least one heavy-tailed tail-state $k^*$ and the bulk states have $F_k(q^*) < \alpha$ at the tail-state quantile $q^* = F_{k^*}^{-1}(\alpha)$, the mixture quantile satisfies $F^{-1}(\alpha) \le \min_k F_k^{-1}(\alpha)$, with strict inequality whenever the precondition holds.
+
+\paragraph{Candidate remedies (left to future work).} Three classes of fix have been considered without resolution. (i) A concentration constraint on the filter posterior, e.g.\ floor $\pi_t(k) \ge \pi_{\min}$ on the bulk modes only, biases the mixture quantile back toward the bulk. (ii) An explicit state-conditional variance overlay that re-scales the per-state emissions by a posterior-conditional volatility factor. (iii) Rolling re-estimation of $\hat\theta$ on a moving window so the IS-fitted state library tracks the OoS regime, partially defeating the over-conservatism by widening the active state mix. None of the three is reported as a working operational rule in the present paper.
+
 \subsection{Pre-OoS Validation $K$-Selection, Walk-Forward Summary, and $\nu_k$ Diagnostics}
 \label{sec:supp_misc}
 

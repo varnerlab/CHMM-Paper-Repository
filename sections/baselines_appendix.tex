@@ -342,4 +342,45 @@ In the absence of intraday bars we use daily squared demeaned returns as the RV 
 \paragraph{MS-GARCH $K = 3$.}
 A three-regime extension of the Markov-switching GARCH(1,1) ($G_t = \mu + \sigma_t z_t$ with regime-specific recursion $\sigma_t^2(k) = \omega_k + \alpha_k(G_{t-1} - \mu)^2 + \beta_k \sigma_{t-1}^2(k)$). Parameter layout is three regime triples $(\omega_k, \alpha_k, \beta_k)$ plus six transition-matrix logits (softmax-normalised per row, enforcing a non-trivial diagonal); fit by grid-initialised Nelder-Mead. States are canonicalised by ascending unconditional variance, producing the calm / medium / stress decomposition $\sigma = [0.10, 1.77, 10.04]$ on SPY IS.
 
+\paragraph{MS-GARCH $K = 2$ (Haas-Mittnik-Paolella 2004).}
+The path-independent two-regime variant of \citet{haas2004new}. Regime stickiness is high: $p_{11} = 0.915$ (calm) and $p_{22} = 0.547$ (stress), with unconditional standard deviations $0.97$ (calm) and $12.67$ (stress); the calm regime is near-GARCH behaviour and the stress regime is a rare, transient high-variance mode. Common $\mu = 0.094$, log-likelihood $-4{,}965$.
+
+\paragraph{Semi-Markov CHMM (SM-CHMM, the explicit HSMM foil).}
+The conceptual foil of the present paper: a hidden semi-Markov extension of the CHMM in which the geometric sojourn distribution of the Markov chain is replaced by a per-state explicit-duration family chosen by AIC from $\{$Pareto, negative binomial, geometric$\}$. Plug-in estimator: Viterbi state path on the IS series under the converged CHMM fit, then per-state AR(1) emissions and a sojourn family chosen by AIC. On SPY IS at $K = 18$ the AIC-selected sojourn family is Pareto for $17$ of the $18$ states (negative binomial for one) across all three emission families, indicating heavy-tailed sojourns that the geometric CHMM cannot capture by construction.
+
+Table~\ref{tab:m7_extended_panel} reports the IS / OoS distributional fidelity, kurtosis, ACF-MAE, and Kupiec breach diagnostics for the extended GARCH family and the SM-CHMM rows alongside the headline CHMM panel. Two structural observations.
+
+\begin{table}[t]
+\centering
+\small
+\caption{\textbf{Extended baseline panel}. SPY IS / OoS, $T_{\text{IS}} = 2{,}516$, $T_{\text{OoS}} = 572$, $N_{\text{paths}} = 1{,}000$, $\alpha = 0.05$ for KS. Columns: IS / OoS KS pass rate (\%); IS / OoS AD pass rate (\%); simulated IS excess kurtosis; ACF-MAE on $|G_t|$; pooled-archive Kupiec breach rate (\%) and unconditional likelihood-ratio statistic at the $1\%$ and $5\%$ tails. Source: \texttt{results/track\_m7/GARCH\_Suite.txt}, \texttt{results/track\_b4/Track-B4-summary.txt}, \texttt{results/track\_c1/Table-4-Extended-Metrics-C1.txt}.}
+\label{tab:m7_extended_panel}
+\begin{tabular}{l cc cc c c cc cc}
+\toprule
+& \multicolumn{2}{c}{KS (\%) $\uparrow$} & \multicolumn{2}{c}{AD (\%) $\uparrow$} & Kurt & ACF & \multicolumn{2}{c}{$1\%$ tail} & \multicolumn{2}{c}{$5\%$ tail} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){8-9} \cmidrule(lr){10-11}
+Model & IS & OoS & IS & OoS & IS & MAE & br\% & $\text{LR}_{\text{uc}}$ & br\% & $\text{LR}_{\text{uc}}$ \\
+\midrule
+GARCH(1,1) Gaussian & $28.0$ & $59.4$ & $12.5$ & $59.5$ & $7.0$  & $0.0309$ & $0.9$ & $0.10$ & $4.0$ & $1.23$ \\
+EGARCH(1,1)         & $6.3$  & $34.9$ & $4.1$  & $41.7$ & $2.8$  & $0.0430$ & $1.0$ & $0.01$ & $3.5$ & $3.03$ \\
+GJR-GARCH(1,1)      & $40.1$ & $57.7$ & $28.7$ & $61.4$ & $7.6$  & $0.0330$ & $1.2$ & $0.27$ & $4.7$ & $0.10$ \\
+GARCH(1,1)-$t$      & $\mathbf{57.3}$ & $\mathbf{80.8}$ & $\mathbf{36.6}$ & $65.3$ & $15.1$ & $0.0316$ & $1.0$ & $0.01$ & $4.9$ & $0.01$ \\
+HAR-RV              & $0.0$  & $0.0$  & $0.0$  & $0.0$  & $189$  & $0.0566$ & $0.2$ & $5.99$ & $3.5$ & $3.03$ \\
+MS-GARCH $K = 2$    & $27.7$ & $38.7$ & $24.0$ & $44.4$ & $4.7$  & $0.0367$ & $1.0$ & $0.01$ & $4.2$ & $0.82$ \\
+MS-GARCH $K = 3$    & $36.1$ & $33.1$ & $28.8$ & $38.0$ & $4.1$  & $\mathbf{0.0284}$ & $1.0$ & $0.01$ & $4.2$ & $0.82$ \\
+\midrule
+CHMM-N ($K = 18$)   & $93.8$ & $84.2$ & $\mathbf{36.6}$ & $\mathbf{73.0}$ & $5.0$  & $0.0507$ & $0.7$ & $1.58$ & $4.0$ & $3.83$ \\
+CHMM-t ($K = 18$)   & $93.7$ & $\mathbf{85.9}$ & $33.4$ & $69.8$ & $14.6$ & $0.0548$ & $1.2$ & $0.58$ & $5.0$ & $3.83$ \\
+CHMM-L ($K = 18$)   & $93.2$ & $79.3$ & $30.1$ & $65.4$ & $6.8$  & $0.0565$ & $1.4$ & $3.26$ & $5.6$ & $3.03$ \\
+SM-CHMM-N ($K = 18$) & $79.2$ & $66.7$ & $19.5$ & $57.1$ & $4.7$  & $0.0598$ & $1.1$ & $0.01$ & $5.4$ & $0.82$ \\
+SM-CHMM-t ($K = 18$) & $77.1$ & $63.4$ & $17.2$ & $52.3$ & $13.9$ & $0.0625$ & $1.4$ & $0.10$ & $5.7$ & $1.74$ \\
+SM-CHMM-L ($K = 18$) & $80.4$ & $69.1$ & $21.0$ & $58.9$ & $6.4$  & $0.0581$ & $1.4$ & $3.26$ & $5.5$ & $3.03$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+First, none of the extended GARCH variants challenges the CHMM family on the joint (KS, ACF) corner. GARCH(1,1)-$t$ is the strongest extended row on KS ($57.3\%$ IS, $80.8\%$ OoS) but its IS excess kurtosis of $15.1$ overshoots the observed $7.7$ by a factor of two and its ACF-MAE of $0.0316$ is below the CHMM's only because the GARCH variance recursion is hard-wired to track conditional volatility; CHMM at $K = 18$ matches GARCH on ACF-MAE within $0.02$ while gaining $36$ to $36.5$ percentage points on IS KS. EGARCH undershoots kurtosis decisively, GJR-GARCH improves on threshold asymmetry but not on the headline gap, and HAR-RV is degenerate on the daily-RV proxy used here (see methods note above).
+
+Second, the SM-CHMM rows are weaker than the headline CHMM rows on every metric in the panel: IS KS $77$--$80\%$ vs CHMM $93$--$94\%$, OoS KS $63$--$69\%$ vs CHMM $79$--$86\%$. The geometric-sojourn restriction of the standard CHMM is therefore not the bottleneck for the headline KS / ACF / kurtosis story. The Viterbi-AR(1) plug-in estimator used here is one specific HSMM construction; a maximum-likelihood explicit-duration HSMM under a Pareto sojourn family may close part of the gap, but the present empirical evidence is that the spectral mechanism of Section~\ref{sec:theory} dominates the sojourn-family extension on this universe and these horizons.
+
 

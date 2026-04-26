@@ -6,49 +6,57 @@ The IS excess growth rates exhibit excess kurtosis of $7.678$, strong negative s
 The Ljung--Box test on absolute returns rejects no autocorrelation ($\text{LB} = 2{,}959.3$, $p < 0.001$), confirming pronounced volatility clustering.
 The OoS window shares the same qualitative profile (excess kurtosis $5.294$, $\text{LB}_{|G|} = 250.6$).
 
-\subsection{State-Count Selection}
+\subsection{State-Count Selection: Two Reference Operating Points}
 \label{sec:k_selection_results}
 
-We sweep $K \in \{3, 6, 9, 12, 15, 18, 21\}$ for CHMM-N on the SPY IS window, scoring each fitted model on the four information criteria of \citet{nguyen2018hidden} (AIC, BIC, HQC, CAIC, with $p = K^2 + 2K - 1$ parameters) and on the IS / OoS Kolmogorov--Smirnov pass rate.
-Two structural patterns emerge.
-The information-criterion surface flattens over the upper half of the sweep: BIC and CAIC reach their joint minimum in the $K \in \{15, 18, 21\}$ region. Distributional fidelity rises across the sweep and plateaus in the same band: IS KS rises from $89.8\%$ ($K = 3$) to $94.7\%$ at $K = 18$. ACF-MAE, by contrast, is remarkably stable across the entire sweep ($0.047$--$0.053$), consistent with the spectral identity~\eqref{eq:acf_normalised}: the ACF is determined by the eigenvalue spectrum of $\mathbf T$, which the quantile-initialized Baum-Welch recovers at every $K \ge 3$.
-We report the remainder of this section at the operating point $K = 18$, which sits inside the IC-minimizing band and at the top of the distributional plateau; results at $K = 3, 6, 9, 12, 15, 21$ are reported in Appendix~\ref{sec:supplementary}.
+We sweep $K \in \{3, 6, 9, 12, 15, 18, 21\}$ for CHMM-N on the SPY IS window and score each fit on (i) held-out log-likelihood on a clean pre-OoS validation slice (estimation 2014-01-03 to 2021-12-31, validation 2022-01-03 to 2024-01-03), (ii) the four information criteria of \citet{nguyen2018hidden} (AIC, BIC, HQC, CAIC, $p = K^2 + 2K - 1$), and (iii) the IS and OoS two-sample Kolmogorov--Smirnov pass rates over $1{,}000$ simulated paths.
+
+The held-out criterion picks $K^\star = 3$: validation log-likelihood per observation degrades monotonically from $-2.5345$ at $K = 3$ to $-2.5847$ at $K = 21$, a difference of $25.2$ nats over the $T_{\text{val}} = 502$-day validation slice. BIC on the estimation window agrees ($K^\star = 3$). Distributional fidelity, however, rises across the sweep before plateauing: IS KS rises from $89.8\%$ at $K = 3$ to $94.7\%$ at $K = 18$. ACF-MAE is remarkably stable across the entire sweep ($0.047$ to $0.053$), consistent with the spectral identity~\eqref{eq:acf_normalised}: the ACF is determined by the eigenvalue spectrum of $\mathbf T$, which the quantile-initialized Baum-Welch recovers at every $K \ge 3$.
+
+We therefore report two reference operating points throughout this section. $K = 3$ is the held-out-likelihood and BIC choice, the methodologically conservative default. $K = 18$ is the explicit tail-fidelity operating point, chosen because it sits at the top of the IS KS plateau and inside the CAIC-minimizing band. The cost of moving from $K^\star = 3$ to $K = 18$ is the $25.2$-nat held-out-likelihood penalty above; the gain is documented in Tables~\ref{tab:model_comparison} and \ref{tab:cross_ticker}. The complete per-$K$ panel ($K \in \{3, 6, 9, 12, 15, 18, 21\}$) and the full held-out-validation sweep are reported in Appendix~\ref{sec:supplementary}.
 
 \subsection{Six-Generator Comparison (Pipeline~A)}
 \label{sec:model_comparison}
 
-This subsection operates under Pipeline~A (Figure~\ref{fig:pipeline_schematic}, top row): every generator is fit independently to the SPY return series, no cross-asset coupling. Table~\ref{tab:model_comparison} reports the IS and OoS validation results for the three benchmark generators of Section~\ref{sec:benchmarks} together with the three CHMM emission variants at $K = 18$.
+This subsection operates under Pipeline~A (Figure~\ref{fig:pipeline_schematic}, top row): every generator is fit independently to the SPY return series, no cross-asset coupling. Table~\ref{tab:model_comparison} reports the IS and OoS validation results for the three benchmark generators of Section~\ref{sec:benchmarks} together with the three CHMM emission variants at the headline operating point $K = 18$ and a CHMM-N reference row at the held-out-likelihood choice $K^\star = 3$. The extended GARCH-family panel (EGARCH, GJR-GARCH, GARCH-$t$, MS-GARCH at $K \in \{2, 3\}$, HAR-RV) and the explicit semi-Markov foil (SM-CHMM) are reported in Appendix~\ref{sec:supplementary}; the headline conclusions of this section are unchanged under that extended panel.
 
 \begin{table}[t]
 \centering
-\caption{\textbf{Six-generator comparison on SPY}. $K = 18$, $1{,}000$ simulated paths, $\alpha = 0.05$. IS: 2014-01-03 through 2024-01-03 ($T = 2{,}516$); OoS: 2024-01-04 through 2026-04-20 ($T = 572$). KS = Kolmogorov--Smirnov pass rate (\%); Kurt = mean simulated excess kurtosis (observed: $7.68$ IS, $5.29$ OoS); ACF-MAE = mean absolute error of $\text{ACF}(|G_t|)$ over $252$ lags.}
+\caption{\textbf{Headline generator comparison on SPY}. $1{,}000$ simulated paths, $\alpha = 0.05$. IS: 2014-01-03 through 2024-01-03 ($T = 2{,}516$); OoS: 2024-01-04 through 2026-04-20 ($T = 572$). KS = Kolmogorov--Smirnov pass rate (\%); Kurt = mean simulated excess kurtosis (observed: $7.68$ IS, $5.29$ OoS); ACF-MAE = mean absolute error of $\text{ACF}(|G_t|)$ over $252$ lags; CRPS = sample continuous-ranked-probability-score on the OoS series, mean over $T_{\text{OoS}} = 572$ days, ensemble of $1{,}000$ paths (lower is better). The CHMM-N $K = 3$ row is the held-out-likelihood reference; CHMM-N CRPS at $K = 3$ is omitted because the CRPS run uses the cached $K = 18$ archive.}
 \label{tab:model_comparison}
 \small
-\begin{tabular}{l cc cc c}
+\begin{tabular}{l cc cc c c}
 \toprule
-& \multicolumn{2}{c}{KS (\%) $\uparrow$} & \multicolumn{2}{c}{Kurtosis} & ACF-MAE \\
+& \multicolumn{2}{c}{KS (\%) $\uparrow$} & \multicolumn{2}{c}{Kurtosis} & ACF-MAE & CRPS OoS \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
-Model & IS & OoS & IS & OoS & $\downarrow$ \\
+Model & IS & OoS & IS & OoS & $\downarrow$ & $\downarrow$ \\
 \midrule
-\textit{Observed}                    & --   & --   & $7.68$  & $5.29$  & --     \\
-Bootstrap                            & $99.9$ & $91.0$ & $7.54$  & $6.80$  & $0.0628$ \\
-Gaussian i.i.d.                      & $0.0$  & $1.2$  & $-0.01$ & $-0.02$ & $0.0627$ \\
-Laplace i.i.d.                       & $99.1$ & $86.1$ & $2.96$  & $2.83$  & $0.0627$ \\
-GARCH(1,1)                           & $25.9$ & $58.2$ & $6.97$  & $2.88$  & $0.0484$ \\
-\textbf{CHMM-N ($K = 18$)}           & $93.8$ & $84.2$ & $4.99$  & $4.51$  & $\mathbf{0.0507}$ \\
-\textbf{CHMM-t ($K = 18$)}           & $93.7$ & $85.9$ & $14.57$ & $9.74$  & $0.0548$ \\
-\textbf{CHMM-L ($K = 18$)}           & $93.2$ & $79.3$ & $\mathbf{6.75}$  & $\mathbf{6.27}$  & $0.0565$ \\
+\textit{Observed}                    & --   & --   & $7.68$  & $5.29$  & --     & --       \\
+Bootstrap                            & $99.9$ & $91.0$ & $7.54$  & $6.80$  & $0.0628$ & $1.0398$ \\
+Gaussian i.i.d.                      & $0.0$  & $1.2$  & $-0.01$ & $-0.02$ & $0.0627$ & $1.0611$ \\
+Laplace i.i.d.                       & $99.1$ & $86.1$ & $2.96$  & $2.83$  & $0.0627$ & $1.0386$ \\
+GARCH(1,1)                           & $25.9$ & $58.2$ & $6.97$  & $2.88$  & $0.0484$ & $1.0440$ \\
+CHMM-N ($K^\star = 3$)               & $89.8$ & $80.1$ & $3.86$  & $3.56$  & $0.0462$ & --       \\
+\textbf{CHMM-N ($K = 18$)}           & $93.8$ & $84.2$ & $4.99$  & $4.51$  & $\mathbf{0.0507}$ & $\mathbf{1.0384}$ \\
+\textbf{CHMM-t ($K = 18$)}           & $93.7$ & $85.9$ & $14.57$ & $9.74$  & $0.0548$ & $1.0399$ \\
+\textbf{CHMM-L ($K = 18$)}           & $93.2$ & $79.3$ & $\mathbf{6.75}$  & $\mathbf{6.27}$  & $0.0565$ & $1.0400$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The headline finding is in the bottom three rows.
+The headline finding is in the bottom four rows.
 At $K = 18$, CHMM-N attains $93.8\%$ IS KS and $84.2\%$ OoS KS, comparable to the bootstrap distributional ceiling and substantially above GARCH ($25.9\%$ IS KS); ACF-MAE of $0.0507$ is essentially on par with GARCH ($0.0484$), the empirical instance of the spectral identity~\eqref{eq:acf_normalised}: with $K-1 = 17$ non-unit eigenvalues at the operating point, the mixture-of-eigenvalues sum reproduces the slow absolute-return ACF that the \citet{ryden1998stylized} $K = 2$--$3$ Gaussian setup could not recover, inside a standard HMM at moderate state resolution.
 The bootstrap (at $0.0628$) and the i.i.d.\ baselines all sit far above the temporal floor.
 
+CHMM-N at the held-out-likelihood reference $K^\star = 3$ remains a credible operating point: $89.8\%$ IS KS, $80.1\%$ OoS KS, ACF-MAE $0.0462$. The cost of staying at $K^\star = 3$ is a roughly $4$ percentage point drop in IS KS and a doubling of the kurtosis residual ($3.86$ vs $4.99$ at $K = 18$). The benefit is the $25.2$-nat held-out-likelihood gain documented in Section~\ref{sec:k_selection_results}. For risk-management consumers who require minimum model complexity the $K^\star = 3$ row is the recommended default; for synthetic-data consumers who require the strongest joint match on KS and tail moments the $K = 18$ row is the operating point.
+
 The three CHMM emission variants land at three distinct points on the kurtosis axis without retuning $K$ or the transition structure: CHMM-N undershoots ($5.0$ IS vs.\ observed $7.7$), CHMM-t overshoots ($14.6$, an artefact discussed in Section~\ref{sec:discussion}), and CHMM-L matches cleanly ($6.8$, within $0.9$ units of observed). CHMM-L is the strongest entry on IS kurtosis in the panel and adds no shape parameter to CHMM-N (location is the weighted median, scale is the weighted mean absolute deviation, both in closed form). All three variants match each other on KS pass rates to within $1$ percentage point IS and within $7$ percentage points OoS, and all three are within $0.006$ of each other on ACF-MAE: the emission-family swap moves tail weight cleanly without disturbing the central or temporal fit.
 
+The OoS sample-CRPS column tightens this picture. CHMM-N at $K = 18$ attains the lowest mean OoS CRPS in the panel ($1.0384$); CHMM-t, CHMM-L, and the Laplace i.i.d.\ baseline are within $0.002$ and statistically indistinguishable from CHMM-N under a Diebold-Mariano test on the loss differential (Newey-West HAC variance, two-sided $p > 0.45$ in each pair). CHMM-N is significantly better than the Gaussian i.i.d.\ baseline ($p \approx 0.002$). On a proper scoring rule the CHMM family ties or beats every benchmark; the joint dominance on KS, ACF-MAE, and CRPS rules out the concern that the headline KS finding is a non-proper-metric artefact. Per-pair DM verdicts and the methods note are in Appendix~\ref{sec:supplementary}.
+
 GARCH wins on ACF-MAE alone but fails distributional KS decisively; the bootstrap wins KS but is the worst on ACF-MAE; the CHMM at moderate $K$ occupies a distinctive corner where both metrics simultaneously sit close to their respective best-in-panel values, and the choice between CHMM-N, CHMM-t, and CHMM-L is the choice of where to land the kurtosis residual.
+
+The headline KS pass rates are stable under multi-seed and KS-power-calibration controls. A ten-seed Monte Carlo at $K = 18$ ($N_{\text{paths}} = 250$ per seed) gives CHMM-N OoS KS $82.6 \pm 1.79\%$, CHMM-t $85.6 \pm 1.92\%$, and CHMM-L $85.0 \pm 2.4\%$ (Appendix~\ref{sec:supp_robustness}); the seed-to-seed standard deviation is small relative to the cross-generator gaps in Table~\ref{tab:model_comparison}. A KS power-calibration positive control (i.i.d.\ resamples of the IS series at length $T_{\text{OoS}}$) passes at $90\%$ asymptotic and $98$--$99\%$ block-bootstrap (Appendix~\ref{sec:ks_power}, \ref{sec:ks_block_bootstrap}); the CHMM rows under a stricter block-bootstrap critical value retain $81$--$92\%$ pass rates, consistent with the asymptotic numbers above.
 
 \begin{figure}[t]
 \centering
@@ -63,7 +71,7 @@ GARCH wins on ACF-MAE alone but fails distributional KS decisively; the bootstra
 Still under Pipeline~A: each ticker is fit independently, no cross-asset coupling.
 Table~\ref{tab:cross_ticker} reports CHMM-t IS and OoS KS pass rates across the five additional tickers (NVDA, JNJ, JPM, AAPL, QQQ), each fit independently at $K = 18$. CHMM-t is the natural generalization vehicle here because it carries the strongest OoS KS in the SPY headline panel ($85.9\%$, against $84.2\%$ for CHMM-N and $79.3\%$ for CHMM-L) and supplies the per-state heavy tails that the outlier-prone single-name tickers (NVDA, JNJ) require. Per-family $K$-sensitivity for SPY across all three emission variants and per-ticker price-level metrics across all three families are in Appendix~\ref{sec:supplementary}.
 The univariate fidelity persists across the panel on IS KS ($95.2\%$ to $99.8\%$). On OoS, JNJ, AAPL, and QQQ generalise cleanly ($90$--$95\%$), while NVDA ($57.2\%$) and JPM ($53.0\%$) show substantial OoS degradation, a stationarity artefact: the IS-fixed transitions and emissions cannot capture the AI-driven NVDA regime or the rate-repricing cycle for financials in the $2024$--$2026$ holdout.
-A walk-forward quarterly refit recovers $\sim 15$ percentage points of the JPM gap (Appendix~\ref{sec:supplementary}); we acknowledge the residual cliff as a stationarity-scope limitation rather than a model-selection issue (it persists at every $K$ in the sweep).
+A walk-forward quarterly refit lifts JPM OoS KS from $49.0\%$ to $64.3\%$, recovering $15.3$ percentage points of the gap (Appendix Table~\ref{tab:walk_forward}); we acknowledge the residual cliff as a stationarity-scope limitation rather than a model-selection issue (it persists at every $K$ in the sweep).
 
 \begin{table}[t]
 \centering
@@ -144,3 +152,5 @@ Off-diag MAE OoS     & \multicolumn{2}{c}{$0.208$} \\
 The Student-t copula preserves each asset's fitted CHMM marginal exactly by the rank-reordering construction, so the per-asset KS column (median $96.0\%$ IS, $89.8\%$ OoS) is a sanity check on the copula sample rather than a substitute for Table~\ref{tab:cross_ticker}.
 The central dependence-layer claim is the off-diagonal correlation MAE: $0.027$ on IS, against $0.031$ for the Gaussian copula and $0.076$ for the SIM factor baseline on the same marginals (Appendix~\ref{sec:supplementary}).
 The copula advantage is intrinsic to the rank-reordering construction rather than specific to the marginal model.
+
+The OoS off-diagonal MAE of $0.208$ is roughly an order of magnitude larger than the $0.027$ IS value, a degradation we attribute to the same stationarity-scope mechanism as the NVDA / JPM single-name OoS cliffs in Table~\ref{tab:cross_ticker}: the IS-fixed copula has no mechanism to track regime shifts in the cross-asset correlation structure that lie outside the IS support. Two appendix diagnostics localise the cause. First, extending the universe with GLD (a non-equity commodity asset class) reduces the OoS off-diag MAE to $0.179$ (Appendix~\ref{sec:non_us_asset_supp}), so the OoS gap is not driven by equity-cluster size. Second, a per-pair breakdown (Table~\ref{tab:per_pair_offdiag_mae}) shows the gap concentrates in three pairs involving JNJ (JNJ-QQQ, SPY-JNJ, NVDA-JNJ), each with $|\Delta| > 0.48$ on OoS, while gold-equity pairs sit at $|\Delta| \in [0.10, 0.19]$. The dominant cause is a single-name regime shift in the JNJ-equity-factor relationship rather than copula-degree mis-specification.

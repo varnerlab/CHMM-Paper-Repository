@@ -120,6 +120,17 @@ CHMM-t      & $0.872$ & $0.000$ & $0.000$ & $0.196$ & $0.228$ & $0.324$ & $0.661
 \end{tabular}
 \end{table}
 
+\subsection{Continuous Ranked Probability Score and Diebold-Mariano}
+\label{sec:crps_methods}
+
+The OoS CRPS column of Table~\ref{tab:model_comparison} reports a proper-scoring-rule complement to the KS pass rate. We use the unbiased sample CRPS estimator: for an ensemble of $N$ simulated paths $\{x_i\}_{i=1}^N$ at time $t$ and observed value $y_t$,
+\begin{equation}
+    \widehat{\text{CRPS}}_t = \frac{1}{N} \sum_{i=1}^N |x_i - y_t| - \frac{1}{N(N-1)} \sum_{1 \le i < j \le N} |x_i - x_j|.
+\end{equation}
+The double sum is computed in $O(N \log N)$ via the sorted-ensemble identity $\sum_{i<j} (x_{(j)} - x_{(i)}) = \sum_i x_{(i)} (2i - N - 1)$. The ensemble at each $t$ is the cross-section of the $N = 1{,}000$ unconditional simulated paths used throughout Section~\ref{sec:results}; this yields a marginal-predictive CRPS suitable for an unconditional generative-fidelity assessment, distinct from the conditional one-step-ahead CRPS used in forecasting.
+
+For pairwise comparison we report a Diebold-Mariano test on the per-$t$ loss differential $d_t = \widehat{\text{CRPS}}_t^A - \widehat{\text{CRPS}}_t^B$ with a Newey-West HAC variance under a Bartlett kernel and bandwidth $h = \lfloor T_{\text{OoS}}^{1/3} \rfloor = 8$. Two-sided $p$-values are reported under the standard-normal null. The full pairwise table (CHMM-N, CHMM-t, CHMM-L each as the reference row against every other generator in Table~\ref{tab:model_comparison}) is in \texttt{results/track\_m11/CRPS\_DM.txt}; the body claim of Section~\ref{sec:model_comparison} is the headline reading of that table: CHMM ties or beats every benchmark on mean OoS CRPS, with Gaussian i.i.d.\ the only significantly worse comparator.
+
 \subsection{VaR / ES Envelope Visualization (Companion to Table~\ref{tab:var_es})}
 \label{sec:var_es_supp}
 
