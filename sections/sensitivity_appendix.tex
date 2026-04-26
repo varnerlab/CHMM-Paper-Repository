@@ -1,15 +1,3 @@
-\subsection{Empirical Stylized-Fact Visualization}
-\label{sec:stylized_facts_supp}
-
-Figure~\ref{fig:stylized_facts} visualizes the stylized facts of SPY daily excess growth rates summarised in Section~\ref{sec:descriptive} of the main text.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts.pdf}
-\caption{Empirical stylized facts of SPY daily excess growth rates (IS, 2014-01-03 through 2024-01-03). Panel~(a): leptokurtic marginal distribution with Gaussian and Laplace fits. Panel~(b): normal Q-Q plot confirming heavy tails. Panel~(c): near-zero autocorrelation of raw returns. Panel~(d): persistent autocorrelation of absolute returns characterizing volatility clustering.}
-\label{fig:stylized_facts}
-\end{figure}
-
 \subsection{Full State-Resolution Sensitivity Table}
 \label{sec:sensitivity_table}
 
@@ -117,109 +105,6 @@ The monotonic increase confirms that the quantile-based initialization provided 
 \label{fig:convergence_all}
 \end{figure}
 
-\subsection{Emission Distributions Across State Resolutions}
-
-Since the CHMM eliminates the jump mechanism and grid search, the key structural variable is the number of hidden states $K$.
-Figure~\ref{fig:emissions_all} compares the learned emission distributions for $K \in \{3, 6, 12, 18\}$, illustrating how increasing state resolution refines the decomposition of the observed return distribution.
-
-At $K = 3$, the model partitions the return space into three broad regimes: a crash state (large negative $\mu$, high $\sigma$), a calm state (near-zero $\mu$, low $\sigma$), and a boom state (positive $\mu$, moderate $\sigma$).
-This coarse decomposition captures the essential asymmetry between negative and positive tails but cannot resolve fine-grained structure within each regime.
-
-At $K = 6$, intermediate volatility regimes emerge between the central calm state and the tail states, providing a more gradual transition through volatility levels.
-
-At $K = 12$--$18$, the emission distributions form a dense coverage of the return space, with each state capturing a narrow band of returns.
-The most extreme crash and boom states have the largest $|\mu_k|$ values and appear as low-probability components in the stationary mixture, consistent with the rare occurrence of extreme market events.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K3.pdf}
-    \caption{$K = 3$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K6.pdf}
-    \caption{$K = 6$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K12.pdf}
-    \caption{$K = 12$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18.pdf}
-    \caption{$K = 18$ (selected)}
-\end{subfigure}
-\caption{Learned CHMM-N (Gaussian) emission distributions at different state resolutions, overlaid on the observed SPY IS return histogram (Pipeline~A). Higher $K$ values produce finer decomposition with dedicated states capturing tail behavior.}
-\label{fig:emissions_all}
-\end{figure}
-
-\subsection{Transition Matrix Structure}
-
-Figure~\ref{fig:transition_all} shows the learned transition matrices for $K = 6$ and $K = 18$ in log$_{10}$ color scale.
-Both matrices exhibit a dominant near-diagonal band, reflecting the tendency of the market to remain in its current regime.
-Off-diagonal entries decay with distance from the diagonal, indicating that large regime jumps (for example, from a deep crash state directly to a boom state) are rare but nonzero.
-
-The diagonal dominance is critical for the ACF-MAE result discussed in Section~\ref{sec:discussion}: the self-transition probabilities $T_{kk}$ for central states are typically 0.7--0.95, producing mean sojourn times of 3--20 days.
-The mixture of these geometric sojourn times across states produces the sum-of-exponentials ACF profile that approximates the observed slow decay.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K6.pdf}
-    \caption{$K = 6$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18.pdf}
-    \caption{$K = 18$ (selected)}
-\end{subfigure}
-\caption{Learned CHMM-N transition matrices for the SPY IS fit (Pipeline~A) at $K = 6$ and $K = 18$ in log$_{10}$ color scale. The near-diagonal band reflects regime persistence; off-diagonal entries decay with distance, indicating that large regime transitions are rare.}
-\label{fig:transition_all}
-\end{figure}
-
-\subsection{Stationary Distributions and Residence Times}
-
-Figure~\ref{fig:stationary_all} shows the stationary distributions $\bar{\boldsymbol{\pi}}$ for $K = 6$ and $K = 18$.
-In both cases, the central states (those with $\mu_k$ near zero and moderate $\sigma_k$) receive the highest stationary probability, consistent with the empirical concentration of returns near zero.
-Tail states (crash and boom) receive low stationary probability, consistent with the rarity of extreme events.
-
-Figure~\ref{fig:residence_all} shows the natural residence times $\tau_k = 1/(1 - T_{kk})$ per state for $K = 6$ and $K = 18$.
-Under pure Markov dynamics (no jump mechanism), the expected duration in state $k$ before transitioning is $\tau_k$ steps.
-Central states exhibit the longest residence times (5--20 days), while tail states have shorter residence times (1--3 days), consistent with the transient nature of extreme market events.
-Notably, the tail states at higher $K$ maintain sufficient self-transition probability ($T_{kk} \approx 0.3$--$0.5$) to produce multi-day tail episodes, the empirical correlate of the spectral mechanism in Section~\ref{sec:theory}.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Stationary-Distribution-K6.pdf}
-    \caption{$K = 6$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Stationary-Distribution-K18.pdf}
-    \caption{$K = 18$}
-\end{subfigure}
-\caption{Stationary distributions $\bar{\boldsymbol{\pi}}$ for the SPY CHMM-N IS fit (Pipeline~A) at $K = 6$ and $K = 18$. Central states receive the highest stationary probability, consistent with the concentration of returns near zero.}
-\label{fig:stationary_all}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K6.pdf}
-    \caption{$K = 6$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18.pdf}
-    \caption{$K = 18$}
-\end{subfigure}
-\caption{Natural residence times $\tau_k = 1/(1 - T_{kk})$ per state for the SPY CHMM-N IS fit (Pipeline~A) at $K = 6$ and $K = 18$. Central states have the longest residence times (5--20 days), while tail states are shorter-lived (1--3 days). This asymmetry drives volatility clustering.}
-\label{fig:residence_all}
-\end{figure}
-
 \subsection{IS Comparison at Non-Selected State Resolutions}
 \label{sec:k_sweep_panels}
 
@@ -290,32 +175,11 @@ As with the IS panels, $K = 9$ and $K = 15$ are omitted; numerical OoS KS pass r
 \label{fig:k_sweep_oos_k21}
 \end{figure}
 
-\subsection{Example Simulated Trajectories (Illustrative, IS-Fitted CHMM-N)}
-
-Figure~\ref{fig:trajectories} shows example simulated return trajectories from the SPY CHMM-N at $K = 6$ and $K = 18$, illustrating the qualitative dynamics produced by the model.
-Each panel overlays one unconditional simulated path (blue; the sampled-path index is labelled in the figure legend) against the first $500$ trading days of the observed IS SPY excess growth-rate series (red).
-The two lines do not need to agree pointwise (simulated and observed hidden-state sequences are drawn independently); the intended read is qualitative, showing that both trajectories exhibit the characteristic pattern of financial returns: extended periods of low volatility punctuated by clusters of large-magnitude events.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Trajectory-Example-K6.pdf}
-    \caption{$K = 6$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Trajectory-Example-K18.pdf}
-    \caption{$K = 18$ (selected)}
-\end{subfigure}
-\caption{Example simulated return trajectories from the SPY CHMM-N (Pipeline~A, IS fit, first $500$ simulated steps). Blue: one unconditional simulated path (index labelled in the figure legend); red: first $500$ trading days of the observed IS SPY excess growth rate series. The alternation between calm (central states) and volatile (tail states) periods produces the volatility clustering characteristic of empirical financial returns. This figure is qualitative: simulated and observed state sequences are independent, so point-by-point agreement is not expected.}
-\label{fig:trajectories}
-\end{figure}
-
 \subsection{Multi-Emission Figures at $K = 18$}
 \label{sec:multi_emission_figs}
 
 This appendix reproduces the standard diagnostic suite (emission PDFs, residence times, IS comparison, OoS validation, and convergence) for the two heavy-tailed emission families (CHMM-t and CHMM-L) at the selected state resolution $K = 18$; transition matrices and stationary distributions are discussed in prose only below, since they are visually indistinguishable across families at $K = 18$.
-The Gaussian counterparts are already shown as Figures~\ref{fig:is_comparison} and~\ref{fig:oos_validation} in the main text and as Figures~\ref{fig:convergence_all},~\ref{fig:transition_all},~\ref{fig:stationary_all}, and~\ref{fig:residence_all} above in this appendix.
+The Gaussian counterparts are already shown as Figures~\ref{fig:is_comparison} and~\ref{fig:oos_validation} in the main text and as Figure~\ref{fig:convergence_all} above in this appendix.
 The figures confirm that the shared forward--backward scaffold produces internally-similar regime structure across the three families: the near-diagonal transition band, the $K$-component dense emission cover, the longer central-state residence times, and the monotone log-likelihood convergence are features of the CHMM framework and not of the Gaussian component specifically.
 
 \paragraph{Emission PDFs.}
@@ -343,7 +207,7 @@ The CHMM-t panel's per-state $\nu_k$ allocation is visible in the narrower modes
 \end{figure}
 
 \paragraph{Transition matrices and stationary distributions.}
-The $K = 18$ transition matrices and stationary distributions learned under CHMM-t and CHMM-L are visually indistinguishable from their CHMM-N counterparts (right-hand $K = 18$ panels of Figures~\ref{fig:transition_all} and~\ref{fig:stationary_all}): the near-diagonal band, the magnitude of self-transition probabilities, and the mass concentration at central states are features of the regime structure, not the emission family. This is consistent with the ACF-MAE being stable across the family axis (Table~\ref{tab:sensitivity_multi}). The per-family residence times $\tau_k = 1/(1 - T_{kk})$, which magnify small differences in the self-transition probabilities each family recovers, are compared in Figure~\ref{fig:residence_families}.
+The $K = 18$ transition matrices and stationary distributions learned under CHMM-t and CHMM-L are visually indistinguishable from their CHMM-N counterparts: the near-diagonal band, the magnitude of self-transition probabilities, and the mass concentration at central states are features of the regime structure, not the emission family. This is consistent with the ACF-MAE being stable across the family axis (Table~\ref{tab:sensitivity_multi}). The per-family residence times $\tau_k = 1/(1 - T_{kk})$, which magnify small differences in the self-transition probabilities each family recovers, are compared in Figure~\ref{fig:residence_families}.
 
 \begin{figure}[H]
 \centering
