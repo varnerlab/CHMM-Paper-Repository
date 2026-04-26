@@ -10,7 +10,7 @@ For ticker $i$ and trading day $j$, the annualized excess growth rate is
     \label{eq:growth_rate}
 \end{equation}
 
-The empirical study is organised along two pipelines, illustrated in Figure~\ref{fig:pipeline_schematic}. \emph{Pipeline~A} fits a CHMM to each ticker independently and evaluates single-asset marginal, tail, and temporal metrics; this is the scope of the SPY headline panel (Section~\ref{sec:model_comparison}), the cross-ticker generalisation (Section~\ref{sec:cross_asset_univariate}), the rolling-origin out-of-sample evaluation (Section~\ref{sec:rolling_origin}), and the unconditional VaR / ES envelope (Section~\ref{sec:utility}). \emph{Pipeline~B} reuses the per-asset Pipeline-A CHMM fits as \emph{marginals} and injects cross-asset \emph{dependence} through the rank-based Student-t copula of Section~\ref{sec:cross_asset_methods}, evaluated in Section~\ref{sec:cross_asset}.
+The empirical study is organised along two pipelines, illustrated in Figure~\ref{fig:pipeline_schematic}. \emph{Pipeline~A} fits a CHMM to each ticker independently and evaluates single-asset marginal, tail, and temporal metrics; this is the scope of the SPY headline panel (Section~\ref{sec:model_comparison}), the cross-ticker generalisation (Section~\ref{sec:cross_asset_univariate}), and the unconditional VaR / ES envelope (Section~\ref{sec:utility}). \emph{Pipeline~B} reuses the per-asset Pipeline-A CHMM fits as \emph{marginals} and injects cross-asset \emph{dependence} through the rank-based Student-t copula of Section~\ref{sec:cross_asset_methods}, evaluated in Section~\ref{sec:cross_asset}.
 
 \begin{figure}[t]
 \centering
@@ -164,10 +164,12 @@ The companion Julia package \texttt{CHMM-Model.jl} mirrors the model definition 
 \subsection{Benchmark Generators}
 \label{sec:benchmarks}
 
-We benchmark the CHMM against three alternatives fitted on the same IS window.
-The \textit{i.i.d.\ bootstrap} samples $T$ returns uniformly with replacement, preserving the empirical marginal exactly and serving as the non-parametric distributional ceiling.
+We benchmark the CHMM against representatives from each of the standard generator tiers, all fitted on the same IS window.
+The \textit{i.i.d.\ bootstrap} \cite{politis1994stationary} samples $T$ returns uniformly with replacement, preserving the empirical marginal exactly and serving as the non-parametric distributional ceiling.
 The \textit{Gaussian} i.i.d.\ generator draws $G_t \sim \mathcal{N}(\hat\mu, \hat\sigma^2)$ from the sample moments; the \textit{Laplace} i.i.d.\ generator draws $G_t \sim \text{Laplace}(\hat m, \hat b)$ from the sample median and mean absolute deviation.
-\textit{GARCH(1,1)} \cite{bollerslev1986generalized} uses $G_t = \mu + \sigma_t z_t$, $\sigma_t^2 = \omega + \alpha(G_{t-1} - \mu)^2 + \beta \sigma_{t-1}^2$ with $z_t \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 1)$, fitted by Nelder--Mead maximum likelihood; this is the parametric volatility-clustering benchmark.
+\textit{GARCH(1,1)} \cite{bollerslev1986generalized} uses $G_t = \mu + \sigma_t z_t$, $\sigma_t^2 = \omega + \alpha(G_{t-1} - \mu)^2 + \beta \sigma_{t-1}^2$ with $z_t \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 1)$, fitted by Nelder--Mead maximum likelihood; this is the parametric volatility-clustering workhorse.
+\textit{GARCH(1,1)-$t$} \cite{bollerslev1987conditionally} replaces the Gaussian innovation with a Student-$t$, supplying a heavy-tailed volatility-clustering competitor with the same recursion.
+\textit{MS-GARCH} (Markov-switching GARCH, \citealp{haas2004new}) is the regime-switching foil: a discrete two-state hidden chain modulates the GARCH parameters, providing the closest peer to the CHMM scaffold among classical baselines. The full extended GARCH-family panel (EGARCH, GJR-GARCH, HAR-RV, MS-GARCH $K=3$), the explicit semi-Markov CHMM foil, and a deep-generative QuantGAN \cite{wiese2020quantgan} row are reported in Appendix~\ref{sec:supplementary}.
 
 \subsection{Cross-Asset Dependence (Pipeline~B)}
 \label{sec:cross_asset_methods}
