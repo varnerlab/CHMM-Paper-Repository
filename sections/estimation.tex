@@ -43,8 +43,8 @@ The degrees of freedom $\nu_k$ are updated by a golden-section search
 maximizing the per-state $Q$-function
 $Q_k(\nu) = \sum_t \gamma_t(k) \log t_\nu(O_t; \mu_k, \sigma_k)$
 over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$.
-This M-step preserves the monotonicity of EM while avoiding the joint
-saddle-point issues of simultaneous $(\mu_k, \sigma_k, \nu_k)$ maximization.
+Proposition~\ref{prop:ecm_monotone} in Section~\ref{sec:theory} establishes that this two-block CM step preserves the EM monotonicity guarantee on the compact bracket, so the incomplete-data log-likelihood $\mathcal L(\theta^{(n)})$ is non-decreasing across iterations.
+Identifiability of the resulting fit up to label permutation, and consistency of the MLE under our assumptions, are recorded in Propositions~\ref{prop:identifiability} and~\ref{prop:consistency}.
 
 \paragraph{CHMM-L (Laplace).}
 The weighted maximum-likelihood estimators are in closed form:

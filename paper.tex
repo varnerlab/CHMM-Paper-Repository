@@ -8,6 +8,8 @@
 % --- Math ---
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
 \newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
 \newtheorem{remark}{Remark}
 \newtheorem{assumption}{Assumption}
 
@@ -111,7 +113,7 @@
 We develop a family of regime-switching continuous hidden Markov models (CHMMs) as a reference synthetic-data generator for daily equity returns and evaluate it against a broad panel of non-parametric, classical, discrete-state, and deep-generative baselines.
 The three CHMM variants share a log-space Expectation--Maximization (EM) scaffold with a common quantile-initialized transition matrix and differ only in their per-state emission law: Gaussian (CHMM-N), Student-t with data-selected per-state degrees of freedom (CHMM-t), and Laplace (CHMM-L).
 At a single moderate state resolution the continuous models match the canonical stylized-fact set of daily equity returns (heavy tails, negligible linear autocorrelation, persistent volatility clustering, leverage effect, and aggregational Gaussianity) within a standard CHMM framework, complementing the hidden semi-Markov and jump-augmented routes already available in the literature.
-The contribution of this paper is the integrative evaluation built on this unified scaffold rather than a new estimator or complexity-reduction mechanism.
+The contribution of this paper is the integrative evaluation built on this unified scaffold rather than a new estimator or complexity-reduction mechanism, with each operational claim grounded in a stated proposition (Section~\ref{sec:theory}): a closed-form spectral expression for the absolute-return ACF that recasts the Ryd\'{e}n et al.\ low-$K$ limitation as a $K$-rank statement on $\mathbf{T}$, ECM monotonicity for the CHMM-t variant on a compact bracket, identifiability and MLE consistency under stated assumptions, exact marginal preservation under rank reordering, and structural inequalities that explain the filter-VaR and discrete-baseline VaR Kupiec failures as deterministic features of the mixture-quantile and bin-centroid scaffolds rather than sampling artefacts.
 
 On ten years of daily SPDR S\&P~500 exchange-traded fund (ETF) data with ticker SPY, we benchmark the generator family along three operational axes.
 First, on distributional fidelity, flat CHMM-t attains the smallest Maximum Mean Discrepancy (MMD) of any row in the panel and the discriminator Area Under the Curve (AUC) closest to $0.5$ among parametric and Markov-switching rows, second only to a window-diffusion baseline on AUC and ahead of generative adversarial and Markov-Switching GARCH (MS-GARCH) baselines.
@@ -142,6 +144,10 @@ We extend the framework to multi-asset synthesis through a Single Index Model an
 \section{Estimation}
 \label{sec:estimation}
 \input{sections/estimation}
+
+\section{Theoretical Grounding}
+\label{sec:theory}
+\input{sections/theory}
 
 \section{Empirical Study}
 \label{sec:results}

@@ -81,6 +81,7 @@ The stationary marginal is the $K$-component mixture
 and supplies heavy tails either through the spread of component moments
 (Gaussian components) or through the emission family itself (Student-t or
 Laplace components).
+Existence and uniqueness of $\bar{\boldsymbol{\pi}}$ require irreducibility and aperiodicity of $\mathbf T$, recorded as Assumption~\ref{ass:irred} in Section~\ref{sec:theory}; the spectral mechanism behind the absolute-return ACF that this mixture induces is derived in Theorem~\ref{thm:acf_mixture}.
 Unlike the discrete framework of \citet{alswaidan2026hybrid}, which bins
 observations and estimates $\mathbf{T}$ by frequency counting, we learn
 $\mathbf{T}$, $\boldsymbol\theta_{1:K}$, and $\boldsymbol{\pi}$ jointly
@@ -237,7 +238,7 @@ By Sklar's theorem \cite{sklar1959fonctions}, any joint cumulative distribution 
 We use the nonparametric probability integral transform $u_{j, t} = \text{rank}(g_{j, t}) / (T + 1)$, estimate the copula correlation matrix $\Sigma$ by the analytic Kendall's-$\tau$ inversion $\rho_{ij} = \sin(\pi \tau_{ij} / 2)$ \cite{embrechts2002correlation, mcneil2015quantitative}, and project to the nearest positive semi-definite matrix when needed.
 For the Student-t copula \cite{demarta2005tcopula}, the degrees-of-freedom parameter $\nu$ is selected by profile maximum likelihood over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$.
 Cross-asset simulation follows the rank-reordering construction of \citet{iman1982distribution}: (i) draw $T$ independent paths from each per-asset CHMM, (ii) sample $T$ copula variates, and (iii) reorder each column of the CHMM matrix to match the ranks of the copula sample.
-Reordering only permutes simulated values, so every per-asset marginal is preserved \emph{exactly} while cross-asset dependence is injected through rank coupling.
+Reordering only permutes simulated values, so every per-asset marginal is preserved \emph{exactly} while cross-asset dependence is injected through rank coupling; Proposition~\ref{prop:rank_marginals} in Section~\ref{sec:theory} proves the exact-marginal property, and Remark~\ref{rem:copula_finite_T} bounds the finite-$T$ deviation of the imposed copula from the target $\mathcal C(\Sigma)$.
 Full derivations, the Student-t log-density, and the sampler pseudocode are given in Appendix~\ref{sec:cross_asset_supp}.
 
 \subsection{Evaluation Protocol}
