@@ -1,0 +1,100 @@
+This appendix collects supplementary material referenced in the main body. Section~\ref{sec:supp_chmm_api} gives the public API and reproducer entry point of the companion Julia package \texttt{CHMM-Model.jl}. Section~\ref{sec:supp_algorithms} gives the EM forward-backward recursions and the algorithm pseudocode. Section~\ref{sec:supp_metrics} gives the precise validation metric definitions. Section~\ref{sec:supp_propositions} states the formal propositions cited inline in Section~\ref{sec:theory} (ECM monotonicity, identifiability, MLE consistency, rank-reordering marginal preservation, filter-VaR mixture-quantile bound). Section~\ref{sec:supp_sensitivity} gives the full state-resolution and multi-emission sensitivity panels, the $K=2$ replication, and the per-$K$ figures. Section~\ref{sec:supp_robustness} gives KS test-power calibration, the block-bootstrap KS recalibration, multi-seed Monte Carlo, walk-forward refit, and the block-bootstrap baseline; price-fan figures and an expanded GARCH panel are included for completeness. Section~\ref{sec:supp_cross_asset} gives the full cross-asset panel including SIM and Gaussian copula, with copula derivations and profile-MLE figure. Section~\ref{sec:supp_misc} collects the pre-OoS validation $K$-selection, the walk-forward summary, and the $\nu_k$-bracket / penalised-ECM diagnostics referenced from the discussion.
+
+\subsection{CHMM-Model.jl Public API and Reproducer}
+\label{sec:supp_chmm_api}
+
+The companion Julia package \texttt{CHMM-Model.jl} (\url{https://github.com/altashly1/CHMM-Model}) is the entry point used to regenerate every table and figure in this paper from a single seed root under Julia $\geq 1.12$. The public surface is a single \texttt{CHMM} type, three emission constructors, a unified \texttt{fit!} method (log-space Baum-Welch / ECM), and a unified \texttt{simulate} method.
+
+\begin{verbatim}
+using CHMM
+chmm_n = make_chmm_n(returns; K = 18)        # Gaussian emissions
+chmm_t = make_chmm_t(returns; K = 18)        # Student-t emissions
+chmm_l = make_chmm_l(returns; K = 18)        # Laplace emissions
+fit!(chmm_n; max_iter = 60, tol = 1e-4)      # log-space Baum-Welch
+paths = simulate(chmm_n; T = 2516, n = 1000) # 1000 paths of length T
+\end{verbatim}
+
+The same \texttt{simulate} interface is used for every benchmark generator (Bootstrap, Gaussian i.i.d., Laplace i.i.d., GARCH(1,1)) so that the seven-metric panel evaluates each row on byte-identical windows. The Pipeline~B Student-t copula sampler is exposed as \texttt{simulate\_copula(\dots; nu = 6)} on the per-asset CHMM marginals; the rank-reordering construction is one function call. Running \texttt{julia --project=. run\_full\_rebuild.jl} from the paper repository (\url{https://github.com/altashly1/CHMM-paper}) reproduces every numerical artifact under the global seed policy of Section~\ref{sec:metrics}; \texttt{Manifest.toml} pins the dependency graph.
+
+\subsection{CHMM Algorithms and Derivations}
+\label{sec:supp_algorithms}
+\input{sections/algorithms_appendix}
+
+\subsection{Validation Metric Details}
+\label{sec:supp_metrics}
+\input{sections/metrics_appendix}
+
+\subsection{Formal Theoretical Statements}
+\label{sec:supp_propositions}
+
+The following propositions are referenced in Section~\ref{sec:theory} and stated formally here for reference; each is a one-line specialisation of a standard result and the proof sketch is one sentence.
+
+\begin{proposition}[ECM monotonicity for CHMM-t (and EM monotonicity for CHMM-N, CHMM-L)]
+\label{prop:ecm_monotone}
+Under compactness of the parameter space ($\mu_k$, $\sigma_k$ or $b_k$, $\nu_k$ each in a closed bounded interval, $T_{ij} \ge \epsilon_T > 0$), the two-block CM step for CHMM-t of Section~\ref{sec:mstep}, namely the closed-form weighted updates of $(\mathbf T, \boldsymbol\pi, \mu_k, \sigma_k)$ at fixed $\nu_k$, followed by a golden-section maximisation of the per-state $Q$-function over $\nu_k \in [\nu_{\min}, \nu_{\max}]$, satisfies $Q(\theta^{(n+1)} \mid \theta^{(n)}) \ge Q(\theta^{(n)} \mid \theta^{(n)})$, and consequently $\mathcal L(\theta^{(n+1)}) \ge \mathcal L(\theta^{(n)})$ where $\mathcal L$ is the incomplete-data log-likelihood. The same monotonicity holds for the closed-form CHMM-N and CHMM-L M-steps under the standard EM guarantee.
+\end{proposition}
+\noindent\emph{Proof sketch.} Each CM step does not decrease $Q$ by definition (CM-1 is closed-form maximum, CM-2 is golden-section maximum); the standard EM inequality $\mathcal L(\theta^{(n+1)}) - \mathcal L(\theta^{(n)}) \ge Q(\theta^{(n+1)} \mid \theta^{(n)}) - Q(\theta^{(n)} \mid \theta^{(n)})$ \cite{wu1983convergence, mengrubin1993ecm} converts $Q$-monotonicity into log-likelihood monotonicity. Compactness gives boundedness above, hence convergence.
+
+\begin{proposition}[Identifiability up to label permutation]
+\label{prop:identifiability}
+Under irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred}) and the emission contrast condition (Assumption~\ref{ass:moments}), the CHMM parameter is identifiable up to label permutation in all three emission families considered (CHMM-N, CHMM-t with $\nu_k \in [\nu_{\min}, \nu_{\max}]$, and CHMM-L).
+\end{proposition}
+\noindent\emph{Proof sketch.} The HMM identifiability theorem of \citet{allman2009identifiability} requires $\mathbf T$ of full rank and per-state emissions linearly independent in the space of densities on $\R$. Full-rank $\mathbf T$ follows from irreducibility \cite{levinperes2017markov}; linear independence of Gaussian, bracketed-$\nu$ Student-t, and Laplace emissions with distinct location-scale parameters follows from \citet{yakowitzspragins1968}.
+
+\begin{proposition}[MLE consistency]
+\label{prop:consistency}
+Under Assumptions~\ref{ass:irred}--\ref{ass:moments} and the assumption that the true parameter lies in the interior of a compact $\Theta$, the MLE $\hat\theta_T = \arg\max_{\theta \in \Theta} \mathcal L_T(\theta)$ is consistent: $\hat\theta_T \xrightarrow{p} \theta_0$ as $T \to \infty$, modulo label permutation.
+\end{proposition}
+\noindent\emph{Proof reference.} \citet{bickel1998asymptotic} (Theorem~1) and \citet{doucmoulinesryden2004} apply directly under our assumption set: irreducibility supplies the mixing condition, finite second moment the moment condition, compactness the parameter-space condition.
+
+\begin{proposition}[Marginal preservation under rank reordering]
+\label{prop:rank_marginals}
+Let $\tilde g_{j, 1:T}$ be a sample of size $T$ from the per-asset CHMM marginal of asset $j$, and let the rank-reordered output be $\hat g_{j,t}^{(p)} = \tilde g_{j, (r_{j,t}^{(p)})}^{(p)}$ where $r_{j,t}^{(p)}$ is the rank of the copula sample. Then for every asset $j$ the empirical CDF of $\{\hat g_{j,t}^{(p)}\}_{t=1}^T$ equals that of $\{\tilde g_{j,t}^{(p)}\}_{t=1}^T$.
+\end{proposition}
+\noindent\emph{Proof sketch.} The map $t \mapsto r_{j,t}^{(p)}$ is a permutation almost surely, so the multiset of values is preserved; the empirical CDF depends only on the multiset.
+
+\begin{proposition}[Mixture-quantile lower bound, filter VaR]
+\label{prop:filter_var}
+Let $\boldsymbol\pi \in [0,1]^K$ be a probability vector, $F_1, \ldots, F_K$ per-state CDFs, $F = \sum_k \pi_k F_k$, and $k^* = \arg\min_k F_k^{-1}(\alpha)$ with $q^* = F_{k^*}^{-1}(\alpha)$. Then $F(q^*) \le \alpha$, with strict inequality whenever there exists $k \ne k^*$ with $\pi_k > 0$ and $F_k(q^*) < \alpha$. Consequently $F^{-1}(\alpha) \le \min_k F_k^{-1}(\alpha)$ under the same condition.
+\end{proposition}
+\noindent\emph{Proof sketch.} At $q^*$, $F_{k^*}(q^*) = \alpha$ and $F_k(q^*) \le \alpha$ for all $k$ by monotonicity, hence $F(q^*) = \sum_k \pi_k F_k(q^*) \le \alpha$, strict whenever some $F_k(q^*) < \alpha$ with $\pi_k > 0$. Monotonicity of $F$ lifts the CDF inequality to the quantile.
+
+\subsection{State-Resolution and Multi-Emission Sensitivity}
+\label{sec:supp_sensitivity}
+\input{sections/sensitivity_appendix}
+
+\subsection{Robustness, Test Power, Multi-Seed, and Auxiliary Baselines}
+\label{sec:supp_robustness}
+\input{sections/baselines_appendix}
+
+\subsection{Cross-Asset Dependence: Full Pipeline~B Panel}
+\label{sec:supp_cross_asset}
+\input{sections/cross_asset_appendix}
+
+\subsection{Pre-OoS Validation $K$-Selection, Walk-Forward Summary, and $\nu_k$ Diagnostics}
+\label{sec:supp_misc}
+
+\paragraph{Pre-OoS validation $K$-selection.}
+The $K = 18$ operating point in the main panel was chosen via a multi-objective criterion combining IC rank with IS and OoS distributional pass rates, which uses the same $2024$--$2026$ window later used for VaR. As a clean re-selection that decouples the two, we fit CHMM-N on $2014$-$01$-$03$ through $2021$-$12$-$31$ ($n = 2{,}013$) and score every $K$ in the sweep by the forward-algorithm held-out log-likelihood on $2022$-$01$-$03$ through $2024$-$01$-$03$ ($n = 502$); the $2024$--$2026$ window is not touched. Held-out log-lik, BIC, HQC, and CAIC all select $K^\star = 3$ (per-observation log-lik $-2.5345$ at $K = 3$ vs.\ $-2.5694$ at $K = 18$); AIC selects $K^\star = 6$; held-out two-sample KS selects $K^\star = 9$. None of the six criteria that avoid the OoS window select $K = 18$. The $K = 18$ choice is best read as a multi-metric one that weights tail fidelity (kurtosis, AD) and downstream VaR behaviour alongside likelihood; a parallel main panel at $K = 3$ would re-rank some rows in CHMM's favour on ACF-MAE and against it on tail fidelity. The $2022$--$2023$ validation slice is itself partly a structural-break period (Section~\ref{sec:rolling_origin}), so any model with substantial IS-specific structure generalises worse on it.
+
+\paragraph{$\nu_k$ bracket and penalised-ECM rate sweep.}
+A bracket sweep $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0\}$ shows the CHMM-t fit does not pile against the lower bracket: median $\nu_k = 50$, only $2/18$ states near the lower edge. Lifting $\nu_{\min}$ does not reduce the $14.30 \to 7.69$ overshoot because the fit shifts posterior mass into the newly-recentred tail states. An exponential $1/\nu_k$ shrinkage prior at rate $\lambda \in \{0, 5, 20, 50, 100, 200\}$ reduces simulated excess kurtosis monotonically: $14.30, 11.19, 8.43, 5.41, 3.96, 3.67$. The recommended rate $\lambda = 20$ brings simulated kurtosis to $\approx 8$ (close to the observed $7.69$) at a $1$pp IS KS cost. Only the $\nu_{\min}$ state parameter actually moves ($2.1 \to 4.89$); upper bracket and median remain at $50$. The overshoot is therefore a single-state artefact of the two tail regimes hitting the lower bracket under unpenalised ECM.
+
+\paragraph{Cross-asset summary.}
+The full per-construction Pipeline~B panel is in Section~\ref{sec:supp_cross_asset}; for reference, the headline ordering is summarised in Table~\ref{tab:cross_asset_supp_summary}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Cross-asset dependence summary} (Pipeline~B; CHMM-N marginals at $K = 18$; $200$ paths). Median per-asset KS pass rate (\%) and off-diagonal MAE of the simulated correlation matrix vs.\ observed. The Student-t copula at $\nu^\star = 6$ is the strongest dependence layer on every IS metric; full per-asset detail is in Section~\ref{sec:supp_cross_asset}.}
+\label{tab:cross_asset_supp_summary}
+\begin{tabular}{l c c c c}
+\toprule
+& Median IS KS & Median OoS KS & Off-diag MAE IS & Off-diag MAE OoS \\
+\midrule
+Single Index Model       & $78.5$  & $85.0$  & $0.076$ & $0.261$ \\
+Gaussian copula          & $97.8$  & $87.2$  & $0.031$ & $0.202$ \\
+Student-t copula ($\nu^\star = 6$) & $\mathbf{96.0}$  & $\mathbf{89.8}$  & $\mathbf{0.027}$ & $\mathbf{0.208}$ \\
+\bottomrule
+\end{tabular}
+\end{table}

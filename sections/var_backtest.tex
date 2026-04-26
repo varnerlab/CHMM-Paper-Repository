@@ -1,15 +1,14 @@
-\subsection{Utility: VaR and Expected-Shortfall Back-Test}
+\subsection{VaR and Expected-Shortfall Envelope (Pipeline~A)}
 \label{sec:utility}
 
-Fidelity (Section~\ref{sec:model_comparison}) measures how close the simulated distribution is to the observed one at the univariate level.
-Utility measures whether a downstream consumer of the synthetic paths arrives at the same quantitative conclusion that the historical data would produce.
-For a financial-risk consumer the canonical diagnostics are one-tail Value-at-Risk (VaR) and Expected-Shortfall (ES) at daily probability levels of $1\%$ and $5\%$; the synthetic-data generator is well calibrated if the envelope of per-path simulated VaR/ES brackets the observed historical VaR/ES.
-We simulate $1{,}000$ independent paths of length $T_{\text{IS}} = 2{,}516$ and $T_{\text{OoS}} = 572$ from each of the five models most relevant to the comparison (Bootstrap, GARCH(1,1), CHMM-N, CHMM-t, CHMM-L) and, on each path, compute the left-tail $1\%$ and $5\%$ VaR and the associated ES.
-Table~\ref{tab:var_es} reports the median and $[5\%, 95\%]$ envelope of each quantity across paths alongside the observed historical value.
+Still under Pipeline~A (Figure~\ref{fig:pipeline_schematic}): VaR and Expected-Shortfall are evaluated on the per-ticker SPY simulations, no cross-asset coupling.
+For a financial-risk consumer the canonical diagnostics are one-tail Value-at-Risk (VaR) and Expected-Shortfall (ES) at daily probability levels of $1\%$ and $5\%$.
+A synthetic-data generator is well calibrated if the envelope of per-path simulated VaR/ES brackets the observed historical value.
+We simulate $1{,}000$ independent paths from each of the five most relevant generators (Bootstrap, GARCH(1,1), CHMM-N, CHMM-t, CHMM-L) and report median and $[5\%, 95\%]$ envelope across paths in Table~\ref{tab:var_es}.
 
 \begin{table}[t]
 \centering
-\caption{\textbf{VaR and Expected-Shortfall back-test calibration for SPY} (\NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each entry is the median and $[5\%, 95\%]$ envelope across paths of the left-tail VaR / ES at $\alpha \in \{0.01, 0.05\}$; observed historical values are in the first row. Headline: all three CHMM variants bracket the observed historical VaR and ES at both $1\%$ and $5\%$ on both IS and OoS windows, and the CHMM-N medians (IS VaR$_{0.01} = -6.64$, ES$_{0.01} = -8.80$) are the closest point estimates to the observed $-6.38$ and $-9.00$ among the reported generators.}
+\caption{\textbf{VaR and Expected-Shortfall envelope for SPY} ($N_{\text{paths}} = 1{,}000$). Each entry is the median and $[5\%, 95\%]$ envelope across paths of the left-tail VaR / ES at $\alpha \in \{0.01, 0.05\}$; observed historical values are in the first row. All three CHMM variants bracket the observed historical VaR and ES at both levels on both windows.}
 \label{tab:var_es}
 \small
 \resizebox{\textwidth}{!}{%
@@ -37,189 +36,14 @@ CHMM-L    & $-6.69\ [-8.59, -4.91]$      & $-8.88\ [-11.48,\ -6.73]$    & $-3.27
 }
 \end{table}
 
-Two findings are central to the utility story.
-First, all three CHMM variants bracket the observed historical VaR and ES at both $1\%$ and $5\%$ levels within their $5\%$--$95\%$ envelopes on both IS and OoS windows; the IS CHMM-N median VaR$_{0.01}$ at $-6.64$ (observed $-6.38$) and the CHMM-N median ES$_{0.01}$ at $-8.80$ (observed $-9.00$) are the closest point estimates across the five generators.
-IS the three CHMMs are therefore well calibrated as risk consumers and carry narrower uncertainty bands than GARCH (whose $[-8.62, -4.52]$ VaR$_{0.01}$ envelope is roughly $1.7\times$ wider than the CHMMs').
-Second, CHMM-t -- despite overshooting the empirical kurtosis by $\sim 90\%$ IS -- does \emph{not} produce a systematically more conservative VaR/ES estimate: its IS median VaR$_{0.01}$ of $-6.58$ is almost identical to CHMM-N's $-6.64$, and its envelope width is comparable.
-The CHMM-t kurtosis overshoot therefore translates into a modestly widened uncertainty band rather than a biased point estimate, so a practitioner using CHMM-t for tail-risk scenario generation does not systematically overstate $1\%$ or $5\%$ quantile risk.
-A useful OoS check: the $2024$--$2026$ observed VaR$_{0.01}$ is $-5.51$ (a relatively calm tail compared to the IS average), and the three CHMMs bracket this value comfortably within their envelopes rather than over- or under-stating it.
-Figure~\ref{fig:var_es} (Appendix~\ref{sec:var_es_supp}) visualizes the envelopes alongside the historical observations.
+All three CHMM variants bracket the observed historical VaR and ES at both $1\%$ and $5\%$ levels within their $5\%$--$95\%$ envelopes on both IS and OoS windows; the IS CHMM-N median VaR$_{0.01}$ at $-6.64$ (observed $-6.38$) and ES$_{0.01}$ at $-8.80$ (observed $-9.00$) are the closest point estimates across the five generators.
+The CHMM envelopes are roughly $1.7\times$ tighter than GARCH's and pass the unconditional Kupiec test cleanly at both levels (CHMM-N $\text{LR}_{\text{uc}} = 3.83$ at $5\%$ against the $\chi^2_1 = 3.84$ critical value; CHMM-t at $3.83$; CHMM-L at $3.03$).
+CHMM-t's IS kurtosis overshoot does \emph{not} translate into a systematically more conservative VaR/ES point estimate; the IS median VaR$_{0.01}$ of $-6.58$ is almost identical to CHMM-N's $-6.64$ and the envelope width is comparable. CHMM-L's IS median VaR$_{0.01}$ of $-6.89$ is mildly more conservative than CHMM-N's, consistent with its closer-to-observed kurtosis.
 
-\paragraph{Explicit Kupiec failure of the Discrete HMM baseline of \citet{alswaidan2026hybrid} at $5\%$ VaR.}
-\label{par:discrete_var_failure}%
-Table~\ref{tab:var_es} shows envelope coverage for the five continuous and non-parametric generators, but the discrete HMM baselines of \citet{alswaidan2026hybrid} are excluded from the envelope panel because their bin-centroid emission produces a point-mass VaR estimator whose envelope width is mechanically zero.
-The Kupiec and Christoffersen likelihood-ratio tests of Section~\ref{sec:extended_evaluation} are the appropriate diagnostic for those baselines, and they deliver a clear negative finding.
-Both Discrete NJ and Discrete WJ produce an OoS $5\%$ VaR breach rate of exactly $1.7\%$, roughly one-third of the $5\%$ target; the Kupiec likelihood-ratio statistic $\text{LR}_{\text{uc}} = 16.81$ rejects unconditional coverage with $p < 10^{-3}$, and the independence statistic $\text{LR}_{\text{ind}} = 13.22$ also rejects.
-Proposition~\ref{prop:discrete_var_floor} explains the failure structurally: the bin-centroid simulator returns one of $\{c_1, \ldots, c_J\}$ at every step, so the simulated $\alpha$-VaR cannot fall in the gap $(c_{j(\alpha)}, c_{j(\alpha)+1})$ that contains the continuous-population quantile $\mathrm{VaR}^{\mathrm{cts}}(\alpha)$, and the absolute error is bounded below by half the local bin width.
-The Poisson-jump augmentation does not remedy the failure: no-jump and with-jump variants produce the same breach rate to three significant figures because the prior-paper jump intensity $\epsilon = 5 \times 10^{-5}$ and mean duration $\lambda = 67$ trigger on fewer than one time step per IS or OoS window at our sample lengths, and even when they do trigger they only redistribute residence probability across the existing centroid set without altering the inequality of Proposition~\ref{prop:discrete_var_floor}.
-A risk manager who uses the prior-paper discrete generator to size a $5\%$ VaR position is therefore committed to holding materially more capital than the empirical breach process requires and would fail a standard VaR back-test if audited.
-The continuous CHMM family of the present paper sits at or below the $\chi^2_1$ Kupiec threshold at the $5\%$ level on the unconditional A8 panel (all three variants attain $\text{LR}_{\text{uc}} \le 3.83$, with CHMM-N, CHMM-t, and CHMM-L at $3.83$, $3.83$, and $3.03$ respectively), and the smoother-based regime-conditional VaR of Section~\ref{sec:conditional_var} additionally sits below the $\chi^2_1$ Christoffersen threshold as an IS goodness-of-fit diagnostic; the operationally correct filter-based one-step-ahead backtest of Section~\ref{sec:conditional_var} fails Kupiec, a finding we flag as evidence of regime-uncertainty-driven over-conservatism rather than as a clean operational ranking.
-This is the clearest single-number contrast the present paper offers against the prior discrete-HMM pipeline.
+\subsection{Filter-Based Regime-Conditional VaR is an Open Question}
+\label{sec:filter_var_note}
 
-\subsection{Semi-Markov Ablation: Heavy-Tailed Sojourn Distributions}
-\label{sec:sm_ablation}
-
-The flat CHMM assumes geometric sojourn times in every state, an implicit by-product of the Markov transition matrix.
-Empirically, equity returns exhibit crisis-regime sojourn tails that are heavier than geometric: the bottom-$3$ states of the CHMM partition, which hold the March $2020$ crash and the $2022$ rate-cycle stress, persist longer in the Viterbi decode than a geometric sojourn would predict.
-To quantify the effect of relaxing the geometric-sojourn assumption we fit a semi-Markov variant of each CHMM emission family using the explicit-duration forward-backward machinery of \citet{yu2010hidden}.
-Let $\mathrm{SM\text{-}CHMM\text{-}}F$ denote the semi-Markov extension of the corresponding flat CHMM-$F$ for $F \in \{\mathcal{N}, t, L\}$.
-
-\paragraph{Plug-in estimator and per-state sojourn family selection.}
-We fit the SM variants with the plug-in estimator: given the flat CHMM transition matrix and emission parameters, we (i) decode the most-likely state sequence under Viterbi, (ii) extract the empirical run-length distribution for each state, and (iii) fit one of a negative-binomial, geometric, or discrete truncated Pareto to each state's run-lengths by AIC, after which the SM generator samples sojourn times from the fitted family.
-The AIC-selected family per state is reported in Table~\ref{tab:sm_sojourn}: for all three emission families, $17$ of the $18$ states select a Pareto sojourn and $1$ selects a negative binomial.
-This is consistent with preliminary results we report for the Chicago Board Options Exchange (CBOE) Volatility Index (VIX) in a companion paper in preparation \citep{alswaidan2026smchmm}, where Pareto sojourns dominated on daily log-$\mathrm{VIX}$: the heavy-tailed sojourn pattern is not specific to vol-index series but holds on equity returns at moderate state resolution.
-
-\begin{table}[t]
-\centering
-\small
-\caption{\textbf{Per-state sojourn family selected by AIC} for each SM-CHMM variant on SPY at $K = 18$; candidate families are truncated Pareto, negative binomial, and geometric. Headline: $17$ of $18$ states pick Pareto sojourns under all three emission families (Gaussian / Student-t / Laplace), one state picks negative binomial each, and no state picks geometric, confirming that a heavy-tailed sojourn layer on top of the Markov chain is empirically warranted for equity-return regime persistence.}
-\label{tab:sm_sojourn}
-\begin{tabular}{lccc}
-\toprule
-Model & Pareto states & Negative-binomial states & Geometric states \\
-\midrule
-SM-CHMM-N & $17$ & $1$ & $0$ \\
-SM-CHMM-t & $17$ & $1$ & $0$ \\
-SM-CHMM-L & $17$ & $1$ & $0$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Risk-calibration gain: cleaner unconditional $1\%$ and $5\%$ VaR Kupiec.}
-Table~\ref{tab:sm_var} reproduces the Kupiec and Christoffersen LR tests on the OoS window for the three flat CHMM variants and their SM counterparts.
-At $1\%$ VaR, SM-CHMM-N drops $\text{LR}_{\text{uc}}$ from $1.58$ (flat) to $0.01$ (a breach rate of exactly $1.0\%$ against a target of $1.0\%$), SM-CHMM-t drops from $0.58$ to $0.10$, and SM-CHMM-L is unchanged at $3.26$.
-At $5\%$ VaR, SM-CHMM-N drops $\text{LR}_{\text{uc}}$ from $3.83$ (just below the $3.84$ critical value) to $0.82$ (breach rate $4.2\%$), SM-CHMM-t drops from $3.83$ to $1.74$ (breach rate $3.8\%$), and SM-CHMM-L is unchanged at $3.03$; at $T_{\text{OoS}} = 572$ with $\alpha = 0.05$ the expected breach count is $\approx 28.6$ so the Kupiec test has reasonable power, but the paper tempers "passes cleanly" language throughout in line with the small-sample concern that applies most sharply at $\alpha = 0.01$.
-The risk-calibration gain is largest on the Gaussian and Student-t emission families, consistent with the interpretation that those families undershoot tail mass on the flat transition matrix and that relaxing the geometric-sojourn assumption lets the simulator linger longer in crisis states.
-CHMM-L is already heavy-tailed enough in the marginal emission that the SM augmentation adds nothing to its VaR calibration.
-
-\begin{table}[t]
-\centering
-\small
-\caption{\textbf{Semi-Markov VaR calibration} (Pipeline~A, SPY, \TOoS{572}, \NPaths{1{,}000}); Kupiec ($\text{LR}_{\text{uc}}$) and Christoffersen ($\text{LR}_{\text{ind}}$) likelihood-ratio statistics for the three flat CHMM variants and their semi-Markov counterparts at $\alpha \in \{0.01, 0.05\}$; $\chi^2_1$ critical value $3.84$ for each test. Headline: the semi-Markov layer is a \emph{risk-calibration upgrade}: $\text{LR}_{\text{uc}}^{5\%}$ drops from $3.83$ (flat CHMM-N) to $0.82$ (SM-CHMM-N) and from $3.83$ (flat CHMM-t) to $1.74$ (SM-CHMM-t); Christoffersen independence remains open across the unconditional panel; Table~\ref{tab:conditional_var} reports the smoother-based IS diagnostic and reserves placeholders for the filter-based one-step-ahead rows (M3 response, pending re-run).}
-\label{tab:sm_var}
-\begin{tabular}{lrrrr|rrrr}
-\toprule
- & \multicolumn{4}{c}{$\alpha = 0.01$} & \multicolumn{4}{c}{$\alpha = 0.05$} \\
-Model & br\% & $\text{LR}_{\text{uc}}$ & $p_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & br\% & $\text{LR}_{\text{uc}}$ & $p_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ \\
-\midrule
-CHMM-N       & $0.5$ & $1.58$ & $0.209$ & $18.98$ & $3.3$ & $3.83$ & $0.050$ & $5.26$ \\
-\textbf{SM-CHMM-N} & $\mathbf{1.0}$ & $\mathbf{0.01}$ & $\mathbf{0.907}$ & $20.87$ & $\mathbf{4.2}$ & $\mathbf{0.82}$ & $\mathbf{0.365}$ & $5.87$ \\
-CHMM-t       & $0.7$ & $0.58$ & $0.445$ & $15.53$ & $3.3$ & $3.83$ & $0.050$ & $5.26$ \\
-\textbf{SM-CHMM-t} & $\mathbf{0.9}$ & $\mathbf{0.10}$ & $\mathbf{0.757}$ & $13.18$ & $\mathbf{3.8}$ & $\mathbf{1.74}$ & $\mathbf{0.188}$ & $7.12$ \\
-CHMM-L       & $0.3$ & $3.26$ & $0.071$ & $\phantom{0}9.15$ & $3.5$ & $3.03$ & $0.082$ & $4.71$ \\
-SM-CHMM-L    & $0.3$ & $3.26$ & $0.071$ & $\phantom{0}9.15$ & $3.5$ & $3.03$ & $0.082$ & $4.71$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{MC confidence band on the Kupiec gain.}
-A natural concern is whether the SM-CHMM-N $5\%$ Kupiec gain ($\text{LR}_{\text{uc}}: 3.83 \to 0.82$) is numerically meaningful given the MC error at $T_{\text{OoS}} = 572$. We address this with a parametric bootstrap: for each (model, observed breach rate $\hat p$) pair, draw $B = 10{,}000$ i.i.d.\ Bernoulli$(\hat p)$ breach sequences of length $572$ and compute the Kupiec $\text{LR}_{\text{uc}}$ statistic against the target $\alpha = 0.05$ on each, giving the MC noise band the observed $\text{LR}_{\text{uc}}$ inhabits. The bootstrap means and $5\%$/$95\%$ quantiles are: CHMM-N flat at $\hat p = 0.033$, mean $4.9$, $[0.26, 12.86]$; SM-CHMM-N at $\hat p = 0.042$, mean $1.79$, $[0.01, 5.76]$; CHMM-t flat at $\hat p = 0.033$, $[0.26, 12.86]$; SM-CHMM-t at $\hat p = 0.038$, $[0.01, 9.59]$; CHMM-L and SM-CHMM-L at $\hat p = 0.035$, $[0.10, 11.14]$ (identical because the SM ablation did not move the breach rate). The MC band on $\text{LR}_{\text{uc}}$ is wide ($\sigma \approx 2$--$4$) at this sample size, so the point-estimate gain $3.83 \to 0.82$ is genuinely smaller than the noise on either statistic taken alone. The pairwise comparison sharpens the reading: under independent draws of two synthetic OoS sequences, one at the flat rate and one at the SM rate, the SM-CHMM-N rate produces a strictly smaller $\text{LR}_{\text{uc}}$ in $76\%$ of $10{,}000$ MC replications (CHMM-t flat-vs-SM: $65\%$; CHMM-L: $47\%$ because the SM ablation did not move the L breach rate). The unconditional-VaR calibration gain on the Gaussian and Student-t variants is therefore genuine in the majority of MC replications, but smaller in magnitude than the point-estimate $\text{LR}_{\text{uc}}$ comparison alone would suggest. Full bootstrap quantiles are at \texttt{results/robustness/kupiec\_mc\_ci.csv}. A principled extension, an explicit-duration forward-backward MLE for SM-CHMM in the sense of \citet{yu2010hidden}, is left to a follow-up code-repo pass; see \texttt{revision-code-todo.md}.
-
-\paragraph{TSTR HAR vol-forecasting gain.}
-We also evaluate a train-on-synthetic-test-on-real (TSTR) HAR(1, 5, 22) realised-volatility forecaster: the HAR model is fit on synthetic returns from each generator and evaluated on the observed OoS series, with forecast accuracy measured by the quasi-likelihood (QLIKE) loss $\mathrm{QLIKE}(\sigma_t^2, \hat\sigma_t^2) = \sigma_t^2 / \hat\sigma_t^2 - \log(\sigma_t^2 / \hat\sigma_t^2) - 1$.
-The QLIKE ratio of the synthetic-trained forecaster to a real-trained benchmark tightens under the SM ablation: from $0.999$ to $1.000$ under CHMM-N $\to$ SM-CHMM-N, from $1.045$ to $1.014$ under CHMM-t $\to$ SM-CHMM-t, and from $1.027$ to $1.012$ under CHMM-L $\to$ SM-CHMM-L.
-Closer to $1.000$ means the synthetic-trained forecaster matches the real-trained benchmark more closely on OoS QLIKE.
-SM-CHMM-N ties the real-trained benchmark exactly at $1.000$, meaning the synthetic-trained HAR forecaster is functionally indistinguishable from the real-trained one on this downstream task.
-The full TSTR panel is in \texttt{results/track\_c1/tstr\_vol\_forecaster\_c1.txt}.
-
-\paragraph{Marginal-fidelity trade-off.}
-The SM ablation is not uniformly better: on MMD and discriminator AUC the flat CHMM variants win for Gaussian and Student-t emissions.
-Concretely, MMD IS moves from $1.5 \times 10^{-4}$ (CHMM-N) to $3.8 \times 10^{-3}$ (SM-CHMM-N) and from $2.0 \times 10^{-5}$ (CHMM-t) to $6.2 \times 10^{-3}$ (SM-CHMM-t); discriminator AUC IS moves from $0.646$ to $0.699$ (CHMM-N $\to$ SM-CHMM-N) and from $0.607$ to $0.782$ (CHMM-t $\to$ SM-CHMM-t).
-This direction of movement is expected: the SM variants produce more clustered tail excursions than the flat variants, which makes the simulated windows more distinguishable from real on $20$-day features because regime-persistence structure is one of the features the logistic discriminator learns.
-The Laplace SM variant is the exception in both directions: SM-CHMM-L attains the smallest IS MMD among the SM variants and improves on its flat CHMM-L counterpart ($4.0 \times 10^{-5}$, close to but not below flat CHMM-t's panel-leading $2.0 \times 10^{-5}$), but its discriminator AUC IS climbs to $0.823$ and its joint $\bar{pv}$ OoS drops from $0.692$ to $0.436$.
-
-\paragraph{Christoffersen independence is not closed by the SM ablation.}
-On the $2024$-$2026$ OoS window, breach clustering remains pronounced for every SM variant: $\text{LR}_{\text{ind}}$ ranges from $9.15$ (SM-CHMM-L at $1\%$) to $20.87$ (SM-CHMM-N at $1\%$), all above the $\chi^2_1$ critical value of $3.84$.
-Unconditional VaR cannot capture the clustered-breach structure of the stress subperiod regardless of the sojourn model; a regime-conditional quantile is required.
-The following subsection separates a smoother-based IS regime-structure diagnostic from the operationally correct filter-based one-step-ahead backtest: the smoother shows that the Viterbi-decoded flat CHMM-t state-conditional quantile sits below the $\chi^2_1$ threshold on both Kupiec and Christoffersen at $1\%$ and $5\%$, while the filter-based one-step-ahead backtest fails Kupiec at both levels (over-conservative), so the independence gap identified in the unconditional panel is captured by the IS regime partition but is not currently closed by an operational real-time estimator.
-
-\paragraph{Takeaway: SM is a risk-calibration upgrade, not a marginal-fidelity upgrade.}
-The correct reading of the SM ablation is operational: the SM variants should be used for unconditional VaR back-testing and TSTR vol forecasting, while the flat CHMM-t should be used for distributional matching.
-The three-way operational split that we formalise in Section~\ref{sec:discussion} separates these roles.
-
-\subsection{Regime-Conditional Value-at-Risk: Smoother-Based Diagnostic and Filter-Based Backtest}
-\label{sec:conditional_var}
-
-The Christoffersen-independence failures documented in Sections~\ref{sec:extended_evaluation} and~\ref{sec:sm_ablation} are not a property of any one generator: every row in the unconditional-VaR panel fails independence at both $1\%$ and $5\%$ on the $2024$-$2026$ OoS window.
-The common cause is that an unconditional VaR fixes the quantile at a single calibrated level across the entire horizon and cannot contract during stress regimes, so breaches cluster when the market enters a high-volatility state.
-A natural remedy is to make the VaR quantile regime-conditional.
-
-We report two constructions separately, and they answer different questions.
-The \emph{smoother-based} construction (Viterbi decode of the full OoS series) is a goodness-of-fit diagnostic on the regime structure: the decoded state $\hat s_t$ is a function of the entire observation path $(r_1, \ldots, r_T)$, so the resulting state-conditional quantile is not available in real time and the Kupiec / Christoffersen statistics computed on its breach sequence are not a one-step-ahead backtest.
-The \emph{filter-based} construction uses the forward posterior $P(s_t \mid r_{1:t})$ under the IS-fit parameters and a mixture-of-emissions quantile, and is the operationally correct one-step-ahead regime-conditional VaR that a risk consumer could deploy in real time.
-The two constructions produce different conclusions on the $2024$-$2026$ OoS window (Table~\ref{tab:conditional_var}): the smoother-based IS diagnostic sits below the $\chi^2_1$ Kupiec and Christoffersen thresholds for flat CHMM-t at both confidence levels, while the filter-based one-step-ahead backtest fails Kupiec at both $\alpha = 0.01$ and $\alpha = 0.05$ for every emission family (breach rates $0.2\%$ and $1.2$--$1.4\%$ against targets of $1\%$ and $5\%$). The filter-based failure is a material one and we discuss it below.
-
-\paragraph{Smoother-based diagnostic (IS regime-structure goodness-of-fit).}
-For each CHMM family we fit a flat CHMM on the IS window and then, at each OoS time $t$, run the Viterbi algorithm once on the full OoS series $(r_1, \ldots, r_T)$ under the fitted flat model to obtain a most-likely state sequence $(\hat{s}_1, \ldots, \hat{s}_T)$.
-The smoother-based state-conditional quantile at level $\alpha$ at time $t$ is
-\begin{equation}
-\widehat{\mathrm{VaR}}^{\mathrm{smoother}}_{t}(\alpha) \;=\; F^{-1}_{F_{\hat{s}_t}}(\alpha),
-\label{eq:conditional_var}
-\end{equation}
-where $F^{-1}_{F_k}$ is the inverse CDF of the state-$k$ emission law under family $F$.
-For CHMM-N this is $\mu_k + \sigma_k \Phi^{-1}(\alpha)$; for CHMM-t it is $\mu_k + \sigma_k t^{-1}_{\nu_k}(\alpha)$; for CHMM-L it is the Laplace $\alpha$-quantile.
-The breach indicator $\mathbf{1}\{r_t \le \widehat{\mathrm{VaR}}^{\mathrm{smoother}}_{t}(\alpha)\}$ supports Kupiec and Christoffersen likelihood-ratio statistics computed on the full OoS breach sequence; because $\hat s_t$ depends on $r_{t+1}, \ldots, r_T$, these statistics diagnose the fit between the regime structure and the realised OoS path, not the one-step-ahead predictive calibration of any deployable VaR rule.
-
-\paragraph{Filter-based one-step-ahead backtest.}
-\label{par:filter_conditional_var}
-For the operational backtest, at each OoS time $t$ we form the forward-filtered posterior $\pi_t(k) = P(s_t = k \mid r_{1:t}, \hat\theta_{\text{IS}})$ under the IS-fit parameters $\hat\theta_{\text{IS}}$ using the standard forward recursion, then set
-\begin{equation}
-\widehat{\mathrm{VaR}}^{\mathrm{filter}}_{t}(\alpha) \;=\; F^{-1}_{\,\sum_{k=1}^{K}\, \pi_t(k)\, F_k}(\alpha),
-\label{eq:filter_conditional_var}
-\end{equation}
-the $\alpha$-quantile of the one-step-ahead predictive mixture of state-conditional emissions.
-The breach indicator $\mathbf{1}\{r_t \le \widehat{\mathrm{VaR}}^{\mathrm{filter}}_{t}(\alpha)\}$ is measurable with respect to the information set $\{r_1, \ldots, r_t\}$, so the resulting Kupiec and Christoffersen statistics are a valid one-step-ahead backtest that a risk manager could reproduce in real time.
-The filter-based rows of Table~\ref{tab:conditional_var} show that all three CHMM families fail Kupiec at both $\alpha = 0.01$ (breach rate $0.2\%$, $\text{LR}_{\text{uc}} = 5.99$) and $\alpha = 0.05$ (breach rate $1.2$--$1.4\%$, $\text{LR}_{\text{uc}} \ge 21.59$): the filter VaR is systematically \emph{over-conservative} on this window.
-The mechanism is the structural inequality of Proposition~\ref{prop:filter_var}: when the forward filter places non-trivial posterior mass on at least one heavy-tailed tail-state $k^*$ and the bulk states have $F_k(q^*) < \alpha$ at the tail-state quantile $q^* = F_{k^*}^{-1}(\alpha)$, the mixture quantile satisfies $F^{-1}_{\sum_k \pi_k F_k}(\alpha) \le \min_k F_k^{-1}(\alpha)$, with strict inequality whenever the precondition holds. The realised CHMM-t parameters have two tail-states with $\nu_k$ near the lower bracket (Figure~\ref{fig:nu_hist}); when those states carry non-trivial filter mass and the bulk states are well-separated, the inequality bites and the breach count falls below the target. A precondition-incidence diagnostic on the OoS window is identified as a follow-up sanity check.
-An $1/\nu_k$ shrinkage penalty on the ECM (Section~\ref{sec:discussion}) that brings the simulated IS kurtosis from $14.30$ down to the observed $7.69$ nevertheless leaves the filter-VaR Kupiec failure essentially unchanged across every rate in the sweep $\lambda \in \{0, 5, 20, 50, 100, 200\}$ (breach rate at $\alpha = 0.01$ remains $0.17\%$ for every $\lambda$), so the operational over-conservatism is a mixture-over-states property of the filter rather than a heavy-tails property of any one emission.
-The implication is that the candidate remedies lie elsewhere: an adaptive re-fit of $\hat\theta_{\text{IS}}$ on a rolling window (which the rolling-origin results in Section~\ref{sec:rolling_and_weekly} address directly), an explicit state-conditional variance overlay, or a concentration-constrained posterior that penalises mass on heavy-$\sigma$ states under the filter recursion.
-On the independence leg, all three families sit below the $\chi^2_1$ Christoffersen threshold at $\alpha = 0.01$ ($\text{LR}_{\text{ind}} = 0.00$) because only one breach is observed over $572$ days; CHMM-N also clears it at $\alpha = 0.05$ ($\text{LR}_{\text{ind}} = 2.81$), whereas CHMM-t and CHMM-L fail independence at $5\%$ ($\text{LR}_{\text{ind}} = 8.74, 9.95$). These LR values are consistent with the small-sample caveat below and should be read as diagnostic rather than decisive; the dominant operational finding is the Kupiec failure.
-
-\paragraph{Smoother-diagnostic statistics for flat CHMM-t on the $2024$-$2026$ OoS window.}
-Table~\ref{tab:conditional_var} compares the Track A unconditional LR statistics against the smoother-based conditional statistics for the three flat CHMM variants on the OoS window.
-Flat CHMM-t achieves a breach rate of $0.87\%$ at $1\%$ (Kupiec $\text{LR}_{\text{uc}} = 0.10$, $p = 0.76$) and $5.07\%$ at $5\%$ (Kupiec $\text{LR}_{\text{uc}} = 0.01$, $p = 0.94$), with Christoffersen $\text{LR}_{\text{ind}}$ dropping from $15.53$ (unconditional) to $0.09$ at $1\%$ and from $5.26$ (unconditional) to $0.19$ at $5\%$; both statistics sit below the $\chi^2_1$ critical value of $3.84$.
-At $T_{\text{OoS}} = 572$ and $\alpha = 0.01$ the expected breach count is roughly $5.7$, so the independence test is substantially underpowered and "$\text{LR}_{\text{ind}} = 0.09$" should be read as "consistent with independence" rather than as a resolved ranking; we temper claims throughout this subsection accordingly.
-CHMM-N and CHMM-L are each below the $\chi^2_1$ threshold on Christoffersen at $5\%$ (LR$_{\text{ind}}$ $= 1.39$ and $2.25$ respectively); CHMM-L is also below it at $1\%$ ($\text{LR}_{\text{ind}} = 0.01$).
-Under the smoother diagnostic CHMM-t is the CHMM family that falls below the $\chi^2_1$ threshold on both tests at both confidence levels with margin; CHMM-L clears all four thresholds but sits close to the boundary at the $5\%$ Kupiec ($\text{LR}_{\text{uc}} = 3.83$ against the $3.84$ critical value), while CHMM-N remains above the $\chi^2_1$ threshold on Christoffersen independence at $1\%$ even after conditioning.
-These numbers are the IS goodness-of-fit signal that the regime partition captures the realised 2024-2026 stress clustering; the operational one-step-ahead claim requires the filter-based row of Table~\ref{tab:conditional_var}.
-
-\paragraph{Bootstrap null for $\text{LR}_{\text{ind}}$ at $n = 572$.}
-To quantify the test-power concern at $T_{\text{OoS}} = 572$ we simulate $B = 10{,}000$ i.i.d.\ Bernoulli$(\alpha)$ breach sequences of length $572$ at each $\alpha$ and compute the empirical null distribution of $\text{LR}_{\text{ind}}$; the p-values reported below are the fraction of bootstrap sequences with $\text{LR}_{\text{ind}}$ at least as extreme as the observed statistic.
-At $\alpha = 0.01$ the empirical size of the asymptotic $\chi^2_1 = 3.84$ cutoff is $2.07\%$ (not the nominal $5\%$): the test is \emph{conservative} under-rejects rather than over-rejects at this sample size, and the bootstrap $95\%$ quantile is $1.65$, well below the asymptotic $3.84$.
-At $\alpha = 0.05$ the empirical size is $4.20\%$ and the bootstrap $95\%$ quantile is $3.80$, both close to the asymptotic values.
-Locating the observed statistics within the bootstrap null sharpens the reading of Table~\ref{tab:conditional_var}: the smoother CHMM-t $\text{LR}_{\text{ind}} = 0.09$ at $\alpha = 0.01$ has bootstrap $p = 0.52$ (firmly consistent with independence); the smoother CHMM-t $\text{LR}_{\text{ind}} = 0.19$ at $\alpha = 0.05$ has $p = 0.67$ (also consistent).
-On the filter side the bootstrap sharpens the headline negative finding: the filter CHMM-t $\text{LR}_{\text{ind}} = 8.74$ at $\alpha = 0.05$ has bootstrap $p = 0.002$ (a decisive rejection, confirming that the filter-VaR breach clustering at the $5\%$ level is not a small-sample artefact), the filter CHMM-L $\text{LR}_{\text{ind}} = 9.95$ has $p < 0.001$, and the filter CHMM-N $\text{LR}_{\text{ind}} = 2.81$ is borderline at $p = 0.13$.
-At $\alpha = 0.01$ the filter $\text{LR}_{\text{ind}} = 0.00$ values are driven by a single observed breach and are a degeneracy (any zero- or one-breach sequence produces $\text{LR}_{\text{ind}} = 0$ under the standard estimator); the corresponding bootstrap p-values of $1.0$ reflect this rather than a substantive independence pass, and these cells should be read as "test uninformative" rather than as a Christoffersen clearance. Full bootstrap quantiles and per-construction p-values are in \texttt{results/robustness/lr\_ind\_bootstrap\_null.csv}.
-
-\begin{table}[t]
-\centering
-\small
-\caption{\textbf{Regime-conditional VaR: smoother-based diagnostic and filter-based backtest} (Pipeline~A, SPY, \TOoS{572}). The ``unconditional (A8)'' rows restate the matching Kupiec / Christoffersen statistics from Section~\ref{sec:extended_evaluation} for reference. The ``smoother (Viterbi)'' rows apply equation~\eqref{eq:conditional_var} with the state sequence decoded from the full OoS path; because $\hat s_t$ depends on future observations, these are an IS goodness-of-fit diagnostic on the regime structure, not a one-step-ahead backtest. The ``filter (forward)'' rows apply equation~\eqref{eq:filter_conditional_var} with the forward posterior $P(s_t \mid r_{1:t})$ under the IS-fit parameters and are the operationally correct one-step-ahead regime-conditional VaR backtest. Entries with $\text{LR}$ below the $\chi^2_1$ critical value of $3.84$ are bolded; at $T_{\text{OoS}} = 572$ and $\alpha = 0.01$ the expected breach count is $\approx 5.7$, so Christoffersen independence is substantially underpowered and small $\text{LR}_{\text{ind}}$ values should be read as "consistent with independence" rather than as resolved rankings. Headline finding on the filter rows: one-step-ahead filter-based regime-conditional VaR fails Kupiec for all three emission families at both $\alpha$ levels on this OoS window (breach rate $\approx 0.2\%$ vs. $1\%$ target and $1.2$--$1.4\%$ vs. $5\%$ target), i.e.\ the filter mixture of state-conditional heavy-tailed emissions is systematically over-conservative; the smoother rows continue to pass both tests and so remain informative as IS goodness-of-fit statistics on the regime partition.}
-\label{tab:conditional_var}
-\begin{tabular}{lcrrrr|rrrr}
-\toprule
- & & \multicolumn{4}{c}{$\alpha = 0.01$} & \multicolumn{4}{c}{$\alpha = 0.05$} \\
-Model & VaR kind & br\% & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $p_{\text{ind}}$ & br\% & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $p_{\text{ind}}$ \\
-\midrule
-\multirow{3}{*}{CHMM-N} & unconditional (A8) & $0.5$ & $1.58$ & $18.98$ & $< 0.01$ & $3.3$ & $3.83$ & $5.26$ & $0.02$ \\
-                        & smoother (Viterbi) & $0.7$ & $\mathbf{0.58}$ & $5.73$ & $0.02$ & $5.1$ & $\mathbf{0.01}$ & $\mathbf{1.39}$ & $0.24$ \\
-                        & filter (forward)   & $0.2$ & $5.99$ & $\mathbf{0.00}$ & $\mathbf{0.95}$ & $1.4$ & $21.59$ & $\mathbf{2.81}$ & $0.09$ \\
-\multirow{3}{*}{\textbf{CHMM-t}} & unconditional (A8) & $0.7$ & $0.58$ & $15.53$ & $< 0.01$ & $3.3$ & $3.83$ & $5.26$ & $0.02$ \\
-                        & \textbf{smoother (Viterbi)} & $\mathbf{0.9}$ & $\mathbf{0.10}$ & $\mathbf{0.09}$ & $\mathbf{0.77}$ & $\mathbf{5.1}$ & $\mathbf{0.01}$ & $\mathbf{0.19}$ & $\mathbf{0.66}$ \\
-                        & filter (forward)   & $0.2$ & $5.99$ & $\mathbf{0.00}$ & $\mathbf{0.95}$ & $1.4$ & $21.59$ & $8.74$ & $< 0.01$ \\
-\multirow{3}{*}{CHMM-L} & unconditional (A8) & $0.3$ & $3.26$ & $9.15$ & $< 0.01$ & $3.5$ & $3.03$ & $4.71$ & $0.03$ \\
-                        & smoother (Viterbi) & $0.3$ & $3.26$ & $\mathbf{0.01}$ & $\mathbf{0.91}$ & $3.3$ & $3.83$ & $\mathbf{2.25}$ & $0.13$ \\
-                        & filter (forward)   & $0.2$ & $5.99$ & $\mathbf{0.00}$ & $\mathbf{0.95}$ & $1.2$ & $24.34$ & $9.95$ & $< 0.01$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{SM-CHMM conditional VaR is non-trivial and we defer it.}
-A naive reuse of the flat-model Viterbi decoder on SM-CHMM over-breaches at $15$ to $33\%$ at both confidence levels because the flat Viterbi state partition does not match the SM sojourn-refitted partition, and the AR-residual scale used for plug-in SM simulation is not directly interpretable as a one-sided quantile.
-Two approximations (AR-residual scale and stationary within-state $\sigma$) both sit well above the $\chi^2_1$ Kupiec threshold; interestingly the stationary-$\sigma$ SM-CHMM-t variant produces Christoffersen $\text{LR}_{\text{ind}} = 0.07$ at $1\%$ on the smoother diagnostic, suggesting that the regime-persistence structure alone carries most of the independence fix, but unconditional coverage remains broken until an SM-aware decoder (whether smoother or filter) is implemented.
-We leave a proper SM-aware decoder to future work; the flat CHMM-t smoother diagnostic already provides an IS goodness-of-fit signal that the regime partition captures the 2024-2026 stress clustering, but the filter-based one-step-ahead backtest for all three emission families fails Kupiec (over-conservative), so the operational regime-conditional VaR rule a risk consumer could deploy in real time under the current flat CHMM is not yet calibrated, and the candidate remedies (adaptive re-fitting of $\hat\theta$ on a rolling window, an explicit variance overlay on top of the filtered regime, and the tail-emission shrinkage of Section~\ref{sec:discussion} under the $\nu_k$-shrinkage item) are left to future work.
-
-\paragraph{Where this lands in the three-way operational split.}
-Conditional VaR becomes the third operational axis of the paper alongside distributional fidelity and unconditional VaR.
-Flat CHMM-t is the leading generator on distributional fidelity (Section~\ref{sec:extended_evaluation}); MS-GARCH (Section~\ref{sec:benchmarks}) and the SM ablation are the leading generators on unconditional VaR (Section~\ref{sec:sm_ablation}); on regime-conditional VaR, the smoother-based IS diagnostic identifies flat CHMM-t's regime partition as capturing the 2024-2026 stress clustering, while the filter-based one-step-ahead backtest shows that no CHMM family currently delivers a Kupiec-calibrated operational regime-conditional VaR on this window.
-Section~\ref{sec:discussion} returns to the operational reading of this honest negative finding.
+A natural further step is regime-conditional VaR using the forward filter posterior $P(s_t \mid r_{1:t})$ under the IS-fit parameters and the mixture quantile $F^{-1}_{\sum_k \pi_t(k) F_k}(\alpha)$.
+On the $2024$--$2026$ OoS window this filter-based one-step-ahead backtest fails Kupiec for all three CHMM emission families at $\alpha = 0.01$ and $\alpha = 0.05$ (breach rate $\approx 0.2\%$ vs.\ $1\%$ target and $\approx 1.2$--$1.4\%$ vs.\ $5\%$ target): the filter mixture of state-conditional emissions is systematically over-conservative.
+The mechanism is a structural mixture-quantile inequality: when the filter places non-trivial posterior mass on at least one heavy-tailed tail-state $k^*$ and the bulk states have $F_k(q^*) < \alpha$ at the tail-state quantile $q^* = F_{k^*}^{-1}(\alpha)$, the mixture quantile satisfies $F^{-1}_{\sum_k \pi_k F_k}(\alpha) \le \min_k F_k^{-1}(\alpha)$, with strict inequality whenever the precondition holds (formal statement in Appendix~\ref{sec:supplementary}).
+We flag this as an honest open question for operational deployment of the regime-conditional VaR rule rather than as a contribution of the present paper; candidate remedies (a concentration constraint on the filter posterior, an explicit state-conditional variance overlay, or rolling re-estimation of $\hat\theta$) are left to future work.

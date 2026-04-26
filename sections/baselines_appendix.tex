@@ -1,7 +1,7 @@
 \subsection{OoS KS Test-Power Calibration}
 \label{sec:ks_power}
 
-Table~\ref{tab:ks_power} reports the two-sample KS test-power calibration used to anchor the OoS KS pass rates of Section~\ref{sec:oos}.
+Table~\ref{tab:ks_power} reports the two-sample KS test-power calibration used to anchor the OoS KS pass rates of Section~\ref{sec:rolling_origin}.
 For each of $1{,}000$ Monte Carlo replications (seed = 20260420), a simulated series of length $T_{\text{OoS}} = 572$ is drawn from each of three reference generators and tested against the observed OoS series using the same $\alpha = 0.05$ threshold as the main-body pass-rate metric.
 
 \begin{table}[h]
@@ -20,12 +20,12 @@ Gaussian$(\hat\mu_{\text{IS}}, \hat\sigma_{\text{IS}})$ at length $T_{\text{IS}}
 \end{tabular}
 \end{table}
 
-The $90.0\%$ "nearly correct" rate is the practical ceiling for the CHMM OoS KS pass rates reported in Section~\ref{sec:oos} ($80$--$84\%$); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
+The $90.0\%$ "nearly correct" rate is the practical ceiling for the CHMM OoS KS pass rates reported in Section~\ref{sec:rolling_origin} ($80$--$84\%$); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
 
 \subsection{Block-Bootstrap KS Recalibration and Mean p-value Distribution}
 \label{sec:ks_block_bootstrap}
 
-Two complementary concerns can be raised about the headline IS KS pass-rate metric: (i) the asymptotic two-sample KS test assumes i.i.d. samples, but the simulated paths from CHMM, GARCH, and discrete HMMs all carry volatility clustering, so the asymptotic null distribution may not apply; and (ii) the binary "pass / fail at $\alpha = 0.05$" reduces a continuous p-value to a one-bit summary. Table~\ref{tab:m2_ks_bootstrap} reports two recalibrations addressing each concern.
+Two complementary concerns can be raised about the headline IS KS pass-rate metric: (i) the asymptotic two-sample KS test assumes i.i.d.\ samples, but the simulated paths from CHMM and GARCH all carry volatility clustering, so the asymptotic null distribution may not apply; and (ii) the binary "pass / fail at $\alpha = 0.05$" reduces a continuous p-value to a one-bit summary. Table~\ref{tab:m2_ks_bootstrap} reports two recalibrations addressing each concern.
 
 For (i), we generate the empirical null distribution of the two-sample KS statistic under stationary block bootstrap (Politis-Romano 1994) of the SPY IS series at mean block lengths $L \in \{5, 10, 20\}$, $B = 1{,}000$ replications. The resulting $95\%$ block-bootstrap critical values are $0.0306$, $0.0338$, and $0.0350$ respectively, all \emph{smaller} than the asymptotic critical value $1.36 \sqrt{2/n_{\text{IS}}} = 0.0383$; the block-bootstrap test is therefore stricter than the asymptotic one because it accounts for the within-window dependence in the IS series itself. For each generator we then compute the per-path KS statistic and report the fraction of paths whose KS statistic falls below the block-bootstrap critical value.
 
@@ -55,10 +55,7 @@ Two patterns emerge that the asymptotic pass-rate metric of the main panel does 
 \label{sec:tier3_robustness}
 
 \paragraph{Fixed observed-sample MMD bandwidth.}
-The original Section~\ref{sec:extended_evaluation} computes MMD with median-heuristic bandwidth on the pooled (observed + simulated) window matrix, so the kernel scale $\gamma$ varies with the generator under evaluation. We refit MMD across the full extended generator panel under a single bandwidth $\gamma_{\text{obs}}$ computed once on $500$ observed standardised $20$-day windows from SPY IS. The legacy and fixed MMDs differ only in the third or fourth decimal across all ten generators in our reproduction (full numbers in \texttt{results/robustness/mmd\_fixed\_bandwidth.csv}); the cross-generator ranking under the fixed bandwidth is preserved. The bandwidth-heuristic concern is therefore real in principle but small in practice for this panel.
-
-\paragraph{$K_{\text{disc}} = 13$ centroid ablation.}
-The Bin-T NJ row of Table~\ref{tab:model_comparison} changes both the bin count ($K_{\text{disc}} = 90 \to 13$) and the emission family (centroid $\to$ bin-conditional Student-t). To isolate the bin-count effect we add a parallel $K_{\text{disc}} = 13$ row with the standard centroid emissions: IS KS $0.0\%$, OoS KS $35.4\%$, IS AD $0.0\%$, OoS AD $63.4\%$, simulated IS excess kurtosis $0.63$, ACF-MAE $0.0596$. At $K_{\text{disc}} = 13$, centroid emissions cannot tile the SPY IS distribution at all (IS KS collapses to zero); the Bin-T NJ row's IS KS of $95.4\%$ at the same bin count is therefore driven by the within-bin Student-t emissions, not by the bin count. The within-bin tail mass is the dominant contributor to that row's calibration. CSV at \texttt{results/robustness/kdisc13\_centroid\_ablation.csv}.
+An auxiliary MMD metric we report in this appendix (Section~\ref{sec:supp_metrics}) computes Maximum Mean Discrepancy with median-heuristic bandwidth on the pooled (observed $+$ simulated) window matrix, so the kernel scale $\gamma$ varies with the generator under evaluation. We refit MMD across the full extended generator panel under a single bandwidth $\gamma_{\text{obs}}$ computed once on $500$ observed standardised $20$-day windows from SPY IS. The legacy and fixed MMDs differ only in the third or fourth decimal across all ten generators in our reproduction (full numbers in \texttt{results/robustness/mmd\_fixed\_bandwidth.csv}); the cross-generator ranking under the fixed bandwidth is preserved. The bandwidth-heuristic concern is therefore real in principle but small in practice for this panel.
 
 \paragraph{Multi-seed Monte Carlo on headline metrics.}
 The paper reports headline statistics under a single global seed. We re-run the CHMM-N / -t / -L pipeline at $K = 18$ across ten alternative global seeds (base $20260422$, increment $100$) with $N_{\text{paths}} = 250$ per seed and report mean $\pm$ std for the headline metrics in Table~\ref{tab:m10_multiseed}. Seed-to-seed variability is small: IS KS std is $1.2$--$1.8\%$; OoS KS std is $1.8$--$3.6\%$; simulated IS kurtosis std is $0.06$ for CHMM-N, $0.05$ for CHMM-L, and $1.95$ for CHMM-t (reflecting the well-known instability of the per-state $\nu_k$ ECM at moderate $K$, already discussed in Section~\ref{sec:discussion}). Kupiec $\text{LR}_{\text{uc}}^{1\%}$ has std up to $1.25$ for CHMM-N because the breach count moves on a coarse $0$--$10$ grid at $T_{\text{OoS}} = 572$. The single-seed headline numbers in Table~\ref{tab:model_comparison} (e.g., CHMM-N IS KS $93.8\%$, simulated kurt $4.99$) sit comfortably inside the multi-seed bands. CSV at \texttt{results/robustness/multiseed\_headline.csv}.
@@ -125,30 +122,6 @@ OoS & 87.5 & 86.4 & 5.34 & 0.0512 & 0.225 & 0.1570 & 86.9  \\
 \end{tabular}
 \end{table}
 
-\subsection{Discrete HMM with Bin-Conditional Student-t Emissions}
-\label{sec:bin_t_supp}
-
-Table~\ref{tab:bin_t} reports the full seven-metric panel for the Bin-T NJ variant referenced in Section~\ref{sec:model_comparison}: the discrete NJ transition matrix with $K_{\text{disc}} = 13$ quantile bins, but with each bin emitting from a bin-conditional Student-t density rather than from the bin centroid.
-
-\begin{table}[h]
-\centering
-\small
-\caption{Discrete HMM with bin-conditional Student-t emissions on SPY (no jumps, $K_{\text{disc}} = 13$, 1{,}000 paths, seed = 20260420).}
-\label{tab:bin_t}
-\begin{tabular}{l cc cc c c c c}
-\toprule
-Window & KS & AD & Kurt & ACF-MAE & $W_1$ & $H$ & Cov \\
-\midrule
-IS  & 95.4 & 92.1 & 26.18 & 0.0619 & 0.116 & 0.0929 & 89.9 \\
-OoS & 86.7 & 93.2 & 10.76 & 0.0538 & 0.177 & 0.1614 & 93.9 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The bin-conditional Student-t fit picks $\nu \approx 2.71$ for the two extreme bins (bins $1$ and $13$, corresponding to the lower and upper quantile tails of the IS distribution) and $\nu = 50$ (upper bracket) for the eleven central bins, which explains both the large IS simulated kurtosis ($26.18$) and the very thin-scale central bins ($\sigma$ $\sim$ $0.06$--$0.28$).
-
-
-
 \subsection{GRU Deep-Generative Baseline}
 \label{sec:gru_supp}
 
@@ -162,7 +135,7 @@ Section~\ref{sec:model_comparison} are summarised here.
     standardised return) over a context window of $w = 20$ trading days.
 
     \item \textbf{Loss.} Per-window negative log-likelihood of a Gaussian
-    next-step density, equation~\eqref{eq:gru_nll}.
+    next-step density, $\ell_t = \log \sigma_t + \tfrac{1}{2}((G_t - \mu_t)/\sigma_t)^2$.
 
     \item \textbf{Optimiser.} Adam, learning rate $1.0 \times 10^{-3}$.
 
@@ -193,7 +166,7 @@ Section~\ref{sec:model_comparison} are summarised here.
 
 The trained model is callable through the same
 \texttt{simulate\_gru(model, n\_steps; seed\_window)} interface as the
-CHMM and discrete-HMM models, so the seven-metric panel evaluates the GRU
+CHMM, so the seven-metric panel evaluates the GRU
 on byte-identical windows to the other generators.
 
 \begin{table}[h]
@@ -214,8 +187,8 @@ OoS & 52.5 & 55.0 & 2.21 & 0.0500 & 0.293 & 0.1603 & 69.7 \\
 \subsection{Per-Ticker OoS Price-Simulation Figures and Full Path-Level Metrics (Unconditional CHMM)}
 \label{sec:price_sim_oos_appendix}
 
-This appendix collects (i) the full per-family path-level probabilistic-forecast metrics deferred from Table~\ref{tab:price_sim_oos} in Section~\ref{sec:price_sim_oos}, and (ii) the per-ticker price-fan and terminal-distribution figures for the five non-body tickers NVDA, JNJ, JPM, AAPL, and QQQ.
-All figures use the same plotting conventions as Figure~\ref{fig:price_fan_spy} in the main body: blue shaded bands are the $5$--$95\%$ and $25$--$75\%$ quantile envelopes of the $500$ simulated paths, blue solid line is the simulated median, red solid line is the observed OoS price track.
+This appendix collects (i) the full per-family path-level probabilistic-forecast metrics for an auxiliary OoS price-simulation diagnostic on the six SPY-member tickers and (ii) the per-ticker price-fan and terminal-distribution figures for NVDA, JNJ, JPM, AAPL, and QQQ.
+Plotting conventions: blue shaded bands are the $5$--$95\%$ and $25$--$75\%$ quantile envelopes of the $500$ simulated paths, blue solid line is the simulated median, red solid line is the observed OoS price track.
 Terminal-histogram panels show the cross-path distribution of $\widetilde P_T$ at $T_{\text{OoS}}$ in gray, with the observed terminal $P^{\text{obs}}_T$ as a red vertical line and the simulated median as a blue dashed line.
 For brevity, the figures show CHMM-N only (the representative family; differences across the three emission families in the price-level metrics are small, see Table~\ref{tab:price_sim_path_metrics}).
 
@@ -286,7 +259,7 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
     \includegraphics[width=\textwidth]{figs/Fig-JNJ-TerminalDist-N.pdf}
     \caption{Terminal distribution.}
 \end{subfigure}
-\caption{JNJ OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
+\caption{JNJ OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as above).}
 \label{fig:price_fan_jnj_appendix}
 \end{figure}
 
@@ -300,7 +273,7 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
     \includegraphics[width=\textwidth]{figs/Fig-JPM-TerminalDist-N.pdf}
     \caption{Terminal distribution.}
 \end{subfigure}
-\caption{JPM OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
+\caption{JPM OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as above).}
 \label{fig:price_fan_jpm_appendix}
 \end{figure}
 
@@ -314,7 +287,7 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
     \includegraphics[width=\textwidth]{figs/Fig-AAPL-TerminalDist-N.pdf}
     \caption{Terminal distribution.}
 \end{subfigure}
-\caption{AAPL OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
+\caption{AAPL OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as above).}
 \label{fig:price_fan_aapl_appendix}
 \end{figure}
 
@@ -328,14 +301,14 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
     \includegraphics[width=\textwidth]{figs/Fig-QQQ-TerminalDist-N.pdf}
     \caption{Terminal distribution.}
 \end{subfigure}
-\caption{QQQ OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as in Figure~\ref{fig:price_fan_spy}).}
+\caption{QQQ OoS price fan and terminal distribution, CHMM-N (Pipeline~A, $K = 18$, 500 simulated paths, $T_{\text{OoS}} = 572$; plotting conventions as above).}
 \label{fig:price_fan_qqq_appendix}
 \end{figure}
 
 \subsection{Expanded GARCH-Family Baselines}
 \label{sec:m7_baselines}
 
-We add five conditional-volatility baselines to the single GARCH(1,1) Gaussian row of Table~\ref{tab:model_comparison} and the two-regime MS-GARCH row of Table~\ref{tab:extended_metrics}. All are fit by grid-initialised Nelder-Mead maximum likelihood on the SPY IS window ($T_{\text{IS}} = 2{,}516$); simulation follows the same recursion used in estimation. Full results are in Table~\ref{tab:garch_suite}; model specifications are below.
+We add five conditional-volatility baselines to the single GARCH(1,1) Gaussian row of Table~\ref{tab:model_comparison}. All are fit by grid-initialised Nelder-Mead maximum likelihood on the SPY IS window ($T_{\text{IS}} = 2{,}516$); simulation follows the same recursion used in estimation. Model specifications are below.
 
 \paragraph{EGARCH(1,1) Gaussian.}
 The exponential GARCH of \citet{nelson1991conditional} evolves $\log \sigma_t^2$ in levels:
@@ -367,6 +340,6 @@ The heterogeneous-autoregressive model of \citet{corsi2009simple} models realise
 In the absence of intraday bars we use daily squared demeaned returns as the RV proxy; simulation samples $\eta_t \sim \mathcal{N}(0, \hat\sigma_\eta^2)$ and rolls forward the recursion, then draws $r_t - \mu = \sqrt{\text{RV}_t}\, z_t$ with $z_t \sim \mathcal{N}(0, 1)$.
 
 \paragraph{MS-GARCH $K = 3$.}
-The three-regime extension of the Markov-switching GARCH(1,1) in Section~\ref{sec:msgarch_methods}. Parameter layout is three regime triples $(\omega_k, \alpha_k, \beta_k)$ plus six transition-matrix logits (softmax-normalised per row, enforcing a non-trivial diagonal); fit by grid-initialised Nelder-Mead as in the $K = 2$ case. States are canonicalised by ascending unconditional variance, producing the calm / medium / stress decomposition $\sigma = [0.10, 1.77, 10.04]$ on SPY IS.
+A three-regime extension of the Markov-switching GARCH(1,1) ($G_t = \mu + \sigma_t z_t$ with regime-specific recursion $\sigma_t^2(k) = \omega_k + \alpha_k(G_{t-1} - \mu)^2 + \beta_k \sigma_{t-1}^2(k)$). Parameter layout is three regime triples $(\omega_k, \alpha_k, \beta_k)$ plus six transition-matrix logits (softmax-normalised per row, enforcing a non-trivial diagonal); fit by grid-initialised Nelder-Mead. States are canonicalised by ascending unconditional variance, producing the calm / medium / stress decomposition $\sigma = [0.10, 1.77, 10.04]$ on SPY IS.
 
 

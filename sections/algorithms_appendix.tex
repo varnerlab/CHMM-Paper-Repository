@@ -40,7 +40,7 @@ so that conditional on $\nu_k$ the location and scale admit closed-form weighted
     \label{eq:tupdate_supp}
 \end{equation}
 The degrees-of-freedom parameter $\nu_k$ is then refined by a one-dimensional golden-section search on the per-state $Q$-function $Q_k(\nu) = \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k)$ over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$.
-This two-block ECM preserves the monotonicity of the standard EM guarantee under Assumption~\ref{ass:compact}, with the search invariant $Q_k(\nu^{(n+1)}) \ge Q_k(\nu^{(n)})$ at every iteration; Proposition~\ref{prop:ecm_monotone} in Section~\ref{sec:theory} states the guarantee in full.
+This two-block ECM preserves the monotonicity of the standard EM guarantee on the compact bracket $[\nu_{\min}, \nu_{\max}]$, with the search invariant $Q_k(\nu^{(n+1)}) \ge Q_k(\nu^{(n)})$ at every iteration; Proposition~\ref{prop:ecm_monotone} states the guarantee in full.
 We extend this M-step with an optional exponential shrinkage prior on $1/\nu_k$, corresponding to the penalised objective
 \begin{equation}
     Q_k^{\text{pen}}(\nu) \;=\; \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k) \;-\; \lambda \, / \, \nu,

@@ -56,7 +56,7 @@ For the cross-asset extension we additionally track the mean Frobenius norm $\|\
 \subsection{Extended Evaluation: Detail Panels}
 \label{sec:extended_eval_detail}
 
-Per-generator detail for the leverage, aggregational-Gaussianity, and joint $p$-value diagnostics summarised in Section~\ref{sec:extended_evaluation} (headline panel: Table~\ref{tab:extended_metrics}).
+Per-generator detail for the leverage, aggregational-Gaussianity, and joint $p$-value diagnostics on the SPY IS and OoS windows.
 
 \begin{table}[h]
 \centering
@@ -70,8 +70,6 @@ Model & avg IS & asym IS & $p_{\text{avg}}$ IS & avg OoS & asym OoS & $p_{\text{
 Bootstrap & $\phantom{-}0.000$ & $\phantom{-}0.001$ & $0.000$ & $\phantom{-}0.001$ & $-0.006$ & $0.000$ \\
 Gaussian  & $-0.000$ & $-0.001$ & $0.000$ & $-0.000$ & $\phantom{-}0.001$ & $0.000$ \\
 Laplace   & $-0.000$ & $-0.000$ & $0.000$ & $-0.000$ & $\phantom{-}0.005$ & $0.000$ \\
-Discrete NJ & $-0.010$ & $\phantom{-}0.287$ & $0.000$ & $-0.008$ & $\phantom{-}0.273$ & $0.001$ \\
-Discrete WJ & $-0.010$ & $\phantom{-}0.290$ & $0.000$ & $-0.008$ & $\phantom{-}0.287$ & $0.011$ \\
 GARCH(1,1)  & $-0.001$ & $\phantom{-}0.064$ & $0.014$ & $-0.001$ & $\phantom{-}0.065$ & $0.061$ \\
 \textbf{CHMM-N} & $\mathbf{-0.038}$ & $\phantom{-}0.292$ & $0.000$ & $\mathbf{-0.033}$ & $\phantom{-}0.287$ & $\mathbf{0.205}$ \\
 CHMM-t  & $-0.025$ & $\phantom{-}0.281$ & $0.000$ & $-0.029$ & $\phantom{-}0.274$ & $0.048$ \\
@@ -94,8 +92,6 @@ Observed    & $7.68$ & $4.34$ & $6.82$ & $2.63$ & $5.29$ & $1.98$ & $0.09$  & $-
 Bootstrap   & $7.44$ & $1.31$ & $0.54$ & $0.13$ & $5.24$ & $0.77$ & $0.04$  & $-0.39$ \\
 Gaussian    & $-0.01$& $-0.03$& $-0.09$& $-0.17$& $-0.05$& $-0.17$& $-0.30$ & $-0.54$ \\
 Laplace     & $2.86$ & $0.51$ & $0.16$ & $-0.04$& $2.55$ & $0.23$ & $-0.15$ & $-0.49$ \\
-Discrete NJ & $3.55$ & $2.15$ & $1.10$ & $0.34$ & $3.41$ & $1.42$ & $0.39$  & $-0.29$ \\
-Discrete WJ & $3.50$ & $2.16$ & $1.16$ & $0.42$ & $3.34$ & $1.41$ & $0.47$  & $-0.25$ \\
 GARCH(1,1)  & $4.35$ & $4.79$ & $3.74$ & $2.55$ & $1.79$ & $1.87$ & $1.26$  & $0.34$ \\
 CHMM-N      & $4.88$ & $3.70$ & $3.27$ & $2.38$ & $4.08$ & $2.38$ & $1.60$  & $0.40$ \\
 \textbf{CHMM-t} & $\mathbf{8.46}$ & $\mathbf{2.65}$ & $\mathbf{2.06}$ & $\mathbf{1.35}$ & $\mathbf{5.55}$ & $\mathbf{1.89}$ & $\mathbf{1.15}$ & $\mathbf{0.21}$ \\
@@ -116,8 +112,6 @@ Model & $p_{\text{kurt}}$ & $p_{\text{acf}}$ & $p_{\text{lev}}$ & $p_{\text{ak5}
 Bootstrap   & $0.894$ & $0.000$ & $0.000$ & $0.012$ & $0.005$ & $0.228$ & $0.466$ \\
 Gaussian    & $0.000$ & $0.000$ & $0.000$ & $0.000$ & $0.002$ & $0.000$ & $0.116$ \\
 Laplace     & $0.002$ & $0.000$ & $0.000$ & $0.000$ & $0.002$ & $0.001$ & $0.156$ \\
-Discrete NJ & $0.000$ & $0.000$ & $0.000$ & $0.034$ & $0.029$ & $0.016$ & $0.376$ \\
-Discrete WJ & $0.000$ & $0.000$ & $0.000$ & $0.060$ & $0.057$ & $0.029$ & $0.384$ \\
 GARCH(1,1)  & $0.271$ & $0.021$ & $0.014$ & $0.903$ & $0.974$ & $0.540$ & $0.468$ \\
 CHMM-N      & $0.009$ & $0.000$ & $0.000$ & $0.659$ & $0.894$ & $0.390$ & $0.539$ \\
 CHMM-t      & $0.872$ & $0.000$ & $0.000$ & $0.196$ & $0.228$ & $0.324$ & $0.661$ \\

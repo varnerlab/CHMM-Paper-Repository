@@ -92,7 +92,7 @@
 % Mark text that must be rewritten when new numbers arrive from CHMM-Model.
 \newcommand{\revtodo}[1]{\textcolor{red}{\textbf{[TODO (revision): #1]}}}
 
-\title{A Regime-Switching Continuous Hidden Markov Model as a Reference Synthetic-Data Generator for Equity Returns:\\Extended Evaluation, Semi-Markov Ablation, and Regime-Conditional Value-at-Risk}
+\title{A Regime-Switching Continuous Hidden Markov Model as a Reference Synthetic-Data Generator for Equity Returns}
 
 \author{
     Abdulrahman Alswaidan\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA. Email: \texttt{aa2725@cornell.edu}.}
@@ -110,10 +110,10 @@
 
 % ========================================================================================= %
 \begin{abstract}
-We develop a family of regime-switching continuous hidden Markov models (CHMMs) as a reference synthetic-data generator for daily equity returns and benchmark them against non-parametric, discrete-state, and deep-generative alternatives. Three variants share a log-space Expectation--Maximization scaffold and differ only in the per-state emission law: Gaussian (CHMM-N), Student-t with per-state degrees of freedom (CHMM-t), and Laplace (CHMM-L). At a single moderate state resolution they reproduce the canonical stylized facts of daily equity returns within a standard CHMM framework. The contribution is the integrative evaluation built on this unified scaffold rather than a new estimator, with each operational claim grounded in a stated proposition: a closed-form spectral expression for the absolute-return ACF that recasts the Ryd\'{e}n et al.\ low-$K$ limitation as a $K$-rank statement on $\mathbf{T}$, ECM monotonicity for CHMM-t, identifiability and MLE consistency, marginal preservation under rank reordering, and structural inequalities that explain filter-VaR Kupiec failures. On ten years of daily SPDR S\&P~500 ETF (SPY) data, flat CHMM-t attains the smallest Maximum Mean Discrepancy in the panel and the discriminator AUC closest to $0.5$ among parametric and Markov-switching rows. On unconditional VaR, a semi-Markov CHMM and a two-regime MS-GARCH both reach the Kupiec floor at $1\%$, with MS-GARCH leading at $5\%$. On regime-conditional VaR, the Viterbi smoother diagnostic clears Kupiec and Christoffersen at $1\%$ and $5\%$ on the 2024 to 2026 holdout, but the filter-based one-step-ahead backtest fails Kupiec at both levels because the heavy-tailed mixture under the filter posterior is systematically over-conservative, an honest negative finding. We extend to multi-asset synthesis via a Single Index Model and Gaussian and Student-t copulas, with the flat Student-t copula the most competitive dependence layer.
+We show that a continuous hidden Markov model (CHMM) at moderate state resolution reproduces the three canonical stylized facts of daily equity returns, heavy-tailed marginals, negligible linear autocorrelation, and slow decay of the absolute-return autocorrelation function, simultaneously within a single Expectation--Maximization scaffold. The mechanism is spectral: the absolute-return autocovariance admits the closed-form mixture-of-eigenvalues identity $\rho_{|G|}(\tau) = \sum_{k \ge 2} w_k \lambda_k^{\tau}$ over the non-unit eigenvalues of the transition matrix $\mathbf{T}$, which recasts the low-$K$ limitation of standard regime-switching HMMs as a $K$-rank statement on $\mathbf{T}$ rather than a structural barrier requiring semi-Markov or jump augmentation. The same scaffold accommodates Gaussian (CHMM-N), Student-t (CHMM-t), and Laplace (CHMM-L) emissions through a single M-step swap, with quantile initialization driving Baum-Welch to a non-degenerate fit. On ten years of daily SPDR S\&P~500 ETF (SPY) data the CHMM attains $93.8\%$ in-sample and $84.2\%$ out-of-sample Kolmogorov--Smirnov pass rates and reproduces the absolute-return autocorrelation function within $0.002$ of GARCH(1,1). CHMM-N undershoots simulated excess kurtosis ($5.0$ vs.\ observed $7.7$), CHMM-t overshoots ($14.6$), and CHMM-L matches cleanly ($6.8$) without a shape parameter. The unconditional Value-at-Risk and Expected-Shortfall envelopes bracket the observed historical values at both $1\%$ and $5\%$ on the in-sample and out-of-sample windows. Multi-asset synthesis composes cleanly through a rank-based Student-t copula on top of the CHMM marginals: profile maximum likelihood selects $\nu^\star = 6$ degrees of freedom, and the resulting cross-asset construction reproduces the off-diagonal correlation matrix on six SPY-member assets with mean absolute error $0.027$. The headline single-window result is qualified by a five-window rolling-origin evaluation: four of five windows reproduce the headline pass rates, the $2022$ structural break is an explicit counter-example. The companion Julia package \texttt{CHMM-Model.jl} ships as a co-equal deliverable with this paper.
 
 \bigskip\noindent
-\textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch, Student-t Emissions, Semi-Markov, Stylized Facts, Volatility Clustering, Copula Dependence, Cross-Asset Simulation, Value-at-Risk, Kupiec, Christoffersen, Maximum Mean Discrepancy, Synthetic-Data Generator.
+\textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch, Student-t Emissions, Stylized Facts, Volatility Clustering, Spectral ACF, Value-at-Risk, Synthetic-Data Generator.
 \end{abstract}
 
 % ========================================================================================= %
@@ -160,24 +160,8 @@ We develop a family of regime-switching continuous hidden Markov models (CHMMs) 
 % ========================================================================================= %
 \appendix
 
-\section{Validation Metric Details}
-\label{sec:metrics_appendix}
-\input{sections/metrics_appendix}
-
-\section{CHMM Algorithms and Derivations}
-\label{sec:algorithms_appendix}
-\input{sections/algorithms_appendix}
-
-\section{State-Resolution and Multi-Emission Supplementary Material}
-\label{sec:sensitivity_appendix}
-\input{sections/sensitivity_appendix}
-
-\section{Cross-Asset Dependence Supplementary Material}
-\label{sec:cross_asset_appendix}
-\input{sections/cross_asset_appendix}
-
-\section{Baseline and Per-Ticker Supplementary Material}
-\label{sec:baselines_appendix}
-\input{sections/baselines_appendix}
+\section{Supplementary Material}
+\label{sec:supplementary}
+\input{sections/supplementary}
 
 \end{document}

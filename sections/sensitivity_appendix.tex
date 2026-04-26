@@ -1,7 +1,7 @@
-\subsection{Empirical Stylized-Fact Visualization (Companion to Table~\ref{tab:descriptive})}
+\subsection{Empirical Stylized-Fact Visualization}
 \label{sec:stylized_facts_supp}
 
-Figure~\ref{fig:stylized_facts} visualizes the stylized facts of SPY daily excess growth rates whose Jarque--Bera and Ljung--Box test statistics are reported in Table~\ref{tab:descriptive}.
+Figure~\ref{fig:stylized_facts} visualizes the stylized facts of SPY daily excess growth rates summarised in Section~\ref{sec:descriptive} of the main text.
 
 \begin{figure}[H]
 \centering
@@ -13,7 +13,7 @@ Figure~\ref{fig:stylized_facts} visualizes the stylized facts of SPY daily exces
 \subsection{Full State-Resolution Sensitivity Table}
 \label{sec:sensitivity_table}
 
-Table~\ref{tab:sensitivity} reports the full $K$-sweep referenced in Section~\ref{sec:k_sensitivity} of the main text.
+Table~\ref{tab:sensitivity} reports the full $K$-sweep referenced in Section~\ref{sec:k_selection_results} of the main text.
 Observed excess kurtosis is $7.68$ IS and $5.29$ OoS at all $K$.
 
 \begin{table}[H]
@@ -188,8 +188,7 @@ Tail states (crash and boom) receive low stationary probability, consistent with
 Figure~\ref{fig:residence_all} shows the natural residence times $\tau_k = 1/(1 - T_{kk})$ per state for $K = 6$ and $K = 18$.
 Under pure Markov dynamics (no jump mechanism), the expected duration in state $k$ before transitioning is $\tau_k$ steps.
 Central states exhibit the longest residence times (5--20 days), while tail states have shorter residence times (1--3 days), consistent with the transient nature of extreme market events.
-Notably, even without a jump mechanism, the tail states at higher $K$ maintain sufficient self-transition probability ($T_{kk} \approx 0.3$--$0.5$) to produce multi-day tail episodes.
-This contrasts with the discrete model of \citet{alswaidan2026hybrid}, where tail-state residence times were too short to sustain clustering without the Poisson jump extension.
+Notably, the tail states at higher $K$ maintain sufficient self-transition probability ($T_{kk} \approx 0.3$--$0.5$) to produce multi-day tail episodes, the empirical correlate of the spectral mechanism in Section~\ref{sec:theory}.
 
 \begin{figure}[H]
 \centering
@@ -316,7 +315,7 @@ The two lines do not need to agree pointwise (simulated and observed hidden-stat
 \label{sec:multi_emission_figs}
 
 This appendix reproduces the standard diagnostic suite (emission PDFs, residence times, IS comparison, OoS validation, and convergence) for the two heavy-tailed emission families (CHMM-t and CHMM-L) at the selected state resolution $K = 18$; transition matrices and stationary distributions are discussed in prose only below, since they are visually indistinguishable across families at $K = 18$.
-The Gaussian counterparts are already shown as Figures~\ref{fig:model_internals},~\ref{fig:is_comparison},~\ref{fig:oos_validation},~\ref{fig:convergence_all},~\ref{fig:transition_all},~\ref{fig:stationary_all}, and~\ref{fig:residence_all} in the main text and above in this appendix.
+The Gaussian counterparts are already shown as Figures~\ref{fig:is_comparison} and~\ref{fig:oos_validation} in the main text and as Figures~\ref{fig:convergence_all},~\ref{fig:transition_all},~\ref{fig:stationary_all}, and~\ref{fig:residence_all} above in this appendix.
 The figures confirm that the shared forward--backward scaffold produces internally-similar regime structure across the three families: the near-diagonal transition band, the $K$-component dense emission cover, the longer central-state residence times, and the monotone log-likelihood convergence are features of the CHMM framework and not of the Gaussian component specifically.
 
 \paragraph{Emission PDFs.}
