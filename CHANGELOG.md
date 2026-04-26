@@ -69,12 +69,10 @@ refocused narrative on equity-only synthetic-data generation.
 
 ---
 
-## v8 (frozen; current main + v8-icaif conference variant)
+## v8 (frozen)
 
-**Scope.** Editorial clarity pass plus venue separation into two variants:
-a venue-agnostic journal / arXiv preprint (`Paper_v8.tex`) and an
-ICAIF 2026 double-blind submission (`Paper_v8-icaif.tex`). No new
-experiments, no changed numbers.
+**Scope.** Editorial clarity pass on `Paper_v8.tex`. No new experiments,
+no changed numbers. Target output is a venue-agnostic preprint.
 
 ### Changes vs v7
 
@@ -110,19 +108,12 @@ experiments, no changed numbers.
    a one-paragraph orientation that names Pipeline A and explains how
    Pipeline B composes on top of it.
 
-5. **ICAIF 2026 conference variant** (`Paper_v8-icaif.tex`). Separate
-   submission file built on the ACM `acmart` sigconf template with the
-   `anonymous` option; 4 pages in two-column format; self-contained (no
-   supplementary material, per ICAIF rules). Reuses all v8 results but
-   compressed to an 8-page-budget format. Shares `References_v8-icaif.bib`
-   (11-entry subset of `References_v8.bib`).
+5. **Venue-agnostic framing in `Paper_v8.tex`.** Removed prior
+   venue-specific framing (fidelity / utility / privacy triad paragraph)
+   from the abstract and introduction so the paper is suitable for an
+   arXiv preprint.
 
-6. **Venue-agnostic framing in `Paper_v8.tex`.** Removed prior JDIQ-specific
-   framing (fidelity / utility / privacy triad paragraph) from the abstract
-   and introduction so the main v8 paper is suitable for any venue or a
-   standalone arXiv preprint.
-
-7. **v7-leftover cleanup.** Removed internal references to `V7_SEED`,
+6. **v7-leftover cleanup.** Removed internal references to `V7_SEED`,
    `run_v7_revisions.jl`, the "Paper v7" rebuild log line, and the
    `Fig-v7-*.pdf` figure filename prefix (renamed those figures to drop the
    v7 prefix, paths updated throughout).
