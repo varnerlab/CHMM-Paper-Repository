@@ -108,7 +108,7 @@ Section~\ref{sec:model_comparison} are summarised here.
     outputs $(\mu_t, \log \sigma_t)$. Input is a single feature (the
     standardised return) over a context window of $w = 20$ trading days.
 
-    \item \textbf{Loss.} Per-window negative log-likelihood of a Gaussian
+    \item \textbf{Loss.} Per-window negative log-likelihood (NLL) of a Gaussian
     next-step density, $\ell_t = \log \sigma_t + \tfrac{1}{2}((G_t - \mu_t)/\sigma_t)^2$.
 
     \item \textbf{Optimiser.} Adam, learning rate $1.0 \times 10^{-3}$.
@@ -319,7 +319,7 @@ A three-regime extension of the Markov-switching GARCH(1,1) ($G_t = \mu + \sigma
 \paragraph{MS-GARCH $K = 2$ (Haas-Mittnik-Paolella 2004).}
 The path-independent two-regime variant of \citet{haas2004new}. Regime stickiness is high: $p_{11} = 0.915$ (calm) and $p_{22} = 0.547$ (stress), with unconditional standard deviations $0.97$ (calm) and $12.67$ (stress); the calm regime is near-GARCH behaviour and the stress regime is a rare, transient high-variance mode. Common $\mu = 0.094$, log-likelihood $-4{,}965$.
 
-\paragraph{Semi-Markov CHMM (SM-CHMM, the explicit HSMM foil).}
+\paragraph{Semi-Markov CHMM (SM-CHMM, the explicit hidden semi-Markov model (HSMM) foil).}
 The conceptual foil of the present paper: a hidden semi-Markov extension of the CHMM in which the geometric sojourn distribution of the Markov chain is replaced by a per-state explicit-duration family chosen by AIC from $\{$Pareto, negative binomial, geometric$\}$. Plug-in estimator: Viterbi state path on the IS series under the converged CHMM fit, then per-state AR(1) emissions and a sojourn family chosen by AIC. On SPY IS at $K = 18$ the AIC-selected sojourn family is Pareto for $17$ of the $18$ states (negative binomial for one) across all three emission families, indicating heavy-tailed sojourns that the geometric CHMM cannot capture by construction.
 
 Table~\ref{tab:m7_extended_panel} reports the IS / OoS distributional fidelity, kurtosis, ACF-MAE, and Kupiec breach diagnostics for the extended GARCH family and the SM-CHMM rows alongside the headline CHMM panel. Two structural observations.

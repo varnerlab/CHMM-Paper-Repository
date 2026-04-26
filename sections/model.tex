@@ -2,7 +2,7 @@
 \label{sec:data}
 
 The single-asset analysis uses daily SPDR S\&P~500 ETF (SPY) prices from January~3, 2014 to January~3, 2024 (a ten-year training window, $T_{\text{IS}} = 2{,}516$), with the period from January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 572$) held out.
-Cross-ticker generalization additionally covers NVDA, JNJ, JPM, AAPL, and QQQ.
+Cross-ticker generalization additionally covers NVIDIA (NVDA), Johnson \& Johnson (JNJ), JPMorgan Chase (JPM), Apple (AAPL), and the Invesco QQQ Trust (QQQ).
 For ticker $i$ and trading day $j$, the annualized excess growth rate is
 \begin{equation}
     G_{i,j} \equiv \frac{1}{\Delta t} \ln\!\left(\frac{P_{i,j}}{P_{i,j-1}}\right) - r_f,
@@ -176,8 +176,8 @@ The \textit{Gaussian} i.i.d.\ generator draws $G_t \sim \mathcal{N}(\hat\mu, \ha
 
 The univariate analysis fits a separate CHMM to each ticker independently (Pipeline~A).
 For multi-asset synthesis we extend Pipeline~A through the rank-based Student-t copula \cite{demarta2005tcopula, mcneil2015quantitative}, which preserves each asset's fitted CHMM marginal exactly while injecting cross-sectional tail-coupled dependence.
-Of the three constructions evaluated in our larger panel (Single Index Model \cite{sharpe1963simplified}, Gaussian copula, Student-t copula), the Student-t copula is the strongest dependence layer in every relevant metric; we report it here as Pipeline~B and relegate the SIM and Gaussian copula constructions to Appendix~\ref{sec:supplementary}.
-By Sklar's theorem \cite{sklar1959fonctions, nelsen2006introduction}, any joint cumulative distribution function with continuous marginals factors uniquely into a copula and the marginals; this lets us fix each marginal at its per-asset CHMM and estimate only the copula.
+Of the three constructions evaluated in our larger panel (Single Index Model (SIM) \cite{sharpe1963simplified}, Gaussian copula, Student-t copula), the Student-t copula is the strongest dependence layer in every relevant metric; we report it here as Pipeline~B and relegate the SIM and Gaussian copula constructions to Appendix~\ref{sec:supplementary}.
+By Sklar's theorem \cite{sklar1959fonctions, nelsen2006introduction}, any joint cumulative distribution function (CDF) with continuous marginals factors uniquely into a copula and the marginals; this lets us fix each marginal at its per-asset CHMM and estimate only the copula.
 We use the nonparametric probability integral transform $u_{j,t} = \mathrm{rank}(g_{j,t}) / (T+1)$, estimate the copula correlation matrix $\Sigma$ by the analytic Kendall's-$\tau$ inversion $\rho_{ij} = \sin(\pi \tau_{ij}/2)$ \cite{embrechts2002correlation, mcneil2015quantitative}, and select the degrees-of-freedom parameter $\nu$ by profile maximum likelihood over $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$.
 Cross-asset simulation follows the rank-reordering construction of \citet{iman1982distribution}: (i) draw $T$ independent paths from each per-asset CHMM, (ii) sample $T$ copula variates, and (iii) reorder each column of the CHMM matrix to match the ranks of the copula sample.
 Reordering only permutes simulated values, so every per-asset marginal is preserved \emph{exactly} while cross-asset dependence is injected through rank coupling; this is a standard property of the rank-reordering construction.

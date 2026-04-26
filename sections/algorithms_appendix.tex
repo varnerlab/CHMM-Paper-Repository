@@ -208,7 +208,7 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \label{alg:copula_sim}
 \small
 \begin{algorithmic}[1]
-\REQUIRE Fitted per-asset CHMMs $\{\mathcal{M}_j\}_{j=1}^d$, correlation matrix $\Sigma$ (PSD, unit diagonal), copula family $\mathcal{C} \in \{\text{Gaussian}, t_\nu\}$, path length $T$, number of paths $P$
+\REQUIRE Fitted per-asset CHMMs $\{\mathcal{M}_j\}_{j=1}^d$, correlation matrix $\Sigma$ (positive semi-definite (PSD), unit diagonal), copula family $\mathcal{C} \in \{\text{Gaussian}, t_\nu\}$, path length $T$, number of paths $P$
 \ENSURE Cross-asset path tensor $\{\hat{G}^{(p)}_{j,t}\}$ of shape $T \times d \times P$
 
 \FOR{$p = 1$ to $P$}
@@ -246,7 +246,7 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \REQUIRE IS return matrix $\mathbf{R} \in \mathbb{R}^{T \times d}$, market-column index $m$, market CHMM $\mathcal{M}_m$, path length $T$, number of paths $P$
 \ENSURE Cross-asset path tensor $\{\hat{G}^{(p)}_{j,t}\}$ of shape $T \times d \times P$
 
-\STATE \textbf{OLS fit.} For $j \neq m$:
+\STATE \textbf{Ordinary least squares (OLS) fit.} For $j \neq m$:
 \STATE \quad $\hat{\beta}_j \leftarrow \text{Cov}(\mathbf{R}_{:,j}, \mathbf{R}_{:,m}) / \text{Var}(\mathbf{R}_{:,m})$
 \STATE \quad $\hat{\alpha}_j \leftarrow \overline{\mathbf{R}_{:,j}} - \hat{\beta}_j \overline{\mathbf{R}_{:,m}}$
 \STATE \quad $\hat{\eta}_{j,t} \leftarrow R_{t,j} - \hat{\alpha}_j - \hat{\beta}_j R_{t,m}$, \; $R^2_j \leftarrow 1 - \sum_t \hat{\eta}_{j,t}^2 / \sum_t (R_{t,j} - \overline{\mathbf{R}_{:,j}})^2$
@@ -287,7 +287,7 @@ The overshoot is therefore a feature of the Student-t emission family at $K = 18
 \begin{table}[h]
 \centering
 \small
-\caption{CHMM-t $\nu_{\min}$ bracket sensitivity at $K = 18$ on SPY (seed = 20260420, 1{,}000 paths).}
+\caption{CHMM-t $\nu_{\min}$ bracket sensitivity at $K = 18$ on SPY (seed = 20260420, 1{,}000 paths). AD = Anderson--Darling pass rate; $W_1$ = Wasserstein-1; $H$ = Hellinger distance (definitions in Appendix~\ref{sec:metric_details}).}
 \label{tab:nu_bracket}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{l cc cc cc c c c}
