@@ -4,7 +4,7 @@ The headline quantitative findings on SPY are $93.8\%$ in-sample and $84.2\%$ ou
 
 Multi-asset synthesis composes cleanly with the rank-based Student-t copula on top of the CHMM-N marginals: profile MLE selects $\nu^\star = 6$, and the resulting cross-asset construction reproduces the off-diagonal correlation matrix on six SPY-member assets with a mean absolute error of $0.027$, against $0.076$ for a Single Index Model factor baseline on the same marginals.
 
-Skew-heavy-tailed emissions, explicit-duration semi-Markov sojourns, and operational regime-conditional VaR are companion-paper directions; scaling the cross-asset construction to a larger universe via vine or factor copulas is the natural multi-asset follow-up.
+Skew-heavy-tailed emissions, explicit-duration semi-Markov sojourns, and operational regime-conditional VaR are companion-paper directions; a truncated C-vine on the same six-asset universe does not improve over the elliptical copulas (Appendix~\ref{sec:cvine_supp}), so the natural multi-asset follow-up is scaling to larger $d$ via untruncated regular vines or factor copulas.
 
 \paragraph{Data and code availability.}
 The simulation scripts and data to reproduce the paper are available under an MIT license at \url{https://github.com/altashly1/CHMM-paper}.

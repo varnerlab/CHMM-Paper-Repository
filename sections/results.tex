@@ -123,7 +123,7 @@ Profile maximum likelihood over $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ o
 
 \begin{table}[t]
 \centering
-\caption{\textbf{Cross-asset Student-t copula on CHMM-N marginals} (Pipeline~B; $\nu^\star = 6$ by profile MLE; $200$ paths). Per-asset KS pass rate at $\alpha = 0.05$ (rank reordering preserves marginals exactly, so the per-asset KS column is a sanity check after dependence injection rather than a substitute for Table~\ref{tab:cross_ticker}). The lower block reports correlation reproduction averaged over paths: Frobenius norm of $\hat\Sigma_{\text{sim}} - \hat\Sigma_{\text{obs}}$ and off-diagonal mean absolute error. Comparison against SIM and the Gaussian copula on the same marginals is in Appendix~\ref{sec:supp_cross_asset}; the Student-t copula is the best of the three on every metric (off-diagonal MAE $0.027$ vs.\ $0.031$ Gaussian, $0.076$ SIM).}
+\caption{\textbf{Cross-asset Student-t copula on CHMM-N marginals} (Pipeline~B; $\nu^\star = 6$ by profile MLE; $200$ paths). Per-asset KS pass rate at $\alpha = 0.05$ (rank reordering preserves marginals exactly, so the per-asset KS column is a sanity check after dependence injection rather than a substitute for Table~\ref{tab:cross_ticker}). The lower block reports correlation reproduction averaged over paths: Frobenius norm of $\hat\Sigma_{\text{sim}} - \hat\Sigma_{\text{obs}}$ and off-diagonal mean absolute error. Comparison against SIM, the Gaussian copula, and a truncated C-vine on the same marginals is in Appendix~\ref{sec:supp_cross_asset}; the Student-t copula is the best of the four on the headline IS off-diagonal MAE ($0.027$ vs.\ $0.030$ Gaussian, $0.068$ truncated C-vine, $0.076$ SIM).}
 \label{tab:cross_asset}
 \small
 \begin{tabular}{l cc}
@@ -132,27 +132,27 @@ Profile maximum likelihood over $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ o
 \cmidrule(lr){2-3}
 Ticker & IS & OoS \\
 \midrule
-SPY   & $95.5$  & $86.0$ \\
-NVDA  & $93.0$  & $50.5$ \\
-JNJ   & $100.0$ & $93.5$ \\
-JPM   & $96.5$  & $49.0$ \\
-AAPL  & $99.0$  & $94.5$ \\
-QQQ   & $93.0$  & $95.0$ \\
+SPY   & $96.0$  & $79.5$ \\
+NVDA  & $98.5$  & $53.5$ \\
+JNJ   & $99.0$  & $97.5$ \\
+JPM   & $99.5$  & $48.0$ \\
+AAPL  & $99.0$  & $93.5$ \\
+QQQ   & $95.5$  & $92.0$ \\
 \midrule
-Mean   & $96.2$ & $78.1$ \\
-Median & $96.0$ & $89.8$ \\
+Mean   & $97.9$ & $77.3$ \\
+Median & $98.8$ & $85.8$ \\
 \midrule
 \multicolumn{3}{l}{\textit{Correlation reproduction (averaged over $200$ paths)}} \\
-Frobenius IS         & \multicolumn{2}{c}{$0.184$} \\
+Frobenius IS         & \multicolumn{2}{c}{$0.183$} \\
 Off-diag MAE IS      & \multicolumn{2}{c}{$0.027$} \\
-Frobenius OoS        & \multicolumn{2}{c}{$1.499$} \\
-Off-diag MAE OoS     & \multicolumn{2}{c}{$0.208$} \\
+Frobenius OoS        & \multicolumn{2}{c}{$1.507$} \\
+Off-diag MAE OoS     & \multicolumn{2}{c}{$0.209$} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The Student-t copula preserves each asset's fitted CHMM marginal exactly by the rank-reordering construction, so the per-asset KS column (median $96.0\%$ IS, $89.8\%$ OoS) is a sanity check on the copula sample rather than a substitute for Table~\ref{tab:cross_ticker}.
-The central dependence-layer claim is the off-diagonal correlation MAE: $0.027$ on IS, against $0.031$ for the Gaussian copula and $0.076$ for the SIM factor baseline on the same marginals (Appendix~\ref{sec:supp_cross_asset}).
+The Student-t copula preserves each asset's fitted CHMM marginal exactly by the rank-reordering construction, so the per-asset KS column (median $98.8\%$ IS, $85.8\%$ OoS) is a sanity check on the copula sample rather than a substitute for Table~\ref{tab:cross_ticker}.
+The central dependence-layer claim is the off-diagonal correlation MAE: $0.027$ on IS, against $0.030$ for the Gaussian copula, $0.068$ for a truncated C-vine with SPY as root, and $0.076$ for the SIM factor baseline on the same marginals (Appendix~\ref{sec:supp_cross_asset}).
 The copula advantage is intrinsic to the rank-reordering construction rather than specific to the marginal model.
 
-The OoS off-diagonal MAE of $0.208$ is roughly an order of magnitude larger than the $0.027$ IS value, a degradation we attribute to the same stationarity-scope mechanism as the NVDA / JPM single-name OoS cliffs in Table~\ref{tab:cross_ticker}: the IS-fixed copula has no mechanism to track regime shifts in the cross-asset correlation structure that lie outside the IS support. Two appendix diagnostics localise the cause. First, extending the universe with GLD (a non-equity commodity asset class) reduces the OoS off-diag MAE to $0.179$ (Appendix~\ref{sec:non_us_asset_supp}), so the OoS gap is not driven by equity-cluster size. Second, a per-pair breakdown (Table~\ref{tab:per_pair_offdiag_mae}) shows the gap concentrates in three pairs involving JNJ (JNJ-QQQ, SPY-JNJ, NVDA-JNJ), each with $|\Delta| > 0.48$ on OoS, while gold-equity pairs sit at $|\Delta| \in [0.10, 0.19]$. The dominant cause is a single-name regime shift in the JNJ-equity-factor relationship rather than copula-degree mis-specification.
+The OoS off-diagonal MAE of $0.209$ is roughly an order of magnitude larger than the $0.027$ IS value, a degradation we attribute to the same stationarity-scope mechanism as the NVDA / JPM single-name OoS cliffs in Table~\ref{tab:cross_ticker}: the IS-fixed copula has no mechanism to track regime shifts in the cross-asset correlation structure that lie outside the IS support. Two appendix diagnostics localise the cause. First, extending the universe with GLD (a non-equity commodity asset class) reduces the OoS off-diag MAE to $0.179$ (Appendix~\ref{sec:non_us_asset_supp}), so the OoS gap is not driven by equity-cluster size. Second, a per-pair breakdown (Table~\ref{tab:per_pair_offdiag_mae}) shows the gap concentrates in three pairs involving JNJ (JNJ-QQQ, SPY-JNJ, NVDA-JNJ), each with $|\Delta| > 0.48$ on OoS, while gold-equity pairs sit at $|\Delta| \in [0.10, 0.19]$. The dominant cause is a single-name regime shift in the JNJ-equity-factor relationship rather than copula-degree mis-specification.

@@ -76,7 +76,7 @@ The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum 
 \label{sec:cross_asset_corr_supp}
 
 Figure~\ref{fig:cross_asset_corr} visualises the observed and path-averaged simulated correlation matrices for the dependence models of Section~\ref{sec:cross_asset}.
-The panel ordering is SIM, Gaussian copula, Student-t copula (each reported quantitatively in Table~\ref{tab:cross_asset_supp_summary}), plus a truncated C-vine variant with SPY as root for visual comparison.
+The panel ordering is SIM, Gaussian copula, Student-t copula, and a truncated C-vine variant with SPY as root, each reported quantitatively in Table~\ref{tab:cross_asset_supp_summary} and (for the C-vine) Section~\ref{sec:cvine_supp}.
 All five panels share the six-asset SPY cross-section and the same CHMM-N marginals at $K = 18$, so any visible differences between the simulated panels reflect only the dependence construction.
 
 \begin{figure}[H]
@@ -85,6 +85,29 @@ All five panels share the six-asset SPY cross-section and the same CHMM-N margin
 \caption{\textbf{Cross-asset IS correlation reproduction across dependence models} (Pipeline~B, companion to Table~\ref{tab:cross_asset_supp_summary}). Panel~(a), top-left: \emph{observed} correlation matrix on 2014-01-03 through 2024-01-03 daily excess log returns for SPY, NVDA, JNJ, JPM, AAPL, QQQ (IS window, $T_{\text{IS}} = 2{,}516$). Panel~(b), top-right: path-averaged correlation under the Single Index Model with SPY as market factor. Panel~(c), middle-left: path-averaged correlation under the Gaussian copula on CHMM marginals. Panel~(d), middle-right: path-averaged correlation under the Student-t copula on CHMM marginals, $\nu^* = 6$. Panel~(e), bottom-left: path-averaged correlation under a truncated C-vine copula with SPY as root. Each simulated panel averages over 200 paths of length $T_{\text{IS}}$. All marginals are the per-asset CHMM-N fits at $K = 18$ from Table~\ref{tab:cross_asset}; color scale in $[-1, 1]$, red-white-blue (RdBu) diverging. Closer visual match to panel~(a) is better.}
 \label{fig:cross_asset_corr}
 \end{figure}
+
+\subsubsection{Truncated C-vine Copula on CHMM Marginals (Pipeline~B)}
+\label{sec:cvine_supp}
+
+The truncated C-vine variant in panel~(e) of Figure~\ref{fig:cross_asset_corr} uses SPY as the root and selects each pair-copula family edge-wise from \{Gaussian, Student-t, Clayton, Gumbel\} by Akaike Information Criterion (AIC); on the six-asset universe every selected pair is Student-t, with $\hat\rho$ and $\hat\nu$ as in Table~\ref{tab:cvine_edges}. On the same CHMM-N marginals at $K = 18$ and $200$ paths under seed \texttt{20260422}, the truncated C-vine attains an off-diagonal MAE of $0.068$ on IS and $0.235$ on OoS (Table~\ref{tab:cross_asset_supp_summary}), strictly above both elliptical copulas on the IS column and on OoS off-diag MAE, and only modestly below the SIM baseline. The reason is the level-1 truncation: a root-centred C-vine models only the SPY-vs-asset bivariate copulas and treats the remaining pairs as conditionally independent given SPY, which is a stronger restriction than either elliptical copula and only a small relaxation of the SIM factor structure. Untruncated regular vines or factor copulas are the natural way to recover non-root cross-pair structure at larger $d$, but at $d = 6$ with $T_{\text{IS}} = 2{,}516$ the additional flexibility does not justify the extra estimation cost.
+
+\begin{table}[H]
+\centering
+\caption{\textbf{Truncated C-vine edge summary}, Pipeline~B with SPY as root on the six-asset universe. Pair family selected edge-wise by AIC over \{Gaussian, Student-t, Clayton, Gumbel\}; on this universe every selected pair is Student-t. $\hat\rho$ is the Kendall's-$\tau$-inverted correlation parameter and $\hat\nu$ is the per-edge degrees-of-freedom estimate.}
+\label{tab:cvine_edges}
+\small
+\begin{tabular}{l l c c}
+\toprule
+Child & Family & $\hat\rho$ & $\hat\nu$ \\
+\midrule
+NVDA & Student-t & $0.637$ & $5$ \\
+JNJ  & Student-t & $0.483$ & $4$ \\
+JPM  & Student-t & $0.686$ & $4$ \\
+AAPL & Student-t & $0.698$ & $4$ \\
+QQQ  & Student-t & $0.911$ & $3$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsubsection{Non-US Asset Class Extension and Per-Pair OoS Off-Diagonal Breakdown}
 \label{sec:non_us_asset_supp}
@@ -95,7 +118,7 @@ The body universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ) is six US-listed equity ticke
 Fitting CHMM-N, CHMM-t, and CHMM-L on the GLD return series at $K = 18$ produces $100\%$ IS KS pass rate for all three families and observed IS excess kurtosis $3.6$ matched closely by CHMM-L ($2.2$); on OoS, however, the KS pass rate collapses to $0\%$ for all three families against an observed OoS excess kurtosis of $6.5$. Inspection of the GLD price path on the $2024$--$2026$ OoS window shows the asset re-priced from $\sim 200$ to $\sim 300$ on a persistent demand shock not represented in the $2014$--$2024$ IS regime library. This is the same stationarity-scope artefact as the NVDA / JPM single-name OoS cliffs reported in Section~\ref{sec:cross_asset_univariate}, on a non-equity asset; the limitation is not equity-specific.
 
 \paragraph{Pipeline-B: 7-ticker Student-t copula off-diagonal MAE.}
-Refitting the Student-t copula on the augmented seven-ticker universe at $\nu^\star = 6$ gives IS off-diagonal MAE of $0.029$ (six-ticker baseline: $0.027$) and OoS off-diagonal MAE of $0.179$ (six-ticker baseline: $0.211$). Adding the low-equity-correlation gold ETF \emph{reduces} the OoS off-diagonal MAE, because the equity-cluster correlation degradation is the dominant component; pairs involving GLD have moderate IS-to-OoS shifts ($|\Delta| \in [0.04, 0.19]$) while the largest equity-cluster pairs (JNJ-QQQ, SPY-JNJ, NVDA-JNJ) have $|\Delta| > 0.48$ on OoS.
+Refitting the Student-t copula on the augmented seven-ticker universe at $\nu^\star = 6$ gives IS off-diagonal MAE of $0.029$ (six-ticker baseline: $0.027$) and OoS off-diagonal MAE of $0.179$ (six-ticker baseline: $0.209$). Adding the low-equity-correlation gold ETF \emph{reduces} the OoS off-diagonal MAE, because the equity-cluster correlation degradation is the dominant component; pairs involving GLD have moderate IS-to-OoS shifts ($|\Delta| \in [0.04, 0.19]$) while the largest equity-cluster pairs (JNJ-QQQ, SPY-JNJ, NVDA-JNJ) have $|\Delta| > 0.48$ on OoS.
 
 \paragraph{Per-pair OoS gap localisation.}
 Table~\ref{tab:per_pair_offdiag_mae} reports the per-pair off-diagonal absolute deviation between observed and path-averaged simulated correlation matrices on IS and OoS, sorted by OoS $|\Delta|$. The OoS gap concentrates in pairs involving JNJ (the defensive single-name proxy): JNJ's IS correlation with the broad equity factor (QQQ, SPY) collapses on OoS, in some pairs flipping sign, and the IS-fixed copula has no mechanism for tracking that shift. The gold-ETF pairs (SPY-GLD, JPM-GLD, JNJ-GLD, QQQ-GLD) sit in the middle of the ranking with $|\Delta|$ between $0.10$ and $0.19$ on OoS. The dominant cause of the OoS off-diagonal gap is therefore neither equity-cluster size nor copula-degree mis-specification but a single-name regime shift in the JNJ-equity-factor relationship that the IS-fitted dependence layer cannot anticipate.
