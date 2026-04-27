@@ -1,4 +1,4 @@
-\subsection{Theoretical Grounding: Spectral Mechanism for the Absolute-Return ACF}
+\subsection{Spectral Mechanism for the Absolute-Return ACF}
 \label{sec:theory}
 
 This subsection derives the spectral mechanism behind the absolute-return ACF (the central technical contribution) and states the assumptions under which it holds.
@@ -63,14 +63,16 @@ and the autocorrelation
     w_k = c_k / \sigma_{|G|}^2.
     \label{eq:acf_normalised}
 \end{equation}
-Equation~\eqref{eq:acf_normalised} is the closed-form mixture-of-eigenvalues identity for the absolute-return ACF: the autocorrelation at every lag is a weighted sum of geometric decays at the non-unit eigenvalues of $\mathbf T$.
+Equation~\eqref{eq:acf_normalised} is the closed-form mixture-of-eigenvalues identity for the absolute-return ACF: the autocorrelation at every lag is a weighted sum of geometric decays at the non-unit eigenvalues of $\mathbf T$. Setting $\tau = 0$ gives $\rho_{|G|}(0) = \sum_{k \ge 2} w_k = 1$, so the weights $w_k$ form a (signed) decomposition of unity across the non-unit spectrum.
 The same derivation with $|G_t|$ replaced by $G_t^2$ and $\mathbf m$ by $(M_1, \ldots, M_K)^\top$ gives the analogous form for the squared-return ACF.
 
 \paragraph{Ryd\'{e}n separation as a $K$-rank statement.}
-At $K = 2$, equation~\eqref{eq:acf_normalised} reduces to the mono-exponential form $\rho_{|G|}(\tau) = w_2\, \lambda_2^\tau$, and matching a target slow-decay rate $\rho^*(\tau) = \exp(-\tau/\tau^*)$ on a horizon $\tau \in \{1, \ldots, L\}$ with $\tau^* \ge L$ forces $|\lambda_2| \ge \exp(-1/\tau^*)$, i.e.\ a near-unit second eigenvalue.
-The eigenvalues of a $2 \times 2$ stochastic matrix are $\lambda_1 = 1$ and $\lambda_2 = T_{11} + T_{22} - 1$, so $|\lambda_2| \to 1$ requires both diagonal entries near unity; under Assumption~\ref{ass:moments} this concentrates $\bar{\boldsymbol\pi}$ near a vertex of the simplex and the marginal mixture collapses to a single emission density with the wrong tail, failing distributional KS.
-At $K \ge 3$ the right-hand side admits at least two non-unit eigenvalues, the ACF can match $\rho^*(\tau)$ over the same horizon with each individual $|\lambda_k|$ bounded away from $1$, and the distributional-versus-temporal tension breaks.
-This is the spectral content of the empirical Ryd\'{e}n et al.\ low-$K$ failure: at $K = 2$ the ACF and the marginal are coupled through a single eigenvalue, so the model cannot match both simultaneously; at $K \ge 3$ they decouple.
-The empirical correlate is that ACF-MAE is essentially flat across $K \in \{3, 6, \ldots, 21\}$ while KS pass rates rise (Section~\ref{sec:results}).
+At $K = 2$, equation~\eqref{eq:acf_normalised} reduces to the mono-exponential form $\rho_{|G|}(\tau) = w_2\, \lambda_2^\tau$ with $w_2 = 1$.
+The eigenvalues of a $2 \times 2$ stochastic matrix are $\lambda_1 = 1$ and $\lambda_2 = T_{11} + T_{22} - 1$, so a target slow-decay rate $\rho^*(\tau) = \exp(-\tau/\tau^*)$ over horizon $\tau \in \{1, \ldots, L\}$ is matched by tuning $T_{11} + T_{22}$ to set $\lambda_2 \approx \exp(-1/\tau^*)$.
+The temporal constraint at $K = 2$ is therefore satisfiable; the binding constraint is the marginal.
+A two-component mixture $f(x) = \bar\pi_1 b_1(x) + \bar\pi_2 b_2(x)$ has bounded representational capacity, and at the empirical equity-return target (excess kurtosis $\approx 7$ to $8$) it cannot simultaneously match the central peak and the heavy tail under any choice of $(\mu_k, \sigma_k, \nu_k)$ within the standard families, irrespective of how the transitions are tuned.
+At $K \ge 3$ the right-hand side admits at least two non-unit eigenvalues, the ACF can match $\rho^*(\tau)$ over the same horizon with each individual $|\lambda_k|$ bounded away from $1$, and the marginal mixture has enough components to match the observed tail.
+The empirical Ryd\'{e}n et al.\ low-$K$ failure is therefore a $K$-rank statement on two coupled axes: $K$ controls both the number of available decay modes in the ACF and the component count of the marginal mixture, and both matter for the joint fit.
+The empirical correlate is that ACF-MAE is essentially flat across $K \in \{3, 6, \ldots, 21\}$ (the temporal constraint is non-binding once $K \ge 2$) while KS pass rates rise with $K$ (the marginal constraint binds at low $K$ and relaxes at moderate $K$); see Section~\ref{sec:results}.
 
 The spectral identity~\eqref{eq:acf_normalised} is the mechanism behind the moderate-$K$ ACF claim. Under standard EM monotonicity \citep{wu1983convergence, mengrubin1993ecm}, the per-state $\nu_k$ ECM update of Section~\ref{sec:mstep} preserves the incomplete-data log-likelihood as non-decreasing on the compact bracket $[\nu_{\min}, \nu_{\max}]$; the closed-form weighted-median / weighted-MAD M-step for Laplace emissions \citep{rabiner1986introduction} preserves the same guarantee. Identifiability up to label permutation in all three emission families (CHMM-N, CHMM-t, CHMM-L) follows from \citet{allman2009identifiability} together with \citet{yakowitzspragins1968}, and MLE consistency from \citet{bickel1998asymptotic} and \citet{doucmoulinesryden2004} under Assumptions~\ref{ass:irred}--\ref{ass:moments}. Formal statements with proof sketches are collected in Appendix~\ref{sec:supplementary}.
