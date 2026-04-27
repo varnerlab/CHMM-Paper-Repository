@@ -22,10 +22,27 @@ Total cleanup if you opt for the cheap path on every choice: 3-5 hours, no exper
 The cleanup plan branches on these. I'll execute whichever you pick on each.
 
 ### Status snapshot
-- **D1 (QuantGAN): DONE.** User picked (c) + Q1=(i). Re-ran the WGAN under the seven-metric panel, dropped the GRU appendix, inserted the QuantGAN row into `tab:m7_extended_panel`. PDF rebuilt clean (54 pages). Headline: QuantGAN reaches 0% IS / 0% OoS KS, kurt 2.05, ACF-MAE 0.0591.
-  - **Literature sanity check: NORMAL.** Per-path KS is not a metric used in the QuantGAN literature; reported metrics are EMD / DY / ACF-score / Leverage-score (Wiese et al. 2020, arXiv:1907.06673) or marginal-distance / absolute-ACF-difference (Ni et al. 2020 SigCWGAN, arXiv:2006.05421). Our 0% per-path rate is the expected outcome of a per-path KS test under tail mismatch at n=2515. Kurtosis 2.05 vs observed 7.68 matches Eckerli & Osterrieder (2021, arXiv:2106.06364) qualitative finding that "all three [WGAN-GP, DCGAN, SAGAN] fail to recreate the intensity of heavy tails" on S&P 500. ACF-MAE 0.0591 narrowly beating bootstrap 0.0628 matches the SigCWGAN Table-3 pattern where WGAN-style competitors lose to GARCH on volatility-clustering. Christoffersen LR_ind=20.87 rejection of breach independence is the mechanical consequence of stitching independent 64-day windows. Our config is materially smaller than Wiese et al.'s (3 conv layers vs their 7-block TCN with 127-day receptive field; no Lambert-W preprocessing); the paper already calls this a "repo-native approximation, not exact reproduction." **No further action: numbers are honest.**
-- **D2-D5: not started.** Awaiting one-by-one decisions.
-- **D6 (NEW: revision-era naming cleanup): not started.** Surfaced after the D1 pass exposed how many `m7`-style labels still leak. See below.
+- **D1 (QuantGAN): DONE.** User picked (c) + Q1=(i). Re-ran the WGAN under the seven-metric panel, dropped the GRU appendix, inserted the QuantGAN row into `tab:extended_baselines` (renamed from `tab:m7_extended_panel` in D6a). PDF rebuilt clean (54 pages). QuantGAN: 0% IS / 0% OoS KS, kurt 2.05, ACF-MAE 0.0591. Literature sanity check: NORMAL (Wiese et al. 2020, Eckerli & Osterrieder 2021, Ni et al. 2020). Added one framing sentence noting the runner is a repo-native approximation (no Lambert-W, shallower receptive field) so reviewers don't read the row as a strawman.
+- **D2 (stale `track_*/` results dirs): DONE.** 16 subdirectories archived to `CHMM-Model/results/_attic_v10/` via git mv. Active dirs that stay live: `quantgan_baseline/`, `msgarch_baselines/`, `smchmm_baseline/` (after D6c rename), plus the SPY/cross_asset/diagnostics/equity_price_sim trio.
+- **D3 (orphan `run_track_*.jl` runners): DONE.** 9 runners archived to `_attic_v10/runners/` (8 track orphans + GRU runner). `run_full_rebuild.jl` SCRIPTS list trimmed to the 11 stages that the arXiv preprint actually consumes; header docstring rewritten.
+- **D4 (top-level v9/v10 docs): DONE.** `LITERATURE-REVIEW.md`, `user-comments.md`, `Notebooks/` (5 ipynbs), `planning/` (DECISION-MEMO + plan-equity-paper), `downloaded-references/` (gitignored PDFs), and `fetch_oos_extended.jl` moved to `_attic_v10/docs/`. Also `rename-revision-artefacts-plan.md` moved to attic in D6 (the audit trail of the prior rename pass). README.md runner block refreshed.
+- **D5 (stale data snapshots): DONE.** 9 dated/intermediate JLD2/CSV files archived to `_attic_v10/data/`. Active `data/` retains: the two `CHMM-SP500-*.jld2` bundles (loaded by every script), the three `HMM-WJ-*-daily-aggregate.jld2` per-ticker aggregates, and the two raw OHLC sources for `build_new_train_oos.jl`.
+- **D6 (revision-era naming cleanup): DONE.**
+  - **D6a (paper labels):** `tab:m2_ks_bootstrap` -> `tab:ks_block_bootstrap`, `tab:m10_multiseed` -> `tab:multiseed_headline`, `sec:m7_baselines` -> `sec:extended_baselines`, `tab:m7_extended_panel` -> `tab:extended_baselines`. PDF clean.
+  - **D6c (script renames):** `run_track_b1_quantgan.jl` -> `run_quantgan_baseline.jl`, `run_track_b4_msgarch.jl` -> `run_msgarch_baselines.jl`, `run_track_c1_smchmm.jl` -> `run_smchmm_baseline.jl`, `run_track_c2_large_universe.jl` -> `run_cross_asset_large_universe.jl`. Active result subdirs renamed to match.
+  - **D6d (in-script sanitisation):** All `TRACK_M*_DIR` / `TRACK_MINOR*_DIR` / `TRACK_A_DIR` / `TRACK_B_DIR` constants renamed to `OUT_DIR` / `SIM_ARCHIVE_PATH` / `QUANTGAN_DIR` / `MSGARCH_DIR` / `SMCHMM_DIR`. Header docstrings collapsed to drop "Track Mn (revision response to referee comment Mn): ...". Println banners scrubbed of "Track Mn." / "Track Minor n." / "(referee Mn response)" suffixes. Output filenames inside renamed dirs sanitised (Table-4-Extended-Metrics-{B1,B4,C1}.txt -> extended_metrics.txt, Track-{B1,B4,C1}-summary.txt -> summary.txt, etc.). Legacy v10-suffix files git-rm'd; next runner pass writes descriptive names.
+  - Cross-repo grep verifies zero remaining `m7`-style labels in the paper, zero `Track M*` / `referee M*` prose, zero `TRACK_M*_DIR` / `track_m*` paths in active scripts, zero surviving `run_track_*.jl`.
+
+### Per-decision commits (chronological)
+
+| Repo | Commit | Decision |
+|---|---|---|
+| CHMM-paper | 1c2675e | D1 + D6a (QuantGAN row + drop GRU + paper-side label rename) |
+| CHMM-Model | d35c14f | D2 (archive 16 stale `track_*/` results dirs) |
+| CHMM-Model | d5fd45b | D3 (archive 9 orphan `run_track_*.jl` runners) |
+| CHMM-Model | 563d1ca | D4 (archive v9/v10 top-level docs and notebooks) |
+| CHMM-Model | 0c65bb8 | D5 (archive stale data snapshots) |
+| CHMM-Model | 0099514 | D6c+d (rename surviving runners + sanitise constants/banners) |
 
 ### D1 — QuantGAN — DECISION: (c), Q1=(i). DONE.
 
