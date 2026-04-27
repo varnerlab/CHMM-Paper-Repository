@@ -96,67 +96,28 @@ OoS & 87.5 & 86.4 & 5.34 & 0.0512 & 0.225 & 0.1570 & 86.9  \\
 \end{tabular}
 \end{table}
 
-\subsection{GRU Deep-Generative Baseline}
-\label{sec:gru_supp}
+\subsection{QuantGAN Deep-Generative Baseline}
+\label{sec:quantgan_supp}
 
-Architecture and training details for the GRU baseline used in
-Section~\ref{sec:model_comparison} are summarised here.
+Architecture and training details for the QuantGAN deep-generative baseline used in Section~\ref{sec:model_comparison} are summarised here. The construction is a repo-native approximation to the convolutional WGAN of \citet{wiese2020quantgan}: a one-dimensional convolutional generator and critic, Wasserstein loss with critic weight clipping, trained on rolling windows of standardised SPY returns and synthesising long paths by stitching generated windows.
 
 \begin{itemize}
-    \item \textbf{Architecture.} A single-layer Gated Recurrent Unit (GRU)
-    with hidden dimension $H = 32$ followed by a Dense head with two
-    outputs $(\mu_t, \log \sigma_t)$. Input is a single feature (the
-    standardised return) over a context window of $w = 20$ trading days.
+    \item \textbf{Generator.} Three 1D convolutional layers ($G_{\text{ch}} = 32$, kernel size 5, ReLU, same-padding), followed by a $1 \times 1$ projection to a single output channel. Input is i.i.d.\ Gaussian noise of latent dimension $L = 8$ at every position of the rolling window.
 
-    \item \textbf{Loss.} Per-window negative log-likelihood (NLL) of a Gaussian
-    next-step density, $\ell_t = \log \sigma_t + \tfrac{1}{2}((G_t - \mu_t)/\sigma_t)^2$.
+    \item \textbf{Critic.} Three 1D convolutional layers ($D_{\text{ch}} = 32$, kernel size 5, leaky-ReLU slope $0.2$, same-padding), global mean pooling along the time axis, and a single linear scalar output.
 
-    \item \textbf{Optimiser.} Adam, learning rate $1.0 \times 10^{-3}$.
+    \item \textbf{Loss.} Wasserstein loss with critic weight clipping at $\pm 0.01$ \citep{arjovsky2017wasserstein}. The critic minimises $\E[D(\tilde G)] - \E[D(G)]$ on real / fake mini-batches; the generator maximises $\E[D(\tilde G)]$.
 
-    \item \textbf{Training schedule.} $20$ epochs, full pass per epoch
-    over $T_{\text{IS}} - w$ training windows, randomly shuffled at each
-    epoch.
+    \item \textbf{Optimiser.} Adam, learning rate $1.0 \times 10^{-4}$ for both networks, batch size $64$.
 
-    \item \textbf{Numerical stability.} $\log \sigma_t$ is clamped to
-    $[-6, 4]$ inside the loss to prevent gradient explosion when the
-    network attempts to assign vanishingly-small variance to extreme
-    observations.
+    \item \textbf{Training schedule.} $15$ epochs, $120$ outer steps per epoch, $4$ critic updates per generator update, training on rolling windows of length $W = 64$ standardised by the IS mean and standard deviation.
 
-    \item \textbf{Pre-processing.} The input return series is standardised
-    by its IS mean and standard deviation; predictions are
-    re-scaled back at sampling time.
+    \item \textbf{Synthesis.} Independent draws of length $W$ are stitched end-to-end to produce paths of length $T_{\text{IS}}$ or $T_{\text{OoS}}$; outputs are then re-scaled back to the natural return scale by the IS mean and standard deviation.
 
-    \item \textbf{Synthesis.} The trailing $w$ IS returns seed the
-    recurrence; for each generation step the predicted Gaussian is
-    sampled, the sample is appended to the context window, and the
-    procedure rolls forward. The first $64$ steps are discarded as
-    burn-in.
-
-    \item \textbf{Implementation.} Julia using \texttt{Flux.jl}
-    \cite{innes2018flux} with the \texttt{Optimisers.Adam} state.
-    Random seed for weight initialisation, training shuffling, and per-path
-    sampling: $20260420$, with deterministic per-path sub-seeds.
+    \item \textbf{Implementation.} Julia with \texttt{Flux.jl} \cite{innes2018flux} and \texttt{Optimisers.Adam} state. Random seed for weight initialisation, training shuffling, and per-path sampling: $20260422$, with deterministic per-path sub-seeds.
 \end{itemize}
 
-The trained model is callable through the same
-\texttt{simulate\_gru(model, n\_steps; seed\_window)} interface as the
-CHMM, so the seven-metric panel evaluates the GRU
-on byte-identical windows to the other generators.
-
-\begin{table}[h]
-\centering
-\small
-\caption{GRU deep-generative baseline on SPY (single-layer, hidden $H=32$, window $w=20$, $20$ epochs, Adam $\eta=10^{-3}$, $1{,}000$ paths, seed = 20260420). Final training NLL: $0.2005$.}
-\label{tab:gru}
-\begin{tabular}{l cc c c c c c}
-\toprule
-Window & KS & AD & Kurt & ACF-MAE & $W_1$ & $H$ & Cov \\
-\midrule
-IS  & 18.1 & 13.7 & 2.85 & 0.0518 & 0.196 & 0.0966 & 37.4 \\
-OoS & 52.5 & 55.0 & 2.21 & 0.0500 & 0.293 & 0.1603 & 69.7 \\
-\bottomrule
-\end{tabular}
-\end{table}
+The trained model is callable through the same \texttt{simulate} interface as the CHMM, so the seven-metric panel evaluates QuantGAN on byte-identical windows to the other generators. The QuantGAN row is reported alongside the extended-GARCH and SM-CHMM rows in Table~\ref{tab:m7_extended_panel}; the deep-generative row reaches $0\%$ IS and OoS KS pass rates and undershoots IS kurtosis decisively ($2.1$ vs.\ observed $7.7$), consistent with the documented difficulty of GAN-based generators on financial-time-series volatility-clustering benchmarks \citep{takahashi2019modeling, kwon2024can}.
 
 \subsection{Per-Ticker OoS Price-Simulation Figures and Full Path-Level Metrics (Unconditional CHMM)}
 \label{sec:price_sim_oos_appendix}
@@ -279,10 +240,10 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
 \label{fig:price_fan_qqq_appendix}
 \end{figure}
 
-\subsection{Expanded GARCH-Family Baselines}
+\subsection{Expanded Baseline Panel: GARCH Family, Semi-Markov CHMM, and QuantGAN}
 \label{sec:m7_baselines}
 
-We add five conditional-volatility baselines to the single GARCH(1,1) Gaussian row of Table~\ref{tab:model_comparison}. All are fit by grid-initialised Nelder-Mead maximum likelihood on the SPY IS window ($T_{\text{IS}} = 2{,}516$); simulation follows the same recursion used in estimation. Model specifications are below.
+We add five conditional-volatility baselines, the three semi-Markov CHMM variants, and the QuantGAN deep-generative baseline (Appendix~\ref{sec:quantgan_supp}) to the single GARCH(1,1) Gaussian row of Table~\ref{tab:model_comparison}. The conditional-volatility models are fit by grid-initialised Nelder-Mead maximum likelihood on the SPY IS window ($T_{\text{IS}} = 2{,}516$); simulation follows the same recursion used in estimation. Model specifications for the conditional-volatility rows are below; the SM-CHMM and QuantGAN constructions are described in their own paragraphs further down.
 
 \paragraph{EGARCH(1,1) Gaussian.}
 The exponential GARCH of \citet{nelson1991conditional} evolves $\log \sigma_t^2$ in levels:
@@ -322,7 +283,7 @@ The path-independent two-regime variant of \citet{haas2004new}. Regime stickines
 \paragraph{Semi-Markov CHMM (SM-CHMM, the explicit hidden semi-Markov model (HSMM) foil).}
 The conceptual foil of the present paper: a hidden semi-Markov extension of the CHMM in which the geometric sojourn distribution of the Markov chain is replaced by a per-state explicit-duration family chosen by AIC from $\{$Pareto, negative binomial, geometric$\}$. Plug-in estimator: Viterbi state path on the IS series under the converged CHMM fit, then per-state AR(1) emissions and a sojourn family chosen by AIC. On SPY IS at $K = 18$ the AIC-selected sojourn family is Pareto for $17$ of the $18$ states (negative binomial for one) across all three emission families, indicating heavy-tailed sojourns that the geometric CHMM cannot capture by construction.
 
-Table~\ref{tab:m7_extended_panel} reports the IS / OoS distributional fidelity, kurtosis, ACF-MAE, and Kupiec breach diagnostics for the extended GARCH family and the SM-CHMM rows alongside the headline CHMM panel. Two structural observations.
+Table~\ref{tab:m7_extended_panel} reports the IS / OoS distributional fidelity, kurtosis, ACF-MAE, and Kupiec breach diagnostics for the extended GARCH family, the SM-CHMM rows, and the QuantGAN deep-generative row, alongside the headline CHMM panel. Three structural observations.
 
 \begin{table}[t]
 \centering
@@ -349,6 +310,8 @@ CHMM-L ($K = 18$)   & $93.2$ & $79.3$ & $30.1$ & $65.4$ & $6.8$  & $0.0565$ & $1
 SM-CHMM-N ($K = 18$) & $79.2$ & $66.7$ & $19.5$ & $57.1$ & $4.7$  & $0.0598$ & $1.1$ & $0.01$ & $5.4$ & $0.82$ \\
 SM-CHMM-t ($K = 18$) & $77.1$ & $63.4$ & $17.2$ & $52.3$ & $13.9$ & $0.0625$ & $1.4$ & $0.10$ & $5.7$ & $1.74$ \\
 SM-CHMM-L ($K = 18$) & $80.4$ & $69.1$ & $21.0$ & $58.9$ & $6.4$  & $0.0581$ & $1.4$ & $3.26$ & $5.5$ & $3.03$ \\
+\midrule
+QuantGAN            & $0.0$  & $0.0$  & $0.0$  & $0.0$  & $2.1$  & $0.0591$ & $1.0$ & $0.01$ & $3.3$ & $3.83$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -356,5 +319,7 @@ SM-CHMM-L ($K = 18$) & $80.4$ & $69.1$ & $21.0$ & $58.9$ & $6.4$  & $0.0581$ & $
 First, none of the extended GARCH variants challenges the CHMM family on the joint (KS, ACF) corner. GARCH(1,1)-$t$ is the strongest extended row on KS ($57.3\%$ IS, $80.8\%$ OoS) but its IS excess kurtosis of $15.1$ overshoots the observed $7.7$ by a factor of two and its ACF-MAE of $0.0316$ is below the CHMM's only because the GARCH variance recursion is hard-wired to track conditional volatility; CHMM at $K = 18$ matches GARCH on ACF-MAE within $0.02$ while gaining $36$ to $36.5$ percentage points on IS KS. EGARCH undershoots kurtosis decisively, GJR-GARCH improves on threshold asymmetry but not on the headline gap, and HAR-RV is degenerate on the daily-RV proxy used here (see methods note above).
 
 Second, the SM-CHMM rows are weaker than the headline CHMM rows on every metric in the panel: IS KS $77$--$80\%$ vs CHMM $93$--$94\%$, OoS KS $63$--$69\%$ vs CHMM $79$--$86\%$. The geometric-sojourn restriction of the standard CHMM is therefore not the bottleneck for the headline KS / ACF / kurtosis story. The Viterbi-AR(1) plug-in estimator used here is one specific HSMM construction; a maximum-likelihood explicit-duration HSMM under a Pareto sojourn family may close part of the gap, but the present empirical evidence is that the spectral mechanism of Section~\ref{sec:theory} dominates the sojourn-family extension on this universe and these horizons.
+
+Third, the QuantGAN deep-generative row (Appendix~\ref{sec:quantgan_supp}) is the weakest entry in the panel on every distributional metric. IS and OoS KS pass rates collapse to $0\%$ at $\alpha = 0.05$ across all $1{,}000$ simulated paths, IS and OoS AD pass rates are also $0\%$, and simulated IS excess kurtosis of $2.1$ undershoots the observed $7.7$ by more than a factor of three. ACF-MAE of $0.0591$ is comparable to the i.i.d.\ baselines of Table~\ref{tab:model_comparison} ($0.0628$), so the GAN does not recover absolute-return autocorrelation either. The convolutional WGAN reproduces some surface-level visual properties of the return series but the stitched-window simulation scheme has no mechanism for modelling either the heavy-tailed marginal or the persistent absolute-return autocorrelation; this matches the documented failure mode of GAN-based generators on financial-time-series volatility-clustering benchmarks \citep{takahashi2019modeling, kwon2024can}. The runner is a repo-native convolutional WGAN with critic weight clipping (Appendix~\ref{sec:quantgan_supp}), materially smaller than the original temporal convolutional network of \citet{wiese2020quantgan} (a seven-block TCN with $127$-day receptive field, hidden width $80$, plus Lambert-W input pre-processing that the original authors credit with most of the tail-fidelity); the row therefore reads as the panel's deep-generative negative control rather than a verdict on the WGAN literature as a whole. The QuantGAN row complements the i.i.d.\ Gaussian negative control of the headline Table~\ref{tab:model_comparison}.
 
 
