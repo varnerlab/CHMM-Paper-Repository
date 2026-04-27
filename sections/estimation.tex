@@ -13,7 +13,7 @@ EM iterates to tolerance $|\mathcal{L}^{(n)} - \mathcal{L}^{(n-1)}| < 10^{-4}$
 with $\texttt{max\_iter} = 60$; convergence is typically reached in
 20--40 iterations.
 Quantile-based initialization is what makes Baum-Welch reach a non-degenerate $K \ge 3$ fit: random initialization standard in the 1990s often converges to overlapping local optima, which is one of the two compounding sources of the low-$K$ failure observed by \citet{ryden1998stylized} (the other is the spectral one of Section~\ref{sec:theory}).
-Algorithmic details and the forward-backward recursion are in Appendix~\ref{sec:supplementary}.
+Algorithmic details and the forward-backward recursion are in Appendix~\ref{sec:supp_algorithms}.
 
 \subsection{Family-Specific M-Step Updates}
 \label{sec:mstep}

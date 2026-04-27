@@ -40,13 +40,11 @@ Under compactness of the parameter space ($\mu_k$, $\sigma_k$ or $b_k$, $\nu_k$ 
 \noindent\emph{Proof sketch.} Each CM step does not decrease $Q$ by definition (CM-1 is closed-form maximum, CM-2 is golden-section maximum); the standard EM inequality $\mathcal L(\theta^{(n+1)}) - \mathcal L(\theta^{(n)}) \ge Q(\theta^{(n+1)} \mid \theta^{(n)}) - Q(\theta^{(n)} \mid \theta^{(n)})$ \cite{wu1983convergence, mengrubin1993ecm} converts $Q$-monotonicity into log-likelihood monotonicity. Compactness gives boundedness above, hence convergence.
 
 \begin{proposition}[Identifiability up to label permutation]
-\label{prop:identifiability}
 Under irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred}) and the emission contrast condition (Assumption~\ref{ass:moments}), the CHMM parameter is identifiable up to label permutation in all three emission families considered (CHMM-N, CHMM-t with $\nu_k \in [\nu_{\min}, \nu_{\max}]$, and CHMM-L).
 \end{proposition}
 \noindent\emph{Proof sketch.} The HMM identifiability theorem of \citet{allman2009identifiability} requires $\mathbf T$ of full rank and per-state emissions linearly independent in the space of densities on $\R$. Full-rank $\mathbf T$ follows from irreducibility \cite{levinperes2017markov}; linear independence of Gaussian, bracketed-$\nu$ Student-t, and Laplace emissions with distinct location-scale parameters follows from \citet{yakowitzspragins1968}.
 
 \begin{proposition}[MLE consistency]
-\label{prop:consistency}
 Under Assumptions~\ref{ass:irred}--\ref{ass:moments} and the assumption that the true parameter lies in the interior of a compact $\Theta$, the MLE $\hat\theta_T = \arg\max_{\theta \in \Theta} \mathcal L_T(\theta)$ is consistent: $\hat\theta_T \xrightarrow{p} \theta_0$ as $T \to \infty$, modulo label permutation.
 \end{proposition}
 \noindent\emph{Proof reference.} \citet{bickel1998asymptotic} (Theorem~1) and \citet{doucmoulinesryden2004} apply directly under our assumption set: irreducibility supplies the mixing condition, finite second moment the moment condition, compactness the parameter-space condition.
