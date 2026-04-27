@@ -61,6 +61,10 @@ There was also a famous *negative result* in this space:
 
 So before this paper, the field had a problem: no simple model reproduced all three stylized facts at once.
 
+To be precise about what that claim means (because the professor will push on it): prior simple models can each *qualitatively* produce all three. GARCH(1,1)-t, MS-GARCH, and stochastic-volatility models all generate heavy tails, near-zero linear autocorrelation, and slow `|G|` ACF decay. The point is *quantitative*: none of them simultaneously passes a strict goodness-of-fit test on the marginal (e.g., KS) *and* matches the absolute-return ACF at the level needed for synthetic-data work. Table 1 makes this concrete: GARCH(1,1) sits at IS KS 25.9% with ACF-MAE 0.0484; MS-GARCH at 27.7% with 0.0367; the bootstrap is at 99.9% KS but ACF-MAE 0.0628 (it destroys clustering). The CHMM is the only row at 93%+ KS and ~0.05 ACF-MAE simultaneously. Bulla and Bulla (2006) did achieve this joint fit, but only by leaving the standard Markov scaffold for an explicit-duration semi-Markov model, which is the "added complexity" we avoid.
+
+So the defensible version of the claim is: no simple *Markovian* model previously passed both diagnostics jointly inside the standard HMM scaffold; semi-Markov fixes existed but added machinery. Combined with the spectral identity in §5.3 (which explains *why* moderate K works and reframes the Rydén negative result as a rank statement on T), that is the contribution.
+
 ---
 
 ## 5. What We Actually Built
