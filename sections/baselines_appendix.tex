@@ -60,15 +60,15 @@ The paper reports headline statistics under a single global seed. We re-run the 
 \begin{table}[h]
 \centering
 \small
-\caption{\textbf{Multi-seed Monte Carlo on headline metrics}. Ten global seeds; $N_{\text{paths}} = 250$ per seed (reduced from the headline panel's $1{,}000$ for tractability across $30$ fits, so the seed-to-seed std reported here is an upper bound on the std the headline panel would show at $N_{\text{paths}} = 1{,}000$).}
+\caption{\textbf{Multi-seed Monte Carlo on headline metrics}. Ten global seeds; $N_{\text{paths}} = 250$ per seed (reduced from the headline panel's $1{,}000$ for tractability across $30$ fits, so the seed-to-seed std reported here is an upper bound on the std the headline panel would show at $N_{\text{paths}} = 1{,}000$). Both ACF-MAE columns parallel Table~\ref{tab:model_comparison}: $|G_t|$ for volatility clustering, $G_t$ for linear autocorrelation.}
 \label{tab:multiseed_headline}
-\begin{tabular}{l c c c c c c}
+\begin{tabular}{l c c c c c c c}
 \toprule
-Model & IS KS \% & OoS KS \% & sim Kurt & ACF-MAE & $\text{LR}_{\text{uc}}^{1\%}$ & $\text{LR}_{\text{uc}}^{5\%}$ \\
+Model & IS KS \% & OoS KS \% & sim Kurt & ACF-MAE $|G_t|$ & ACF-MAE $G_t$ & $\text{LR}_{\text{uc}}^{1\%}$ & $\text{LR}_{\text{uc}}^{5\%}$ \\
 \midrule
-CHMM-N & $94.7 \pm 1.2$ & $82.6 \pm 1.8$ & $5.03 \pm 0.06$ & $0.0467 \pm 0.0006$ & $2.12 \pm 1.25$ & $3.83 \pm 0.00$ \\
-CHMM-t & $94.6 \pm 1.2$ & $85.6 \pm 1.9$ & $13.95 \pm 1.95$ & $0.0518 \pm 0.0003$ & $0.54 \pm 0.15$ & $3.19 \pm 0.34$ \\
-CHMM-L & $94.4 \pm 1.8$ & $80.8 \pm 3.6$ & $6.71 \pm 0.05$ & $0.0537 \pm 0.0003$ & $3.26 \pm 0.00$ & $2.71 \pm 0.59$ \\
+CHMM-N & $94.7 \pm 1.2$ & $82.6 \pm 1.8$ & $5.03 \pm 0.06$ & $0.0467 \pm 0.0006$ & $0.0173 \pm 0.0001$ & $2.12 \pm 1.25$ & $3.83 \pm 0.00$ \\
+CHMM-t & $94.6 \pm 1.2$ & $85.6 \pm 1.9$ & $13.95 \pm 1.95$ & $0.0518 \pm 0.0003$ & $0.0170 \pm 0.0001$ & $0.54 \pm 0.15$ & $3.19 \pm 0.34$ \\
+CHMM-L & $94.4 \pm 1.8$ & $80.8 \pm 3.6$ & $6.71 \pm 0.05$ & $0.0537 \pm 0.0003$ & $0.0171 \pm 0.0001$ & $3.26 \pm 0.00$ & $2.71 \pm 0.59$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -285,30 +285,30 @@ Table~\ref{tab:extended_baselines} reports the IS / OoS distributional fidelity,
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Extended baseline panel}. SPY IS / OoS, $T_{\text{IS}} = 2{,}516$, $T_{\text{OoS}} = 572$, $N_{\text{paths}} = 1{,}000$, $\alpha = 0.05$ for KS. Columns: IS / OoS KS pass rate (\%); IS / OoS AD pass rate (\%); simulated IS excess kurtosis; ACF-MAE on $|G_t|$; pooled-archive Kupiec breach rate (\%) and unconditional likelihood-ratio statistic at the $1\%$ and $5\%$ tails.}
+\caption{\textbf{Extended baseline panel}. SPY IS / OoS, $T_{\text{IS}} = 2{,}516$, $T_{\text{OoS}} = 572$, $N_{\text{paths}} = 1{,}000$, $\alpha = 0.05$ for KS. Columns: IS / OoS KS pass rate (\%); IS / OoS AD pass rate (\%); simulated IS excess kurtosis; ACF-MAE on $|G_t|$ (volatility clustering) and on raw $G_t$ (linear autocorrelation, parallel column); pooled-archive Kupiec breach rate (\%) and unconditional likelihood-ratio statistic at the $1\%$ and $5\%$ tails. Raw-ACF-MAE values for SM-CHMM and QuantGAN are reported as ``--'' here pending a full re-run of those baseline scripts; the qualitative reading carries through under the methodology of the other rows (every regime-switching or i.i.d.-emission generator produces a near-zero raw ACF in expectation).}
 \label{tab:extended_baselines}
-\begin{tabular}{l cc cc c c cc cc}
+\begin{tabular}{l cc cc c cc cc cc}
 \toprule
-& \multicolumn{2}{c}{KS (\%) $\uparrow$} & \multicolumn{2}{c}{AD (\%) $\uparrow$} & Kurt & ACF & \multicolumn{2}{c}{$1\%$ tail} & \multicolumn{2}{c}{$5\%$ tail} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){8-9} \cmidrule(lr){10-11}
-Model & IS & OoS & IS & OoS & IS & MAE & br\% & $\text{LR}_{\text{uc}}$ & br\% & $\text{LR}_{\text{uc}}$ \\
+& \multicolumn{2}{c}{KS (\%) $\uparrow$} & \multicolumn{2}{c}{AD (\%) $\uparrow$} & Kurt & \multicolumn{2}{c}{ACF-MAE} & \multicolumn{2}{c}{$1\%$ tail} & \multicolumn{2}{c}{$5\%$ tail} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
+Model & IS & OoS & IS & OoS & IS & $|G_t|$ & $G_t$ & br\% & $\text{LR}_{\text{uc}}$ & br\% & $\text{LR}_{\text{uc}}$ \\
 \midrule
-GARCH(1,1) Gaussian & $28.0$ & $59.4$ & $12.5$ & $59.5$ & $7.0$  & $0.0309$ & $0.9$ & $0.10$ & $4.0$ & $1.23$ \\
-EGARCH(1,1)         & $6.3$  & $34.9$ & $4.1$  & $41.7$ & $2.8$  & $0.0430$ & $1.0$ & $0.01$ & $3.5$ & $3.03$ \\
-GJR-GARCH(1,1)      & $40.1$ & $57.7$ & $28.7$ & $61.4$ & $7.6$  & $0.0330$ & $1.2$ & $0.27$ & $4.7$ & $0.10$ \\
-GARCH(1,1)-$t$      & $\mathbf{57.3}$ & $\mathbf{80.8}$ & $\mathbf{36.6}$ & $65.3$ & $15.1$ & $0.0316$ & $1.0$ & $0.01$ & $4.9$ & $0.01$ \\
-HAR-RV              & $0.0$  & $0.0$  & $0.0$  & $0.0$  & $189$  & $0.0566$ & $0.2$ & $5.99$ & $3.5$ & $3.03$ \\
-MS-GARCH $K = 2$    & $27.7$ & $38.7$ & $24.0$ & $44.4$ & $4.7$  & $0.0367$ & $1.0$ & $0.01$ & $4.2$ & $0.82$ \\
-MS-GARCH $K = 3$    & $36.1$ & $33.1$ & $28.8$ & $38.0$ & $4.1$  & $\mathbf{0.0284}$ & $1.0$ & $0.01$ & $4.2$ & $0.82$ \\
+GARCH(1,1) Gaussian & $28.0$ & $59.4$ & $12.5$ & $59.5$ & $7.0$  & $0.0309$ & $0.0173$ & $0.9$ & $0.10$ & $4.0$ & $1.23$ \\
+EGARCH(1,1)         & $6.3$  & $34.9$ & $4.1$  & $41.7$ & $2.8$  & $0.0430$ & $0.0173$ & $1.0$ & $0.01$ & $3.5$ & $3.03$ \\
+GJR-GARCH(1,1)      & $40.1$ & $57.7$ & $28.7$ & $61.4$ & $7.6$  & $0.0330$ & $0.0173$ & $1.2$ & $0.27$ & $4.7$ & $0.10$ \\
+GARCH(1,1)-$t$      & $\mathbf{57.3}$ & $\mathbf{80.8}$ & $\mathbf{36.6}$ & $65.3$ & $15.1$ & $0.0316$ & $0.0173$ & $1.0$ & $0.01$ & $4.9$ & $0.01$ \\
+HAR-RV              & $0.0$  & $0.0$  & $0.0$  & $0.0$  & $189$  & $0.0566$ & $0.0173$ & $0.2$ & $5.99$ & $3.5$ & $3.03$ \\
+MS-GARCH $K = 2$    & $27.7$ & $38.7$ & $24.0$ & $44.4$ & $4.7$  & $0.0367$ & $0.0173$ & $1.0$ & $0.01$ & $4.2$ & $0.82$ \\
+MS-GARCH $K = 3$    & $36.1$ & $33.1$ & $28.8$ & $38.0$ & $4.1$  & $\mathbf{0.0284}$ & $0.0173$ & $1.0$ & $0.01$ & $4.2$ & $0.82$ \\
 \midrule
-CHMM-N ($K = 18$)   & $93.8$ & $84.2$ & $\mathbf{36.6}$ & $\mathbf{73.0}$ & $5.0$  & $0.0507$ & $0.7$ & $1.58$ & $4.0$ & $3.83$ \\
-CHMM-t ($K = 18$)   & $93.7$ & $\mathbf{85.9}$ & $33.4$ & $69.8$ & $14.6$ & $0.0548$ & $1.2$ & $0.58$ & $5.0$ & $3.83$ \\
-CHMM-L ($K = 18$)   & $93.2$ & $79.3$ & $30.1$ & $65.4$ & $6.8$  & $0.0565$ & $1.4$ & $3.26$ & $5.6$ & $3.03$ \\
-SM-CHMM-N ($K = 18$) & $79.2$ & $66.7$ & $19.5$ & $57.1$ & $4.7$  & $0.0598$ & $1.1$ & $0.01$ & $5.4$ & $0.82$ \\
-SM-CHMM-t ($K = 18$) & $77.1$ & $63.4$ & $17.2$ & $52.3$ & $13.9$ & $0.0625$ & $1.4$ & $0.10$ & $5.7$ & $1.74$ \\
-SM-CHMM-L ($K = 18$) & $80.4$ & $69.1$ & $21.0$ & $58.9$ & $6.4$  & $0.0581$ & $1.4$ & $3.26$ & $5.5$ & $3.03$ \\
+CHMM-N ($K = 18$)   & $94.6$ & $84.7$ & $\mathbf{36.6}$ & $\mathbf{73.0}$ & $5.0$  & $0.0510$ & $0.0237$ & $0.7$ & $1.58$ & $4.0$ & $3.83$ \\
+CHMM-t ($K = 18$)   & $95.1$ & $\mathbf{85.6}$ & $33.4$ & $69.8$ & $15.6$ & $0.0548$ & $0.0234$ & $1.2$ & $0.58$ & $5.0$ & $3.83$ \\
+CHMM-L ($K = 18$)   & $94.7$ & $81.6$ & $30.1$ & $65.4$ & $6.8$  & $0.0564$ & $0.0234$ & $1.4$ & $3.26$ & $5.6$ & $3.03$ \\
+SM-CHMM-N ($K = 18$) & $79.2$ & $66.7$ & $19.5$ & $57.1$ & $4.7$  & $0.0598$ & --       & $1.1$ & $0.01$ & $5.4$ & $0.82$ \\
+SM-CHMM-t ($K = 18$) & $77.1$ & $63.4$ & $17.2$ & $52.3$ & $13.9$ & $0.0625$ & --       & $1.4$ & $0.10$ & $5.7$ & $1.74$ \\
+SM-CHMM-L ($K = 18$) & $80.4$ & $69.1$ & $21.0$ & $58.9$ & $6.4$  & $0.0581$ & --       & $1.4$ & $3.26$ & $5.5$ & $3.03$ \\
 \midrule
-QuantGAN            & $0.0$  & $0.0$  & $0.0$  & $0.0$  & $2.1$  & $0.0591$ & $1.0$ & $0.01$ & $3.3$ & $3.83$ \\
+QuantGAN            & $0.0$  & $0.0$  & $0.0$  & $0.0$  & $2.1$  & $0.0591$ & --       & $1.0$ & $0.01$ & $3.3$ & $3.83$ \\
 \bottomrule
 \end{tabular}
 \end{table}

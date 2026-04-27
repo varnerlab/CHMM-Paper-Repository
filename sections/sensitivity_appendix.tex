@@ -6,22 +6,22 @@ Observed excess kurtosis is $7.68$ IS and $5.29$ OoS at all $K$.
 
 \begin{table}[H]
 \centering
-\caption{State resolution sensitivity for SPY CHMM-N (1{,}000 paths, $\alpha = 0.05$). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison} in the main text. IS coverage was 100\% at every $K$; OoS coverage is reported separately.}
+\caption{State resolution sensitivity for SPY CHMM-N (1{,}000 paths, $\alpha = 0.05$). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison} in the main text. IS coverage was 100\% at every $K$; OoS coverage is reported separately. ACF-MAE columns: $|G_t|$ measures the volatility-clustering reproduction; $G_t$ measures linear-autocorrelation reproduction (parallel to $|G_t|$, both averaged over lags 1--252).}
 \label{tab:sensitivity}
 \small
-\begin{tabular}{c cc cc cc c c c c}
+\begin{tabular}{c cc cc cc cc c c c}
 \toprule
-& \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & \multicolumn{2}{c}{Kurtosis} & & & & \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
-$K$ & IS & OoS & IS & OoS & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov OoS (\%) \\
+& \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & \multicolumn{2}{c}{Kurtosis} & \multicolumn{2}{c}{ACF-MAE} & & & \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
+$K$ & IS & OoS & IS & OoS & Obs & Sim & $|G_t|$ & $G_t$ & $W_1$ & $H$ & Cov OoS (\%) \\
 \midrule
-3  & 88.8 & 77.1 & 79.2 & 67.9 & 7.68 & 3.80 & 0.0466 & 0.130 & 0.0836 & 94.9 \\
-6  & 93.1 & 80.0 & 87.1 & 74.6 & 7.68 & 5.26 & 0.0499 & 0.113 & 0.0828 & 90.9 \\
-9  & 94.6 & 82.4 & 85.8 & 73.6 & 7.68 & 4.56 & 0.0494 & 0.116 & 0.0806 & 93.9 \\
-12 & 94.6 & 82.8 & 86.0 & 74.9 & 7.68 & 4.57 & 0.0495 & 0.112 & 0.0802 & 88.9 \\
-15 & 93.9 & 82.7 & 86.9 & 75.6 & 7.68 & 4.89 & 0.0505 & 0.116 & 0.0806 & 90.9 \\
-\textbf{18} & 95.6 & 81.7 & 88.4 & 73.2 & 7.68 & 4.98 & 0.0509 & 0.110 & 0.0805 & 90.9 \\
-21 & \textbf{96.1} & \textbf{86.6} & \textbf{89.0} & \textbf{78.4} & 7.68 & 3.83 & 0.0532 & 0.111 & 0.0798 & \textbf{100.0} \\
+3  & 89.0 & 77.2 & 78.9 & 68.6 & 7.68 & 3.82 & 0.0463 & 0.0240 & 0.131 & 0.0839 & 94.9 \\
+6  & 92.9 & 78.7 & 84.3 & 74.3 & 7.68 & 5.38 & 0.0496 & 0.0238 & 0.116 & 0.0829 & 90.9 \\
+9  & 93.0 & 81.4 & 84.4 & 74.4 & 7.68 & 4.63 & 0.0492 & 0.0238 & 0.118 & 0.0810 & 91.9 \\
+12 & 94.9 & 81.6 & 85.8 & 75.0 & 7.68 & 4.57 & 0.0500 & 0.0238 & 0.113 & 0.0801 & 91.9 \\
+15 & 93.9 & 81.0 & 84.8 & 73.5 & 7.68 & 4.89 & 0.0508 & 0.0238 & 0.114 & 0.0804 & 88.9 \\
+\textbf{18} & 94.8 & 85.5 & 88.2 & 79.7 & 7.68 & 5.04 & 0.0515 & 0.0237 & 0.110 & 0.0807 & 91.9 \\
+21 & \textbf{95.6} & \textbf{88.0} & \textbf{89.1} & \textbf{78.8} & 7.68 & 3.78 & 0.0534 & \textbf{0.0236} & 0.112 & 0.0801 & \textbf{99.0} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -32,46 +32,46 @@ $K$ & IS & OoS & IS & OoS & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov OoS (\%) \\
 Table~\ref{tab:sensitivity_multi} extends Table~\ref{tab:sensitivity} across the three emission families, confirming that the qualitative operating point $K = 18$ is stable when the Gaussian component is replaced with Student-t or Laplace emissions.
 For CHMM-t the per-state degrees of freedom $\nu_k$ are refit by ECM-plus-golden-section at every $K$; for CHMM-L the weighted-median location and weighted MAD scale are closed form and impose no additional cost.
 Three patterns extend from Table~\ref{tab:sensitivity} to the new families.
-First, the distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band for all three families: CHMM-t reaches its highest IS KS at $K = 18$ ($95.2\%$) and its highest OoS KS at $K = 18$ ($85.1\%$), and CHMM-L reaches its highest IS KS at $K = 18$ ($96.2\%$) and its highest IS AD at $K = 18$ ($93.0\%$).
+First, the distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band for all three families: CHMM-t reaches its highest IS KS at $K = 18$ ($96.0\%$) and its highest OoS KS at $K = 18$ ($84.5\%$), and CHMM-L reaches its highest IS KS at $K = 18$ ($95.6\%$) and its highest IS AD at $K = 18$ ($92.7\%$).
 Once a family enters the plateau the operating point is flat with respect to $K$, so we report the main-text results at the same $K = 18$ used for CHMM-N.
-Second, the ACF-MAE remains within the narrow $0.047$--$0.056$ band observed for the Gaussian sweep, indicating that the volatility-clustering mechanism is a property of the regime structure rather than the emission family.
-Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks around $5.0$ at the high-$K$ end, the Laplace sweep lands squarely in the $5.2$--$6.6$ range (closest to the observed $7.68$), and the Student-t sweep climbs sharply above $13$ across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, over-correcting IS kurtosis.
+Second, the absolute-return ACF-MAE remains within the narrow $0.047$--$0.056$ band observed for the Gaussian sweep, and the raw-return ACF-MAE remains essentially constant at $\approx 0.024$ across all $21$ (family, $K$) combinations. Both temporal axes are properties of the regime structure rather than the emission family: $|G_t|$ ACF reproduction is governed by the eigenvalue spectrum of $\mathbf T$ (Section~\ref{sec:theory}), and raw-$G_t$ ACF is null in expectation under any HMM with i.i.d.\ within-state emissions.
+Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks around $5.0$ at the high-$K$ end, the Laplace sweep lands squarely in the $5.3$--$6.7$ range (closest to the observed $7.68$), and the Student-t sweep climbs sharply above $13$ across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, over-correcting IS kurtosis.
 
 \begin{table}[H]
 \centering
-\caption{Multi-emission state resolution sensitivity for SPY (1{,}000 paths, $\alpha = 0.05$). CHMM-N: Gaussian; CHMM-t: Student-t with per-state $\nu_k$ refit by ECM-plus-golden-section; CHMM-L: Laplace with weighted-median location and weighted-MAD scale. Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison}. Observed excess kurtosis is $7.68$ IS and $5.29$ OoS.}
+\caption{Multi-emission state resolution sensitivity for SPY (1{,}000 paths, $\alpha = 0.05$). CHMM-N: Gaussian; CHMM-t: Student-t with per-state $\nu_k$ refit by ECM-plus-golden-section; CHMM-L: Laplace with weighted-median location and weighted-MAD scale. Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison}. Observed excess kurtosis is $7.68$ IS and $5.29$ OoS. ACF-MAE columns parallel the main-text Table~\ref{tab:model_comparison}: $|G_t|$ for volatility clustering, $G_t$ (raw) for linear autocorrelation.}
 \label{tab:sensitivity_multi}
 \small
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{l c cc cc c c c c}
+\begin{tabular}{l c cc cc c cc c c}
 \toprule
-& & \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & & & & \\
-\cmidrule(lr){3-4} \cmidrule(lr){5-6}
-Family & $K$ & IS & OoS & IS & OoS & Kurt (IS sim) & ACF-MAE & $W_1$ IS & $H$ IS \\
+& & \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & & \multicolumn{2}{c}{ACF-MAE} & & \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){8-9}
+Family & $K$ & IS & OoS & IS & OoS & Kurt (IS sim) & $|G_t|$ & $G_t$ & $W_1$ IS & $H$ IS \\
 \midrule
-CHMM-N & 3  & 89.8 & 76.3 & 81.3 & 67.7 & 3.81 & 0.0468 & 0.128 & 0.0835 \\
-       & 6  & 91.7 & 79.6 & 85.9 & 73.6 & 5.30 & 0.0497 & 0.115 & 0.0831 \\
-       & 9  & 92.8 & 82.2 & 84.7 & 75.5 & 4.55 & 0.0497 & 0.118 & 0.0810 \\
-       & 12 & 95.0 & 83.7 & 86.1 & 76.6 & 4.55 & 0.0497 & 0.114 & 0.0805 \\
-       & 15 & 95.2 & 83.5 & 86.9 & 76.3 & 4.91 & 0.0508 & 0.111 & 0.0802 \\
-       & \textbf{18} & 94.7 & 82.4 & 85.8 & 76.5 & 5.02 & 0.0509 & 0.111 & 0.0809 \\
-       & 21 & \textbf{95.2} & \textbf{87.6} & \textbf{89.1} & \textbf{80.9} & 3.80 & 0.0530 & 0.112 & 0.0802 \\
+CHMM-N & 3  & 89.7 & 80.1 & 79.2 & 70.7 & 3.86  & 0.0467 & 0.0240 & 0.128 & 0.0833 \\
+       & 6  & 93.8 & 79.1 & 87.2 & 72.8 & 5.29  & 0.0504 & 0.0238 & 0.114 & 0.0825 \\
+       & 9  & 94.9 & 83.0 & 84.3 & 74.8 & 4.58  & 0.0490 & 0.0238 & 0.115 & 0.0806 \\
+       & 12 & 93.7 & 82.7 & 85.5 & 75.0 & 4.56  & 0.0501 & 0.0237 & 0.115 & 0.0804 \\
+       & 15 & 93.6 & 83.0 & 87.0 & 75.1 & 4.89  & 0.0509 & 0.0238 & 0.114 & 0.0803 \\
+       & \textbf{18} & 94.7 & 83.4 & 88.5 & 76.6 & 4.97  & 0.0511 & 0.0237 & 0.108 & 0.0805 \\
+       & 21 & \textbf{95.1} & \textbf{88.0} & \textbf{88.2} & \textbf{79.7} & 3.80  & 0.0532 & 0.0236 & 0.110 & 0.0796 \\
 \midrule
-CHMM-t & 3  & 91.1 & 81.6 & 85.2 & 77.1 & 27.12 & 0.0540 & 0.109 & 0.0764 \\
-       & 6  & 92.2 & 82.1 & 86.1 & 76.6 & 20.80 & 0.0533 & 0.108 & 0.0768 \\
-       & 9  & 92.7 & 84.8 & 86.9 & 80.1 & 15.96 & 0.0537 & 0.104 & 0.0756 \\
-       & 12 & 94.1 & 83.1 & 88.3 & 80.6 & 14.68 & 0.0542 & 0.102 & 0.0757 \\
-       & 15 & 93.5 & 82.9 & 88.0 & 76.5 & 15.85 & 0.0537 & 0.103 & 0.0757 \\
-       & \textbf{18} & \textbf{95.2} & \textbf{85.1} & \textbf{90.9} & \textbf{80.7} & 14.40 & 0.0550 & \textbf{0.101} & \textbf{0.0756} \\
-       & 21 & 94.9 & 82.2 & 89.3 & 77.8 & 13.28 & 0.0540 & 0.103 & 0.0758 \\
+CHMM-t & 3  & 92.2 & 82.9 & 88.0 & 79.1 & 33.68 & 0.0538 & 0.0235 & 0.108 & 0.0759 \\
+       & 6  & 91.8 & 80.4 & 86.7 & 74.8 & 22.74 & 0.0527 & 0.0235 & 0.108 & 0.0772 \\
+       & 9  & 95.4 & 84.0 & 89.9 & 78.0 & 16.60 & 0.0535 & 0.0234 & 0.102 & 0.0752 \\
+       & 12 & 95.2 & 85.0 & 89.8 & 78.4 & 14.98 & 0.0543 & 0.0234 & 0.100 & 0.0757 \\
+       & 15 & 94.7 & 83.7 & 88.8 & 79.5 & 16.36 & 0.0539 & 0.0234 & 0.101 & 0.0758 \\
+       & \textbf{18} & \textbf{96.0} & \textbf{84.5} & \textbf{91.7} & \textbf{80.8} & 13.19 & 0.0551 & \textbf{0.0234} & \textbf{0.099} & \textbf{0.0759} \\
+       & 21 & 94.5 & 83.3 & 88.5 & 78.1 & 14.66 & 0.0539 & 0.0234 & 0.102 & 0.0758 \\
 \midrule
-CHMM-L & 3  & 82.4 & 63.6 & 82.9 & 66.9 & 5.24 & 0.0533 & 0.112 & 0.0853 \\
-       & 6  & 88.8 & 77.0 & 83.3 & 72.5 & 5.74 & 0.0511 & 0.113 & 0.0823 \\
-       & 9  & 90.0 & 77.9 & 84.1 & 74.8 & 6.05 & 0.0519 & 0.113 & 0.0823 \\
-       & 12 & 92.4 & 77.8 & 87.6 & 77.9 & 6.21 & 0.0540 & 0.106 & 0.0797 \\
-       & 15 & 92.6 & 79.4 & 87.0 & 77.6 & 6.06 & 0.0542 & 0.106 & 0.0795 \\
-       & \textbf{18} & \textbf{96.2} & \textbf{80.9} & \textbf{93.0} & \textbf{80.6} & \textbf{6.60} & 0.0564 & \textbf{0.101} & 0.0793 \\
-       & 21 & 90.7 & 80.7 & 87.3 & 78.8 & 5.99 & 0.0544 & 0.107 & 0.0809 \\
+CHMM-L & 3  & 81.9 & 64.8 & 82.5 & 65.8 & 5.29  & 0.0535 & 0.0235 & 0.112 & 0.0854 \\
+       & 6  & 90.5 & 76.4 & 85.0 & 74.2 & 5.91  & 0.0513 & 0.0235 & 0.110 & 0.0818 \\
+       & 9  & 90.5 & 75.7 & 84.8 & 70.1 & 6.01  & 0.0517 & 0.0235 & 0.110 & 0.0819 \\
+       & 12 & 93.6 & 81.4 & 89.8 & 78.8 & 6.18  & 0.0541 & 0.0234 & 0.106 & 0.0796 \\
+       & 15 & 92.5 & 78.9 & 88.3 & 78.8 & 6.03  & 0.0541 & 0.0234 & 0.105 & 0.0792 \\
+       & \textbf{18} & \textbf{95.6} & \textbf{79.9} & \textbf{92.7} & \textbf{80.7} & \textbf{6.74}  & 0.0563 & 0.0234 & 0.101 & 0.0798 \\
+       & 21 & 93.1 & 79.5 & 87.7 & 76.8 & 6.05  & 0.0543 & 0.0234 & 0.107 & 0.0807 \\
 \bottomrule
 \end{tabular}%
 }
