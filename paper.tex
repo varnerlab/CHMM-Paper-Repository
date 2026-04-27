@@ -88,16 +88,12 @@
 \newcommand{\TIS}[1]{\ensuremath{T_{\text{IS}} = #1}}
 \newcommand{\TOoS}[1]{\ensuremath{T_{\text{OoS}} = #1}}
 
-% --- Revision placeholder macro (remove once filter-based re-runs land) ---
-% Mark text that must be rewritten when new numbers arrive from CHMM-Model.
-\newcommand{\revtodo}[1]{\textcolor{red}{\textbf{[TODO (revision): #1]}}}
-
 \title{A Regime-Switching Continuous Hidden Markov Model as a Reference Synthetic-Data Generator for Equity Returns}
 
 \author{
     Abdulrahman Alswaidan\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA. Email: \texttt{aa2725@cornell.edu}.}
     \and
-    Cade Jin\thanks{Cornell Ann S.\ Bowers College of Computing and Information Science, Cornell University, Ithaca, NY, USA (B.S.\ Computer Science, 2022--2026). Email: \texttt{cj383@cornell.edu}.}
+    Cade Jin\thanks{Cornell Ann S.\ Bowers College of Computing and Information Science, Cornell University, Ithaca, NY, USA. Email: \texttt{cj383@cornell.edu}.}
     \and
     Jeffrey D.\ Varner\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA. Email: \texttt{jdv27@cornell.edu}.}
 }
@@ -110,7 +106,7 @@
 
 % ========================================================================================= %
 \begin{abstract}
-Synthetic equity-return generators support stress testing, regulatory backtesting, and scenario design, but existing approaches struggle to reproduce the three canonical stylized facts of daily returns simultaneously: heavy-tailed marginals, negligible linear autocorrelation, and slow decay of the absolute-return autocorrelation function (ACF). We show that a continuous hidden Markov model (CHMM) at moderate state resolution reproduces all three facts within a single Expectation--Maximization scaffold. The mechanism is spectral: the absolute-return autocovariance admits the closed-form mixture-of-eigenvalues identity $\rho_{|G|}(\tau) = \sum_{k \ge 2} w_k \lambda_k^{\tau}$ over the non-unit eigenvalues of the transition matrix $\mathbf{T}$, which recasts the low-$K$ limitation of regime-switching HMMs as a $K$-rank statement on $\mathbf{T}$ rather than a structural barrier requiring semi-Markov or jump augmentation. The same scaffold accommodates Gaussian (CHMM-N), Student-t (CHMM-t), and Laplace (CHMM-L) emissions through a single M-step swap. On ten years of daily SPDR S\&P~500 ETF (SPY) data with a $2.5$-year held-out window, CHMM at $K = 18$ attains $93.8\%$ in-sample and $84.2\%$ out-of-sample Kolmogorov--Smirnov pass rates and an absolute-return ACF mean absolute error within $0.003$ of GARCH(1,1); Value-at-Risk and Expected-Shortfall envelopes bracket observed values at $1\%$ and $5\%$ on both windows. The CHMM occupies the joint-fit corner of the metric panel where i.i.d.\ baselines win on marginal fidelity and GARCH wins on volatility clustering. Multi-asset synthesis composes through a rank-based Student-t copula on the CHMM marginals: profile maximum likelihood selects $\nu^\star = 6$, and the resulting construction reproduces the off-diagonal correlation matrix on six SPY-member assets with mean absolute error $0.027$.
+Synthetic equity-return generators support stress testing, regulatory backtesting, and scenario design, but existing approaches struggle to reproduce the three canonical stylized facts of daily returns simultaneously: heavy-tailed marginals, negligible linear autocorrelation, and slow decay of the absolute-return autocorrelation function (ACF). We show that a continuous hidden Markov model (CHMM) at moderate state resolution reproduces all three within a single EM scaffold. The mechanism is spectral: the absolute-return autocovariance admits the closed-form mixture-of-eigenvalues identity $\rho_{|G|}(\tau) = \sum_{k \ge 2} w_k \lambda_k^{\tau}$ over the non-unit eigenvalues of the transition matrix $\mathbf{T}$, recasting the low-$K$ limitation of regime-switching HMMs as a $K$-rank statement on $\mathbf{T}$. The same scaffold accommodates Gaussian (CHMM-N), Student-t (CHMM-t), and Laplace (CHMM-L) emissions through a single M-step swap. On ten years of daily SPDR S\&P~500 ETF (SPY) data with a $2.5$-year held-out window, CHMM at $K = 18$ attains $93.8\%$ in-sample and $84.2\%$ out-of-sample Kolmogorov--Smirnov pass rates and an absolute-return ACF mean absolute error within $0.003$ of GARCH(1,1); VaR and Expected-Shortfall envelopes bracket observed values at $1\%$ and $5\%$ on both windows. CHMM occupies the joint-fit corner of the metric panel where i.i.d.\ baselines win on marginal fidelity and GARCH wins on volatility clustering. Multi-asset synthesis composes through a rank-based Student-t copula on the CHMM marginals: profile MLE selects $\nu^\star = 6$, reproducing the off-diagonal correlation matrix on six SPY-member assets with MAE $0.027$.
 
 \bigskip\noindent
 \textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch, Student-t Emissions, Stylized Facts, Volatility Clustering, Spectral ACF, Value-at-Risk, Synthetic-Data Generator.
