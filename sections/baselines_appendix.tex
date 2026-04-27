@@ -25,7 +25,7 @@ The $90.0\%$ "nearly correct" rate is the practical ceiling for the CHMM OoS KS 
 \subsection{Block-Bootstrap KS Recalibration and Mean p-value Distribution}
 \label{sec:ks_block_bootstrap}
 
-Two complementary concerns can be raised about the headline IS KS pass-rate metric: (i) the asymptotic two-sample KS test assumes i.i.d.\ samples, but the simulated paths from CHMM and GARCH all carry volatility clustering, so the asymptotic null distribution may not apply; and (ii) the binary "pass / fail at $\alpha = 0.05$" reduces a continuous p-value to a one-bit summary. Table~\ref{tab:m2_ks_bootstrap} reports two recalibrations addressing each concern.
+Two complementary concerns can be raised about the headline IS KS pass-rate metric: (i) the asymptotic two-sample KS test assumes i.i.d.\ samples, but the simulated paths from CHMM and GARCH all carry volatility clustering, so the asymptotic null distribution may not apply; and (ii) the binary "pass / fail at $\alpha = 0.05$" reduces a continuous p-value to a one-bit summary. Table~\ref{tab:ks_block_bootstrap} reports two recalibrations addressing each concern.
 
 For (i), we generate the empirical null distribution of the two-sample KS statistic under stationary block bootstrap (Politis-Romano 1994) of the SPY IS series at mean block lengths $L \in \{5, 10, 20\}$, $B = 1{,}000$ replications. The resulting $95\%$ block-bootstrap critical values are $0.0306$, $0.0338$, and $0.0350$ respectively, all \emph{smaller} than the asymptotic critical value $1.36 \sqrt{2/n_{\text{IS}}} = 0.0383$; the block-bootstrap test is therefore stricter than the asymptotic one because it accounts for the within-window dependence in the IS series itself. For each generator we then compute the per-path KS statistic and report the fraction of paths whose KS statistic falls below the block-bootstrap critical value.
 
@@ -35,7 +35,7 @@ For (ii), we report the mean two-sample KS p-value across simulated paths plus i
 \centering
 \small
 \caption{\textbf{Block-bootstrap KS recalibration and p-value distribution}. All numbers under seed \texttt{20260422} with $N_{\text{paths}} = 500$. ``asymp pass'' is the original Section~\ref{sec:model_comparison} metric (two-sample KS p-value $\geq 0.05$). ``mean pv'' is the mean two-sample KS p-value across paths, with $q_5$ and $q_{95}$ as the lower / upper p-value quantiles. ``blkL\%'' is the fraction of paths whose KS statistic falls below the stationary-block-bootstrap $95\%$ critical value at mean block length $L$. Block-bootstrap critical values: $0.0306$ ($L = 5$), $0.0338$ ($L = 10$), $0.0350$ ($L = 20$); asymptotic critical value $0.0383$.}
-\label{tab:m2_ks_bootstrap}
+\label{tab:ks_block_bootstrap}
 \begin{tabular}{l c c c c c c c}
 \toprule
 Generator & asymp pass\% $\uparrow$ & mean pv $\uparrow$ & pv $q_{05}$ & pv $q_{95}$ & blk5\% $\uparrow$ & blk10\% $\uparrow$ & blk20\% $\uparrow$ \\
@@ -58,13 +58,13 @@ Two patterns emerge that the asymptotic pass-rate metric of the main panel does 
 An auxiliary MMD metric we report in this appendix (Section~\ref{sec:supp_metrics}) computes Maximum Mean Discrepancy with median-heuristic bandwidth on the pooled (observed $+$ simulated) window matrix, so the kernel scale $\gamma$ varies with the generator under evaluation. We refit MMD across the full extended generator panel under a single bandwidth $\gamma_{\text{obs}}$ computed once on $500$ observed standardised $20$-day windows from SPY IS. The legacy and fixed MMDs differ only in the third or fourth decimal across all ten generators in our reproduction; the cross-generator ranking under the fixed bandwidth is preserved. The bandwidth-heuristic concern is therefore real in principle but small in practice for this panel.
 
 \paragraph{Multi-seed Monte Carlo on headline metrics.}
-The paper reports headline statistics under a single global seed. We re-run the CHMM-N / -t / -L pipeline at $K = 18$ across ten alternative global seeds (base $20260422$, increment $100$) with $N_{\text{paths}} = 250$ per seed and report mean $\pm$ std for the headline metrics in Table~\ref{tab:m10_multiseed}. Seed-to-seed variability is small: IS KS std is $1.2$--$1.8\%$; OoS KS std is $1.8$--$3.6\%$; simulated IS kurtosis std is $0.06$ for CHMM-N, $0.05$ for CHMM-L, and $1.95$ for CHMM-t (reflecting the well-known instability of the per-state $\nu_k$ ECM at moderate $K$, already discussed in Section~\ref{sec:discussion}). Kupiec $\text{LR}_{\text{uc}}^{1\%}$ has std up to $1.25$ for CHMM-N because the breach count moves on a coarse $0$--$10$ grid at $T_{\text{OoS}} = 572$. The single-seed headline numbers in Table~\ref{tab:model_comparison} (e.g., CHMM-N IS KS $93.8\%$, simulated kurt $4.99$) sit comfortably inside the multi-seed bands.
+The paper reports headline statistics under a single global seed. We re-run the CHMM-N / -t / -L pipeline at $K = 18$ across ten alternative global seeds (base $20260422$, increment $100$) with $N_{\text{paths}} = 250$ per seed and report mean $\pm$ std for the headline metrics in Table~\ref{tab:multiseed_headline}. Seed-to-seed variability is small: IS KS std is $1.2$--$1.8\%$; OoS KS std is $1.8$--$3.6\%$; simulated IS kurtosis std is $0.06$ for CHMM-N, $0.05$ for CHMM-L, and $1.95$ for CHMM-t (reflecting the well-known instability of the per-state $\nu_k$ ECM at moderate $K$, already discussed in Section~\ref{sec:discussion}). Kupiec $\text{LR}_{\text{uc}}^{1\%}$ has std up to $1.25$ for CHMM-N because the breach count moves on a coarse $0$--$10$ grid at $T_{\text{OoS}} = 572$. The single-seed headline numbers in Table~\ref{tab:model_comparison} (e.g., CHMM-N IS KS $93.8\%$, simulated kurt $4.99$) sit comfortably inside the multi-seed bands.
 
 \begin{table}[h]
 \centering
 \small
 \caption{\textbf{Multi-seed Monte Carlo on headline metrics}. Ten global seeds; $N_{\text{paths}} = 250$ per seed (reduced from the headline panel's $1{,}000$ for tractability across $30$ fits, so the seed-to-seed std reported here is an upper bound on the std the headline panel would show at $N_{\text{paths}} = 1{,}000$).}
-\label{tab:m10_multiseed}
+\label{tab:multiseed_headline}
 \begin{tabular}{l c c c c c c}
 \toprule
 Model & IS KS \% & OoS KS \% & sim Kurt & ACF-MAE & $\text{LR}_{\text{uc}}^{1\%}$ & $\text{LR}_{\text{uc}}^{5\%}$ \\
@@ -117,7 +117,7 @@ Architecture and training details for the QuantGAN deep-generative baseline used
     \item \textbf{Implementation.} Julia with \texttt{Flux.jl} \cite{innes2018flux} and \texttt{Optimisers.Adam} state. Random seed for weight initialisation, training shuffling, and per-path sampling: $20260422$, with deterministic per-path sub-seeds.
 \end{itemize}
 
-The trained model is callable through the same \texttt{simulate} interface as the CHMM, so the seven-metric panel evaluates QuantGAN on byte-identical windows to the other generators. The QuantGAN row is reported alongside the extended-GARCH and SM-CHMM rows in Table~\ref{tab:m7_extended_panel}; the deep-generative row reaches $0\%$ IS and OoS KS pass rates and undershoots IS kurtosis decisively ($2.1$ vs.\ observed $7.7$), consistent with the documented difficulty of GAN-based generators on financial-time-series volatility-clustering benchmarks \citep{takahashi2019modeling, kwon2024can}.
+The trained model is callable through the same \texttt{simulate} interface as the CHMM, so the seven-metric panel evaluates QuantGAN on byte-identical windows to the other generators. The QuantGAN row is reported alongside the extended-GARCH and SM-CHMM rows in Table~\ref{tab:extended_baselines}; the deep-generative row reaches $0\%$ IS and OoS KS pass rates and undershoots IS kurtosis decisively ($2.1$ vs.\ observed $7.7$), consistent with the documented difficulty of GAN-based generators on financial-time-series volatility-clustering benchmarks \citep{takahashi2019modeling, kwon2024can}.
 
 \subsection{Per-Ticker OoS Price-Simulation Figures and Full Path-Level Metrics (Unconditional CHMM)}
 \label{sec:price_sim_oos_appendix}
@@ -241,7 +241,7 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
 \end{figure}
 
 \subsection{Expanded Baseline Panel: GARCH Family, Semi-Markov CHMM, and QuantGAN}
-\label{sec:m7_baselines}
+\label{sec:extended_baselines}
 
 We add five conditional-volatility baselines, the three semi-Markov CHMM variants, and the QuantGAN deep-generative baseline (Appendix~\ref{sec:quantgan_supp}) to the single GARCH(1,1) Gaussian row of Table~\ref{tab:model_comparison}. The conditional-volatility models are fit by grid-initialised Nelder-Mead maximum likelihood on the SPY IS window ($T_{\text{IS}} = 2{,}516$); simulation follows the same recursion used in estimation. Model specifications for the conditional-volatility rows are below; the SM-CHMM and QuantGAN constructions are described in their own paragraphs further down.
 
@@ -283,13 +283,13 @@ The path-independent two-regime variant of \citet{haas2004new}. Regime stickines
 \paragraph{Semi-Markov CHMM (SM-CHMM, the explicit hidden semi-Markov model (HSMM) foil).}
 The conceptual foil of the present paper: a hidden semi-Markov extension of the CHMM in which the geometric sojourn distribution of the Markov chain is replaced by a per-state explicit-duration family chosen by AIC from $\{$Pareto, negative binomial, geometric$\}$. Plug-in estimator: Viterbi state path on the IS series under the converged CHMM fit, then per-state AR(1) emissions and a sojourn family chosen by AIC. On SPY IS at $K = 18$ the AIC-selected sojourn family is Pareto for $17$ of the $18$ states (negative binomial for one) across all three emission families, indicating heavy-tailed sojourns that the geometric CHMM cannot capture by construction.
 
-Table~\ref{tab:m7_extended_panel} reports the IS / OoS distributional fidelity, kurtosis, ACF-MAE, and Kupiec breach diagnostics for the extended GARCH family, the SM-CHMM rows, and the QuantGAN deep-generative row, alongside the headline CHMM panel. Three structural observations.
+Table~\ref{tab:extended_baselines} reports the IS / OoS distributional fidelity, kurtosis, ACF-MAE, and Kupiec breach diagnostics for the extended GARCH family, the SM-CHMM rows, and the QuantGAN deep-generative row, alongside the headline CHMM panel. Three structural observations.
 
 \begin{table}[t]
 \centering
 \small
 \caption{\textbf{Extended baseline panel}. SPY IS / OoS, $T_{\text{IS}} = 2{,}516$, $T_{\text{OoS}} = 572$, $N_{\text{paths}} = 1{,}000$, $\alpha = 0.05$ for KS. Columns: IS / OoS KS pass rate (\%); IS / OoS AD pass rate (\%); simulated IS excess kurtosis; ACF-MAE on $|G_t|$; pooled-archive Kupiec breach rate (\%) and unconditional likelihood-ratio statistic at the $1\%$ and $5\%$ tails.}
-\label{tab:m7_extended_panel}
+\label{tab:extended_baselines}
 \begin{tabular}{l cc cc c c cc cc}
 \toprule
 & \multicolumn{2}{c}{KS (\%) $\uparrow$} & \multicolumn{2}{c}{AD (\%) $\uparrow$} & Kurt & ACF & \multicolumn{2}{c}{$1\%$ tail} & \multicolumn{2}{c}{$5\%$ tail} \\
