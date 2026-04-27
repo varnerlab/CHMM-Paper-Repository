@@ -1,4 +1,4 @@
-\subsection{Cross-Asset Dependence Models: Derivations and Diagnostics (Pipeline~B)}
+\subsubsection{Cross-Asset Dependence Models: Derivations and Diagnostics (Pipeline~B)}
 \label{sec:cross_asset_supp}
 
 This appendix provides the technical background for the SIM and copula constructions used in Section~\ref{sec:cross_asset} of the main text. These constructions constitute \emph{Pipeline~B}: per-asset marginals come from the independent CHMMs of Pipeline~A (Section~\ref{sec:cross_asset_univariate}) and joint dependence is overlaid on top. Pipeline~A stays purely univariate; Pipeline~B is the sole multi-asset pipeline in the paper.
@@ -59,7 +59,7 @@ QQQ  & $0.047$   & $1.122$ & $0.840$ \\
 \end{tabular}
 \end{table}
 
-\subsection{Student-t Copula Profile Log-Likelihood (Pipeline~B)}
+\subsubsection{Student-t Copula Profile Log-Likelihood (Pipeline~B)}
 \label{sec:copula_profile_supp}
 
 Figure~\ref{fig:copula_profile} plots the profile log-likelihood of the Student-t copula used inside Pipeline~B, computed on the six-asset SPY cross-section over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ used in Section~\ref{sec:cross_asset}.
@@ -72,7 +72,7 @@ The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum 
 \label{fig:copula_profile}
 \end{figure}
 
-\subsection{Cross-Asset Correlation Heat Maps (Pipeline~B, Companion to Table~\ref{tab:cross_asset_supp_summary})}
+\subsubsection{Cross-Asset Correlation Heat Maps (Pipeline~B, Companion to Table~\ref{tab:cross_asset_supp_summary})}
 \label{sec:cross_asset_corr_supp}
 
 Figure~\ref{fig:cross_asset_corr} visualises the observed and path-averaged simulated correlation matrices for the dependence models of Section~\ref{sec:cross_asset}.
@@ -86,7 +86,7 @@ All five panels share the six-asset SPY cross-section and the same CHMM-N margin
 \label{fig:cross_asset_corr}
 \end{figure}
 
-\subsection{Non-US Asset Class Extension and Per-Pair OoS Off-Diagonal Breakdown}
+\subsubsection{Non-US Asset Class Extension and Per-Pair OoS Off-Diagonal Breakdown}
 \label{sec:non_us_asset_supp}
 
 The body universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ) is six US-listed equity tickers from one country-index family. To probe whether the cross-asset construction generalises off the equity cluster we extend the universe with GLD (SPDR Gold Trust), a US-listed ETF whose underlying is physically-backed gold, i.e.\ a non-equity commodity asset class.

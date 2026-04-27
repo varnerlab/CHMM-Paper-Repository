@@ -1,4 +1,4 @@
-\subsection{Forward-Backward Recursions and M-Step Updates}
+\subsubsection{Forward-Backward Recursions and M-Step Updates}
 \label{sec:baum_welch_supp}
 
 For reference, the in-text Baum-Welch description of Section~\ref{sec:chmm_def} is underpinned by the standard log-space recursions \cite{rabiner1986introduction, bilmes1998gentle}.
@@ -58,7 +58,7 @@ For Laplace emissions $b_k(x) = \tfrac{1}{2 b_k} \exp(-|x - \mu_k|/b_k)$ the wei
 The weighted median is computed by cumulative-weight bracketing with linear interpolation between adjacent order statistics at the half-total weight crossing.
 The Laplace M-step carries no shape parameter, so CHMM-L is strictly cheaper per iteration than CHMM-t (which requires the per-state $Q_k$ search).
 
-\subsection{Algorithm Descriptions}
+\subsubsection{Algorithm Descriptions}
 \label{sec:algorithms}
 
 This section provides detailed pseudocode for the main algorithms used in this study.
@@ -266,7 +266,7 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \end{algorithm}
 
 
-\subsection{CHMM-t Degrees-of-Freedom Diagnostics}
+\subsubsection{CHMM-t Degrees-of-Freedom Diagnostics}
 \label{sec:nu_diagnostics}
 
 This appendix backs the discussion in Section~\ref{sec:discussion} of the CHMM-t IS kurtosis overshoot.

@@ -50,7 +50,7 @@ For the cross-asset extension we additionally track the mean Frobenius norm $\|\
     \text{MAE}_{\text{off-diag}} \;=\; \frac{1}{P}\sum_{p=1}^{P} \frac{2}{d(d-1)} \sum_{1 \leq i < j \leq d} \left| \hat\Sigma^{(p)}_{\text{sim},\,ij} - \hat\Sigma_{\text{obs},\,ij} \right|.
 \end{equation*}
 
-\subsection{Continuous Ranked Probability Score and Diebold-Mariano}
+\subsubsection{Continuous Ranked Probability Score and Diebold-Mariano}
 \label{sec:crps_methods}
 
 The OoS CRPS column of Table~\ref{tab:model_comparison} reports a proper-scoring-rule complement to the KS pass rate. We use the unbiased sample CRPS estimator: for an ensemble of $N$ simulated paths $\{x_i\}_{i=1}^N$ at time $t$ and observed value $y_t$,
@@ -61,7 +61,7 @@ The double sum is computed in $O(N \log N)$ via the sorted-ensemble identity $\s
 
 For pairwise comparison we report a Diebold-Mariano test on the per-$t$ loss differential $d_t = \widehat{\text{CRPS}}_t^A - \widehat{\text{CRPS}}_t^B$ with a Newey-West HAC variance under a Bartlett kernel and bandwidth $h = \lfloor T_{\text{OoS}}^{1/3} \rfloor = 8$. Two-sided $p$-values are reported under the standard-normal null. The body claim of Section~\ref{sec:model_comparison} is: CHMM ties or beats every benchmark on mean OoS CRPS, with Gaussian i.i.d.\ the only significantly worse comparator.
 
-\subsection{VaR / ES Envelope Visualization (Companion to Table~\ref{tab:var_es})}
+\subsubsection{VaR / ES Envelope Visualization (Companion to Table~\ref{tab:var_es})}
 \label{sec:var_es_supp}
 
 Figure~\ref{fig:var_es} visualizes the median and $[5\%, 95\%]$ envelopes across simulated paths whose numeric values are reported in Table~\ref{tab:var_es}.

@@ -1,4 +1,4 @@
-\subsection{OoS KS Test-Power Calibration}
+\subsubsection{OoS KS Test-Power Calibration}
 \label{sec:ks_power}
 
 Table~\ref{tab:ks_power} reports the two-sample KS test-power calibration used to anchor the OoS KS pass rates of Section~\ref{sec:model_comparison}.
@@ -22,7 +22,7 @@ Gaussian$(\hat\mu_{\text{IS}}, \hat\sigma_{\text{IS}})$ at length $T_{\text{IS}}
 
 The $90.0\%$ "nearly correct" rate is the practical ceiling for the CHMM OoS KS pass rates reported in Section~\ref{sec:model_comparison} ($80$--$84\%$); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
 
-\subsection{Block-Bootstrap KS Recalibration and Mean p-value Distribution}
+\subsubsection{Block-Bootstrap KS Recalibration and Mean p-value Distribution}
 \label{sec:ks_block_bootstrap}
 
 Two complementary concerns can be raised about the headline IS KS pass-rate metric: (i) the asymptotic two-sample KS test assumes i.i.d.\ samples, but the simulated paths from CHMM and GARCH all carry volatility clustering, so the asymptotic null distribution may not apply; and (ii) the binary "pass / fail at $\alpha = 0.05$" reduces a continuous p-value to a one-bit summary. Table~\ref{tab:ks_block_bootstrap} reports two recalibrations addressing each concern.
@@ -51,7 +51,7 @@ CHMM-L            & $94.8$ & $0.498$ & $0.048$ & $0.948$ & $81.0$ & $88.2$ & $90
 
 Two patterns emerge that the asymptotic pass-rate metric of the main panel does not surface. First, the cross-generator ordering on the mean p-value scale (bootstrap $0.81$, CHMM-t $0.57$, CHMM-N $0.55$, CHMM-L $0.50$, GARCH $0.04$) is much more compressed for CHMM-vs-bootstrap than the $94.8$--$99.8\%$ asymp pass rates suggest: the CHMM family lands at mean p-value $\sim 0.5$, the natural value for paths that are statistically indistinguishable from the observed series. Second, GARCH(1,1)'s drop from $25.4\%$ asymp $\to$ $5.6$--$16.2\%$ block-aware confirms concern (i): the asymptotic test is mildly lenient on volatility-clustering generators with the wrong marginal, and the block-aware test catches GARCH's misspecification more sharply. The CHMM family, by contrast, sees only a small block-bootstrap penalty ($94.8\% \to 88$--$92\%$), indicating that its asymptotic-test passes are not a clustering-induced artefact.
 
-\subsection{Bandwidth, Bin-Count, and Multi-Seed Robustness}
+\subsubsection{Bandwidth, Bin-Count, and Multi-Seed Robustness}
 \label{sec:tier3_robustness}
 
 \paragraph{Multi-seed Monte Carlo on headline metrics.}
@@ -73,7 +73,7 @@ CHMM-L & $94.4 \pm 1.8$ & $80.8 \pm 3.6$ & $6.71 \pm 0.05$ & $0.0537 \pm 0.0003$
 \end{tabular}
 \end{table}
 
-\subsection{Block-Bootstrap Baseline}
+\subsubsection{Block-Bootstrap Baseline}
 \label{sec:block_bootstrap_supp}
 
 Table~\ref{tab:block_bootstrap} reports the full seven-metric panel for the stationary block bootstrap at block length $b = 10$ trading days, the temporally-aware non-parametric baseline added to Table~\ref{tab:model_comparison}.
@@ -93,7 +93,7 @@ OoS & 87.5 & 86.4 & 5.34 & 0.0512 & 0.225 & 0.1570 & 86.9  \\
 \end{tabular}
 \end{table}
 
-\subsection{QuantGAN Deep-Generative Baseline}
+\subsubsection{QuantGAN Deep-Generative Baseline}
 \label{sec:quantgan_supp}
 
 Architecture and training details for the QuantGAN deep-generative baseline used in Section~\ref{sec:model_comparison} are summarised here. The construction is a repo-native approximation to the convolutional WGAN of \citet{wiese2020quantgan}: a one-dimensional convolutional generator and critic, Wasserstein loss with critic weight clipping, trained on rolling windows of standardised SPY returns and synthesising long paths by stitching generated windows.
@@ -116,7 +116,7 @@ Architecture and training details for the QuantGAN deep-generative baseline used
 
 The trained model is callable through the same \texttt{simulate} interface as the CHMM, so the seven-metric panel evaluates QuantGAN on byte-identical windows to the other generators. The QuantGAN row is reported alongside the extended-GARCH and SM-CHMM rows in Table~\ref{tab:extended_baselines}; the deep-generative row reaches $0\%$ IS and OoS KS pass rates and undershoots IS kurtosis decisively ($2.1$ vs.\ observed $7.7$), consistent with the documented difficulty of GAN-based generators on financial-time-series volatility-clustering benchmarks \citep{takahashi2019modeling, kwon2024can}.
 
-\subsection{Per-Ticker OoS Price-Simulation Figures and Full Path-Level Metrics (Unconditional CHMM)}
+\subsubsection{Per-Ticker OoS Price-Simulation Figures and Full Path-Level Metrics (Unconditional CHMM)}
 \label{sec:price_sim_oos_appendix}
 
 This appendix collects (i) the full per-family path-level probabilistic-forecast metrics for an auxiliary OoS price-simulation diagnostic on the six SPY-member tickers and (ii) the per-ticker price-fan and terminal-distribution figures for NVDA, JNJ, JPM, AAPL, and QQQ.
@@ -237,7 +237,7 @@ Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\tex
 \label{fig:price_fan_qqq_appendix}
 \end{figure}
 
-\subsection{Expanded Baseline Panel: GARCH Family, Semi-Markov CHMM, and QuantGAN}
+\subsubsection{Expanded Baseline Panel: GARCH Family, Semi-Markov CHMM, and QuantGAN}
 \label{sec:extended_baselines}
 
 We add five conditional-volatility baselines, the three semi-Markov CHMM variants, and the QuantGAN deep-generative baseline (Appendix~\ref{sec:quantgan_supp}) to the single GARCH(1,1) Gaussian row of Table~\ref{tab:model_comparison}. The conditional-volatility models are fit by grid-initialised Nelder-Mead maximum likelihood on the SPY IS window ($T_{\text{IS}} = 2{,}516$); simulation follows the same recursion used in estimation. Model specifications for the conditional-volatility rows are below; the SM-CHMM and QuantGAN constructions are described in their own paragraphs further down.

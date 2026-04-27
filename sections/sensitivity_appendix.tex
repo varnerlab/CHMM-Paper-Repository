@@ -1,4 +1,4 @@
-\subsection{Full State-Resolution Sensitivity Table}
+\subsubsection{Full State-Resolution Sensitivity Table}
 \label{sec:sensitivity_table}
 
 Table~\ref{tab:sensitivity} reports the full $K$-sweep referenced in Section~\ref{sec:k_selection_results} of the main text.
@@ -26,7 +26,7 @@ $K$ & IS & OoS & IS & OoS & Obs & Sim & ACF-MAE & $W_1$ & $H$ & Cov OoS (\%) \\
 \end{tabular}
 \end{table}
 
-\subsection{Multi-Emission State-Resolution Sensitivity}
+\subsubsection{Multi-Emission State-Resolution Sensitivity}
 \label{sec:multi_emission_sensitivity}
 
 Table~\ref{tab:sensitivity_multi} extends Table~\ref{tab:sensitivity} across the three emission families, confirming that the qualitative operating point $K = 18$ is stable when the Gaussian component is replaced with Student-t or Laplace emissions.
@@ -77,7 +77,7 @@ CHMM-L & 3  & 82.4 & 63.6 & 82.9 & 66.9 & 5.24 & 0.0533 & 0.112 & 0.0853 \\
 }
 \end{table}
 
-\subsection{Baum-Welch Convergence}
+\subsubsection{Baum-Welch Convergence}
 \label{sec:convergence}
 
 Figure~\ref{fig:convergence_all} shows the Baum-Welch convergence curves for representative state resolutions.
@@ -105,7 +105,7 @@ The monotonic increase confirms that the quantile-based initialization provided 
 \label{fig:convergence_all}
 \end{figure}
 
-\subsection{IS Comparison at Non-Selected State Resolutions}
+\subsubsection{IS Comparison at Non-Selected State Resolutions}
 \label{sec:k_sweep_panels}
 
 Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_is_k21} show the IS model comparison panels for $K \in \{3, 6, 12, 21\}$, complementing the $K = 18$ comparison in Figure~\ref{fig:is_comparison} of the main text.
@@ -141,7 +141,7 @@ $K = 9$ and $K = 15$ panels are omitted because they interpolate smoothly betwee
 \label{fig:k_sweep_is_k21}
 \end{figure}
 
-\subsection{OoS Validation at Non-Selected State Resolutions}
+\subsubsection{OoS Validation at Non-Selected State Resolutions}
 
 Figures~\ref{fig:k_sweep_panels_oos}--\ref{fig:k_sweep_oos_k21} show the OoS validation panels for $K \in \{3, 6, 12, 21\}$.
 KS pass rates remain above 91\% at all resolutions; the $K = 18$ panel is reproduced in Figure~\ref{fig:oos_validation} of the main text.
@@ -175,7 +175,7 @@ As with the IS panels, $K = 9$ and $K = 15$ are omitted; numerical OoS KS pass r
 \label{fig:k_sweep_oos_k21}
 \end{figure}
 
-\subsection{\texorpdfstring{Multi-Emission Figures at $K = 18$}{Multi-Emission Figures at K = 18}}
+\subsubsection{\texorpdfstring{Multi-Emission Figures at $K = 18$}{Multi-Emission Figures at K = 18}}
 \label{sec:multi_emission_figs}
 
 This appendix reproduces the standard diagnostic suite (emission PDFs, residence times, IS comparison, OoS validation, and convergence) for the two heavy-tailed emission families (CHMM-t and CHMM-L) at the selected state resolution $K = 18$; transition matrices and stationary distributions are discussed in prose only below, since they are visually indistinguishable across families at $K = 18$.
@@ -288,7 +288,7 @@ The CHMM-t and CHMM-L curves inherit the monotone increase of the classical EM g
 \label{fig:convergence_families}
 \end{figure}
 
-\subsection{Ryd\'{e}n K = 2 Replication}
+\subsubsection{Ryd\'{e}n K = 2 Replication}
 \label{sec:ryden_replication}
 
 Table~\ref{tab:ryden_init} reports the direct replication of Ryd\'{e}n et al.'s 1998 $K = 2$ setting on SPY IS under both initialization strategies, as discussed in Section~\ref{sec:discussion}.

@@ -18,11 +18,14 @@
 \usepackage[section]{placeins}
 \setlength{\emergencystretch}{3em}
 
-% Force \FloatBarrier before every \subsection so floats cannot cross into the
-% next subsection, eliminating orphan headings followed by tall whitespace
-% (the \texttt{[section]} option of \texttt{placeins} only barriers at \section).
+% Force \FloatBarrier before every \subsection and \subsubsection so floats
+% cannot cross into the next (sub)subsection, eliminating orphan headings
+% followed by tall whitespace (the \texttt{[section]} option of
+% \texttt{placeins} only barriers at \section).
 \let\origsubsection\subsection
 \renewcommand{\subsection}{\FloatBarrier\origsubsection}
+\let\origsubsubsection\subsubsection
+\renewcommand{\subsubsection}{\FloatBarrier\origsubsubsection}
 
 % --- Floats, tables, figures ---
 \usepackage{graphicx}
