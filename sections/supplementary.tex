@@ -18,6 +18,9 @@ The same \texttt{simulate} interface is used for every benchmark generator (Boot
 
 \subsection{CHMM Algorithms and Derivations}
 \label{sec:supp_algorithms}
+
+This appendix collects the algorithmic content for the CHMM family: the forward-backward recursions and weighted M-step updates, the complete training pseudocode, and per-state degrees-of-freedom diagnostics for CHMM-t.
+
 \input{sections/algorithms_appendix}
 
 \subsection{Validation Metric Details}
@@ -56,24 +59,33 @@ Let $\tilde g_{j, 1:T}$ be a sample of size $T$ from the per-asset CHMM marginal
 
 \subsection{State-Resolution and Multi-Emission Sensitivity}
 \label{sec:supp_sensitivity}
+
+This appendix reports the full $K$-sweep underlying the headline operating point of Section~\ref{sec:results}, the multi-emission family extension confirming that $K = 18$ is stable under Student-t and Laplace emissions, the EM convergence curves at representative $K$, the IS and OoS visual comparison panels at non-selected $K \in \{3, 6, 12, 21\}$, the multi-emission figure panels at $K = 18$, and the Ryd\'{e}n $K = 2$ replication.
+
 \input{sections/sensitivity_appendix}
 
 \subsection{Robustness, Test Power, Multi-Seed, and Auxiliary Baselines}
 \label{sec:supp_robustness}
+
+This appendix collects the robustness diagnostics and auxiliary baseline panel referenced from Section~\ref{sec:results}: the KS test-power calibration, block-bootstrap KS recalibration, bandwidth/bin-count and multi-seed sensitivity, the auxiliary block-bootstrap baseline, the QuantGAN deep-generative baseline, the per-ticker OoS price-simulation figures, and the expanded baseline panel that adds the GARCH family and the SM-CHMM foil to the headline table.
+
 \input{sections/baselines_appendix}
 
 \subsection{Cross-Asset Dependence: Full Pipeline~B Panel}
 \label{sec:supp_cross_asset}
+
+This appendix collects the full Pipeline~B detail: cross-asset dependence model derivations and diagnostics, the Student-t copula profile log-likelihood, the cross-asset correlation heat maps, the non-US asset-class extension and per-pair OoS off-diagonal breakdown, and the per-asset KS bar chart.
+
 \input{sections/cross_asset_appendix}
 
-\subsection{\texorpdfstring{Pre-OoS Validation $K$-Selection, Walk-Forward Summary, and $\nu_k$ Diagnostics}{Pre-OoS Validation K-Selection, Walk-Forward Summary, and nu\_k Diagnostics}}
+\subsection{\texorpdfstring{Pre-OoS Validation $K$-Selection and $\nu_k$ Diagnostics}{Pre-OoS Validation K-Selection and nu\_k Diagnostics}}
 \label{sec:supp_misc}
 
 \paragraph{Pre-OoS validation $K$-selection.}
 The $K = 18$ operating point in the main panel was chosen via a multi-objective criterion combining information-criterion (IC) rank with IS and OoS distributional pass rates, which uses the same $2024$--$2026$ window later used for VaR. As a clean re-selection that decouples the two, we fit CHMM-N on $2014$-$01$-$03$ through $2021$-$12$-$31$ ($n = 2{,}013$) and score every $K$ in the sweep by the forward-algorithm held-out log-likelihood on $2022$-$01$-$03$ through $2024$-$01$-$03$ ($n = 502$); the $2024$--$2026$ window is not touched. Held-out log-lik, BIC, HQC, and CAIC all select $K^\star = 3$ (per-observation log-lik $-2.5345$ at $K = 3$ vs.\ $-2.5694$ at $K = 18$); AIC selects $K^\star = 6$; held-out two-sample KS selects $K^\star = 9$. None of the six criteria that avoid the OoS window select $K = 18$. The $K = 18$ choice is best read as a multi-metric one that weights tail fidelity (kurtosis, AD) and downstream VaR behaviour alongside likelihood; a parallel main panel at $K = 3$ would re-rank some rows in CHMM's favour on ACF-MAE and against it on tail fidelity. The $2022$--$2023$ validation slice is itself partly a structural-break period (the rate-hike cycle), so any model with substantial IS-specific structure generalises worse on it.
 
-\paragraph{$\nu_k$ bracket and penalised-ECM rate sweep.}
-A bracket sweep $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0\}$ shows the CHMM-t fit does not pile against the lower bracket: median $\nu_k = 50$, only $2/18$ states near the lower edge. Lifting $\nu_{\min}$ does not reduce the $14.30 \to 7.69$ overshoot because the fit shifts posterior mass into the newly-recentred tail states. An exponential $1/\nu_k$ shrinkage prior at rate $\lambda \in \{0, 5, 20, 50, 100, 200\}$ reduces simulated excess kurtosis monotonically: $14.30, 11.19, 8.43, 5.41, 3.96, 3.67$. The recommended rate $\lambda = 20$ brings simulated kurtosis to $\approx 8$ (close to the observed $7.69$) at a $1$pp IS KS cost. Only the $\nu_{\min}$ state parameter actually moves ($2.1 \to 4.89$); upper bracket and median remain at $50$. The overshoot is therefore a single-state artefact of the two tail regimes hitting the lower bracket under unpenalised ECM.
+\paragraph{Penalised-ECM rate sweep.}
+The bracket sensitivity is reported with its table in Section~\ref{sec:nu_diagnostics}; here we report the complementary $1/\nu_k$ shrinkage rate sweep referenced in Section~\ref{sec:discussion}. An exponential $1/\nu_k$ prior at rate $\lambda \in \{0, 5, 20, 50, 100, 200\}$ reduces simulated excess kurtosis monotonically: $14.30, 11.19, 8.43, 5.41, 3.96, 3.67$. The recommended rate $\lambda = 20$ brings simulated kurtosis to $\approx 8$ (close to the observed $7.69$) at a $1$pp IS KS cost. Only the $\nu_{\min}$ state parameter actually moves ($2.1 \to 4.89$); upper bracket and median remain at $50$. The overshoot is therefore a single-state artefact of the two tail regimes hitting the lower bracket under unpenalised ECM.
 
 \paragraph{Cross-asset summary.}
 The full per-construction Pipeline~B panel is in Section~\ref{sec:supp_cross_asset}; for reference, the headline ordering is summarised in Table~\ref{tab:cross_asset_supp_summary}.
