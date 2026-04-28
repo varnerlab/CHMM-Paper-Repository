@@ -7,9 +7,10 @@ The companion Julia package \texttt{CHMM-Model.jl} (\url{https://github.com/alta
 
 \begin{verbatim}
 using CHMM
-chmm_n = make_chmm_n(returns; K = 18)        # Gaussian emissions
-chmm_t = make_chmm_t(returns; K = 18)        # Student-t emissions
-chmm_l = make_chmm_l(returns; K = 18)        # Laplace emissions
+chmm_n   = make_chmm_n(returns;   K = 18)    # Gaussian emissions
+chmm_t   = make_chmm_t(returns;   K = 18)    # Student-t emissions
+chmm_l   = make_chmm_l(returns;   K = 18)    # Laplace emissions
+chmm_ged = make_chmm_ged(returns; K = 18)    # GED (per-state shape p_k)
 fit!(chmm_n; max_iter = 60, tol = 1e-4)      # log-space Baum-Welch
 paths = simulate(chmm_n; T = 2516, n = 1000) # 1000 paths of length T
 \end{verbatim}
@@ -33,16 +34,16 @@ This appendix collects the algorithmic content for the CHMM family: the forward-
 
 The following propositions are referenced in Section~\ref{sec:theory} and stated formally here for reference; each is a one-line specialisation of a standard result and the proof sketch is one sentence.
 
-\begin{proposition}[ECM monotonicity for CHMM-t (and EM monotonicity for CHMM-N, CHMM-L)]
+\begin{proposition}[ECM monotonicity for CHMM-t and CHMM-GED (and EM monotonicity for CHMM-N, CHMM-L)]
 \label{prop:ecm_monotone}
-Under compactness of the parameter space ($\mu_k$, $\sigma_k$ or $b_k$, $\nu_k$ each in a closed bounded interval, $T_{ij} \ge \epsilon_T > 0$), the two-block CM step for CHMM-t of Section~\ref{sec:mstep}, namely the closed-form weighted updates of $(\mathbf T, \boldsymbol\pi, \mu_k, \sigma_k)$ at fixed $\nu_k$, followed by a golden-section maximisation of the per-state $Q$-function over $\nu_k \in [\nu_{\min}, \nu_{\max}]$, satisfies $Q(\theta^{(n+1)} \mid \theta^{(n)}) \ge Q(\theta^{(n)} \mid \theta^{(n)})$, and consequently $\mathcal L(\theta^{(n+1)}) \ge \mathcal L(\theta^{(n)})$ where $\mathcal L$ is the incomplete-data log-likelihood. The same monotonicity holds for the closed-form CHMM-N and CHMM-L M-steps under the standard EM guarantee.
+Under compactness of the parameter space ($\mu_k$, $\sigma_k$ or $b_k$ or $\alpha_k$, $\nu_k \in [\nu_{\min}, \nu_{\max}]$, $p_k \in [p_{\min}, p_{\max}]$ each in a closed bounded interval, $T_{ij} \ge \epsilon_T > 0$), the two-block CM step for CHMM-t of Section~\ref{sec:mstep}, namely the closed-form weighted updates of $(\mathbf T, \boldsymbol\pi, \mu_k, \sigma_k)$ at fixed $\nu_k$, followed by a golden-section maximisation of the per-state $Q$-function over $\nu_k$, satisfies $Q(\theta^{(n+1)} \mid \theta^{(n)}) \ge Q(\theta^{(n)} \mid \theta^{(n)})$, and consequently $\mathcal L(\theta^{(n+1)}) \ge \mathcal L(\theta^{(n)})$ where $\mathcal L$ is the incomplete-data log-likelihood. The same monotonicity holds for the closed-form CHMM-N and CHMM-L M-steps under the standard EM guarantee, and for the three-stage CHMM-GED CM sequence (bracketed $\mu_k$, closed-form $\alpha_k$, bracketed $p_k$) of equations~\eqref{eq:ged_mu}--\eqref{eq:ged_p}.
 \end{proposition}
-\noindent\emph{Proof sketch.} Each CM step does not decrease $Q$ by definition (CM-1 is closed-form maximum, CM-2 is golden-section maximum); the standard EM inequality $\mathcal L(\theta^{(n+1)}) - \mathcal L(\theta^{(n)}) \ge Q(\theta^{(n+1)} \mid \theta^{(n)}) - Q(\theta^{(n)} \mid \theta^{(n)})$ \cite{wu1983convergence, mengrubin1993ecm} converts $Q$-monotonicity into log-likelihood monotonicity. Compactness gives boundedness above, hence convergence.
+\noindent\emph{Proof sketch.} Each CM step does not decrease $Q$ by definition (closed-form steps are exact maximisers, golden-section steps are bracketed maxima within the prescribed interval); the standard EM inequality $\mathcal L(\theta^{(n+1)}) - \mathcal L(\theta^{(n)}) \ge Q(\theta^{(n+1)} \mid \theta^{(n)}) - Q(\theta^{(n)} \mid \theta^{(n)})$ \cite{wu1983convergence, mengrubin1993ecm} converts $Q$-monotonicity into log-likelihood monotonicity. Compactness gives boundedness above, hence convergence.
 
 \begin{proposition}[Identifiability up to label permutation]
-Under irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred}) and the emission contrast condition (Assumption~\ref{ass:moments}), the CHMM parameter is identifiable up to label permutation in all three emission families considered (CHMM-N, CHMM-t with $\nu_k \in [\nu_{\min}, \nu_{\max}]$, and CHMM-L).
+Under irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred}) and the emission contrast condition (Assumption~\ref{ass:moments}), the CHMM parameter is identifiable up to label permutation in all four emission families considered (CHMM-N, CHMM-t with $\nu_k \in [\nu_{\min}, \nu_{\max}]$, CHMM-L, and CHMM-GED with $p_k \in [p_{\min}, p_{\max}]$).
 \end{proposition}
-\noindent\emph{Proof sketch.} The HMM identifiability theorem of \citet{allman2009identifiability} requires $\mathbf T$ of full rank and per-state emissions linearly independent in the space of densities on $\R$. Full-rank $\mathbf T$ follows from irreducibility \cite{levinperes2017markov}; linear independence of Gaussian, bracketed-$\nu$ Student-t, and Laplace emissions with distinct location-scale parameters follows from \citet{yakowitzspragins1968}.
+\noindent\emph{Proof sketch.} The HMM identifiability theorem of \citet{allman2009identifiability} requires $\mathbf T$ of full rank and per-state emissions linearly independent in the space of densities on $\R$. Full-rank $\mathbf T$ follows from irreducibility \cite{levinperes2017markov}; linear independence of Gaussian, bracketed-$\nu$ Student-t, Laplace, and bracketed-$p$ GED emissions with distinct location-scale-shape parameters follows from \citet{yakowitzspragins1968}.
 
 \begin{proposition}[MLE consistency]
 Under Assumptions~\ref{ass:irred}--\ref{ass:moments} and the assumption that the true parameter lies in the interior of a compact $\Theta$, the MLE $\hat\theta_T = \arg\max_{\theta \in \Theta} \mathcal L_T(\theta)$ is consistent: $\hat\theta_T \xrightarrow{p} \theta_0$ as $T \to \infty$, modulo label permutation.

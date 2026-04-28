@@ -5,7 +5,7 @@
 Still under Pipeline~A (Figure~\ref{fig:pipeline_schematic}): VaR and Expected-Shortfall are evaluated on the per-ticker SPY simulations, no cross-asset coupling.
 For a financial-risk consumer the canonical diagnostics are one-tail Value-at-Risk (VaR) and Expected-Shortfall (ES) at daily probability levels of $1\%$ and $5\%$.
 A synthetic-data generator is well calibrated if the envelope of per-path simulated VaR/ES brackets the observed historical value.
-We simulate $1{,}000$ independent paths from each of the five most relevant generators (Bootstrap, GARCH(1,1), CHMM-N, CHMM-t, CHMM-L) and report median and $[5\%, 95\%]$ envelope across paths in Table~\ref{tab:var_es}.
+We simulate $1{,}000$ independent paths from each of the six most relevant generators (Bootstrap, GARCH(1,1), CHMM-N, CHMM-t, CHMM-L, CHMM-GED) and report median and $[5\%, 95\%]$ envelope across paths in Table~\ref{tab:var_es}.
 
 \begin{table}[t]
 \centering
@@ -24,6 +24,7 @@ GARCH     & $-5.80\ [-8.62, -4.52]$      & $-7.86\ [-13.54,\ -5.77]$    & $-3.19
 CHMM-N    & $-6.64\ [-8.01, -5.47]$      & $-8.80\ [-10.16,\ -7.34]$    & $-3.45\ [-4.05, -2.95]$      & $-5.45\ [-6.33, -4.61]$      \\
 CHMM-t    & $-6.58\ [-7.51, -5.83]$      & $-9.06\ [-10.70,\ -7.79]$    & $-3.40\ [-3.90, -2.90]$      & $-5.51\ [-6.18, -4.85]$      \\
 CHMM-L    & $-6.89\ [-7.85, -6.01]$      & $-9.15\ [-10.42,\ -7.97]$    & $-3.30\ [-3.77, -2.88]$      & $-5.53\ [-6.17, -4.87]$      \\
+CHMM-GED  & $-6.85\ [-7.70, -6.06]$      & $-8.79\ [-9.83,\ -7.82]$     & $-3.43\ [-3.98, -2.93]$      & $-5.55\ [-6.23, -4.91]$      \\
 \midrule
           & OoS VaR$_{0.01}$             & OoS ES$_{0.01}$              & OoS VaR$_{0.05}$             & OoS ES$_{0.05}$              \\
 \textit{Observed}  & $-5.51$                      & $-7.94$                      & $-2.77$                      & $-4.67$                      \\
@@ -32,11 +33,12 @@ GARCH     & $-5.35\ [-9.98, -3.61]$      & $-6.72\ [-13.51,\ -4.38]$    & $-3.14
 CHMM-N    & $-6.30\ [-9.02, -4.30]$      & $-8.44\ [-11.36,\ -5.42]$    & $-3.39\ [-4.74, -2.47]$      & $-5.27\ [-7.23, -3.74]$      \\
 CHMM-t    & $-6.32\ [-8.13, -4.80]$      & $-8.60\ [-12.20,\ -6.29]$    & $-3.29\ [-4.27, -2.45]$      & $-5.34\ [-6.72, -4.08]$      \\
 CHMM-L    & $-6.69\ [-8.59, -4.91]$      & $-8.88\ [-11.48,\ -6.73]$    & $-3.27\ [-4.30, -2.51]$      & $-5.47\ [-6.82, -4.20]$      \\
+CHMM-GED  & $-6.60\ [-8.30, -4.82]$      & $-8.51\ [-10.68,\ -6.47]$    & $-3.32\ [-4.38, -2.46]$      & $-5.41\ [-6.66, -4.06]$      \\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
 
-All three CHMM variants bracket the observed historical VaR and ES at both $1\%$ and $5\%$ levels within their $5\%$--$95\%$ envelopes on both IS and OoS windows; the IS CHMM-N median VaR$_{0.01}$ at $-6.64$ (observed $-6.38$) and ES$_{0.01}$ at $-8.80$ (observed $-9.00$) are the closest point estimates across the five generators.
-The CHMM envelopes are roughly $1.7\times$ tighter than GARCH's and pass the unconditional Kupiec test cleanly at both levels (CHMM-N $\text{LR}_{\text{uc}} = 3.83$ at $5\%$ against the $\chi^2_1 = 3.84$ critical value; CHMM-t at $3.83$; CHMM-L at $3.03$).
-CHMM-t's IS kurtosis overshoot does \emph{not} translate into a systematically more conservative VaR/ES point estimate; the IS median VaR$_{0.01}$ of $-6.58$ is almost identical to CHMM-N's $-6.64$ and the envelope width is comparable. CHMM-L's IS median VaR$_{0.01}$ of $-6.89$ is mildly more conservative than CHMM-N's, consistent with its closer-to-observed kurtosis.
+All four CHMM variants bracket the observed historical VaR and ES at both $1\%$ and $5\%$ levels within their $5\%$--$95\%$ envelopes on both IS and OoS windows; the IS CHMM-N median VaR$_{0.01}$ at $-6.64$ (observed $-6.38$) and ES$_{0.01}$ at $-8.80$ (observed $-9.00$) are the closest point estimates across the six generators.
+The CHMM envelopes are roughly $1.7\times$ tighter than GARCH's and pass the unconditional Kupiec test cleanly at both levels (CHMM-N $\text{LR}_{\text{uc}} = 3.83$ at $5\%$ against the $\chi^2_1 = 3.84$ critical value; CHMM-t at $3.83$; CHMM-L at $3.03$; CHMM-GED at $3.83$).
+CHMM-t's IS kurtosis overshoot does \emph{not} translate into a systematically more conservative VaR/ES point estimate; the IS median VaR$_{0.01}$ of $-6.58$ is almost identical to CHMM-N's $-6.64$ and the envelope width is comparable. CHMM-L's IS median VaR$_{0.01}$ of $-6.89$ is mildly more conservative than CHMM-N's, consistent with its closer-to-observed kurtosis. CHMM-GED's IS median VaR$_{0.01}$ of $-6.85$ sits between CHMM-N and CHMM-L on the conservativeness axis, consistent with its adaptive shape mechanism.

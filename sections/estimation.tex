@@ -46,3 +46,6 @@ The two-block CM step preserves the EM monotonicity guarantee on the compact bra
 
 \paragraph{CHMM-L (Laplace).}
 The weighted maximum-likelihood estimators are in closed form: $\mu_k$ is the posterior-weighted median of the observations (weights $\gamma_t(k)$, computed by cumulative-weight bracketing with linear interpolation between neighbouring order statistics), and $b_k \leftarrow \sum_t \gamma_t(k) |O_t - \mu_k| / \sum_t \gamma_t(k)$.
+
+\paragraph{CHMM-GED (Generalized Error Distribution via three-stage ECM).}
+For $b_k(x) = \mathrm{GED}(x; \mu_k, \alpha_k, p_k)$ the M-step decomposes into three CM updates per state: a bracketed $\mu_k \leftarrow \arg\min_{\mu} \sum_t \gamma_t(k)\,|O_t - \mu|^{p_k}$ via golden-section over $[\hat\mu_k - 5\alpha_k, \hat\mu_k + 5\alpha_k]$, then the closed-form scale $\alpha_k \leftarrow \big[(p_k / W_k) \sum_t \gamma_t(k)\,|O_t - \mu_k|^{p_k}\big]^{1/p_k}$ with $W_k = \sum_t \gamma_t(k)$, and finally a bracketed $p_k \leftarrow \arg\max_{p \in [p_{\min}, p_{\max}]} \sum_t \gamma_t(k)\, \log b_k(O_t; \mu_k, \alpha_k, p)$ via golden-section over $[p_{\min}, p_{\max}] = [0.5, 3.0]$. Each CM step is a partial maximization, so EM monotonicity holds on the compact bracket. CHMM-N (all $p_k = 2$) and CHMM-L (all $p_k = 1$) are the boundary cases.

@@ -29,17 +29,17 @@ $K$ & IS & OoS & IS & OoS & Obs & Sim & $|G_t|$ & $G_t$ & $W_1$ & $H$ & Cov OoS 
 \subsubsection{Multi-Emission State-Resolution Sensitivity}
 \label{sec:multi_emission_sensitivity}
 
-Table~\ref{tab:sensitivity_multi} extends Table~\ref{tab:sensitivity} across the three emission families, confirming that the qualitative operating point $K = 18$ is stable when the Gaussian component is replaced with Student-t or Laplace emissions.
-For CHMM-t the per-state degrees of freedom $\nu_k$ are refit by ECM-plus-golden-section at every $K$; for CHMM-L the weighted-median location and weighted MAD scale are closed form and impose no additional cost.
+Table~\ref{tab:sensitivity_multi} extends Table~\ref{tab:sensitivity} across the four emission families, confirming that the qualitative operating point $K = 18$ is stable when the Gaussian component is replaced with Student-t, Laplace, or GED emissions.
+For CHMM-t the per-state degrees of freedom $\nu_k$ are refit by ECM-plus-golden-section at every $K$; for CHMM-L the weighted-median location and weighted MAD scale are closed form and impose no additional cost; for CHMM-GED the three-stage CM update of Section~\ref{sec:mstep} refits $(\mu_k, \alpha_k, p_k)$ at every $K$ with $p_k$ bracketed in $[0.5, 3.0]$.
 Three patterns extend from Table~\ref{tab:sensitivity} to the new families.
-First, the distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band for all three families: CHMM-t reaches its highest IS KS at $K = 18$ ($96.0\%$) and its highest OoS KS at $K = 18$ ($84.5\%$), and CHMM-L reaches its highest IS KS at $K = 18$ ($95.6\%$) and its highest IS AD at $K = 18$ ($92.7\%$).
+First, the distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band for all four families: CHMM-t reaches its highest IS KS at $K = 18$ ($94.6\%$), CHMM-L reaches its highest IS KS at $K = 18$ ($94.2\%$) and its highest IS AD at $K = 18$ ($91.4\%$), and CHMM-GED reaches its highest IS KS at $K = 12$ ($97.6\%$) and the highest entry across the entire panel.
 Once a family enters the plateau the operating point is flat with respect to $K$, so we report the main-text results at the same $K = 18$ used for CHMM-N.
-Second, the absolute-return ACF-MAE remains within the narrow $0.047$--$0.056$ band observed for the Gaussian sweep, and the raw-return ACF-MAE remains essentially constant at $\approx 0.024$ across all $21$ (family, $K$) combinations. Both temporal axes are properties of the regime structure rather than the emission family: $|G_t|$ ACF reproduction is governed by the eigenvalue spectrum of $\mathbf T$ (Section~\ref{sec:theory}), and raw-$G_t$ ACF is null in expectation under any HMM with i.i.d.\ within-state emissions.
-Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks around $5.0$ at the high-$K$ end, the Laplace sweep lands squarely in the $5.3$--$6.7$ range (closest to the observed $7.68$), and the Student-t sweep climbs sharply above $13$ across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, over-correcting IS kurtosis.
+Second, the absolute-return ACF-MAE remains within the narrow $0.046$--$0.058$ band across the four families, and the raw-return ACF-MAE remains essentially constant at $\approx 0.024$ across all $28$ (family, $K$) combinations. Both temporal axes are properties of the regime structure rather than the emission family: $|G_t|$ ACF reproduction is governed by the eigenvalue spectrum of $\mathbf T$ (Section~\ref{sec:theory}), and raw-$G_t$ ACF is null in expectation under any HMM with i.i.d.\ within-state emissions.
+Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks around $5.0$ at the high-$K$ end, the Laplace sweep lands squarely in the $5.2$--$6.7$ range (closest to the observed $7.68$), the Student-t sweep climbs sharply above $13$ across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, and the GED sweep mirrors the Gaussian curve at $4.7$--$5.5$ because the bulk of $\hat p_k$ values pin near the upper bracket and the Laplace-like tail states contribute too little stationary mass to lift the aggregate moment.
 
 \begin{table}[H]
 \centering
-\caption{Multi-emission state resolution sensitivity for SPY (1{,}000 paths, $\alpha = 0.05$). CHMM-N: Gaussian; CHMM-t: Student-t with per-state $\nu_k$ refit by ECM-plus-golden-section; CHMM-L: Laplace with weighted-median location and weighted-MAD scale. Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison}. Observed excess kurtosis is $7.68$ IS and $5.29$ OoS. ACF-MAE columns parallel the main-text Table~\ref{tab:model_comparison}: $|G_t|$ for volatility clustering, $G_t$ (raw) for linear autocorrelation.}
+\caption{Multi-emission state resolution sensitivity for SPY (1{,}000 paths, $\alpha = 0.05$). CHMM-N: Gaussian; CHMM-t: Student-t with per-state $\nu_k$ refit by ECM-plus-golden-section; CHMM-L: Laplace with weighted-median location and weighted-MAD scale; CHMM-GED: Generalized Error Distribution with per-state shape $p_k \in [0.5, 3.0]$ via three-stage ECM (Section~\ref{sec:mstep}). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison}. Observed excess kurtosis is $7.68$ IS and $5.29$ OoS. ACF-MAE columns parallel the main-text Table~\ref{tab:model_comparison}: $|G_t|$ for volatility clustering, $G_t$ (raw) for linear autocorrelation.}
 \label{tab:sensitivity_multi}
 \small
 \resizebox{\textwidth}{!}{%
@@ -65,13 +65,21 @@ CHMM-t & 3  & 92.2 & 82.9 & 88.0 & 79.1 & 33.68 & 0.0538 & 0.0235 & 0.108 & 0.07
        & \textbf{18} & \textbf{96.0} & \textbf{84.5} & \textbf{91.7} & \textbf{80.8} & 13.19 & 0.0551 & \textbf{0.0234} & \textbf{0.099} & \textbf{0.0759} \\
        & 21 & 94.5 & 83.3 & 88.5 & 78.1 & 14.66 & 0.0539 & 0.0234 & 0.102 & 0.0758 \\
 \midrule
-CHMM-L & 3  & 81.9 & 64.8 & 82.5 & 65.8 & 5.29  & 0.0535 & 0.0235 & 0.112 & 0.0854 \\
-       & 6  & 90.5 & 76.4 & 85.0 & 74.2 & 5.91  & 0.0513 & 0.0235 & 0.110 & 0.0818 \\
-       & 9  & 90.5 & 75.7 & 84.8 & 70.1 & 6.01  & 0.0517 & 0.0235 & 0.110 & 0.0819 \\
-       & 12 & 93.6 & 81.4 & 89.8 & 78.8 & 6.18  & 0.0541 & 0.0234 & 0.106 & 0.0796 \\
-       & 15 & 92.5 & 78.9 & 88.3 & 78.8 & 6.03  & 0.0541 & 0.0234 & 0.105 & 0.0792 \\
-       & \textbf{18} & \textbf{95.6} & \textbf{79.9} & \textbf{92.7} & \textbf{80.7} & \textbf{6.74}  & 0.0563 & 0.0234 & 0.101 & 0.0798 \\
-       & 21 & 93.1 & 79.5 & 87.7 & 76.8 & 6.05  & 0.0543 & 0.0234 & 0.107 & 0.0807 \\
+CHMM-L & 3  & 80.5 & 62.7 & 81.2 & 66.5 & 5.24  & 0.0531 & 0.0235 & 0.113 & 0.0855 \\
+       & 6  & 88.3 & 76.3 & 83.1 & 71.8 & 5.86  & 0.0510 & 0.0235 & 0.112 & 0.0821 \\
+       & 9  & 90.7 & 77.2 & 84.2 & 72.2 & 5.92  & 0.0519 & 0.0235 & 0.112 & 0.0823 \\
+       & 12 & 93.8 & 79.3 & 88.7 & 76.7 & 6.17  & 0.0541 & 0.0234 & 0.105 & 0.0793 \\
+       & 15 & 92.5 & 78.3 & 88.2 & 75.5 & 5.98  & 0.0539 & 0.0234 & 0.107 & 0.0794 \\
+       & \textbf{18} & \textbf{94.2} & \textbf{80.5} & \textbf{91.4} & \textbf{80.6} & \textbf{6.74}  & 0.0566 & 0.0234 & 0.104 & 0.0795 \\
+       & 21 & 91.5 & 79.6 & 87.5 & 77.7 & 5.95  & 0.0539 & 0.0234 & 0.107 & 0.0807 \\
+\midrule
+CHMM-GED & 3  & 90.3 & 78.4 & 85.5 & 73.6 & 5.45  & 0.0531 & 0.0236 & 0.109 & 0.0818 \\
+         & 6  & 91.8 & 79.0 & 84.9 & 73.5 & 5.22  & 0.0518 & 0.0235 & 0.108 & 0.0805 \\
+         & 9  & 94.6 & 81.6 & 89.1 & 75.9 & 5.03  & 0.0535 & 0.0234 & 0.101 & 0.0787 \\
+         & 12 & \textbf{97.6} & \textbf{84.2} & \textbf{94.0} & \textbf{81.2} & 4.67  & 0.0563 & 0.0234 & \textbf{0.094} & \textbf{0.0775} \\
+         & 15 & 94.2 & 82.0 & 87.4 & 76.5 & 5.14  & 0.0535 & 0.0235 & 0.104 & 0.0784 \\
+         & \textbf{18} & 96.3 & 83.8 & 92.7 & 81.3 & 5.05  & 0.0546 & 0.0235 & 0.098 & 0.0779 \\
+         & 21 & 94.1 & 85.3 & 88.7 & 81.2 & 4.82  & 0.0542 & 0.0235 & 0.102 & 0.0781 \\
 \bottomrule
 \end{tabular}%
 }
@@ -183,26 +191,31 @@ The Gaussian counterparts are already shown as Figures~\ref{fig:is_comparison} a
 The figures confirm that the shared forward--backward scaffold produces internally-similar regime structure across the three families: the near-diagonal transition band, the $K$-component dense emission cover, the longer central-state residence times, and the monotone log-likelihood convergence are features of the CHMM framework and not of the Gaussian component specifically.
 
 \paragraph{Emission PDFs.}
-Figure~\ref{fig:emissions_families} compares the learned $K = 18$ emissions for the three families.
-The CHMM-t panel's per-state $\nu_k$ allocation is visible in the narrower modes of certain tail states; the CHMM-L panel's Laplace components have sharper peaks and slower exponential tail decay than the Gaussians.
+Figure~\ref{fig:emissions_families} compares the learned $K = 18$ emissions for the four families.
+The CHMM-t panel's per-state $\nu_k$ allocation is visible in the narrower modes of certain tail states; the CHMM-L panel's Laplace components have sharper peaks and slower exponential tail decay than the Gaussians; the CHMM-GED panel mixes both, with bulk states near the Gaussian shape ($\hat p_k$ near the upper bracket) and a small set of tail states near the Laplace shape ($\hat p_k$ near $1$).
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.32\textwidth}
+\begin{subfigure}[b]{0.24\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-N.pdf}
     \caption{CHMM-N (Gaussian)}
 \end{subfigure}
 \hfill
-\begin{subfigure}[b]{0.32\textwidth}
+\begin{subfigure}[b]{0.24\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-t.pdf}
     \caption{CHMM-t (Student-t)}
 \end{subfigure}
 \hfill
-\begin{subfigure}[b]{0.32\textwidth}
+\begin{subfigure}[b]{0.24\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-L.pdf}
     \caption{CHMM-L (Laplace)}
 \end{subfigure}
-\caption{Learned emission distributions at $K = 18$ across the three emission families (CHMM-N Gaussian, CHMM-t Student-t with per-state $\nu_k$, CHMM-L Laplace), overlaid on the observed SPY IS return histogram (Pipeline~A). Heavier-tailed emission families (t, L) give individual components more tail mass, which is what closes the kurtosis gap of the Gaussian CHMM.}
+\hfill
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-GED.pdf}
+    \caption{CHMM-GED (per-state $p_k$)}
+\end{subfigure}
+\caption{Learned emission distributions at $K = 18$ across the four emission families (CHMM-N Gaussian, CHMM-t Student-t with per-state $\nu_k$, CHMM-L Laplace, CHMM-GED with per-state $p_k$), overlaid on the observed SPY IS return histogram (Pipeline~A). Heavier-tailed emission families (t, L) give individual components more tail mass, which is what closes the kurtosis gap of the Gaussian CHMM; CHMM-GED interpolates between Gaussian and Laplace per state.}
 \label{fig:emissions_families}
 \end{figure}
 
@@ -211,31 +224,36 @@ The $K = 18$ transition matrices and stationary distributions learned under CHMM
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.32\textwidth}
+\begin{subfigure}[b]{0.24\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-N.pdf}
     \caption{CHMM-N}
 \end{subfigure}
 \hfill
-\begin{subfigure}[b]{0.32\textwidth}
+\begin{subfigure}[b]{0.24\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-t.pdf}
     \caption{CHMM-t}
 \end{subfigure}
 \hfill
-\begin{subfigure}[b]{0.32\textwidth}
+\begin{subfigure}[b]{0.24\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-L.pdf}
     \caption{CHMM-L}
 \end{subfigure}
-\caption{Natural residence times $\tau_k = 1/(1 - T_{kk})$ at $K = 18$ for the SPY IS fit (Pipeline~A) across the three emission families (CHMM-N Gaussian, CHMM-t Student-t, CHMM-L Laplace).}
+\hfill
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-GED.pdf}
+    \caption{CHMM-GED}
+\end{subfigure}
+\caption{Natural residence times $\tau_k = 1/(1 - T_{kk})$ at $K = 18$ for the SPY IS fit (Pipeline~A) across the four emission families (CHMM-N Gaussian, CHMM-t Student-t, CHMM-L Laplace, CHMM-GED).}
 \label{fig:residence_families}
 \end{figure}
 
 \paragraph{IS comparison.}
-Figures~\ref{fig:is_families}--\ref{fig:is_families_L} reproduce the three-panel IS comparison (density, ACF of $|G_t|$, tail Q-Q) at $K = 18$ for the two heavy-tailed families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
+Figures~\ref{fig:is_families}--\ref{fig:is_families_GED} reproduce the three-panel IS comparison (density, ACF of $|G_t|$, tail Q-Q) at $K = 18$ for the three non-Gaussian emission families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t.pdf}
-\caption{IS SPY model comparison at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) marginal density with KS pass rate, (b) ACF of $|G_t|$, and (c) tail Q-Q plot. The CHMM-N counterpart is Figure~\ref{fig:is_comparison}; the CHMM-L counterpart is Figure~\ref{fig:is_families_L}.}
+\caption{IS SPY model comparison at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) marginal density with KS pass rate, (b) ACF of $|G_t|$, and (c) tail Q-Q plot. The CHMM-N counterpart is Figure~\ref{fig:is_comparison}; the CHMM-L and CHMM-GED counterparts are Figures~\ref{fig:is_families_L} and~\ref{fig:is_families_GED}.}
 \label{fig:is_families}
 \end{figure}
 
@@ -246,14 +264,21 @@ Figures~\ref{fig:is_families}--\ref{fig:is_families_L} reproduce the three-panel
 \label{fig:is_families_L}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-GED.pdf}
+\caption{IS SPY model comparison at $K = 18$ for CHMM-GED emissions with per-state shape $p_k \in [0.5, 3.0]$ (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:is_families}. The fitted $\hat p_k$ partition is reported in Figure~\ref{fig:p_hist} and Appendix~\ref{sec:nu_diagnostics}.}
+\label{fig:is_families_GED}
+\end{figure}
+
 \paragraph{OoS validation.}
-Figures~\ref{fig:oos_families}--\ref{fig:oos_families_L} show the OoS validation panels for CHMM-t and CHMM-L at $K = 18$.
-The CHMM-t panel demonstrates the OoS kurtosis alignment noted in the main text (simulated 6.40 vs.\ observed 6.24), and the CHMM-L panel shows the tighter density fan produced by the heavier Laplace tails relative to the Gaussian.
+Figures~\ref{fig:oos_families}--\ref{fig:oos_families_GED} show the OoS validation panels for CHMM-t, CHMM-L, and CHMM-GED at $K = 18$.
+The CHMM-t panel demonstrates the OoS kurtosis alignment noted in the main text, the CHMM-L panel shows the tighter density fan produced by the heavier Laplace tails relative to the Gaussian, and the CHMM-GED panel shows the density fan tightening that follows from the data-chosen $p_k$ partition.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t.pdf}
-\caption{OoS SPY validation at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) KS $p$-values, (b) OoS density fan, and (c) OoS ACF of $|G_t|$. The CHMM-N counterpart is Figure~\ref{fig:oos_validation}; the CHMM-L counterpart is Figure~\ref{fig:oos_families_L}.}
+\caption{OoS SPY validation at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) KS $p$-values, (b) OoS density fan, and (c) OoS ACF of $|G_t|$. The CHMM-N counterpart is Figure~\ref{fig:oos_validation}; the CHMM-L and CHMM-GED counterparts are Figures~\ref{fig:oos_families_L} and~\ref{fig:oos_families_GED}.}
 \label{fig:oos_families}
 \end{figure}
 
@@ -264,27 +289,39 @@ The CHMM-t panel demonstrates the OoS kurtosis alignment noted in the main text 
 \label{fig:oos_families_L}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-GED.pdf}
+\caption{OoS SPY validation at $K = 18$ for CHMM-GED emissions with per-state shape $p_k \in [0.5, 3.0]$ (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:oos_families}.}
+\label{fig:oos_families_GED}
+\end{figure}
+
 \paragraph{Convergence.}
-Figure~\ref{fig:convergence_families} shows the Baum-Welch / ECM / weighted-EM log-likelihood histories at $K = 18$ for all three families.
-The CHMM-t and CHMM-L curves inherit the monotone increase of the classical EM guarantee; the CHMM-t curve has a slightly longer pre-plateau phase because each ECM sub-iteration refines $\nu_k$ with a golden-section search.
+Figure~\ref{fig:convergence_families} shows the Baum-Welch / ECM / weighted-EM log-likelihood histories at $K = 18$ for all four families.
+The CHMM-t, CHMM-L, and CHMM-GED curves inherit the monotone increase of the classical EM guarantee; the CHMM-t and CHMM-GED curves have slightly longer pre-plateau phases because each ECM sub-iteration refines a shape parameter (per-state $\nu_k$ for CHMM-t, per-state $p_k$ for CHMM-GED) with a golden-section search.
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.32\textwidth}
+\begin{subfigure}[b]{0.24\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-N.pdf}
     \caption{CHMM-N}
 \end{subfigure}
 \hfill
-\begin{subfigure}[b]{0.32\textwidth}
+\begin{subfigure}[b]{0.24\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-t.pdf}
     \caption{CHMM-t}
 \end{subfigure}
 \hfill
-\begin{subfigure}[b]{0.32\textwidth}
+\begin{subfigure}[b]{0.24\textwidth}
     \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-L.pdf}
     \caption{CHMM-L}
 \end{subfigure}
-\caption{Log-likelihood histories for the SPY IS fit (Pipeline~A) at $K = 18$ across the three emission families (CHMM-N Gaussian classical EM; CHMM-t Student-t ECM with per-state $\nu_k$ golden-section sub-step; CHMM-L Laplace weighted-EM). All three curves are monotonically non-decreasing and plateau well before the $\texttt{max\_iter} = 60$ budget.}
+\hfill
+\begin{subfigure}[b]{0.24\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-GED.pdf}
+    \caption{CHMM-GED}
+\end{subfigure}
+\caption{Log-likelihood histories for the SPY IS fit (Pipeline~A) at $K = 18$ across the four emission families (CHMM-N Gaussian classical EM; CHMM-t Student-t ECM with per-state $\nu_k$ golden-section sub-step; CHMM-L Laplace weighted-EM; CHMM-GED with per-state $p_k$ three-stage ECM). All four curves are monotonically non-decreasing and plateau well before the $\texttt{max\_iter} = 60$ budget.}
 \label{fig:convergence_families}
 \end{figure}
 

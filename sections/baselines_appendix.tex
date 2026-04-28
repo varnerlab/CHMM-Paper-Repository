@@ -40,35 +40,37 @@ For (ii), we report the mean two-sample KS p-value across simulated paths plus i
 \toprule
 Generator & asymp pass\% $\uparrow$ & mean pv $\uparrow$ & pv $q_{05}$ & pv $q_{95}$ & blk5\% $\uparrow$ & blk10\% $\uparrow$ & blk20\% $\uparrow$ \\
 \midrule
-i.i.d.\ bootstrap & $99.8$ & $0.812$ & $0.371$ & $0.999$ & $98.2$ & $99.0$ & $99.6$ \\
-GARCH(1,1)        & $25.4$ & $0.042$ & $0.000$ & $0.201$ & $\mathbf{5.6}$ & $\mathbf{11.2}$ & $\mathbf{16.2}$ \\
+i.i.d.\ bootstrap & $99.6$ & $0.820$ & $0.352$ & $0.999$ & $97.6$ & $99.4$ & $99.6$ \\
+GARCH(1,1)        & $26.8$ & $0.048$ & $0.000$ & $0.227$ & $\mathbf{6.8}$ & $\mathbf{13.6}$ & $\mathbf{17.4}$ \\
 CHMM-N            & $94.8$ & $0.546$ & $0.047$ & $0.976$ & $81.2$ & $89.4$ & $91.6$ \\
-\textbf{CHMM-t}   & $\mathbf{95.8}$ & $\mathbf{0.571}$ & $0.059$ & $0.987$ & $\mathbf{82.4}$ & $89.2$ & $91.6$ \\
+CHMM-t            & $\mathbf{95.8}$ & $\mathbf{0.571}$ & $0.060$ & $0.987$ & $82.4$ & $89.2$ & $91.6$ \\
 CHMM-L            & $94.8$ & $0.498$ & $0.048$ & $0.948$ & $81.0$ & $88.2$ & $90.0$ \\
+\textbf{CHMM-GED} & $95.6$ & $0.547$ & $0.064$ & $0.968$ & $\mathbf{83.2}$ & $\mathbf{90.2}$ & $\mathbf{93.2}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Two patterns emerge that the asymptotic pass-rate metric of the main panel does not surface. First, the cross-generator ordering on the mean p-value scale (bootstrap $0.81$, CHMM-t $0.57$, CHMM-N $0.55$, CHMM-L $0.50$, GARCH $0.04$) is much more compressed for CHMM-vs-bootstrap than the $94.8$--$99.8\%$ asymp pass rates suggest: the CHMM family lands at mean p-value $\sim 0.5$, the natural value for paths that are statistically indistinguishable from the observed series. Second, GARCH(1,1)'s drop from $25.4\%$ asymp $\to$ $5.6$--$16.2\%$ block-aware confirms concern (i): the asymptotic test is mildly lenient on volatility-clustering generators with the wrong marginal, and the block-aware test catches GARCH's misspecification more sharply. The CHMM family, by contrast, sees only a small block-bootstrap penalty ($94.8\% \to 88$--$92\%$), indicating that its asymptotic-test passes are not a clustering-induced artefact.
+Two patterns emerge that the asymptotic pass-rate metric of the main panel does not surface. First, the cross-generator ordering on the mean p-value scale (bootstrap $0.82$, CHMM-t $0.57$, CHMM-GED $0.55$, CHMM-N $0.55$, CHMM-L $0.50$, GARCH $0.05$) is much more compressed for CHMM-vs-bootstrap than the $94.8$--$99.6\%$ asymp pass rates suggest: the CHMM family lands at mean p-value $\sim 0.5$, the natural value for paths that are statistically indistinguishable from the observed series. Second, GARCH(1,1)'s drop from $26.8\%$ asymp $\to$ $6.8$--$17.4\%$ block-aware confirms concern (i): the asymptotic test is mildly lenient on volatility-clustering generators with the wrong marginal, and the block-aware test catches GARCH's misspecification more sharply. The CHMM family, by contrast, sees only a small block-bootstrap penalty ($95\% \to 88$--$93\%$); CHMM-GED is the strongest entry on the block-aware metric across all three block lengths ($83.2\%$, $90.2\%$, $93.2\%$ at $L = 5, 10, 20$).
 
 \subsubsection{Bandwidth, Bin-Count, and Multi-Seed Robustness}
 \label{sec:tier3_robustness}
 
 \paragraph{Multi-seed Monte Carlo on headline metrics.}
-The paper reports headline statistics under a single global seed. We re-run the CHMM-N / -t / -L pipeline at $K = 18$ across ten alternative global seeds (base $20260422$, increment $100$) with $N_{\text{paths}} = 250$ per seed and report mean $\pm$ std for the headline metrics in Table~\ref{tab:multiseed_headline}. Seed-to-seed variability is small: IS KS std is $1.2$--$1.8\%$; OoS KS std is $1.8$--$3.6\%$; simulated IS kurtosis std is $0.06$ for CHMM-N, $0.05$ for CHMM-L, and $1.95$ for CHMM-t (reflecting the well-known instability of the per-state $\nu_k$ ECM at moderate $K$, already discussed in Section~\ref{sec:discussion}). Kupiec $\text{LR}_{\text{uc}}^{1\%}$ has std up to $1.25$ for CHMM-N because the breach count moves on a coarse $0$--$10$ grid at $T_{\text{OoS}} = 572$. The single-seed headline numbers in Table~\ref{tab:model_comparison} (e.g., CHMM-N IS KS $93.8\%$, simulated kurt $4.99$) sit comfortably inside the multi-seed bands.
+The paper reports headline statistics under a single global seed. We re-run the CHMM-N / -t / -L / -GED pipeline at $K = 18$ across ten alternative global seeds (base $20260422$, increment $100$) with $N_{\text{paths}} = 250$ per seed and report mean $\pm$ std for the headline metrics in Table~\ref{tab:multiseed_headline}. Seed-to-seed variability is small: IS KS std is $1.2$--$1.8\%$; OoS KS std is $1.8$--$3.6\%$; simulated IS kurtosis std is $0.06$ for CHMM-N, $0.05$ for CHMM-L, $0.09$ for CHMM-GED, and $1.95$ for CHMM-t (reflecting the well-known instability of the per-state $\nu_k$ ECM at moderate $K$, already discussed in Section~\ref{sec:discussion}). Kupiec $\text{LR}_{\text{uc}}^{1\%}$ has std up to $1.25$ for CHMM-N because the breach count moves on a coarse $0$--$10$ grid at $T_{\text{OoS}} = 572$. The single-seed headline numbers in Table~\ref{tab:model_comparison} sit comfortably inside the multi-seed bands. CHMM-GED has the highest mean IS KS pass rate among the four families ($95.9\%$), consistent with its single-seed headline value.
 
 \begin{table}[h]
 \centering
 \small
-\caption{\textbf{Multi-seed Monte Carlo on headline metrics}. Ten global seeds; $N_{\text{paths}} = 250$ per seed (reduced from the headline panel's $1{,}000$ for tractability across $30$ fits, so the seed-to-seed std reported here is an upper bound on the std the headline panel would show at $N_{\text{paths}} = 1{,}000$). Both ACF-MAE columns parallel Table~\ref{tab:model_comparison}: $|G_t|$ for volatility clustering, $G_t$ for linear autocorrelation.}
+\caption{\textbf{Multi-seed Monte Carlo on headline metrics}. Ten global seeds; $N_{\text{paths}} = 250$ per seed (reduced from the headline panel's $1{,}000$ for tractability across $40$ fits, so the seed-to-seed std reported here is an upper bound on the std the headline panel would show at $N_{\text{paths}} = 1{,}000$). Both ACF-MAE columns parallel Table~\ref{tab:model_comparison}: $|G_t|$ for volatility clustering, $G_t$ for linear autocorrelation.}
 \label{tab:multiseed_headline}
 \begin{tabular}{l c c c c c c c}
 \toprule
 Model & IS KS \% & OoS KS \% & sim Kurt & ACF-MAE $|G_t|$ & ACF-MAE $G_t$ & $\text{LR}_{\text{uc}}^{1\%}$ & $\text{LR}_{\text{uc}}^{5\%}$ \\
 \midrule
 CHMM-N & $94.7 \pm 1.2$ & $82.6 \pm 1.8$ & $5.03 \pm 0.06$ & $0.0467 \pm 0.0006$ & $0.0173 \pm 0.0001$ & $2.12 \pm 1.25$ & $3.83 \pm 0.00$ \\
-CHMM-t & $94.6 \pm 1.2$ & $85.6 \pm 1.9$ & $13.95 \pm 1.95$ & $0.0518 \pm 0.0003$ & $0.0170 \pm 0.0001$ & $0.54 \pm 0.15$ & $3.19 \pm 0.34$ \\
+CHMM-t & $94.6 \pm 1.2$ & $\mathbf{85.6 \pm 1.9}$ & $13.95 \pm 1.95$ & $0.0518 \pm 0.0003$ & $0.0170 \pm 0.0001$ & $0.54 \pm 0.15$ & $3.19 \pm 0.34$ \\
 CHMM-L & $94.4 \pm 1.8$ & $80.8 \pm 3.6$ & $6.71 \pm 0.05$ & $0.0537 \pm 0.0003$ & $0.0171 \pm 0.0001$ & $3.26 \pm 0.00$ & $2.71 \pm 0.59$ \\
+CHMM-GED & $\mathbf{95.9 \pm 1.2}$ & $83.2 \pm 2.7$ & $5.15 \pm 0.09$ & $0.0513 \pm 0.0003$ & $0.0171 \pm 0.0001$ & $2.93 \pm 0.71$ & $3.75 \pm 0.25$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -126,36 +128,42 @@ For brevity, the figures show CHMM-N only (the representative family; difference
 
 \begin{table}[h]
 \centering
-\caption{\textbf{Full path-level probabilistic-forecast metrics for OoS equity-price simulation, all (ticker, family) cells} ($K = 18$, $500$ paths, $T_{\text{OoS}} = 572$; global seed policy in Section~\ref{sec:metrics}). $\overline{C}_{0.90}$: fraction of OoS steps at which the observed price falls inside the simulated $5$--$95\%$ band (calibration); $\text{MAPE}_{0.50}$: mean absolute percentage error between observed path and simulated median (sharpness); $\overline{\text{CRPS}}$: horizon-average bias-corrected sample CRPS of \citet{gneiting2007strictly}; $\overline{\text{CRPS}}/S_0$: CRPS scaled by $S_0$ to remove price-level effects. Lower MAPE and CRPS, higher $\overline{C}_{0.90}$, are better. \textbf{Headline:} no CHMM emission family dominates on all four metrics across all six tickers; differences between CHMM-N, CHMM-t and CHMM-L live mostly in the return tails and propagate only weakly into aggregated price-level scores.}
+\caption{\textbf{Full path-level probabilistic-forecast metrics for OoS equity-price simulation, all (ticker, family) cells} ($K = 18$, $500$ paths, $T_{\text{OoS}} = 572$; global seed policy in Section~\ref{sec:metrics}). $\overline{C}_{0.90}$: fraction of OoS steps at which the observed price falls inside the simulated $5$--$95\%$ band (calibration); $\text{MAPE}_{0.50}$: mean absolute percentage error between observed path and simulated median (sharpness); $\overline{\text{CRPS}}$: horizon-average bias-corrected sample CRPS of \citet{gneiting2007strictly}; $\overline{\text{CRPS}}/S_0$: CRPS scaled by $S_0$ to remove price-level effects. Lower MAPE and CRPS, higher $\overline{C}_{0.90}$, are better. \textbf{Headline:} no CHMM emission family dominates on all four metrics across all six tickers; differences between CHMM-N, CHMM-t, CHMM-L, and CHMM-GED live mostly in the return tails and propagate only weakly into aggregated price-level scores. CHMM-GED is the strongest entry on JNJ (lowest CRPS, lowest MAPE) and effectively ties CHMM-t on QQQ; the other four tickers show no clear ordering.}
 \label{tab:price_sim_path_metrics}
 \small
 \begin{tabular}{ll r r r r}
 \toprule
 Ticker & Family & $\overline{C}_{0.90}$ & $\text{MAPE}_{0.50}$ & $\overline{\text{CRPS}}$ & $\overline{\text{CRPS}}/S_0$ \\
 \midrule
-\multirow{3}{*}{SPY}  & CHMM-N & 1.000 & 0.100 & 39.25 & 0.0835 \\
-                      & CHMM-t & 1.000 & 0.112 & 42.66 & 0.0908 \\
-                      & CHMM-L & 1.000 & 0.102 & 38.68 & 0.0823 \\
+\multirow{4}{*}{SPY}  & CHMM-N   & 1.000 & 0.100 & 39.25 & 0.0835 \\
+                      & CHMM-t   & 1.000 & 0.112 & 42.66 & 0.0908 \\
+                      & CHMM-L   & 1.000 & 0.102 & 38.68 & 0.0823 \\
+                      & CHMM-GED & 1.000 & 0.116 & 44.54 & 0.0948 \\
 \midrule
-\multirow{3}{*}{NVDA} & CHMM-N & 0.698 & 0.339 & 30.62 & 0.6424 \\
-                      & CHMM-t & 0.636 & 0.383 & 34.77 & 0.7293 \\
-                      & CHMM-L & 0.666 & 0.411 & 36.58 & 0.7674 \\
+\multirow{4}{*}{NVDA} & CHMM-N   & 0.698 & 0.339 & 30.62 & 0.6424 \\
+                      & CHMM-t   & 0.636 & 0.383 & 34.77 & 0.7293 \\
+                      & CHMM-L   & 0.666 & 0.411 & 36.58 & 0.7674 \\
+                      & CHMM-GED & 0.682 & 0.375 & 33.26 & 0.6977 \\
 \midrule
-\multirow{3}{*}{JNJ}  & CHMM-N & 1.000 & 0.101 & 12.55 & 0.0780 \\
-                      & CHMM-t & 1.000 & 0.098 & 12.62 & 0.0784 \\
-                      & CHMM-L & 1.000 & 0.101 & 12.65 & 0.0786 \\
+\multirow{4}{*}{JNJ}  & CHMM-N   & 1.000 & 0.101 & 12.55 & 0.0780 \\
+                      & CHMM-t   & 1.000 & 0.098 & 12.62 & 0.0784 \\
+                      & CHMM-L   & 1.000 & 0.101 & 12.65 & 0.0786 \\
+                      & CHMM-GED & 1.000 & 0.095 & 12.21 & 0.0759 \\
 \midrule
-\multirow{3}{*}{JPM}  & CHMM-N & 1.000 & 0.195 & 32.23 & 0.1881 \\
-                      & CHMM-t & 1.000 & 0.241 & 40.38 & 0.2357 \\
-                      & CHMM-L & 1.000 & 0.211 & 35.25 & 0.2057 \\
+\multirow{4}{*}{JPM}  & CHMM-N   & 1.000 & 0.195 & 32.23 & 0.1881 \\
+                      & CHMM-t   & 1.000 & 0.241 & 40.38 & 0.2357 \\
+                      & CHMM-L   & 1.000 & 0.211 & 35.25 & 0.2057 \\
+                      & CHMM-GED & 0.993 & 0.253 & 43.73 & 0.2552 \\
 \midrule
-\multirow{3}{*}{AAPL} & CHMM-N & 1.000 & 0.108 & 21.30 & 0.1156 \\
-                      & CHMM-t & 1.000 & 0.075 & 18.90 & 0.1025 \\
-                      & CHMM-L & 1.000 & 0.077 & 18.82 & 0.1021 \\
+\multirow{4}{*}{AAPL} & CHMM-N   & 1.000 & 0.108 & 21.30 & 0.1156 \\
+                      & CHMM-t   & 1.000 & 0.075 & 18.90 & 0.1025 \\
+                      & CHMM-L   & 1.000 & 0.077 & 18.82 & 0.1021 \\
+                      & CHMM-GED & 1.000 & 0.089 & 19.28 & 0.1046 \\
 \midrule
-\multirow{3}{*}{QQQ}  & CHMM-N & 0.998 & 0.073 & 30.48 & 0.0763 \\
-                      & CHMM-t & 0.995 & 0.079 & 31.63 & 0.0792 \\
-                      & CHMM-L & 1.000 & 0.118 & 41.12 & 0.1029 \\
+\multirow{4}{*}{QQQ}  & CHMM-N   & 0.998 & 0.073 & 30.48 & 0.0763 \\
+                      & CHMM-t   & 0.995 & 0.079 & 31.63 & 0.0792 \\
+                      & CHMM-L   & 1.000 & 0.118 & 41.12 & 0.1029 \\
+                      & CHMM-GED & 0.997 & 0.080 & 31.76 & 0.0795 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -301,9 +309,10 @@ HAR-RV              & $0.0$  & $0.0$  & $0.0$  & $0.0$  & $189$  & $0.0566$ & $0
 MS-GARCH $K = 2$    & $27.7$ & $38.7$ & $24.0$ & $44.4$ & $4.7$  & $0.0367$ & $0.0173$ & $1.0$ & $0.01$ & $4.2$ & $0.82$ \\
 MS-GARCH $K = 3$    & $36.1$ & $33.1$ & $28.8$ & $38.0$ & $4.1$  & $\mathbf{0.0284}$ & $0.0173$ & $1.0$ & $0.01$ & $4.2$ & $0.82$ \\
 \midrule
-CHMM-N ($K = 18$)   & $94.6$ & $84.7$ & $\mathbf{36.6}$ & $\mathbf{73.0}$ & $5.0$  & $0.0510$ & $0.0237$ & $0.7$ & $1.58$ & $4.0$ & $3.83$ \\
-CHMM-t ($K = 18$)   & $95.1$ & $\mathbf{85.6}$ & $33.4$ & $69.8$ & $15.6$ & $0.0548$ & $0.0234$ & $1.2$ & $0.58$ & $5.0$ & $3.83$ \\
-CHMM-L ($K = 18$)   & $94.7$ & $81.6$ & $30.1$ & $65.4$ & $6.8$  & $0.0564$ & $0.0234$ & $1.4$ & $3.26$ & $5.6$ & $3.03$ \\
+CHMM-N ($K = 18$)   & $94.1$ & $81.8$ & $\mathbf{36.6}$ & $\mathbf{73.0}$ & $5.0$  & $0.0509$ & $0.0237$ & $0.7$ & $1.58$ & $4.0$ & $3.83$ \\
+CHMM-t ($K = 18$)   & $95.6$ & $\mathbf{85.7}$ & $33.4$ & $69.8$ & $14.4$ & $0.0549$ & $0.0234$ & $1.2$ & $0.58$ & $5.0$ & $3.83$ \\
+CHMM-L ($K = 18$)   & $93.6$ & $80.8$ & $30.1$ & $65.4$ & $6.6$  & $0.0567$ & $0.0234$ & $1.4$ & $3.26$ & $5.6$ & $3.03$ \\
+\textbf{CHMM-GED ($K = 18$)} & $\mathbf{95.2}$ & $84.3$ & $34.1$ & $71.0$ & $5.2$  & $0.0548$ & $0.0234$ & $0.9$ & $0.58$ & $4.4$ & $3.83$ \\
 SM-CHMM-N ($K = 18$) & $79.2$ & $66.7$ & $19.5$ & $57.1$ & $4.7$  & $0.0598$ & --       & $1.1$ & $0.01$ & $5.4$ & $0.82$ \\
 SM-CHMM-t ($K = 18$) & $77.1$ & $63.4$ & $17.2$ & $52.3$ & $13.9$ & $0.0625$ & --       & $1.4$ & $0.10$ & $5.7$ & $1.74$ \\
 SM-CHMM-L ($K = 18$) & $80.4$ & $69.1$ & $21.0$ & $58.9$ & $6.4$  & $0.0581$ & --       & $1.4$ & $3.26$ & $5.5$ & $3.03$ \\

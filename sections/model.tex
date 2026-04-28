@@ -95,6 +95,9 @@ Per-state degrees of freedom let heavy-tailed regimes coexist with near-Gaussian
 \paragraph{CHMM-L: Laplace emissions.}
 $b_k(x) = \mathrm{Laplace}(x; \mu_k, b_k)$ with per-state location $\mu_k$ and scale $b_k$. The heavier-than-Gaussian Laplace tail (per-component excess kurtosis $3$) provides an alternative route to tail fidelity that carries no shape parameter and is strictly cheaper than CHMM-t.
 
+\paragraph{CHMM-GED: Generalized Error Distribution emissions.}
+$b_k(x) = \mathrm{GED}(x; \mu_k, \alpha_k, p_k)$ with per-state location $\mu_k$, scale $\alpha_k$, and shape $p_k \in [p_{\min}, p_{\max}]$. The GED nests Gaussian at $p = 2$ and Laplace at $p = 1$, so per-state $p_k$ is the structural analog of CHMM-t's per-state $\nu_k$ on the Gaussian-to-Laplace shape axis: each state picks its own kurtosis adaptively, by ECM, on a continuous shape parameter. CHMM-GED therefore strictly nests CHMM-N (all $p_k = 2$) and CHMM-L (all $p_k = 1$) as boundary cases.
+
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}[
@@ -136,13 +139,15 @@ $b_k(x) = \mathrm{Laplace}(x; \mu_k, b_k)$ with per-state location $\mu_k$ and s
 \draw[flow] (s3) -- (o3) node[midway, right, eq] {$b_{s_{t+1}}$};
 \node[lbl, below=2mm of o2] {observed excess growth rate $G_t \in \mathbb{R}$};
 
-% ---- Two emission families (bottom-left panel) ----
-\node[emit, below=20mm of o1.south west, anchor=north west] (eN)
+% ---- Four emission families (bottom-left panel) ----
+\node[emit, minimum width=28mm, below=20mm of o1.south west, anchor=north west] (eN)
     {\textbf{CHMM-N} \\ $b_k = \mathcal{N}(\mu_k, \sigma_k^2)$};
-\node[emit, right=3mm of eN] (eT)
+\node[emit, minimum width=28mm, right=2mm of eN] (eT)
     {\textbf{CHMM-t} \\ $b_k = t_{\nu_k}(\mu_k, \sigma_k)$};
-\node[emit, right=3mm of eT] (eL)
+\node[emit, minimum width=28mm, right=2mm of eT] (eL)
     {\textbf{CHMM-L} \\ $b_k = \mathrm{Laplace}(\mu_k, b_k)$};
+\node[emit, minimum width=28mm, right=2mm of eL] (eG)
+    {\textbf{CHMM-GED} \\ $b_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$};
 \node[lbl, above=1mm of eT, anchor=south] {per-state emission family (one per CHMM variant)};
 
 % ---- EM training loop (top-right) ----
@@ -155,7 +160,7 @@ $b_k(x) = \mathrm{Laplace}(x; \mu_k, b_k)$ with per-state location $\mu_k$ and s
 \node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
 
 \end{tikzpicture}
-\caption{\textbf{CHMM architecture and training loop.} A $K$-state latent Markov chain with transition matrix $\mathbf{T}$ generates the regime sequence $s_t$; each $s_t$ conditionally emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}$. The three CHMM variants (Gaussian, Student-t, Laplace) share everything except the emission family. Joint estimation alternates an E-step (log-space forward--backward) and a family-specific M-step until the log-likelihood change falls below $10^{-4}$.}
+\caption{\textbf{CHMM architecture and training loop.} A $K$-state latent Markov chain with transition matrix $\mathbf{T}$ generates the regime sequence $s_t$; each $s_t$ conditionally emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}$. The four CHMM variants (Gaussian, Student-t, Laplace, GED) share everything except the emission family. Joint estimation alternates an E-step (log-space forward--backward) and a family-specific M-step until the log-likelihood change falls below $10^{-4}$.}
 \label{fig:chmm_architecture}
 \end{figure}
 

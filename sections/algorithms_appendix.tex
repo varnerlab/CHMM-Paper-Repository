@@ -58,6 +58,24 @@ For Laplace emissions $b_k(x) = \tfrac{1}{2 b_k} \exp(-|x - \mu_k|/b_k)$ the wei
 The weighted median is computed by cumulative-weight bracketing with linear interpolation between adjacent order statistics at the half-total weight crossing.
 The Laplace M-step carries no shape parameter, so CHMM-L is strictly cheaper per iteration than CHMM-t (which requires the per-state $Q_k$ search).
 
+\paragraph{CHMM-GED M-step (three-stage ECM with closed-form scale).}
+For Generalized Error Distribution emissions $b_k(x) = \mathrm{GED}(x; \mu_k, \alpha_k, p_k) = \frac{p_k}{2 \alpha_k \Gamma(1/p_k)} \exp\!\big(-(|x - \mu_k|/\alpha_k)^{p_k}\big)$ the M-step decomposes into three CM updates per state. Given current $(\mu_k^{(n)}, \alpha_k^{(n)}, p_k^{(n)})$, CM-1 updates the location by minimising the per-state weighted $L^{p_k}$ loss,
+\begin{equation}
+    \mu_k^{(n+1)} \;=\; \arg\min_{\mu \in [\hat\mu_k - 5\alpha_k,\, \hat\mu_k + 5\alpha_k]} \;\sum_t \gamma_t(k)\, \big|O_t - \mu\big|^{p_k^{(n)}},
+    \label{eq:ged_mu}
+\end{equation}
+by a $40$-iteration golden-section search; CM-2 updates the scale in closed form given $(\mu_k^{(n+1)}, p_k^{(n)})$,
+\begin{equation}
+    \alpha_k^{(n+1)} \;=\; \left[\frac{p_k^{(n)}}{W_k} \sum_t \gamma_t(k)\, \big|O_t - \mu_k^{(n+1)}\big|^{p_k^{(n)}}\right]^{1 / p_k^{(n)}}, \qquad W_k \;=\; \sum_t \gamma_t(k);
+    \label{eq:ged_alpha}
+\end{equation}
+and CM-3 updates the shape by maximising the per-state $Q$-function over the bracket,
+\begin{equation}
+    p_k^{(n+1)} \;=\; \arg\max_{p \in [p_{\min},\, p_{\max}]} \;\sum_t \gamma_t(k)\, \log b_k\!\big(O_t;\, \mu_k^{(n+1)},\, \alpha_k^{(n+1)},\, p\big),
+    \label{eq:ged_p}
+\end{equation}
+again by a $40$-iteration golden-section search over $[p_{\min}, p_{\max}] = [0.5, 3.0]$. Equation~\eqref{eq:ged_alpha} is the unique zero of $\partial Q_k/\partial \alpha$, so CM-2 is exact maximization. CM-1 and CM-3 are bracketed maximization. Each CM step is therefore a partial maximization, and the standard ECM monotonicity result \citep{mengrubin1993ecm} applies on the compact bracket; Proposition~\ref{prop:ecm_monotone} states the guarantee in full. Boundary cases: $p_k = 2$ recovers Gaussian (with $\sigma = \alpha/\sqrt{2}$); $p_k = 1$ recovers Laplace (with $b = \alpha$).
+
 \subsubsection{Algorithm Descriptions}
 \label{sec:algorithms}
 
@@ -76,12 +94,12 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 % Unified EM algorithm with family-specific M-step switch
 % ========================================================================================= %
 \begin{algorithm}[!htbp]
-\caption{Unified EM algorithm for the CHMM family. Lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep} branch on the emission family $F \in \{\mathcal{N}, t, L\}$; every other line is identical across families. CHMM-N and CHMM-L instantiate classical EM; CHMM-t instantiates an ECM sequence whose second CM step updates $\nu_k$ by a one-dimensional golden-section search on the per-state $Q$-function.}
+\caption{Unified EM algorithm for the CHMM family. Lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep} branch on the emission family $F \in \{\mathcal{N}, t, L, \text{GED}\}$; every other line is identical across families. CHMM-N and CHMM-L instantiate classical EM; CHMM-t and CHMM-GED instantiate ECM sequences whose final CM step updates the per-state shape parameter ($\nu_k$ for CHMM-t, $p_k$ for CHMM-GED) by a one-dimensional golden-section search on the per-state $Q$-function.}
 \label{alg:chmm_em}
 \footnotesize
 \setlength{\baselineskip}{0.95\baselineskip}
 \begin{algorithmic}[1]
-\REQUIRE Observations $O_{1:T}$, number of states $K$, tolerance $\text{tol}$, $\texttt{max\_iter}$, emission family $F \in \{\mathcal{N}, t, L\}$, if $F = t$ bracket $(\nu_{\min}, \nu_{\max})$ and initial $\nu^{(0)}$.
+\REQUIRE Observations $O_{1:T}$, number of states $K$, tolerance $\text{tol}$, $\texttt{max\_iter}$, emission family $F \in \{\mathcal{N}, t, L, \text{GED}\}$, if $F = t$ bracket $(\nu_{\min}, \nu_{\max})$ and initial $\nu^{(0)}$, if $F = \text{GED}$ bracket $(p_{\min}, p_{\max})$ and initial $p^{(0)}$.
 \ENSURE Transition matrix $\mathbf{T}$, per-state emission parameters $\boldsymbol\theta_{1:K}$, initial distribution $\boldsymbol{\pi}$.
 
 \STATE \textbf{Quantile-Based Initialization.}
@@ -91,6 +109,7 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
     \STATE \quad $F = \mathcal{N}$: $\mu_k \leftarrow \text{mean}(C_k)$, \quad $\sigma_k \leftarrow \max(\text{std}(C_k), 10^{-6})$.
     \STATE \quad $F = t$: $\mu_k \leftarrow \text{mean}(C_k)$, \quad $\sigma_k \leftarrow \max(\text{std}(C_k), 10^{-6})$, \quad $\nu_k \leftarrow \nu^{(0)}$.
     \STATE \quad $F = L$: $\mu_k \leftarrow \text{median}(C_k)$, \quad $b_k \leftarrow \max(\text{mean}(|C_k - \mu_k|), 10^{-6})$.
+    \STATE \quad $F = \text{GED}$: $\mu_k \leftarrow \text{mean}(C_k)$, \quad $\alpha_k \leftarrow \max(\text{std}(C_k), 10^{-6})$, \quad $p_k \leftarrow p^{(0)}$.
 \ENDFOR
 \STATE $T_{ij} \leftarrow 1/K$; \quad $\pi_k \leftarrow 1/K$; \quad $\mathcal{L}_{\text{prev}} \leftarrow -\infty$.
 
@@ -102,6 +121,7 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
     \STATE \quad $F = \mathcal{N}$: $\log B_{t,k} \leftarrow \log \mathcal{N}(O_t \mid \mu_k, \sigma_k^2)$.
     \STATE \quad $F = t$: $\log B_{t,k} \leftarrow \log t_{\nu_k}(O_t; \mu_k, \sigma_k)$.
     \STATE \quad $F = L$: $\log B_{t,k} \leftarrow -\log(2 b_k) - |O_t - \mu_k|/b_k$.
+    \STATE \quad $F = \text{GED}$: $\log B_{t,k} \leftarrow \log p_k - \log(2 \alpha_k) - \log \Gamma(1/p_k) - (|O_t - \mu_k|/\alpha_k)^{p_k}$.
 
     \STATE \textbf{E-Step, shared log-space forward-backward.}
     \STATE $\log \alpha_1(k) \leftarrow \log \pi_k + \log B_{1,k}$.
@@ -129,13 +149,17 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
     \STATE \quad $F = L$ \COMMENT{closed-form weighted Laplace MLE.}
     \STATE \qquad $\mu_k \leftarrow \text{WeightedMedian}(O_{1:T},\, \gamma_{1:T}(k))$ \COMMENT{cumulative-weight bracketing with interpolation at the $W_k/2$ crossing.}
     \STATE \qquad $b_k \leftarrow \max\!\left(\sum_t \gamma_t(k)\, |O_t - \mu_k| / \sum_t \gamma_t(k),\; 10^{-6}\right)$.
+    \STATE \quad $F = \text{GED}$ \COMMENT{three-stage ECM: bracketed $\mu_k$, closed-form $\alpha_k$, bracketed $p_k$.}
+    \STATE \qquad $\mu_k \leftarrow \arg\min_{\mu \in [\hat\mu_k - 5\alpha_k, \hat\mu_k + 5\alpha_k]} \sum_t \gamma_t(k)\, |O_t - \mu|^{p_k}$ \COMMENT{40-iter golden-section search.}
+    \STATE \qquad $\alpha_k \leftarrow \max\!\Big(\big[(p_k / W_k) \sum_t \gamma_t(k)\, |O_t - \mu_k|^{p_k}\big]^{1/p_k},\; 10^{-6}\Big)$ where $W_k = \sum_t \gamma_t(k)$ \COMMENT{closed form, unique zero of $\partial Q_k / \partial \alpha$.}
+    \STATE \qquad $p_k \leftarrow \arg\max_{p \in [p_{\min}, p_{\max}]} \sum_t \gamma_t(k)\, \log \mathrm{GED}(O_t; \mu_k, \alpha_k, p)$ \COMMENT{40-iter golden-section search.}
 
     \STATE \textbf{Convergence check.} $\mathcal{L}^{(n)} \leftarrow \underset{k}{\text{logsumexp}}(\log \alpha_T(k))$.
     \IF{$|\mathcal{L}^{(n)} - \mathcal{L}_{\text{prev}}| < \text{tol}$} \STATE \textbf{break} \ENDIF
     \STATE $\mathcal{L}_{\text{prev}} \leftarrow \mathcal{L}^{(n)}$.
 \ENDFOR
 
-\RETURN $\mathbf{T}, \boldsymbol\theta_{1:K}, \boldsymbol{\pi}$ \COMMENT{$\boldsymbol\theta_k = (\mu_k, \sigma_k)$ for $F = \mathcal{N}$; $(\mu_k, \sigma_k, \nu_k)$ for $F = t$; $(\mu_k, b_k)$ for $F = L$.}
+\RETURN $\mathbf{T}, \boldsymbol\theta_{1:K}, \boldsymbol{\pi}$ \COMMENT{$\boldsymbol\theta_k = (\mu_k, \sigma_k)$ for $F = \mathcal{N}$; $(\mu_k, \sigma_k, \nu_k)$ for $F = t$; $(\mu_k, b_k)$ for $F = L$; $(\mu_k, \alpha_k, p_k)$ for $F = \text{GED}$.}
 \end{algorithmic}
 \end{algorithm}
 
@@ -266,20 +290,38 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \end{algorithm}
 
 
-\subsubsection{CHMM-t Degrees-of-Freedom Diagnostics}
+\subsubsection{Per-State Shape Diagnostics: CHMM-t and CHMM-GED}
 \label{sec:nu_diagnostics}
 
-This appendix backs the discussion in Section~\ref{sec:discussion} of the CHMM-t IS kurtosis overshoot.
-Figure~\ref{fig:nu_hist} plots the per-state $\nu_k$ histogram for the $K = 18$ CHMM-t fit on SPY IS (seed = $20260420$).
+This appendix backs the discussion in Section~\ref{sec:discussion} of the per-state shape allocation under CHMM-t and CHMM-GED on SPY IS at $K = 18$ (seed = $20260420$).
+
+\paragraph{CHMM-t per-state $\nu_k$.}
+Figure~\ref{fig:nu_hist} plots the per-state $\nu_k$ histogram for the $K = 18$ CHMM-t fit.
 Thirteen of the eighteen states rest at the upper ECM bracket ($\nu_k = 50$), and only two states lie near the lower bracket ($\nu_2 = 2.19$, $\nu_4 = 2.10$).
 The simulated IS mixture kurtosis of $17.34$ is driven by the posterior mass routed to those two very heavy-tailed states, not by a systemic collapse to the lower bracket.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.75\textwidth]{figs/Fig-nu-Histogram.pdf}
+\includegraphics[width=0.65\textwidth]{figs/Fig-nu-Histogram.pdf}
 \caption{Per-state degrees-of-freedom $\nu_k$ for the CHMM-t fit at $K = 18$ on SPY IS. The dashed red line marks the lower ECM bracket $\nu_{\min} = 2.1$. Only two states ($\nu_2 = 2.19$, $\nu_4 = 2.10$) sit near the lower bracket; the median $\nu_k$ is at the upper bracket.}
 \label{fig:nu_hist}
 \end{figure}
+
+\paragraph{CHMM-GED per-state $p_k$ (Gaussian-bulk / Laplace-tail bimodality).}
+Figure~\ref{fig:p_hist} plots the analogous per-state $p_k$ histogram for the $K = 18$ CHMM-GED fit, alongside the $p_k$ ranking by variance-equivalent state $\sigma$.
+The fit is bimodal: thirteen states attain the upper ECM bracket at $p_k = 3.0$ (Gaussian-shape and beyond), one state lands at intermediate shape $p_k = 1.6$, and four states cluster in the Laplace-shape regime $p_k \in [0.86, 1.24]$.
+The smallest fitted $p_k$ on SPY is $0.86$, well clear of every $p_{\min}$ tested in the bracket sweep below, so the lower bracket is non-binding.
+Crucially the four Laplace-shape states are concentrated in the high-volatility tail of the state ordering: ranks $13$, $15$, and $18$ (by variance-equivalent $\sigma$) all have $\hat p_k$ near $1$.
+This is the data-driven analog of a hand-classified Gaussian-bulk / Laplace-tail hybrid: CHMM-GED finds the partition by ECM, not by a priori state assignment.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-p-Histogram.pdf}
+\caption{Per-state shape diagnostics for the CHMM-GED fit at $K = 18$ on SPY IS. \textbf{Left:} histogram of fitted $\hat p_k$ across the eighteen states. The dashed reference lines mark the Laplace shape ($p = 1$) and Gaussian shape ($p = 2$); $\hat p_k$ values cluster in two regimes (bulk near the upper bracket, tail near $p = 1$). \textbf{Right:} $\hat p_k$ versus state rank ordered by variance-equivalent $\sigma$ (rank $1$ is the calmest state, rank $18$ is the highest-volatility state). The high-volatility ranks $13$, $15$, $18$ sit at the Laplace line; the bulk of states sit at the Gaussian-or-beyond line.}
+\label{fig:p_hist}
+\end{figure}
+
+The bimodal partition replicates across $10$ Monte Carlo seeds (every seed yields the same partition counts to within one state) and across the cross-asset universe (Appendix~\ref{sec:supp_robustness}).
 
 Table~\ref{tab:nu_bracket} reports the seven-metric panel for CHMM-t fits whose ECM bracket lower bound is lifted from $\nu_{\min} = 2.1$ through $\{2.5, 3.0, 4.0\}$, plus the Gaussian limit ($\nu = \infty$, equivalent to CHMM-N).
 Lifting the bracket does not reduce the IS kurtosis overshoot: the simulated kurtosis moves within the $12.5$--$14.0$ band across bracket floors and only collapses to $5.05$ in the full Gaussian limit.
@@ -302,6 +344,32 @@ $4.0$     & 95.5 & 89.5 & 85.0 & 80.3 & 13.25 & 9.39  & 0.0550 & 0.101 & 0.0759 
 $\infty$ (Gauss) & 94.1 & 86.7 & 84.2 & 75.5 & 5.03  & 4.46 & 0.0510 & 0.110 & 0.0809 \\
 \midrule
 \textit{Observed} & -- & -- & -- & -- & 7.68 & 5.29 & -- & -- & -- \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+Table~\ref{tab:p_bracket} reports the analogous bracket sensitivity for CHMM-GED on $p_{\max} \in \{2.0, 2.5, 3.0, 3.5, 4.0\}$ (with $p_{\min} = 0.5$ fixed) and on $p_{\min} \in \{0.5, 0.7, 0.85\}$ (with $p_{\max} = 3.0$ fixed). The headline reads cleanly. The Gaussian-like state count is invariant at $13/18$ across every upper bracket; only the redistribution between intermediate and Laplace-like states moves slightly with $p_{\max}$, and the total heavy-shape count stays in $\{4, 5\}$. Tightening $p_{\max}$ from $4.0$ to the canonical $3.0$ costs about $4$ nats of incomplete-data log-likelihood. The $p_{\min}$ sweep is fully degenerate: every $p_{\min} \in [0.5, 0.85]$ produces an identical fit because the smallest observed $\hat p_k$ on SPY is $0.86$, so the lower bracket is non-binding.
+
+\begin{table}[h]
+\centering
+\small
+\caption{CHMM-GED bracket sensitivity at $K = 18$ on SPY (seed = 20260420, 1{,}000 paths). $\hat p_{\min}$, $\hat p_{\text{med}}$, $\hat p_{\max}$ are the across-state minimum, median, and maximum of the fitted $\hat p_k$. nG / nI / nL / nS are the partition counts (Gaussian-like $\hat p_k \ge 1.85$, intermediate $1.30 \le \hat p_k < 1.85$, Laplace-like $0.85 \le \hat p_k < 1.30$, super-Laplace $\hat p_k < 0.85$). LL is the incomplete-data log-likelihood at convergence.}
+\label{tab:p_bracket}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c cccc cc cc cc c c}
+\toprule
+Sweep & $p_{\min}$ & $p_{\max}$ & LL & $\hat p_{\min}$ & nG & nI & nL & nS & KS IS & AD IS & KS OoS & AD OoS & Kurt IS & ACF-MAE & $W_1$ & $H$ \\
+\midrule
+\multirow{5}{*}{$p_{\max}$ sweep} & $0.5$ & $2.0$ & $-4732.0$ & $0.89$ & 13 & 0 & 5 & 0 & 95.8 & 91.0 & 83.8 & 81.2 & 5.02 & 0.0541 & 0.099 & 0.0781 \\
+                                  & $0.5$ & $2.5$ & $-4725.3$ & $0.87$ & 13 & 2 & 3 & 0 & 96.1 & 92.4 & 84.3 & 80.1 & 5.09 & 0.0549 & 0.098 & 0.0778 \\
+                                  & $0.5$ & $\textbf{3.0}$ & $-4720.3$ & $0.86$ & 13 & 1 & 4 & 0 & 96.3 & 92.7 & 83.8 & 81.3 & 5.05 & 0.0546 & 0.098 & 0.0779 \\
+                                  & $0.5$ & $3.5$ & $-4717.5$ & $0.86$ & 13 & 1 & 4 & 0 & 96.3 & 91.8 & 86.7 & 82.4 & 5.11 & 0.0544 & 0.099 & 0.0782 \\
+                                  & $0.5$ & $4.0$ & $-4716.3$ & $0.86$ & 13 & 1 & 4 & 0 & 95.9 & 91.3 & 84.4 & 80.6 & 5.18 & 0.0543 & 0.099 & 0.0785 \\
+\midrule
+\multirow{3}{*}{$p_{\min}$ sweep} & $0.50$ & $3.0$ & $-4720.3$ & $0.86$ & 13 & 1 & 4 & 0 & 96.3 & 92.7 & 83.8 & 81.3 & 5.05 & 0.0546 & 0.098 & 0.0779 \\
+                                  & $0.70$ & $3.0$ & $-4720.3$ & $0.86$ & 13 & 1 & 4 & 0 & 96.3 & 92.7 & 83.8 & 81.3 & 5.05 & 0.0546 & 0.098 & 0.0779 \\
+                                  & $0.85$ & $3.0$ & $-4720.3$ & $0.86$ & 13 & 1 & 4 & 0 & 96.3 & 92.7 & 83.8 & 81.3 & 5.05 & 0.0546 & 0.098 & 0.0779 \\
 \bottomrule
 \end{tabular}%
 }
