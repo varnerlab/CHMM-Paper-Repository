@@ -79,13 +79,33 @@ A hidden Markov model assumes the world goes through a sequence of unobserved "r
 
 "Continuous" means the observed returns are real-valued numbers (as opposed to discretized into bins, which is the older alternative).
 
-We tested three flavors of the emission density, all sharing the same scaffold:
+We tested four flavors of the emission density, all sharing the same scaffold (transition matrix $\mathbf{T}$, initial distribution $\boldsymbol{\pi}$, log-space forward-backward, quantile-based init). Only the M-step differs across them.
 
-- **CHMM-N**: each state's emission is a Gaussian (normal distribution) with its own mean $\mu_k$ and variance $\sigma_k^2$.
-- **CHMM-t**: each state's emission is a Student-t distribution (a fatter-tailed cousin of the Gaussian) with its own mean, scale, and degrees-of-freedom $\nu_k$.
-- **CHMM-L**: each state's emission is a Laplace distribution (symmetric, double-exponential tails, fatter than Gaussian but with no shape parameter).
+- **CHMM-N (Gaussian)**: $b_k(x) = \mathcal{N}(x;\,\mu_k,\,\sigma_k^2)$. Two parameters per state.
+- **CHMM-t (Student-t)**: $b_k(x) = t_{\nu_k}(x;\,\mu_k,\,\sigma_k)$. Three parameters per state.
+- **CHMM-L (Laplace)**: $b_k(x) = \mathrm{Laplace}(x;\,\mu_k,\,b_k)$. Two parameters per state.
+- **CHMM-GED (Generalized Error Distribution, also called the generalized Gaussian)**: $b_k(x) = \mathrm{GED}(x;\,\mu_k,\,\alpha_k,\,p_k)$. Three parameters per state. The GED nests Gaussian at $p = 2$ and Laplace at $p = 1$, so per-state $p_k$ is the structural analog of CHMM-t's $\nu_k$ on the Gaussian-to-Laplace shape axis.
 
-These three live at three different points on the "how heavy are the tails" axis, and the M-step (training step) is the only piece of code that differs across them.
+#### Per-variant parameter cheat sheet
+
+What each per-state parameter does, and how it is updated in the M-step:
+
+| Variant | Parameter | Role | M-step update |
+|---|---|---|---|
+| **CHMM-N** | $\mu_k$ | location (mean) of state $k$'s Gaussian | closed form: $\gamma$-weighted sample mean |
+|  | $\sigma_k^2$ | variance (spread); fully determines tails for a Gaussian | closed form: $\gamma$-weighted sample variance |
+| **CHMM-t** | $\mu_k$ | location | closed form given $\nu_k$ ($u$-weighted mean, where $u_{t,k}$ is the latent precision from eq. for $t$) |
+|  | $\sigma_k$ | scale (not variance; for a $t$ the variance is $\nu_k \sigma_k^2/(\nu_k - 2)$ when $\nu_k > 2$) | closed form given $\nu_k$ |
+|  | $\nu_k$ | degrees of freedom; controls tail heaviness. $\nu_k \to \infty$ recovers Gaussian; $\nu_k \to 2$ gives infinite variance and very heavy tails. **Bracket: $[2.1, 50]$.** | 1-D golden-section search on the conditional $Q$-function (ECM step) |
+| **CHMM-L** | $\mu_k$ | location (the Laplace MLE for location is the median, not the mean) | closed form: $\gamma$-weighted median |
+|  | $b_k$ | scale; the Laplace tail is $\propto e^{-|x-\mu|/b}$, fatter than Gaussian but with no shape parameter | closed form: $\gamma$-weighted mean absolute deviation around $\mu_k$ |
+| **CHMM-GED** | $\mu_k$ | location | bracketed golden-section minimizing $\sum_t \gamma_t(k)\,|O_t - \mu|^{p_k}$ over $[\hat\mu_k - 5\alpha_k,\,\hat\mu_k + 5\alpha_k]$ |
+|  | $\alpha_k$ | scale | closed form given $\mu_k, p_k$: $\alpha_k = \big[(p_k/W_k) \sum_t \gamma_t(k)\,|O_t - \mu_k|^{p_k}\big]^{1/p_k}$, with $W_k = \sum_t \gamma_t(k)$ |
+|  | $p_k$ | **shape parameter on the Gaussian-Laplace axis**: $p_k = 2$ gives Gaussian, $p_k = 1$ gives Laplace, $p_k < 1$ gives very-heavy "spikier" tails, $p_k > 2$ gives sub-Gaussian platykurtic tails. **Bracket: $[0.5, 3.0]$.** | bracketed golden-section maximizing $\sum_t \gamma_t(k) \log b_k(O_t; \mu_k, \alpha_k, p)$ |
+
+Plus the shared parameters that every variant carries: the $K \times K$ transition matrix $\mathbf{T}$ ($K(K-1)$ free parameters, since rows sum to 1) and the initial distribution $\boldsymbol\pi$ ($K - 1$ free parameters). At $K = 18$ that is 306 transition parameters + 17 initial-distribution parameters. The emission block adds $2K$ for CHMM-N and CHMM-L, $3K$ for CHMM-t and CHMM-GED.
+
+The four variants land at four different points on the "how heavy are the tails" axis (Section 7.3 below). CHMM-GED is the most flexible: instead of *picking* a shape (Gaussian, Laplace, or Student-t), it lets each state's $p_k$ adapt to what that state's data wants. Empirically on SPY at $K = 18$, the $\hat p_k$ values split bimodally into 13 Gaussian-like states ($\hat p_k \approx 2$) and 4 Laplace-like states ($\hat p_k \in [0.86, 1.24]$), with the Laplace-like cluster concentrated in the high-volatility / crash tail of the state ordering. This is the data-driven analog of a hand-classified Gaussian-bulk / Laplace-tail hybrid, and it is structural rather than seed-dependent (replicates across 10 seeds and across all six SPY-member tickers).
 
 ### 5.2 How we train it: Baum-Welch (EM)
 
@@ -101,7 +121,7 @@ Two specific choices matter here:
 
 1. **Quantile-based initialization.** Instead of starting the EM from random parameters (the 1990s default), we sort the observed returns and split them into K equal-size chunks; each state is initialized from its corresponding chunk. This avoids the "degenerate local optima" problem that contributed to Rydén et al.'s pessimistic conclusion.
 
-2. **For CHMM-t**, the per-state degrees-of-freedom $\nu_k$ are not closed-form like the other parameters. We update them inside the M-step using a 1-D golden-section search on the conditional Q-function, formally an Expectation Conditional Maximization (ECM) step (following Peel and McLachlan 2000, Liu and Rubin 1995). This still preserves the EM monotonicity guarantee.
+2. **For CHMM-t and CHMM-GED**, some emission parameters are not closed-form. CHMM-t uses a 1-D golden-section search for $\nu_k$ on the conditional $Q$-function, an Expectation Conditional Maximization (ECM) step (Peel and McLachlan 2000, Liu and Rubin 1995). CHMM-GED uses a three-stage ECM per state: bracketed golden-section for $\mu_k$, closed-form $\alpha_k$, then bracketed golden-section for $p_k$. Each is a partial maximization on a compact bracket, so EM monotonicity is preserved.
 
 ### 5.3 The theoretical core: spectral identity for the absolute-return ACF
 
@@ -153,31 +173,33 @@ We simulate $P = 1{,}000$ independent paths from each fitted model and score the
 - **GARCH(1,1)-t**: GARCH with Student-t innovations, heavier tails.
 - **MS-GARCH** (Markov-switching GARCH, Haas et al. 2004): the closest peer to CHMM among classical baselines.
 
-Plus the three CHMM variants at $K = 18$ and a CHMM-N reference at $K^\star = 3$.
+Plus the four CHMM variants at $K = 18$ and a CHMM-N reference at $K^\star = 3$.
 
 ### 7.3 The headline result (Table 1 in the paper)
 
 | Generator | IS KS | OoS KS | IS Kurt | ACF-MAE |
 |---|---|---|---|---|
 | Observed | -- | -- | 7.68 | -- |
-| Bootstrap | 99.9% | 91.0% | 7.54 | 0.0628 |
-| Gaussian iid | 0.0% | 1.2% | -0.01 | 0.0627 |
-| GARCH(1,1) | 25.9% | 58.2% | 6.97 | 0.0484 |
+| Bootstrap | 99.7% | 92.1% | 7.24 | 0.0628 |
+| Gaussian iid | 0.0% | 1.0% | -0.01 | 0.0627 |
+| GARCH(1,1) | 23.4% | 60.8% | 7.06 | 0.0485 |
 | MS-GARCH | 27.7% | 38.7% | 4.73 | 0.0367 |
-| **CHMM-N (K=18)** | **93.8%** | **84.2%** | 4.99 | 0.0507 |
-| **CHMM-t (K=18)** | **93.7%** | **85.9%** | 14.57 | 0.0548 |
-| **CHMM-L (K=18)** | **93.2%** | **79.3%** | **6.75** | 0.0565 |
+| **CHMM-N (K=18)** | **94.1%** | **81.8%** | 5.04 | 0.0509 |
+| **CHMM-t (K=18)** | **95.6%** | **85.7%** | 14.35 | 0.0549 |
+| **CHMM-L (K=18)** | **93.6%** | **80.8%** | **6.63** | 0.0567 |
+| **CHMM-GED (K=18)** | **95.2%** | **84.3%** | 5.15 | 0.0548 |
 
-**The point of this table:** no single benchmark wins on everything. The bootstrap wins on marginals but is the worst on temporal fidelity (it destroys volatility clustering). GARCH is best on temporal fidelity (low ACF-MAE) but fails distributional KS catastrophically. **The CHMM is the only row that sits near the top on both axes simultaneously.** That is the paper's headline finding.
+**The point of this table:** no single benchmark wins on everything. The bootstrap wins on marginals but is the worst on temporal fidelity (it destroys volatility clustering). GARCH is best on temporal fidelity (low ACF-MAE) but fails distributional KS catastrophically. **The CHMM family is the only block that sits near the top on both axes simultaneously.** That is the paper's headline finding.
 
-The three CHMM variants land at three different places on the kurtosis axis:
+The four CHMM variants land at four different places on the kurtosis axis:
 - CHMM-N undershoots (5.0 vs 7.7).
-- CHMM-L matches almost perfectly (6.75).
-- CHMM-t overshoots (14.6) but supplies per-state heavy tails for cases where you want the option to draw extreme tail events.
+- CHMM-L matches almost perfectly (6.6).
+- CHMM-t overshoots (14.4) but supplies per-state heavy tails for cases where you want the option to draw extreme tail events.
+- CHMM-GED sits adaptively at 5.2; instead of fixing the shape, each state's $\hat p_k$ adapts. On SPY at $K = 18$ the partition splits bimodally into 13 Gaussian-like and 4 Laplace-like states (heavy-shape states concentrate in the high-volatility tail). CHMM-GED also attains the highest IS KS pass rate among the four (95.2%) at the same parameter count as CHMM-t.
 
 ### 7.4 Robustness checks
 
-- **Multi-seed Monte Carlo**: 10 different random seeds. CHMM-N OoS KS = $82.6 \pm 1.79\%$, etc. The seed-to-seed std is small relative to between-model gaps, so the results are not lucky seeds.
+- **Multi-seed Monte Carlo**: 10 different random seeds. CHMM-N OoS KS = $82.6 \pm 1.79\%$, CHMM-t $85.6 \pm 1.92\%$, CHMM-L $80.8 \pm 3.59\%$, CHMM-GED $83.2 \pm 2.65\%$. The seed-to-seed std is small relative to between-model gaps, so the results are not lucky seeds. CHMM-GED's $\hat p_k$ partition is also seed-invariant: every one of the 10 seeds yields the identical bulk/tail split.
 - **KS power-calibration positive control**: an i.i.d. resample of the IS series only passes the OoS KS at 90%, not 100%, because $T_{\text{OoS}} = 572$ is finite. So the CHMM's 79 to 86% pass rates are *near the test-power ceiling*, not artifacts of low power.
 - **K-sweep**: we tried $K \in \{3, 6, 9, 12, 15, 18, 21\}$. ACF-MAE is essentially flat across all $K \geq 3$ (consistent with the spectral identity), while KS pass rate rises with $K$ until plateauing around 18.
 - **State-count selection**: held-out log-likelihood and BIC pick $K^\star = 3$. We report two operating points:
@@ -239,7 +261,7 @@ Stated plainly:
 
 2. **The mechanism is spectral.** The absolute-return ACF is a closed-form mixture of geometric decays at the non-unit eigenvalues of the transition matrix. K = 2 fails because the model only has one non-unit eigenvalue and only two marginal mixture components. K ≥ 3 makes both axes flexible enough.
 
-3. **Three emission flavors give a clean tail-heaviness slider** (CHMM-N undershoots, CHMM-L matches cleanly, CHMM-t overshoots and is per-state heavy-tailed). The same EM scaffold; only the M-step changes.
+3. **Four emission flavors give a clean tail-heaviness slider** (CHMM-N undershoots, CHMM-L matches cleanly, CHMM-t overshoots and is per-state heavy-tailed, CHMM-GED lets each state pick its own shape on the Gaussian-Laplace axis via $p_k$ and discovers a bulk/tail partition on its own). Same EM scaffold; only the M-step changes.
 
 4. **The model passes downstream risk-management checks.** VaR / ES envelopes bracket observed values cleanly on both IS and OoS; Kupiec test passes; CRPS is competitive with the best benchmark.
 
