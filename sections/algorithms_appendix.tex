@@ -80,9 +80,9 @@ again by a $40$-iteration golden-section search over $[p_{\min}, p_{\max}] = [0.
 \label{sec:algorithms}
 
 This section provides detailed pseudocode for the main algorithms used in this study.
-Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all three emission families.
-It makes explicit the \emph{shared scaffold} (quantile-based initialization, log-space forward-backward, transition update) and the three \emph{family-specific branches} (Gaussian M-step for CHMM-N, ECM with one-dimensional golden-section $\nu$-search for CHMM-t, closed-form weighted-median + weighted-MAD for CHMM-L); the branch points are lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep}.
-Visualizing the three variants as a single algorithm with three M-step branches makes the architectural contribution of the paper (one EM engine, three interchangeable emission families) immediate from the pseudocode.
+Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all four emission families.
+It makes explicit the \emph{shared scaffold} (quantile-based initialization, log-space forward-backward, transition update) and the four \emph{family-specific branches} (Gaussian M-step for CHMM-N, ECM with one-dimensional golden-section $\nu$-search for CHMM-t, closed-form weighted-median + weighted-MAD for CHMM-L, three-stage CM with bracketed $p_k$ for CHMM-GED); the branch points are lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep}.
+Visualizing the four variants as a single algorithm with four M-step branches makes the architectural contribution of the paper (one EM engine, four interchangeable emission families) immediate from the pseudocode.
 Algorithm~\ref{alg:viterbi} presents the Viterbi algorithm for decoding the most likely hidden state sequence.
 Algorithm~\ref{alg:chmm_simulate} describes the CHMM simulation procedure for generating synthetic return paths.
 Algorithm~\ref{alg:copula_sim} describes the cross-asset rank-reordering simulator for copula-based multi-asset synthesis.

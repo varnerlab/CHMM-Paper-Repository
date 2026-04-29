@@ -212,7 +212,7 @@ As with the IS panels, $K = 9$ and $K = 15$ are omitted; numerical OoS KS pass r
 
 This appendix reproduces the standard diagnostic suite (emission PDFs, residence times, IS comparison, OoS validation, and convergence) for the two heavy-tailed emission families (CHMM-t and CHMM-L) at the selected state resolution $K = 18$; transition matrices and stationary distributions are discussed in prose only below, since they are visually indistinguishable across families at $K = 18$.
 The Gaussian counterparts are already shown as Figures~\ref{fig:is_comparison} and~\ref{fig:oos_validation} in the main text and as Figure~\ref{fig:convergence_all} above in this appendix.
-The figures confirm that the shared forward--backward scaffold produces internally-similar regime structure across the three families: the near-diagonal transition band, the $K$-component dense emission cover, the longer central-state residence times, and the monotone log-likelihood convergence are features of the CHMM framework and not of the Gaussian component specifically.
+The figures confirm that the shared forward--backward scaffold produces internally-similar regime structure across the four families: the near-uniform interior of the transition matrix, the $K$-component dense emission cover, the longer central-state residence times, and the monotone log-likelihood convergence are features of the CHMM framework and not of the Gaussian component specifically.
 
 \paragraph{Emission PDFs.}
 Figure~\ref{fig:emissions_families} compares the learned $K = 18$ emissions for the four families.
@@ -293,6 +293,31 @@ Figure~\ref{fig:transition_families} shows the $\log_{10}$ transition-matrix hea
 \end{subfigure}
 \caption{Natural residence times $\tau_k = 1/(1 - T_{kk})$ at $K = 18$ for the SPY IS fit (Pipeline~A) across the four emission families (CHMM-N Gaussian, CHMM-t Student-t, CHMM-L Laplace, CHMM-GED).}
 \label{fig:residence_families}
+\end{figure}
+
+\paragraph{Sample simulated trajectories.}
+Figure~\ref{fig:trajectory_families} overlays one simulated SPY return path against the observed IS series for each of the four emission families at $K = 18$, on a common $500$-day window. The visual story matches the metric panel: the simulated paths from all four families track the volatility-clustering envelope of the observed series, with progressively heavier tail excursions as the emission family transitions Gaussian $\to$ GED $\to$ Student-t $\to$ Laplace. The CHMM-t panel in particular shows the occasional large spikes that drive its IS kurtosis overshoot to $14.4$ (Section~\ref{sec:results}).
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-Trajectory-Example-K18-N.pdf}
+\caption{CHMM-N (Gaussian).}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-Trajectory-Example-K18-t.pdf}
+\caption{CHMM-t (Student-t).}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-Trajectory-Example-K18-L.pdf}
+\caption{CHMM-L (Laplace).}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-Trajectory-Example-K18-GED.pdf}
+\caption{CHMM-GED (per-state $p_k$).}
+\end{subfigure}
+\caption{Sample simulated return trajectories at $K = 18$ across the four emission families on SPY (Pipeline~A; first $500$ trading days of the IS window). Red is the observed IS series; blue is one simulated path drawn from each family's fit. All panels share the same time axis and y-scale band, so visual differences reflect emission-family tail behaviour rather than presentation choice.}
+\label{fig:trajectory_families}
 \end{figure}
 
 \paragraph{IS comparison.}
