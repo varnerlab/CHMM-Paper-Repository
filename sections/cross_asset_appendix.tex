@@ -81,8 +81,27 @@ All five panels share the six-asset SPY cross-section and the same CHMM-N margin
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{figs/Fig-Cross-Asset-Correlation.pdf}
-\caption{\textbf{Cross-asset IS correlation reproduction across dependence models} (Pipeline~B, companion to Table~\ref{tab:cross_asset_supp_summary}). Panel~(a), top-left: \emph{observed} correlation matrix on 2014-01-03 through 2024-01-03 daily excess log returns for SPY, NVDA, JNJ, JPM, AAPL, QQQ (IS window, $T_{\text{IS}} = 2{,}516$). Panel~(b), top-right: path-averaged correlation under the Single Index Model with SPY as market factor. Panel~(c), middle-left: path-averaged correlation under the Gaussian copula on CHMM marginals. Panel~(d), middle-right: path-averaged correlation under the Student-t copula on CHMM marginals, $\nu^* = 6$. Panel~(e), bottom-left: path-averaged correlation under a truncated C-vine copula with SPY as root. Each simulated panel averages over 200 paths of length $T_{\text{IS}}$. All marginals are the per-asset CHMM-N fits at $K = 18$ from Table~\ref{tab:cross_asset}; color scale in $[-1, 1]$, red-white-blue (RdBu) diverging. Closer visual match to panel~(a) is better.}
+\begin{subfigure}[b]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-Cross-Asset-Correlation-a.pdf}
+\caption{Observed.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-Cross-Asset-Correlation-b.pdf}
+\caption{Single Index Model.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-Cross-Asset-Correlation-c.pdf}
+\caption{Gaussian copula.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-Cross-Asset-Correlation-d.pdf}
+\caption{Student-$t$ copula, $\nu^* = 6$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.32\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-Cross-Asset-Correlation-e.pdf}
+\caption{Truncated C-vine.}
+\end{subfigure}
+\caption{\textbf{Cross-asset IS correlation reproduction across dependence models} (Pipeline~B, companion to Table~\ref{tab:cross_asset_supp_summary}). Panel~(a): \emph{observed} correlation matrix on 2014-01-03 through 2024-01-03 daily excess log returns for SPY, NVDA, JNJ, JPM, AAPL, QQQ (IS window, $T_{\text{IS}} = 2{,}516$). Panel~(b): path-averaged correlation under the Single Index Model with SPY as market factor. Panel~(c): path-averaged correlation under the Gaussian copula on CHMM marginals. Panel~(d): path-averaged correlation under the Student-t copula on CHMM marginals, $\nu^* = 6$. Panel~(e): path-averaged correlation under a truncated C-vine copula with SPY as root. Each simulated panel averages over 200 paths of length $T_{\text{IS}}$. All marginals are the per-asset CHMM-N fits at $K = 18$ from Table~\ref{tab:cross_asset}; color scale in $[-1, 1]$, red-white-blue (RdBu) diverging. Closer visual match to panel~(a) is better.}
 \label{fig:cross_asset_corr}
 \end{figure}
 

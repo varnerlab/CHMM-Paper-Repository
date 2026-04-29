@@ -10,7 +10,22 @@ Figure~\ref{fig:stylized_facts} summarises the three stylized facts visually on 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts.pdf}
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts-a.pdf}
+\caption{Marginal density.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts-b.pdf}
+\caption{Normal Q-Q plot.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts-c.pdf}
+\caption{ACF of raw $G_t$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts-d.pdf}
+\caption{ACF of $|G_t|$.}
+\end{subfigure}
 \caption{\textbf{The three Cont stylized facts on SPY IS}. Panel~(a): empirical IS marginal density of the annualised excess log return $G_t$ with maximum-likelihood Gaussian (blue dashed) and Laplace (red) overlays; Laplace tracks the central peak and tails decisively better. Panel~(b): normal Q-Q plot showing the heavy-tailed deviation from the $45^\circ$ reference. Panel~(c): empirical ACF of raw $G_t$ at lags $1$--$252$, with the $99\%$ Bartlett confidence band (dashed grey); only lag~$1$ exits the band (microstructure noise), lags $2$--$252$ sit inside, confirming negligible linear autocorrelation. Panel~(d): empirical ACF of $|G_t|$ on the same window, with the same $99\%$ band; the slow decay over many lags is the volatility-clustering signature that motivates the spectral identity~\eqref{eq:acf_normalised}.}
 \label{fig:stylized_facts}
 \end{figure}

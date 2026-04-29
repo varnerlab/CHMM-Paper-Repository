@@ -68,8 +68,23 @@ Figure~\ref{fig:var_es} visualizes the median and $[5\%, 95\%]$ envelopes across
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.98\textwidth]{figs/Fig-VaR-ES.pdf}
-\caption{\textbf{VaR / ES envelope diagnostic} (SPY, \NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each subplot shows the simulated median (dot) and $[5\%, 95\%]$ envelope (error bar) across paths against the observed historical value (dashed red line); rows are IS and OoS windows, columns are VaR and ES, and the x-axis lists the five generators kept for the volatility-aware conditional-coverage comparison (GARCH(1,1), CHMM-N, CHMM-t, CHMM-L, CHMM-GED). The i.i.d.\ bootstrap is omitted here because its envelope is by construction matched to the empirical marginal and does not discriminate among volatility-aware models. The y-axis is the annualized log excess growth rate (daily log return scaled by $1/\Delta t$ with $\Delta t = 1/252$), consistent with the $R_{\text{IS}} / R_{\text{OoS}}$ convention used throughout the paper. Headline: every observed red line falls inside the corresponding simulated envelope, confirming that the CHMM family passes the coverage leg of the back-test complementary to the Kupiec likelihood-ratio leg in Section~\ref{sec:utility}.}
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-VaR-ES-a.pdf}
+\caption{IS VaR ($\alpha = 0.01$).}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-VaR-ES-b.pdf}
+\caption{IS ES ($\alpha = 0.01$).}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-VaR-ES-c.pdf}
+\caption{OoS VaR ($\alpha = 0.05$).}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-VaR-ES-d.pdf}
+\caption{OoS ES ($\alpha = 0.05$).}
+\end{subfigure}
+\caption{\textbf{VaR / ES envelope diagnostic} (SPY, \NPaths{1{,}000}; global seed policy in Section~\ref{sec:metrics}). Each panel shows the simulated median (dot) and $[5\%, 95\%]$ envelope (error bar) across paths against the observed historical value (dashed red line); panels (a)/(b) are the IS window at $\alpha = 0.01$, panels (c)/(d) are the OoS window at $\alpha = 0.05$, and the x-axis in each panel lists the four generators kept for the volatility-aware conditional-coverage comparison (GARCH(1,1), CHMM-N, CHMM-t, CHMM-L). The i.i.d.\ bootstrap is omitted here because its envelope is by construction matched to the empirical marginal and does not discriminate among volatility-aware models. The y-axis is the annualized log excess growth rate (daily log return scaled by $1/\Delta t$ with $\Delta t = 1/252$), consistent with the $R_{\text{IS}} / R_{\text{OoS}}$ convention used throughout the paper. Headline: every observed red line falls inside the corresponding simulated envelope, confirming that the CHMM family passes the coverage leg of the back-test complementary to the Kupiec likelihood-ratio leg in Section~\ref{sec:utility}.}
 \label{fig:var_es}
 \end{figure}
 

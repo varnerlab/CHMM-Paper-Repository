@@ -316,8 +316,15 @@ This is the data-driven analog of a hand-classified Gaussian-bulk / Laplace-tail
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{figs/Fig-p-Histogram.pdf}
-\caption{Per-state shape diagnostics for the CHMM-GED fit at $K = 18$ on SPY IS. \textbf{Left:} histogram of fitted $\hat p_k$ across the eighteen states. The dashed reference lines mark the Laplace shape ($p = 1$) and Gaussian shape ($p = 2$); $\hat p_k$ values cluster in two regimes (bulk near the upper bracket, tail near $p = 1$). \textbf{Right:} $\hat p_k$ versus state rank ordered by variance-equivalent $\sigma$ (rank $1$ is the calmest state, rank $18$ is the highest-volatility state). The high-volatility ranks $13$, $15$, $18$ sit at the Laplace line; the bulk of states sit at the Gaussian-or-beyond line.}
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-p-Histogram-a.pdf}
+\caption{Histogram of fitted $\hat p_k$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-p-Histogram-b.pdf}
+\caption{$\hat p_k$ vs.\ volatility rank.}
+\end{subfigure}
+\caption{Per-state shape diagnostics for the CHMM-GED fit at $K = 18$ on SPY IS. Panel~(a): histogram of fitted $\hat p_k$ across the eighteen states. The dashed reference lines mark the Laplace shape ($p = 1$) and Gaussian shape ($p = 2$); $\hat p_k$ values cluster in two regimes (bulk near the upper bracket, tail near $p = 1$). Panel~(b): $\hat p_k$ versus state rank ordered by variance-equivalent $\sigma$ (rank $1$ is the calmest state, rank $18$ is the highest-volatility state). The high-volatility ranks $13$, $15$, $18$ sit at the Laplace line; the bulk of states sit at the Gaussian-or-beyond line.}
 \label{fig:p_hist}
 \end{figure}
 
