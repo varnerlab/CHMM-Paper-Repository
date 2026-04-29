@@ -63,7 +63,7 @@ QQQ  & $0.047$   & $1.122$ & $0.840$ \\
 \label{sec:copula_profile_supp}
 
 Figure~\ref{fig:copula_profile} plots the profile log-likelihood of the Student-t copula used inside Pipeline~B, computed on the six-asset SPY cross-section over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ used in Section~\ref{sec:cross_asset}.
-The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum profile log-likelihood ($6157.47$), and the neighbouring grid points $\nu = 5$ ($6143.37$) and $\nu = 8$ ($6148.37$) each within $15$ profile-log-likelihood units of the peak, indicating a shallow-but-clean optimum that agrees with the $4$--$10$ range typically reported for equity-portfolio Student-t copulas in the risk-management literature.
+The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum profile log-likelihood ($6157.47$), and the neighbouring grid points $\nu = 5$ ($6143.37$) and $\nu = 8$ ($6148.37$) each within $15$ profile-log-likelihood units of the peak, indicating a shallow-but-clean optimum that agrees with the $4$--$10$ range typically reported for equity-portfolio Student-t copulas in the risk-management literature. The AIC penalty for the additional $\nu$ parameter is $2$ (one degree of freedom relative to the Gaussian copula limit $\nu \to \infty$), and the AIC differential between the Student-t at $\nu^\star = 6$ and the Gaussian copula limit on these data is $-2 \cdot (6157.47 - 6143.37) - 2 = -30.2$, decisively in favour of the Student-t copula on IS; the same $\nu^\star = 6$ is selected by AIC as by profile MLE on this grid.
 
 \begin{figure}[h]
 \centering

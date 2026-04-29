@@ -17,6 +17,9 @@ paths = simulate(chmm_n; T = 2516, n = 1000) # 1000 paths of length T
 
 The same \texttt{simulate} interface is used for every benchmark generator (Bootstrap, Gaussian i.i.d., Laplace i.i.d., GARCH(1,1)) so that the seven-metric panel evaluates each row on byte-identical windows. The Pipeline~B Student-t copula sampler is exposed as \texttt{simulate\_copula(\dots; nu = 6)} on the per-asset CHMM marginals; the rank-reordering construction is one function call. Running \texttt{julia --project=. run\_full\_rebuild.jl} from the paper repository (\url{https://github.com/altashly1/CHMM-paper}) reproduces every numerical artifact under the global seed policy of Section~\ref{sec:metrics}; \texttt{Manifest.toml} pins the dependency graph.
 
+\paragraph{Sub-seed derivation rule.}
+The deterministic global seed root is \texttt{20260420}; per-experiment sub-seeds follow the additive rule \texttt{sub\_seed = SEED + offset(experiment) + offset(replicate)}, with experiment offsets in $\{0, 1{,}000, 100, 10{,}000, \ldots\}$ chosen to avoid collisions across the runners in the public Julia package. For example, the headline simulation in \texttt{run\_diagnostics.jl} uses \texttt{SEED + (path index)} for each per-path random draw, the multi-seed Monte Carlo in \texttt{run\_multiseed\_headline.jl} uses base \texttt{20260422 + 100$\cdot$(seed index)} for ten independent replicates, and the bracket / shrinkage sweeps add a further per-rate offset. The full sub-seed map is enumerated at the top of each runner script; downstream \texttt{Random.seed!()} calls are deterministic and order-independent within each runner.
+
 \subsection{CHMM Algorithms and Derivations}
 \label{sec:supp_algorithms}
 
@@ -40,10 +43,31 @@ Under compactness of the parameter space ($\mu_k$, $\sigma_k$ or $b_k$ or $\alph
 \end{proposition}
 \noindent\emph{Proof sketch.} Each CM step does not decrease $Q$ by definition (closed-form steps are exact maximisers, golden-section steps are bracketed maxima within the prescribed interval); the standard EM inequality $\mathcal L(\theta^{(n+1)}) - \mathcal L(\theta^{(n)}) \ge Q(\theta^{(n+1)} \mid \theta^{(n)}) - Q(\theta^{(n)} \mid \theta^{(n)})$ \cite{wu1983convergence, mengrubin1993ecm} converts $Q$-monotonicity into log-likelihood monotonicity. Compactness gives boundedness above, hence convergence.
 
+\paragraph{Numerical full-rank check on $\hat{\mathbf T}$.}
+The Allman-Matias-Rhodes 2009 identifiability theorem requires $\hat{\mathbf T}$ of full rank. We compute the singular-value spectrum of $\hat{\mathbf T}$ at $K = 18$ across the four emission families on SPY IS (Table~\ref{tab:t_singular_values}). All four matrices are full-rank in the strict sense, with smallest singular value $\sigma_{\min}(\hat{\mathbf T}) \in [0.0007, 0.0170]$ and condition numbers in the range $63$--$1{,}620$. CHMM-GED is the most well-conditioned ($\sigma_{\min} = 0.017$, cond $= 63.5$); CHMM-t is the least ($\sigma_{\min} = 0.0007$, cond $= 1{,}620$), consistent with the per-state $\nu_k$ ECM lower-bracket pinning making one or two heavy-tail states near-degenerate. The deflated matrix $\hat{\mathbf T} - \mathbf 1\bar{\boldsymbol\pi}^\top$ has numerical rank exactly $K - 1 = 17$ across all four families, the rank statement underlying Section~\ref{sec:theory}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Numerical full-rank check on $\hat{\mathbf T}$ at $K = 18$ across four CHMM emission families on SPY IS} (seed = $20260420$). $\sigma_{\min}$, $\sigma_{\max}$, and the condition number $\sigma_{\max}/\sigma_{\min}$ are reported on $\hat{\mathbf T}$ itself; $|\lambda_2|$ is the second-largest absolute eigenvalue (the dominant decay mode in the ACF identity, equation~\eqref{eq:acf_normalised}); ``rank(def)'' is the numerical rank of $\hat{\mathbf T} - \mathbf 1\bar{\boldsymbol\pi}^\top$ at tolerance $10^{-10}$, expected to equal $K - 1 = 17$.}
+\label{tab:t_singular_values}
+\begin{tabular}{l c c c c c}
+\toprule
+Family & $\sigma_{\min}(\hat{\mathbf T})$ & $\sigma_{\max}(\hat{\mathbf T})$ & cond $\hat{\mathbf T}$ & $|\lambda_2|$ & rank$(\hat{\mathbf T} - \mathbf 1\bar{\boldsymbol\pi}^\top)$ \\
+\midrule
+CHMM-N   & $0.00532$ & $1.0866$ & $204$   & $0.929$ & $17 / 17$ \\
+CHMM-t   & $0.00067$ & $1.0796$ & $1{,}620$ & $0.914$ & $17 / 17$ \\
+CHMM-L   & $0.00398$ & $1.0928$ & $275$   & $0.896$ & $17 / 17$ \\
+CHMM-GED & $0.01702$ & $1.0806$ & $63.5$  & $0.911$ & $17 / 17$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \begin{proposition}[Identifiability up to label permutation]
-Under irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred}) and the emission contrast condition (Assumption~\ref{ass:moments}), the CHMM parameter is identifiable up to label permutation in all four emission families considered (CHMM-N, CHMM-t with $\nu_k \in [\nu_{\min}, \nu_{\max}]$, CHMM-L, and CHMM-GED with $p_k \in [p_{\min}, p_{\max}]$).
+Under irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred}), the emission contrast condition (Assumption~\ref{ass:moments}), and pairwise distinctness of the per-state parameter tuples $\boldsymbol\theta_k$ across $k = 1, \ldots, K$, the CHMM parameter is identifiable up to label permutation for CHMM-N (Gaussian) and CHMM-L (Laplace).
+For CHMM-t (with per-state $\nu_k \in [\nu_{\min}, \nu_{\max}]$) and CHMM-GED (with per-state $p_k \in [p_{\min}, p_{\max}]$) the same conclusion holds modulo the standard caveat that pairwise distinctness must hold jointly across all components of $\boldsymbol\theta_k = (\mu_k, \sigma_k, \nu_k)$ or $(\mu_k, \alpha_k, p_k)$, since within either bracket a Gaussian-shaped emission with inflated scale can mimic a Laplace-shaped emission with deflated scale at intermediate quantiles.
 \end{proposition}
-\noindent\emph{Proof sketch.} The HMM identifiability theorem of \citet{allman2009identifiability} requires $\mathbf T$ of full rank and per-state emissions linearly independent in the space of densities on $\R$. Full-rank $\mathbf T$ follows from irreducibility \cite{levinperes2017markov}; linear independence of Gaussian, bracketed-$\nu$ Student-t, Laplace, and bracketed-$p$ GED emissions with distinct location-scale-shape parameters follows from \citet{yakowitzspragins1968}.
+\noindent\emph{Proof sketch.} The HMM identifiability theorem of \citet{allman2009identifiability} requires $\mathbf T$ of full rank and per-state emissions linearly independent in the space of densities on $\R$. Full-rank $\mathbf T$ follows from irreducibility \cite{levinperes2017markov}. For CHMM-N and CHMM-L, linear independence of Gaussian and Laplace emissions with distinct location-scale parameters is direct from \citet{yakowitzspragins1968}, who establish that finite mixtures over location-scale families with strictly decreasing-tail densities are identifiable (the CHMM-N and CHMM-L marginals are special cases). For CHMM-t at fixed shape and CHMM-GED at fixed shape, location-scale identifiability is the same Yakowitz-Spragins result; for finite mixtures of Student-$t$ with varying degrees-of-freedom the standard reference is \citet{lindsay1995mixture}, Chapter~3, which gives identifiability via the moment-generating function over the bracketed range of shape parameters and a non-degeneracy condition on the joint location-scale-shape tuple. The CHMM-GED case under bracketed $p_k \in [p_{\min}, p_{\max}]$ is a parallel application of the moment-matching argument: the GED characteristic function $\hat b(t; \mu, \alpha, p) = \exp(i\mu t)\, M(t; \alpha, p)$ has a unique inverse over the bounded shape range up to permutation of components, modulo the joint-distinctness caveat on $(\mu_k, \alpha_k, p_k)$. Strict linear independence at the boundary cases $p_k = 1$ (Laplace) and $p_k = 2$ (Gaussian) is automatic from Yakowitz-Spragins; in the bracket interior, the joint distinctness condition above is required to rule out the location-scale-shape trade-off.
 
 \begin{proposition}[MLE consistency]
 Under Assumptions~\ref{ass:irred}--\ref{ass:moments} and the assumption that the true parameter lies in the interior of a compact $\Theta$, the MLE $\hat\theta_T = \arg\max_{\theta \in \Theta} \mathcal L_T(\theta)$ is consistent: $\hat\theta_T \xrightarrow{p} \theta_0$ as $T \to \infty$, modulo label permutation.
@@ -59,7 +83,7 @@ Let $\tilde g_{j, 1:T}$ be a sample of size $T$ from the per-asset CHMM marginal
 \subsection{Spectral ACF Identity: Extended Derivation}
 \label{sec:supp_spectral_acf}
 
-The closed-form spectral identity~\eqref{eq:acf_normalised} is the central technical contribution of Section~\ref{sec:theory} and is invoked throughout Sections~\ref{sec:results}--\ref{sec:discussion}. The main-body derivation is intentionally compressed; we restate it here as a self-contained theorem with a step-by-step proof, and record the lag-zero behaviour and the complex / non-diagonalisable extensions that the main body does not.
+Equation~\eqref{eq:acf_normalised} is the closed-form mixture-of-eigenvalues form for the absolute-return ACF used in Section~\ref{sec:theory} and invoked throughout Sections~\ref{sec:results}--\ref{sec:discussion}. The bilinear cross-moment identity $\E[|G_t|\,|G_{t+\tau}|] = \mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\,\mathbf T^\tau\,\mathbf m$ and its eigendecomposition over the non-unit eigenvalues of $\mathbf T$ are textbook material in the regime-switching literature (\citealp{hamilton1994time}, Section~22.2; \citealp{krolzig1997markov}, Chapter~3; the moment-generating-function form for general Markov-switching specifications with conditional means and variances depending on the latent state is given by \citealp{timmermann2000moments}); the underlying Markov-chain spectral decomposition is standard \cite{levinperes2017markov}. We restate the absolute-return specialisation here as a self-contained theorem with a step-by-step proof, and record the lag-zero behaviour and the complex / non-diagonalisable extensions that the main body does not. Our contribution on this axis is the explicit application of the spectral form to recast the empirical \citet{ryden1998stylized} low-$K$ failure as a rank statement on $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$ (Section~\ref{sec:theory}, ``Ryd\'{e}n separation as a $K$-rank statement'') and the empirical demonstration that the rank constraint is the binding axis at moderate $K$ on equity-return data (Sections~\ref{sec:results}, \ref{sec:discussion}).
 
 \begin{theorem}[Mixture-of-eigenvalues identity for the absolute-return ACF]
 \label{thm:supp_spectral_acf}

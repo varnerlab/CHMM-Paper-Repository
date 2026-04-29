@@ -1,7 +1,7 @@
 \subsection{Spectral Mechanism for the Absolute-Return ACF}
 \label{sec:theory}
 
-This subsection derives the spectral mechanism behind the absolute-return ACF (the central technical contribution) and states the assumptions under which it holds.
+This subsection states the spectral mechanism behind the absolute-return ACF and the assumptions under which it holds. The closed-form bilinear identity $\mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\,\mathbf T^\tau\,\mathbf m$ for the cross-moment of $|G_t|$ at lag $\tau$ and its eigendecomposition over the non-unit eigenvalues of $\mathbf T$ are textbook material in the regime-switching literature (\citealp{hamilton1994time, krolzig1997markov}; the moment-generating-function form for general Markov-switching specifications is given by \citealp{timmermann2000moments}). Our contribution is not the identity itself but its explicit application to recast the empirical \citet{ryden1998stylized} low-$K$ failure as a rank statement on the deflated transition matrix $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$, and the empirical demonstration that the rank constraint is the binding axis at moderate $K$ on equity-return data (Section~\ref{sec:results}).
 Identifiability, MLE consistency, ECM monotonicity, and rank-reordering marginal preservation are each one-line specialisations of standard results; we collect them as cited propositions in Appendix~\ref{sec:supp_propositions} with one-sentence proof sketches.
 
 \paragraph{Assumptions.}
@@ -30,23 +30,23 @@ the unit disk \citep{levinperes2017markov}.
 \paragraph{Spectral mechanism.}
 \label{sec:acf_mechanism}
 
-Let $G_t$ be a stationary CHMM, $\bar{\boldsymbol\pi}$ the stationary
-distribution of $\mathbf T$, and define the per-state absolute-return
-moments
+Let $G_t$ be a stationary CHMM and $\bar{\boldsymbol\pi}$ the stationary
+distribution of $\mathbf T$. Define the per-state absolute-return moment $m_k$ and the per-state second moment $M_k$ jointly,
 \begin{equation}
     m_k \;=\; \E\!\left[\,|G_t|\;\big|\; s_t = k\right],
     \qquad
     M_k \;=\; \E\!\left[\,G_t^2\;\big|\; s_t = k\right],
-    \qquad k = 1, \ldots, K.
+    \qquad k = 1, \ldots, K,
     \label{eq:per_state_moments}
 \end{equation}
+and stack them into vectors $\mathbf m = (m_1, \ldots, m_K)^\top$ and $\mathbf M = (M_1, \ldots, M_K)^\top$. The autocovariance derivation below uses $\mathbf m$ for $\rho_{|G|}(\tau)$ at $\tau \ge 1$; the lag-zero discussion at the end of the paragraph picks up $M_k$ where the conditional product is the per-state second moment rather than $m_k^2$.
+
 Conditioning on the latent state pair $(s_t, s_{t+\tau})$ and using that emissions are conditionally independent given the state sequence,
 \begin{equation*}
     \E\!\left[|G_t|\,|G_{t+\tau}|\right]
     = \sum_{i,j} \bar{\boldsymbol\pi}_i\, (\mathbf T^\tau)_{ij}\, m_i\, m_j
-    = \mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\, \mathbf T^\tau\, \mathbf m,
+    = \mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\, \mathbf T^\tau\, \mathbf m.
 \end{equation*}
-with $\mathbf m = (m_1, \ldots, m_K)^\top$.
 Under Assumption~\ref{ass:irred} the spectral decomposition of $\mathbf T$ reads $\mathbf T^\tau = \mathbf 1\bar{\boldsymbol\pi}^\top + \sum_{k=2}^K \lambda_k^\tau\, \mathbf v_k \mathbf w_k^\top$ with $(\mathbf v_k, \mathbf w_k)$ the right and left eigenvectors of $\mathbf T$ associated with $\lambda_k$ (normalised so that $\mathbf w_k^\top \mathbf v_k = 1$). The first term contributes $(\bar{\boldsymbol\pi}^\top \mathbf m)^2 = (\E|G_t|)^2$, and subtracting the product of marginals yields the autocovariance
 \begin{equation}
     \mathrm{Cov}\!\left(|G_t|,\, |G_{t+\tau}|\right)
