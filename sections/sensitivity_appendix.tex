@@ -254,21 +254,66 @@ Figures~\ref{fig:is_families}--\ref{fig:is_families_GED} reproduce the four-pane
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t.pdf}
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t-a.pdf}
+\caption{Marginal density.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t-b.pdf}
+\caption{Tail Q-Q plot.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t-c.pdf}
+\caption{ACF of raw $G_t$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t-d.pdf}
+\caption{ACF of $|G_t|$.}
+\end{subfigure}
 \caption{IS SPY model comparison at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) marginal density with KS pass rate, (b) tail Q-Q plot, (c) ACF of raw $G_t$ (linear autocorrelation, with the $99\%$ Bartlett band), and (d) ACF of $|G_t|$ (volatility clustering). The CHMM-N counterpart is Figure~\ref{fig:is_comparison}; the CHMM-L and CHMM-GED counterparts are Figures~\ref{fig:is_families_L} and~\ref{fig:is_families_GED}.}
 \label{fig:is_families}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L.pdf}
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L-a.pdf}
+\caption{Marginal density.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L-b.pdf}
+\caption{Tail Q-Q plot.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L-c.pdf}
+\caption{ACF of raw $G_t$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L-d.pdf}
+\caption{ACF of $|G_t|$.}
+\end{subfigure}
 \caption{IS SPY model comparison at $K = 18$ for CHMM-L Laplace emissions (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:is_families}.}
 \label{fig:is_families_L}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-GED.pdf}
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-GED-a.pdf}
+\caption{Marginal density.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-GED-b.pdf}
+\caption{Tail Q-Q plot.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-GED-c.pdf}
+\caption{ACF of raw $G_t$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-GED-d.pdf}
+\caption{ACF of $|G_t|$.}
+\end{subfigure}
 \caption{IS SPY model comparison at $K = 18$ for CHMM-GED emissions with per-state shape $p_k \in [0.5, 3.0]$ (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:is_families}. The fitted $\hat p_k$ partition is reported in Figure~\ref{fig:p_hist} and Appendix~\ref{sec:nu_diagnostics}.}
 \label{fig:is_families_GED}
 \end{figure}
@@ -279,21 +324,66 @@ The CHMM-t panel demonstrates the OoS kurtosis alignment noted in the main text,
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t.pdf}
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t-a.pdf}
+\caption{OoS density fan.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t-b.pdf}
+\caption{KS $p$-value histogram.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t-c.pdf}
+\caption{OoS ACF of raw $G_t$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t-d.pdf}
+\caption{OoS ACF of $|G_t|$.}
+\end{subfigure}
 \caption{OoS SPY validation at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) OoS density fan, (b) KS $p$-value histogram with the $\alpha = 0.05$ threshold, (c) OoS ACF of raw $G_t$ (linear autocorrelation, with the $99\%$ Bartlett band), and (d) OoS ACF of $|G_t|$ (volatility clustering). The CHMM-N counterpart is Figure~\ref{fig:oos_validation}; the CHMM-L and CHMM-GED counterparts are Figures~\ref{fig:oos_families_L} and~\ref{fig:oos_families_GED}.}
 \label{fig:oos_families}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L.pdf}
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L-a.pdf}
+\caption{OoS density fan.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L-b.pdf}
+\caption{KS $p$-value histogram.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L-c.pdf}
+\caption{OoS ACF of raw $G_t$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L-d.pdf}
+\caption{OoS ACF of $|G_t|$.}
+\end{subfigure}
 \caption{OoS SPY validation at $K = 18$ for CHMM-L Laplace emissions (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:oos_families}.}
 \label{fig:oos_families_L}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-GED.pdf}
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-GED-a.pdf}
+\caption{OoS density fan.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-GED-b.pdf}
+\caption{KS $p$-value histogram.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-GED-c.pdf}
+\caption{OoS ACF of raw $G_t$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-GED-d.pdf}
+\caption{OoS ACF of $|G_t|$.}
+\end{subfigure}
 \caption{OoS SPY validation at $K = 18$ for CHMM-GED emissions with per-state shape $p_k \in [0.5, 3.0]$ (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:oos_families}.}
 \label{fig:oos_families_GED}
 \end{figure}

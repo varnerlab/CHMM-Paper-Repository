@@ -73,7 +73,28 @@ The headline KS pass rates are stable under multi-seed and KS-power-calibration 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18.pdf}
+\begin{subfigure}[b]{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-a.pdf}
+\caption{Marginal density.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-b.pdf}
+\caption{Tail Q-Q plot.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-c.pdf}
+\caption{ACF of raw $G_t$.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-d.pdf}
+\caption{ACF of $|G_t|$.}
+\end{subfigure}
 \caption{\textbf{IS CHMM-N validation on SPY} ($K = 18$, $1{,}000$ simulated paths). Panel~(a): marginal density of the annualized excess log return $G_t$; gray histogram $=$ observed IS series, blue curve $=$ one simulated path. Panel~(b): tail Q-Q plot at $200$ quantile levels; blue points $=$ simulated pooled over paths, black dashed $=$ identity. Panel~(c): ACF of raw $G_t$ at lags 1--252 (linear autocorrelation); orange dashed $=$ observed, green $=$ mean across sim paths, shaded band $=$ 10th--90th percentile across sim paths, dashed grey $=$ $99\%$ Bartlett confidence band. Panel~(d): ACF of $|G_t|$ on the same window (volatility clustering); same colour conventions. The 2x2 layout mirrors the empirical-only Figure~\ref{fig:stylized_facts}: panels (a/b) verify marginal fidelity, panels (c/d) the two ACF-based stylized facts.}
 \label{fig:is_comparison}
 \end{figure}
@@ -109,7 +130,28 @@ QQQ  & $96.1$ & $90.3$ & $3.4$ & $3.30$  & $0.0576$ \\
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18.pdf}
+\begin{subfigure}[b]{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-a.pdf}
+\caption{OoS density fan.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-b.pdf}
+\caption{KS $p$-value histogram.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-c.pdf}
+\caption{OoS ACF of raw $G_t$.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-d.pdf}
+\caption{OoS ACF of $|G_t|$.}
+\end{subfigure}
 \caption{\textbf{OoS CHMM-N validation on SPY} ($K = 18$, $1{,}000$ paths, $T_{\text{OoS}} = 572$). Panel~(a): OoS return-density fan; blue thin curves $=$ simulated densities, orange thick curve $=$ observed OoS density. Panel~(b): histogram of the $1{,}000$ OoS KS $p$-values against the observed OoS series with the $\alpha = 0.05$ threshold (orange dashed). Panel~(c): ACF of raw $G_t$ on the OoS window (linear autocorrelation); orange dashed $=$ observed, green $=$ mean across sim paths, shaded band $=$ 10th--90th percentile, dashed grey $=$ $99\%$ Bartlett band (wider than IS because $T_{\text{OoS}}$ is shorter). Panel~(d): ACF of $|G_t|$ on the OoS window (volatility clustering); same colour conventions. The 2x2 layout parallels the IS comparison Figure~\ref{fig:is_comparison}.}
 \label{fig:oos_validation}
 \end{figure}
