@@ -873,3 +873,207 @@ SLV & CHMM-t pen.\ ($K = 18$)      & $99.8$ & $\phantom{0}0.1$ & $6.63$ & $4.73$
 The IS pass rates are above $99\%$ on both tickers under all three configurations, demonstrating that the four-emission scaffold transfers cleanly to commodities at the IS step. The OoS KS distribution, however, collapses to $0\%$ on both tickers across all three configurations, a much sharper degradation than the worst single-ticker equity OoS in Table~\ref{tab:cross_ticker} (NEM at $5.6\%$). This is consistent with the stationarity-scope reading of Section~\ref{sec:discussion}: the 2024--2026 OoS window represents a regime introduction for both gold (inflation-expectation re-pricing, central-bank gold purchases) and silver (industrial-demand cycles), and the IS-fitted CHMM has no state with the right $\sigma$ or location to absorb the OoS distribution. The mitigation (periodic refit at quarterly cadence; \citealp{pesarantimmermann2007window}) is the same as for the equity universe-scale failures and is logged in Section~\ref{sec:discussion}.
 
 Independent-decade validation (a 1994--2004 vs.\ 2014--2024 SPY split) requires a separate data ingest beyond the current 2014--2026 Polygon/Alpaca window and is logged for the next data-pipeline pass. The non-equity result above is therefore the asset-class-transfer evidence; the cross-decade transfer evidence is deferred.
+
+\subsubsection{Sub-Decade Validation: 5-Year IS Sub-Windows}
+\label{sec:subdecade_validation}
+
+Reviewer~3 / item~6 asks for an independent decade validation. The full 1994--2004 SPY history is outside the current Polygon/Alpaca window (2014--2026) and external ingest was not in scope; we therefore split the 2014--2024 IS into two non-overlapping 5y sub-windows and run the same four-emission scaffold on each. Results in \texttt{results/subdecade\_validation/subdecade\_validation.txt}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Sub-decade validation on the 2014-2024 SPY window.} Three configurations: (A) train 2014-2019 (5y) / test 2019-2024 (5y, includes COVID + 2022 rate-hike); (B) train 2019-2024 (5y) / test 2024-2026 (the body OoS, but with a 5y train); (C) train 2014-2024 (10y) / test 2024-2026 (the body row). $N_{\text{paths}} = 1{,}000$, seed = 20260420.}
+\label{tab:subdecade_validation}
+\begin{tabular}{l l c c c c c c}
+\toprule
+Config & Model & IS KS\% & OoS KS\% & IS kurt sim & OoS kurt sim & IS ACF-MAE & OoS ACF-MAE \\
+\midrule
+A & CHMM-N ($K = 18$)        & $97.1$ & $\phantom{0}0.0$ & $3.04$ & $3.07$ & $0.0468$ & $0.0579$ \\
+A & CHMM-N ($K^\star = 6$)   & $94.1$ & $\phantom{0}0.4$ & $3.05$ & $3.02$ & $0.0444$ & $0.0533$ \\
+A & CHMM-N ($K^\star = 3$)   & $82.2$ & $\phantom{0}0.2$ & $3.41$ & $3.35$ & $0.0442$ & $0.0484$ \\
+A & CHMM-t pen.\ ($K = 18$)  & $96.8$ & $\phantom{0}0.0$ & $3.15$ & $3.17$ & $0.0470$ & $0.0581$ \\
+\midrule
+B & CHMM-N ($K = 18$)        & $98.4$ & $67.1$ & $3.08$ & $3.02$ & $0.0606$ & $0.0532$ \\
+B & CHMM-N ($K^\star = 6$)   & $90.4$ & $57.2$ & $3.22$ & $2.99$ & $0.0515$ & $0.0524$ \\
+B & CHMM-N ($K^\star = 3$)   & $88.3$ & $70.4$ & $3.49$ & $3.31$ & $0.0513$ & $0.0518$ \\
+B & CHMM-t pen.\ ($K = 18$)  & $98.3$ & $68.9$ & $5.58$ & $5.27$ & $0.0582$ & $0.0508$ \\
+\midrule
+C & CHMM-N ($K = 18$)        & $95.4$ & $85.6$ & $5.00$ & $4.56$ & $0.0510$ & $0.0525$ \\
+C & CHMM-N ($K^\star = 6$)   & $92.1$ & $82.4$ & $5.66$ & $4.71$ & $0.0507$ & $0.0524$ \\
+C & CHMM-N ($K^\star = 3$)   & $88.4$ & $83.0$ & $3.88$ & $3.59$ & $0.0463$ & $0.0539$ \\
+C & CHMM-t pen.\ ($K = 18$)  & $95.0$ & $89.5$ & $8.28$ & $6.92$ & $0.0542$ & $0.0505$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+The IS KS pass rates are stable across configs (most rows $\ge 90\%$); the four-emission scaffold transfers cleanly to either 5y sub-window at the IS step. OoS pass rates are sharply config-dependent:
+\begin{itemize}
+  \item \textbf{Config A} (test slice spans COVID + 2022 rate-hike onset) collapses to OoS KS $\le 0.4\%$ across all four CHMM configurations. This is the Table~\ref{tab:walkforward} W2 / W4 result extended to a full $T = 1{,}257$ test slice: when the OoS window contains a regime introduction the IS distribution does not span, the IS-fixed CHMM cannot reproduce the OoS distribution. The pattern is invariant to $K$ and emission family.
+  \item \textbf{Config B} (5y train ending 2024-01, same OoS window as the body) attains OoS KS $57$--$70\%$ vs.\ the body's $82$--$90\%$ at config C: shrinking the IS window from 10y to 5y, with the boundary at 2019-01-01, costs $\sim 15$--$30$pp of OoS distributional fidelity. The IS distribution is also tail-light (kurtosis $3.0$--$5.6$ vs.\ $5.0$--$8.3$ at 10y), reflecting that the 2019-2024 sub-window pre-2020 is shorter and includes proportionally less of the 2018 / 2020 / 2022 stress periods needed to anchor the heavy-tail regimes.
+  \item \textbf{Config C} (the body) is the only config where the OoS triple is achieved at all four $K$ choices.
+\end{itemize}
+
+The substantive reading is that the headline OoS performance reported in Section~\ref{sec:results} depends on the 10y IS span; the four-emission scaffold transfers to either non-overlapping 5y sub-window with high IS fidelity but the OoS pass rate is sensitive to whether the OoS window contains a regime introduction the IS distribution does not span. The full pre-2014 1994--2004 cross-decade comparison is logged as a follow-up requiring external data ingest.
+
+\subsubsection{Quarterly-Refit 30-Ticker Cross-Ticker Panel}
+\label{sec:cross_ticker_quarterly_refit}
+
+Reviewer~1 W4 / RE4 and Reviewer~3 W2 / RE3 ask for a quarterly-refit version of the 30-ticker cross-ticker panel (Table~\ref{tab:cross_ticker}). We re-fit the penalised CHMM-t at $K = 18$, $\lambda = 20$ on a rolling $5$-year window every $63$ trading days through the OoS span (10 refits per ticker, 300 fits total), simulate the next quarter under each refit, and concatenate the per-quarter simulations into a single OoS path matrix per ticker. Same $N_{\text{paths}} = 1{,}000$, seed = 20260420 as the body Table~\ref{tab:cross_ticker}. Results in \texttt{results/sector\_panel/sector\_panel\_quarterly\_refit.txt}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Quarterly-refit cross-ticker panel.} Aggregate distribution across the 30-ticker universe under the quarterly-refit protocol vs.\ the IS-fixed protocol of Table~\ref{tab:cross_ticker}. Refit cadence $= 63$ OoS trading days; train window $= 1{,}260$ obs ($\sim 5$y rolling). Per-ticker detail in the results file.}
+\label{tab:cross_ticker_quarterly_refit}
+\begin{tabular}{l c c}
+\toprule
+Metric & IS-fixed (body Table~\ref{tab:cross_ticker}) & Quarterly refit (this table) \\
+\midrule
+IS KS\% median        & $99.5\%$ & $99.4\%$ \\
+IS KS\% mean $\pm$ sd & $99.3 \pm 0.6\%$ & $99.2 \pm 0.6\%$ \\
+OoS KS\% median       & $73.4\%$ & $\mathbf{83.0\%}$ \\
+OoS KS\% mean $\pm$ sd & $66.8 \pm 29.5\%$ & $\mathbf{77.2 \pm 21.2\%}$ \\
+OoS KS\% $[Q_1, Q_3]$ & $[49.1, 94.3]\%$ & $[62.0, 95.4]\%$ \\
+Tickers OoS KS $< 60\%$ & $11 / 30 = 36.7\%$ & $\mathbf{7 / 30 = 23.3\%}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+Quarterly refit shifts the OoS KS distribution materially. Median $+9.6$pp ($73.4 \to 83.0\%$), mean $+10.4$pp, IQR tighter ($45.2$pp $\to 33.4$pp), and failure count down by $36\%$ ($11 \to 7$ below the $60\%$ threshold). The largest individual improvements concentrate on the regime-introduction tickers that the IS-fixed Table~\ref{tab:cross_ticker} flagged: LLY $7.6\% \to 83.7\%$, UNH $14.5\% \to 47.3\%$, NEM $5.6\% \to 15.4\%$, HD $41.4\% \to 82.2\%$, NFLX $45.1\% \to 61.5\%$. The mechanism is the obvious one: as the regime introduces new $\sigma$ levels in the OoS window, each quarterly refit picks up the most recent $5$y including the new regime and the simulator can match the OoS distribution.
+
+A small number of tickers regress: DIS $96.4\% \to 48.4\%$, BAC $84.8\% \to 55.8\%$, AAPL $95.1\% \to 66.5\%$. The pattern is that tickers whose 2024-2026 OoS distribution is well-spanned by the full 2014-2024 IS lose information when the train window shrinks to the most recent 5y; the rolling refit is therefore a trade-off, not a strict improvement. Operationally, a refit-trigger rule (refit only when the rolling KS or a Page-Hinkley statistic on $|G_t|$ crosses a threshold) would capture the regime-introduction wins without paying the cost on the well-spanned tickers; the rule is logged as a follow-up companion experiment.
+
+The substantive reading for the body Section~\ref{sec:cross_asset_univariate} is that the ``periodic refit at deployment'' mitigation invoked verbally in Section~\ref{sec:discussion} is exercised here: the universe-scale failure rate drops from $36.7\%$ to $23.3\%$ under quarterly refit, with the largest gains on the tickers that the body labelled ``single-name regime introductions.''
+
+\subsubsection{Stylized-Facts Figure (Empirical SPY IS)}
+\label{sec:supp_stylized_facts}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts-a.pdf}
+\caption{Marginal density.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts-b.pdf}
+\caption{Normal Q-Q plot.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts-c.pdf}
+\caption{ACF of raw $G_t$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-1-Stylized-Facts-d.pdf}
+\caption{ACF of $|G_t|$.}
+\end{subfigure}
+\caption{\textbf{The three Cont stylized facts on SPY IS}. (a)~marginal density with maximum-likelihood Gaussian and Laplace overlays; (b)~normal Q-Q plot; (c)~empirical ACF of raw $G_t$ at lags 1--252 with $99\%$ Bartlett band; (d)~empirical ACF of $|G_t|$ on the same window.}
+\label{fig:stylized_facts}
+\end{figure}
+
+\subsubsection{IS / OoS CHMM-N Validation Figures at $K = 18$}
+\label{sec:supp_validation_figures}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-a.pdf}
+\caption{Marginal density.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-b.pdf}
+\caption{Tail Q-Q plot.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-c.pdf}
+\caption{ACF of raw $G_t$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-d.pdf}
+\caption{ACF of $|G_t|$.}
+\end{subfigure}
+\caption{\textbf{IS CHMM-N validation on SPY at $K = 18$} ($1{,}000$ simulated paths). Panels (a/b) verify marginal fidelity, panels (c/d) the two ACF-based stylized facts.}
+\label{fig:is_comparison}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-a.pdf}
+\caption{OoS density fan.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-b.pdf}
+\caption{KS $p$-value histogram.}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-c.pdf}
+\caption{OoS ACF of raw $G_t$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-d.pdf}
+\caption{OoS ACF of $|G_t|$.}
+\end{subfigure}
+\caption{\textbf{OoS CHMM-N validation on SPY at $K = 18$} ($1{,}000$ paths, $T_{\text{OoS}} = 572$). Same colour conventions as Figure~\ref{fig:is_comparison}.}
+\label{fig:oos_validation}
+\end{figure}
+
+\subsubsection{CHMM-GED $\hat p_k$ Partition (Gaussian-bulk / Laplace-tail)}
+\label{sec:supp_p_partition}
+
+CHMM-GED carries a per-state shape $p_k \in [p_{\min}, p_{\max}] = [0.5, 3.0]$ that nests Gaussian ($p = 2$) and Laplace ($p = 1$) as boundary cases. The empirical fit on SPY IS at $K = 18$ partitions states bimodally (Figure~\ref{fig:p_hist}): thirteen states at the upper bracket $p_k = 3.0$, one at $p_k = 1.6$, and four in the Laplace regime $p_k \in [0.86, 1.24]$. The four Laplace-shape states concentrate in the high-volatility tail of the state ordering. The partition replicates across $10$ Monte Carlo seeds and across the cross-asset universe (Appendix~\ref{sec:supp_robustness}); we read it as the most distinctive empirical finding of the four-emission scaffold.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-p-Histogram-a.pdf}
+\caption{Histogram of fitted $\hat p_k$.}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{figs/Fig-p-Histogram-b.pdf}
+\caption{$\hat p_k$ vs.\ volatility rank.}
+\end{subfigure}
+\caption{\textbf{CHMM-GED per-state shape $\hat p_k$ partition} ($K = 18$, SPY IS, seed $20260420$). The bimodal partition is visible at the upper bracket $p_k = 3.0$ and around the Laplace shape; the Laplace-shape cluster sits at the high-volatility ranks.}
+\label{fig:p_hist}
+\end{figure}
+
+\subsubsection{HSMM at $K = 3$: Numerical Full-Rank Diagnostic}
+\label{sec:supp_hsmm_diagnostic}
+
+The off-diagonal jump matrix of the fitted ML HSMM at $K = 3$ has eigenvalues $\{1.000, 0.823, 0.177\}$ and singular values $\{1.150, 0.762, 0.166\}$; the deflated jump matrix $\mathbf A - \mathbf 1 \bar{\boldsymbol\pi}^\top$ is full rank at $K - 1 = 2$ with non-trivial eigenvalues $\{0.823, 0.177\}$ (numerical rank $2$ at tolerance $10^{-10}$). The dominant non-unit modulus $|\lambda_2| = 0.823$ is comparable to the CHMM-N at $K = 3$ value $|\lambda_2| = 0.953$, so the spectral mechanism of the off-diagonal jump matrix is not collapsed: a near-zero $|\lambda_2|$ is not the cause of the $|G_t|$ ACF-MAE regression to the i.i.d.\ baseline. The active mechanism is the fitted Pareto sojourn distribution at $K = 3$ which concentrates probability mass on a single low-volatility state (the stationary distribution of $\mathbf A$ is $\bar{\boldsymbol\pi} \approx (0,\,1,\,0)$ with $\sigma_2 = 0.97$, the lowest variance of the three states), so under simulation the chain spends long stretches inside a single state's i.i.d.\ emissions and the within-state i.i.d.\ baseline dominates the ACF integration over the IS window. The same Yu (2010) construction at $K = 18$ collapses to a near-degenerate local optimum on $T_{\text{IS}} = 2{,}516$ (IS KS $0.8\%$, simulated kurtosis $3.65$): the joint $K^2 + KD_{\max}$ free-parameter count exceeds the effective IS sample size, so the higher-$K$ ML HSMM is best read as a companion-paper direction at longer training windows or under a constrained sojourn parameterisation.
+
+\subsubsection{Unconditional VaR / ES Envelope Panel}
+\label{sec:supp_var_envelope}
+
+\begin{table}[H]
+\centering
+\caption{\textbf{VaR and Expected-Shortfall envelope for SPY} ($N_{\text{paths}} = 1{,}000$). Each entry is the median and $[5, 95]\%$ envelope across paths of the left-tail VaR / ES at $\alpha \in \{0.01, 0.05\}$; observed historical values are in the first row of each block.}
+\label{tab:var_es}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l l l l}
+\toprule
+          & IS VaR$_{0.01}$              & IS ES$_{0.01}$               & IS VaR$_{0.05}$              & IS ES$_{0.05}$               \\
+Model     & median $[5\%, 95\%]$         & median $[5\%, 95\%]$         & median $[5\%, 95\%]$         & median $[5\%, 95\%]$         \\
+\midrule
+\textit{Observed}  & $-6.38$                      & $-9.00$                      & $-3.43$                      & $-5.50$                      \\
+Bootstrap & $-6.38\ [-7.04, -5.99]$      & $-8.86\ [-10.37,\ -7.78]$    & $-3.43\ [-3.68, -3.20]$      & $-5.46\ [-5.99, -5.05]$      \\
+GARCH     & $-5.80\ [-8.62, -4.52]$      & $-7.86\ [-13.54,\ -5.77]$    & $-3.19\ [-3.92, -2.71]$      & $-4.89\ [-7.11, -3.91]$      \\
+CHMM-N    & $-6.64\ [-8.01, -5.47]$      & $-8.80\ [-10.16,\ -7.34]$    & $-3.45\ [-4.05, -2.95]$      & $-5.45\ [-6.33, -4.61]$      \\
+CHMM-t    & $-6.58\ [-7.51, -5.83]$      & $-9.06\ [-10.70,\ -7.79]$    & $-3.40\ [-3.90, -2.90]$      & $-5.51\ [-6.18, -4.85]$      \\
+CHMM-L    & $-6.89\ [-7.85, -6.01]$      & $-9.15\ [-10.42,\ -7.97]$    & $-3.30\ [-3.77, -2.88]$      & $-5.53\ [-6.17, -4.87]$      \\
+CHMM-GED  & $-6.85\ [-7.70, -6.06]$      & $-8.79\ [-9.83,\ -7.82]$     & $-3.43\ [-3.98, -2.93]$      & $-5.55\ [-6.23, -4.91]$      \\
+\midrule
+          & OoS VaR$_{0.01}$             & OoS ES$_{0.01}$              & OoS VaR$_{0.05}$             & OoS ES$_{0.05}$              \\
+\textit{Observed}  & $-5.51$                      & $-7.94$                      & $-2.77$                      & $-4.67$                      \\
+Bootstrap & $-6.33\ [-7.60, -5.28]$      & $-8.43\ [-11.76,\ -6.59]$    & $-3.39\ [-3.91, -2.88]$      & $-5.34\ [-6.38, -4.50]$      \\
+GARCH     & $-5.35\ [-9.98, -3.61]$      & $-6.72\ [-13.51,\ -4.38]$    & $-3.14\ [-4.94, -2.36]$      & $-4.59\ [-7.92, -3.23]$      \\
+CHMM-N    & $-6.30\ [-9.02, -4.30]$      & $-8.44\ [-11.36,\ -5.42]$    & $-3.39\ [-4.74, -2.47]$      & $-5.27\ [-7.23, -3.74]$      \\
+CHMM-t    & $-6.32\ [-8.13, -4.80]$      & $-8.60\ [-12.20,\ -6.29]$    & $-3.29\ [-4.27, -2.45]$      & $-5.34\ [-6.72, -4.08]$      \\
+CHMM-L    & $-6.69\ [-8.59, -4.91]$      & $-8.88\ [-11.48,\ -6.73]$    & $-3.27\ [-4.30, -2.51]$      & $-5.47\ [-6.82, -4.20]$      \\
+CHMM-GED  & $-6.60\ [-8.30, -4.82]$      & $-8.51\ [-10.68,\ -6.47]$    & $-3.32\ [-4.38, -2.46]$      & $-5.41\ [-6.66, -4.06]$      \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

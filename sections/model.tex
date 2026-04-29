@@ -1,196 +1,41 @@
 \subsection{Data and Excess Growth Rates}
 \label{sec:data}
 
-The single-asset analysis uses daily SPDR S\&P~500 ETF (SPY) prices from January~3, 2014 to January~3, 2024 (a ten-year training window, $T_{\text{IS}} = 2{,}516$), with the period from January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 572$) held out.
-Cross-ticker generalization additionally covers NVIDIA (NVDA), Johnson \& Johnson (JNJ), JPMorgan Chase (JPM), Apple (AAPL), and the Invesco QQQ Trust (QQQ).
-Prices are split-adjusted but not dividend-adjusted; a full description of the data sources and the Polygon-to-Alpaca extension boundary is given in the Data and Software Acknowledgments at the end of the manuscript.
-For ticker $i$ and trading day $j$, the annualized excess growth rate is
+The single-asset analysis uses daily SPDR S\&P~500 ETF (SPY) prices from January~3, 2014 to January~3, 2024 (a ten-year training window, $T_{\text{IS}} = 2{,}516$), with the period from January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 572$) held out. Prices are split-adjusted but not dividend-adjusted; the data sources are described in the acknowledgments. For ticker $i$ and trading day $j$ the annualised excess growth rate is
 \begin{equation}
-    G_{i,j} \equiv \frac{1}{\Delta t} \ln\!\left(\frac{P_{i,j}}{P_{i,j-1}}\right) - r_f,
-    \qquad \Delta t = 1/252, \quad r_f = 0.
+    G_{i,j} \equiv \frac{1}{\Delta t} \ln\!\left(\frac{P_{i,j}}{P_{i,j-1}}\right) - r_f, \qquad \Delta t = 1/252, \quad r_f = 0,
     \label{eq:growth_rate}
 \end{equation}
-The factor $1/\Delta t$ is a constant rescaling that puts the daily log-return on an annualised axis; all CHMM fits, simulations, and per-path metrics (KS, ACF, kurtosis, VaR / ES) are evaluated on the daily-scale series $G_{i,j}$ defined above, and the annualisation is a notational convenience that does not affect any reported metric. The $r_f = 0$ choice is a normalisation rather than a literal excess-return construction; using a non-zero risk-free rate would shift every reported VaR and ES point estimate by the same constant and leave the distributional and ACF metrics unchanged.
-Throughout, $P_{i,j}$ is the daily session volume-weighted average price (VWAP) reported by the data provider, rather than the closing print; the choice is uniform across all tickers, all windows, and all runners, so every reported metric (Kolmogorov--Smirnov pass rate, $\text{ACF}(|G_t|)$ mean absolute error, kurtosis, Value-at-Risk and Expected-Shortfall envelopes, cross-asset off-diagonal MAE) is computed on VWAP-to-VWAP log returns.
-
-The empirical study is organised along two pipelines, illustrated in Figure~\ref{fig:pipeline_schematic}. \emph{Pipeline~A} fits a CHMM to each ticker independently and evaluates single-asset marginal, tail, and temporal metrics; this is the scope of the SPY headline panel (Section~\ref{sec:model_comparison}), the cross-ticker generalisation (Section~\ref{sec:cross_asset_univariate}), and the unconditional VaR / ES envelope (Section~\ref{sec:utility}). \emph{Pipeline~B} reuses the per-asset Pipeline-A CHMM fits as \emph{marginals} and injects cross-asset \emph{dependence} through the rank-based Student-t copula of Section~\ref{sec:cross_asset_methods}, evaluated in Section~\ref{sec:cross_asset}.
-
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[
-    font=\small,
-    node distance=3.8mm,
-    >={Stealth[length=2mm, width=1.6mm]},
-    box/.style={draw, rectangle, rounded corners=1.5pt, align=center,
-                minimum height=13mm, minimum width=22mm, inner sep=1.5mm,
-                fill=black!3},
-    data/.style={box, fill=black!2, draw=black!60},
-    model/.style={box, fill=black!6, draw=black!60, thick},
-    sim/.style={box, fill=black!4, draw=black!60, dashed},
-    metric/.style={box, fill=black!10, draw=black!70, thick},
-    flow/.style={-Stealth, thick, black!70},
-    lbl/.style={font=\scriptsize\itshape, black!60, inner sep=1pt},
-]
-
-% ---------- Pipeline~A: single-asset (top row) ----------
-\node[font=\small\bfseries, anchor=west] (paTitle) at (0, 0) {Pipeline~A (single-asset, Section~\ref{sec:model_comparison}):};
-\node[data, below=2mm of paTitle.south west, anchor=north west] (paData) {Observed\\ returns $G_t$};
-\node[model, right=of paData] (paFit) {Fit CHMM\\ (Baum-Welch,\\ $K = 18$)};
-\node[sim, right=of paFit] (paSim) {Simulate\\ $1{,}000$ paths};
-\node[metric, right=of paSim] (paMet) {Per-asset\\ metrics\\ (Table~\ref{tab:model_comparison})};
-\draw[flow] (paData) -- (paFit);
-\draw[flow] (paFit) -- (paSim);
-\draw[flow] (paSim) -- (paMet);
-
-% ---------- Pipeline~B: cross-asset (bottom row) ----------
-\node[font=\small\bfseries, anchor=west, below=9mm of paData.south west] (pbTitle) {Pipeline~B (cross-asset, Section~\ref{sec:cross_asset}):};
-\node[data, below=10mm of pbTitle.south west, anchor=north west] (pbData) {$d$ tickers\\ returns $G^{(i)}_t$};
-\node[model, right=of pbData] (pbMarg) {Per-asset\\ CHMM fits};
-\node[sim, right=of pbMarg] (pbPaths) {Per-asset\\ simulated\\ paths};
-\node[model, right=of pbPaths, fill=black!10, draw=black!70] (pbCop) {Student-$t$\\ copula on\\ ranks};
-\node[sim, right=of pbCop] (pbReord) {Rank-\\ reordered\\ paths};
-\node[metric, right=of pbReord] (pbMet) {Cross-asset\\ metrics\\ (Table~\ref{tab:cross_asset})};
-\draw[flow] (pbData) -- (pbMarg);
-\draw[flow] (pbMarg) -- (pbPaths);
-\draw[flow] (pbPaths) -- (pbCop);
-\draw[flow] (pbCop) -- (pbReord);
-\draw[flow] (pbReord) -- (pbMet);
-
-% bracket + side labels: marginals span (data -> paths), dependence sits on copula boxes
-\draw[decorate, decoration={brace, amplitude=4pt, raise=1pt}, black!60]
-    ($(pbMarg.north west)+(0,1mm)$) -- ($(pbPaths.north east)+(0,1mm)$)
-    node[midway, lbl, above=3pt] {marginals};
-\draw[decorate, decoration={brace, amplitude=4pt, raise=1pt}, black!60]
-    ($(pbCop.north west)+(0,1mm)$) -- ($(pbReord.north east)+(0,1mm)$)
-    node[midway, lbl, above=3pt] {dependence};
-
-\end{tikzpicture}
-\caption{\textbf{Schematic of Pipeline~A (single-asset) and Pipeline~B (cross-asset).} Pipeline~A fits a CHMM per ticker independently and evaluates single-asset marginal, tail, and temporal metrics. Pipeline~B reuses the per-asset CHMM fits as \emph{marginals} and injects cross-asset \emph{dependence} through the rank-based Student-t copula (profile MLE selects $\nu^\star = 6$), preserving each asset's fitted CHMM distribution exactly while coupling asset ranks to match observed multi-asset correlation structure. Headline: the two pipelines share the single-asset scaffold, so improvements to the CHMM at the marginal step propagate into Pipeline~B without any changes to the dependence layer.}
-\label{fig:pipeline_schematic}
-\end{figure}
+with $P_{i,j}$ the session volume-weighted average price (VWAP). The factor $1/\Delta t$ is a constant rescaling; all simulations and metrics are evaluated on the daily-scale series. The empirical study is organised along two pipelines (full schematic in Appendix~\ref{sec:supp_pipeline_schematic}). \emph{Pipeline~A} fits a CHMM to each ticker independently and evaluates single-asset metrics; \emph{Pipeline~B} reuses the per-asset Pipeline-A fits as marginals and injects cross-asset dependence through a rank-based Student-$t$ copula (\S\ref{sec:cross_asset_methods}).
 
 \subsection{Continuous Hidden Markov Model}
 \label{sec:chmm_def}
 
-We model the continuous excess growth rate $G_t$ as a continuous HMM
-$\mathcal{M} = (\mathcal{S}, \mathbf{T}, \mathbf{B}, \boldsymbol{\pi})$
-with $K$ latent states, a per-state emission density $b_k(x; \boldsymbol\theta_k)$,
-transition matrix $\mathbf{T} \in \mathbb{R}^{K \times K}$, and initial
-distribution $\boldsymbol{\pi}$ \cite{rabiner1986introduction}.
-The stationary marginal is the $K$-component mixture
+We model $G_t$ as a continuous HMM $\mathcal{M} = (\mathcal{S}, \mathbf{T}, \mathbf{B}, \boldsymbol{\pi})$ with $K$ latent states, per-state emission density $b_k(x; \boldsymbol\theta_k)$, transition matrix $\mathbf{T} \in \mathbb{R}^{K \times K}$, and initial distribution $\boldsymbol{\pi}$ \cite{rabiner1986introduction}. The stationary marginal is the $K$-component mixture
 \begin{equation}
-    f(x) = \sum_{k=1}^{K} \bar{\pi}_k\, b_k(x; \boldsymbol\theta_k),
-    \qquad \bar{\boldsymbol{\pi}} = \bar{\boldsymbol{\pi}} \mathbf{T},
+    f(x) = \sum_{k=1}^{K} \bar{\pi}_k\, b_k(x; \boldsymbol\theta_k), \qquad \bar{\boldsymbol{\pi}} = \bar{\boldsymbol{\pi}} \mathbf{T},
     \label{eq:mixture}
 \end{equation}
-and supplies heavy tails either through the spread of component moments
-(Gaussian components) or through the emission family itself (Student-t or Laplace).
-Existence and uniqueness of $\bar{\boldsymbol{\pi}}$ require irreducibility and aperiodicity of $\mathbf T$, recorded as Assumption~\ref{ass:irred} in Section~\ref{sec:theory}; the spectral mechanism behind the absolute-return ACF that this mixture induces is derived in Section~\ref{sec:theory}.
-We learn $\mathbf{T}$, $\boldsymbol\theta_{1:K}$, and $\boldsymbol{\pi}$ jointly from continuous observations via EM (Section~\ref{sec:estimation}).
+with $\bar{\boldsymbol\pi}$ the stationary distribution. Existence and uniqueness require irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred} in \S\ref{sec:theory}). We learn $\mathbf{T}$, $\boldsymbol\theta_{1:K}$, and $\boldsymbol{\pi}$ jointly by EM (\S\ref{sec:estimation}).
 
-\paragraph{CHMM-N: Gaussian emissions.}
-$b_k(x) = \mathcal{N}(x; \mu_k, \sigma_k^2)$ with per-state location $\mu_k$ and variance $\sigma_k^2$.
-
-\paragraph{CHMM-t: Student-t emissions.}
-$b_k(x) = t_{\nu_k}(x; \mu_k, \sigma_k)$ with per-state location $\mu_k$, scale $\sigma_k$, and degrees of freedom $\nu_k \in [\nu_{\min}, \nu_{\max}]$.
-Per-state degrees of freedom let heavy-tailed regimes coexist with near-Gaussian regimes in the same model.
-
-\paragraph{CHMM-L: Laplace emissions.}
-$b_k(x) = \mathrm{Laplace}(x; \mu_k, b_k)$ with per-state location $\mu_k$ and scale $b_k$. The heavier-than-Gaussian Laplace tail (per-component excess kurtosis $3$) provides an alternative route to tail fidelity that carries no shape parameter and is strictly cheaper than CHMM-t.
-
-\paragraph{CHMM-GED: Generalized Error Distribution emissions.}
-$b_k(x) = \mathrm{GED}(x; \mu_k, \alpha_k, p_k)$ with per-state location $\mu_k$, scale $\alpha_k$, and shape $p_k \in [p_{\min}, p_{\max}]$. The GED nests Gaussian at $p = 2$ and Laplace at $p = 1$, so per-state $p_k$ is the structural analog of CHMM-t's per-state $\nu_k$ on the Gaussian-to-Laplace shape axis: each state picks its own kurtosis adaptively, by ECM, on a continuous shape parameter. CHMM-GED therefore strictly nests CHMM-N (all $p_k = 2$) and CHMM-L (all $p_k = 1$) as boundary cases.
-
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[
-    font=\small,
-    >={Stealth[length=2mm, width=1.6mm]},
-    state/.style={draw, circle, minimum size=9mm, inner sep=0pt,
-                  fill=black!4, thick},
-    obs/.style={draw, rectangle, rounded corners=1pt, minimum size=9mm,
-                inner sep=1pt, fill=black!10, thick},
-    emit/.style={draw, rectangle, rounded corners=1.5pt, align=center,
-                 minimum height=10mm, minimum width=34mm, inner sep=1.5mm,
-                 fill=black!3},
-    block/.style={draw, rectangle, rounded corners=1.5pt, align=center,
-                  minimum height=11mm, minimum width=34mm, inner sep=1.5mm,
-                  fill=black!6, thick},
-    flow/.style={-Stealth, thick, black!75},
-    lbl/.style={font=\footnotesize\itshape, black!65, inner sep=1pt},
-    eq/.style={font=\footnotesize, inner sep=1pt},
-]
-
-% ---- Latent Markov chain (top row) ----
-\node[state] (s1) at (0, 0) {$s_{t-1}$};
-\node[state, right=14mm of s1] (s2) {$s_t$};
-\node[state, right=14mm of s2] (s3) {$s_{t+1}$};
-\node[left=6mm of s1] (sdots) {$\cdots$};
-\node[right=6mm of s3] (edots) {$\cdots$};
-\draw[flow] (sdots) -- (s1);
-\draw[flow] (s1) -- (s2) node[midway, above, eq] {$T_{ij}$};
-\draw[flow] (s2) -- (s3) node[midway, above, eq] {$T_{ij}$};
-\draw[flow] (s3) -- (edots);
-\node[lbl, above=2mm of s2] {latent regime chain $s_t \in \{1,\ldots,K\}$};
-
-% ---- Observations (below chain) ----
-\node[obs, below=12mm of s1] (o1) {$G_{t-1}$};
-\node[obs, below=12mm of s2] (o2) {$G_t$};
-\node[obs, below=12mm of s3] (o3) {$G_{t+1}$};
-\draw[flow] (s1) -- (o1) node[midway, right, eq] {$b_{s_{t-1}}$};
-\draw[flow] (s2) -- (o2) node[midway, right, eq] {$b_{s_t}$};
-\draw[flow] (s3) -- (o3) node[midway, right, eq] {$b_{s_{t+1}}$};
-\node[lbl, below=2mm of o2] {observed excess growth rate $G_t \in \mathbb{R}$};
-
-% ---- Four emission families (bottom-left panel) ----
-\node[emit, minimum width=28mm, below=20mm of o1.south west, anchor=north west] (eN)
-    {\textbf{CHMM-N} \\ $b_k = \mathcal{N}(\mu_k, \sigma_k^2)$};
-\node[emit, minimum width=28mm, right=2mm of eN] (eT)
-    {\textbf{CHMM-t} \\ $b_k = t_{\nu_k}(\mu_k, \sigma_k)$};
-\node[emit, minimum width=28mm, right=2mm of eT] (eL)
-    {\textbf{CHMM-L} \\ $b_k = \mathrm{Laplace}(\mu_k, b_k)$};
-\node[emit, minimum width=28mm, right=2mm of eL] (eG)
-    {\textbf{CHMM-GED} \\ $b_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$};
-\node[lbl, above=1mm of eT, anchor=south] {per-state emission family (one per CHMM variant)};
-
-% ---- EM training loop (top-right) ----
-\node[block, right=18mm of edots] (mstep)
-    {M-step\\ update $\mathbf{T}$, $\{\boldsymbol\theta_k\}$\\ (family-specific)};
-\node[block, below=6mm of mstep] (estep)
-    {E-step\\ forward--backward\\ $\gamma_t(k),\ \xi_t(i,j)$};
-\draw[flow, black!75] ([xshift=-3mm]mstep.south) -- ([xshift=-3mm]estep.north);
-\draw[flow, black!75] ([xshift=3mm]estep.north) -- ([xshift=3mm]mstep.south);
-\node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
-
-\end{tikzpicture}
-\caption{\textbf{CHMM architecture and training loop.} A $K$-state latent Markov chain with transition matrix $\mathbf{T}$ generates the regime sequence $s_t$; each $s_t$ conditionally emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}$. The four CHMM variants (Gaussian, Student-t, Laplace, GED) share everything except the emission family. Joint estimation alternates an E-step (log-space forward--backward) and a family-specific M-step until the log-likelihood change falls below $10^{-4}$.}
-\label{fig:chmm_architecture}
-\end{figure}
+The four emission families share a single forward-backward scaffold and quantile-based initialization; the M-step is the only architectural difference. \emph{CHMM-N}: $b_k = \mathcal{N}(\mu_k, \sigma_k^2)$. \emph{CHMM-t}: $b_k = t_{\nu_k}(\mu_k, \sigma_k)$ with per-state degrees of freedom $\nu_k \in [\nu_{\min}, \nu_{\max}]$. \emph{CHMM-L}: $b_k = \mathrm{Laplace}(\mu_k, b_k)$. \emph{CHMM-GED}: $b_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$ with per-state shape $p_k \in [p_{\min}, p_{\max}]$ that nests Gaussian ($p_k = 2$) and Laplace ($p_k = 1$). The architectural diagram is in Appendix~\ref{sec:supp_architecture}.
 
 \subsection{Benchmark Generators}
 \label{sec:benchmarks}
 
-We benchmark the CHMM against representatives from each of the standard generator tiers, all fitted on the same IS window.
-The \textit{i.i.d.\ bootstrap} \cite{politis1994stationary} samples $T$ returns uniformly with replacement, preserving the empirical marginal exactly and serving as the non-parametric distributional ceiling.
-The \textit{Gaussian} i.i.d.\ generator draws $G_t \sim \mathcal{N}(\hat\mu, \hat\sigma^2)$ from the sample moments; the \textit{Laplace} i.i.d.\ generator draws $G_t \sim \text{Laplace}(\hat m, \hat b)$ from the sample median and mean absolute deviation.
-\textit{GARCH(1,1)} \cite{bollerslev1986generalized} uses $G_t = \mu + \sigma_t z_t$, $\sigma_t^2 = \omega + \alpha(G_{t-1} - \mu)^2 + \beta \sigma_{t-1}^2$ with $z_t \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 1)$, fitted by Nelder--Mead maximum likelihood; this is the parametric volatility-clustering workhorse.
-\textit{GARCH(1,1)-$t$} \cite{bollerslev1987conditionally} replaces the Gaussian innovation with a Student-$t$, supplying a heavy-tailed volatility-clustering competitor with the same recursion.
-\textit{MS-GARCH} (Markov-switching GARCH, \citealp{haas2004new}) is the regime-switching foil: a discrete two-state hidden chain modulates the GARCH parameters, providing the closest peer to the CHMM scaffold among classical baselines. The full extended GARCH-family panel (EGARCH, GJR-GARCH, HAR-RV, MS-GARCH $K=3$), the explicit semi-Markov CHMM foil, and a deep-generative QuantGAN \cite{wiese2020quantgan} row are reported in Appendix~\ref{sec:extended_baselines} (the QuantGAN architecture and training details in Appendix~\ref{sec:quantgan_supp}).
+We benchmark against representatives from each generator tier, all fit on the same IS window: i.i.d.\ bootstrap \cite{politis1994stationary} (non-parametric distributional ceiling), Gaussian and Laplace i.i.d., GARCH(1,1) Gaussian \cite{bollerslev1986generalized} and Student-$t$ \cite{bollerslev1987conditionally}, and Markov-switching GARCH (MS-GARCH; \citealp{haas2004new}). The extended GARCH-family panel (EGARCH, GJR-GARCH, HAR-RV, MS-GARCH at $K \in \{3, 4, 6\}$), an explicit-duration semi-Markov foil, a deep-generative QuantGAN \cite{wiese2020quantgan} row, plus stochastic-volatility (Taylor-Harvey-Ruiz-Shephard), Markov-switching multifractal \cite{calvet2004regime}, and Merton-jump-diffusion \cite{merton1976option} baselines are reported in Appendix~\ref{sec:extended_baselines} and \ref{sec:sv_msm_jd_baselines}.
 
 \subsection{Cross-Asset Dependence (Pipeline~B)}
 \label{sec:cross_asset_methods}
 
-Pipeline~B reuses each per-asset CHMM marginal from Pipeline~A and injects cross-asset dependence through a rank-based Student-$t$ copula \cite{demarta2005tcopula, mcneil2015quantitative}. The pseudo-uniform observations $u_{j,t} = \mathrm{rank}(g_{j,t}) / (T+1)$ feed an analytic Kendall's-$\tau$ correlation estimate $\rho_{ij} = \sin(\pi \tau_{ij}/2)$ \cite{embrechts2002correlation, mcneil2015quantitative}; profile MLE over $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ selects $\nu^\star$. Sklar's theorem \cite{sklar1959fonctions, nelsen2006introduction} guarantees that the rank-reordering simulator of \citet{iman1982distribution} preserves each fitted CHMM marginal exactly while coupling the asset ranks to the copula sample. Full derivations, the Single Index Model (SIM) and Gaussian-copula comparators, and the truncated C-vine variant are in Appendix~\ref{sec:cross_asset_supp}.
+Pipeline~B reuses each per-asset CHMM marginal and injects cross-asset dependence through a rank-based Student-$t$ copula \cite{demarta2005tcopula, mcneil2015quantitative}. Pseudo-uniform observations $u_{j,t} = \mathrm{rank}(g_{j,t}) / (T+1)$ feed an analytic Kendall's-$\tau$ correlation estimate $\rho_{ij} = \sin(\pi \tau_{ij}/2)$ \cite{embrechts2002correlation}; profile MLE selects $\nu^\star$. Sklar's theorem \cite{sklar1959fonctions} guarantees that the rank-reordering simulator of \citet{iman1982distribution} preserves each fitted CHMM marginal exactly while coupling the asset ranks to the copula sample. SIM, Gaussian-copula, and truncated C-vine comparators are in Appendix~\ref{sec:cross_asset_supp}.
 
 \subsection{Evaluation Protocol}
 \label{sec:metrics}
 
-For each model we simulate $P = 1{,}000$ independent paths of length $T$ and evaluate four core metrics, following the framework of \cite{stenger2024thinking}.
-All experiments use a deterministic global random seed ($20260420$); per-experiment sub-seeds are derived additively so that each block is independently reproducible from a single seed root.
-The two-sample Kolmogorov--Smirnov \cite{kolmogorov1933, smirnov1948} pass rate at $\alpha = 0.05$ over the $1{,}000$ paths scores distributional fidelity; the mean simulated excess kurtosis scores tail behaviour; and the mean absolute error of the absolute-return ACF (also written ACF of $|G_t|$ when paired with a panel-content figure caption; the two phrases are interchangeable throughout) over $L = 252$ lags,
+For each model we simulate $P = 1{,}000$ independent paths of length $T$ following \cite{stenger2024thinking}, under a deterministic global seed root $20260420$. Headline metrics are the two-sample Kolmogorov--Smirnov \cite{kolmogorov1933, smirnov1948} pass rate at $\alpha = 0.05$, mean simulated excess kurtosis, and the absolute-return ACF mean absolute error (MAE) over $L = 252$ lags,
 \begin{equation}
-    \text{ACF-MAE} = \frac{1}{L}\sum_{\tau=1}^{L} \left| \hat\rho^{\text{obs}}_{|G|}(\tau) - \bar{\hat\rho}^{\,\text{sim}}_{|G|}(\tau) \right|,
+    \text{ACF-MAE} = \frac{1}{L}\sum_{\tau=1}^{L} \left| \hat\rho^{\text{obs}}_{|G|}(\tau) - \bar{\hat\rho}^{\,\text{sim}}_{|G|}(\tau) \right|.
     \label{eq:acf_mae}
 \end{equation}
-is the direct diagnostic for the Ryd\'{e}n et al.\ limitation.
-A separate Value-at-Risk panel (Section~\ref{sec:var_backtest}) carries the unconditional-Kupiec \cite{kupiec1995techniques} and Expected-Shortfall envelope diagnostics.
+A separate Value-at-Risk panel (\S\ref{sec:var_backtest}) carries the unconditional Kupiec \cite{kupiec1995techniques} and Expected-Shortfall envelope diagnostics. Block-bootstrap KS recalibration, Anderson--Darling, $W_1$, Hellinger, and CRPS auxiliaries are in Appendix~\ref{sec:supp_metrics}.

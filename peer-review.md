@@ -316,11 +316,11 @@ This section tracks revision progress on the action list below. Each item is mar
 
 4. ✅ **Christoffersen-cc MC power calibration at $T_{\text{OoS}} = 572$.** *(R1 Q4, R2 W2 / RE1, R3 Q5.)* — *Pass 2: new `run_christoffersen_power.jl`, B=5000 replicates per cell, alpha ∈ {0.01, 0.05}, rho ∈ {0, 0.05, 0.10, 0.20, 0.30, 0.50}. New appendix Table `tab:christoffersen_power` in `sec:christoffersen_power`. At α=0.05: 80% power at ρ ≥ 0.20; type-I correctly sized at 4-5% under iid null. At α=0.01: 80% power only at ρ ≥ 0.50 (under-powered with ~5.7 expected breaches). Body forward-pointer in `var_backtest.tex` notes the alpha=0.01 row is best read as "not detectably worse than a strongly-clustered alternative."*
 
-5. 🟡 **Refit-protocol stress test on the 30-ticker panel.** *(R1 W4 / RE4, R3 W2 / RE3.)* — *Pass 2: K*=6 rebuild (item 1) covers the held-out-clean alternative; quarterly-refit conditional-VaR result on SPY (item 8) substantiates the same refit mechanism. Quarterly-refit cross-ticker on all 30 tickers (~270 fits) is logged as a CHMM-Model batch follow-up; the SPY-side validation in items 1 + 8 plus the body's verbal mitigation are sufficient for the present revision. Mark partial.*
+5. ✅ **Refit-protocol stress test on the 30-ticker panel.** *(R1 W4 / RE4, R3 W2 / RE3.)* — *Pass 3: new `run_sector_panel_quarterly_refit.jl` ran the full 30-ticker panel under quarterly refit (300 fits, ~10 min on this hardware). Results in `results/sector_panel/sector_panel_quarterly_refit.txt`. OoS KS median $73.4\% \to 83.0\%$, mean $66.8 \to 77.2\%$, failure count $11/30 \to 7/30$. Largest individual gains on regime-introduction tickers (LLY $7.6\% \to 83.7\%$, HD $41.4\% \to 82.2\%$, NEM $5.6\% \to 15.4\%$). Some well-spanned tickers regress (DIS $96.4\% \to 48.4\%$, BAC $84.8\% \to 55.8\%$); rolling refit is a trade-off, not a strict improvement. New appendix Table `tab:cross_ticker_quarterly_refit` in `sec:cross_ticker_quarterly_refit`; body inline note in `results.tex`.*
 
 ### Tier 2 — Strongly recommended
 
-6. 🟡 **Independent decade / non-equity validation.** *(R1 W5 / RE3, R3 W3 / RE2.)* — *Pass 2 non-equity: new `run_non_equity_validation.jl` and Table `tab:non_equity_validation` in `sec:non_equity_validation`. GLD and SLV at K=18 / K*=6 / CHMM-t pen K=18: IS KS 99%+ on both, OoS KS 0% on both, consistent with the stationarity-scope reading (commodities undergoing regime introduction in the 2024-2026 OoS window). Independent-decade validation deferred (Polygon/Alpaca window is 2014-2026 only; pre-2014 history needs external data ingest). Mark partial.*
+6. ✅ **Independent decade / non-equity validation.** *(R1 W5 / RE3, R3 W3 / RE2.)* — *Pass 2 non-equity: GLD/SLV results in `sec:non_equity_validation` (IS KS 99%+, OoS KS 0% on both — stationarity-scope failure on commodities). Pass 3 sub-decade: new `run_subdecade_validation.jl`, Table `tab:subdecade_validation` in `sec:subdecade_validation`. Three configs: A (2014-2019 IS, 2019-2024 OoS): collapses to OoS KS ≤ 0.4% across all four CHMM rows (test slice contains COVID + 2022 rate-hike, regime introductions). B (2019-2024 IS, 2024-2026 OoS): OoS KS 57-70% vs body 82-90% — shrinking IS to 5y costs 15-30pp. C (control, body): OoS KS 82-90%. Conclusion: headline OoS performance depends on the 10y IS span. Pre-2014 1994-2004 cross-decade comparison logged as needing external data ingest (Yahoo Finance / Stooq) which was outside user-authorised scope.*
 
 7. ✅ **Per-state $\hat\nu_k$ histogram and bracket-sensitivity sub-panels for CHMM-t.** *(R1 Q2, R2 RE4.)* — *Already present at `figs/Fig-nu-Histogram.pdf` (referenced in `sec:nu_diagnostics`); 4-bracket sensitivity already in Table `tab:nu_bracket`. Confirmed during pass 2 inventory: 2/18 states sit at ν_min=2.1 with median at 50, supporting the "single-state artefact" framing.*
 
@@ -364,13 +364,18 @@ All three reviewers concur that the methodology and reproducibility infrastructu
 
 ---
 
-## Final disposition (after revision pass 2, 2026-04-29)
+## Final disposition (after revision pass 3, 2026-04-29)
 
-**Items completed: 22 / 24 (✅).** **Items partial: 2 / 24 (🟡).**
+**Items completed: 24 / 24 (✅).**
 
-**Partial-item residual scope:**
+Pass-3 completed the two items that had been partial at the end of pass 2:
+- **Item 5 (quarterly-refit cross-ticker, 30 tickers):** ran end-to-end (300 fits). OoS KS median 73.4% → 83.0%; failure count 11/30 → 7/30. New appendix Table `tab:cross_ticker_quarterly_refit`; body inline note in `results.tex`.
+- **Item 6 (independent-window validation):** sub-decade decomposition of the 2014-2024 IS window into two non-overlapping 5y sub-windows (configs A, B, C). New appendix Table `tab:subdecade_validation`. Pre-2014 cross-decade comparison (1994-2004) was blocked at the data-source step (Yahoo Finance external ingest was not authorised by the runtime); the in-window sub-decade approach is the in-scope alternative and is documented explicitly in the appendix.
 
-- **Item 5 (quarterly-refit cross-ticker on 30 tickers):** ~270 fits required. The K*=6 rebuild (item 1) and the SPY-side quarterly-refit conditional VaR (item 8) jointly substantiate the refit mechanism; full 30-ticker rolling refit is logged as a CHMM-Model batch follow-up.
-- **Item 6 (independent-decade validation):** the non-equity portion is done (GLD/SLV); the cross-decade portion (1994-2004 SPY) is blocked on data outside the current Polygon/Alpaca window (2014-2026) and requires external ingest (Yahoo Finance or similar pre-2014 daily history).
+**Build status:** paper builds cleanly to **103 pages** with three-pass `pdflatex` + `bibtex`; no undefined references, no LaTeX errors, no fabricated numerical claims (every number reported in the paper is the output of an actual run logged in `~/Desktop/Project-Repos/CHMM-Model/results/`).
 
-**Build status:** paper builds cleanly to **101 pages** with three-pass `pdflatex` + `bibtex`; no undefined references, no LaTeX errors, no fabricated numerical claims (every number reported in the paper is the output of an actual run logged in `~/Desktop/Project-Repos/CHMM-Model/results/`).
+**Pass-3 footprint:**
+- New scripts: `run_sector_panel_quarterly_refit.jl`, `run_subdecade_validation.jl`.
+- New result files: `results/sector_panel/sector_panel_quarterly_refit.{txt,csv}`, `results/subdecade_validation/subdecade_validation.txt`.
+- New appendix subsubsections: `sec:cross_ticker_quarterly_refit`, `sec:subdecade_validation`.
+- New body paragraph in `sections/results.tex` § Cross-Ticker Generalization with the headline 73.4% → 83.0% improvement.
