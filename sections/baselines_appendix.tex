@@ -63,6 +63,7 @@ The paper reports headline statistics under a single global seed. We re-run the 
 \small
 \caption{\textbf{Multi-seed Monte Carlo on headline metrics}. Ten global seeds; $N_{\text{paths}} = 250$ per seed (reduced from the headline panel's $1{,}000$ for tractability across $40$ fits, so the seed-to-seed std reported here is an upper bound on the std the headline panel would show at $N_{\text{paths}} = 1{,}000$). Both ACF-MAE columns parallel Table~\ref{tab:model_comparison}: $|G_t|$ for volatility clustering, $G_t$ for linear autocorrelation.}
 \label{tab:multiseed_headline}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{l c c c c c c c}
 \toprule
 Model & IS KS \% & OoS KS \% & sim Kurt & ACF-MAE $|G_t|$ & ACF-MAE $G_t$ & $\text{LR}_{\text{uc}}^{1\%}$ & $\text{LR}_{\text{uc}}^{5\%}$ \\
@@ -72,7 +73,8 @@ CHMM-t & $94.6 \pm 1.2$ & $\mathbf{85.6 \pm 1.9}$ & $13.95 \pm 1.95$ & $0.0518 \
 CHMM-L & $94.4 \pm 1.8$ & $80.8 \pm 3.6$ & $6.71 \pm 0.05$ & $0.0537 \pm 0.0003$ & $0.0171 \pm 0.0001$ & $3.26 \pm 0.00$ & $2.71 \pm 0.59$ \\
 CHMM-GED & $\mathbf{95.9 \pm 1.2}$ & $83.2 \pm 2.7$ & $5.15 \pm 0.09$ & $0.0513 \pm 0.0003$ & $0.0171 \pm 0.0001$ & $2.93 \pm 0.71$ & $3.75 \pm 0.25$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \subsubsection{Block-Bootstrap Baseline}
@@ -301,6 +303,7 @@ Table~\ref{tab:extended_baselines} reports the IS / OoS distributional fidelity,
 \small
 \caption{\textbf{Extended baseline panel}. SPY IS / OoS, $T_{\text{IS}} = 2{,}516$, $T_{\text{OoS}} = 572$, $N_{\text{paths}} = 1{,}000$, $\alpha = 0.05$ for KS. Columns: IS / OoS KS pass rate (\%); IS / OoS AD pass rate (\%); simulated IS excess kurtosis; ACF-MAE on $|G_t|$ (volatility clustering) and on raw $G_t$ (linear autocorrelation, parallel column); pooled-archive Kupiec breach rate (\%) and unconditional likelihood-ratio statistic at the $1\%$ and $5\%$ tails. Raw-ACF-MAE values for SM-CHMM and QuantGAN are reported as ``--'' here pending a full re-run of those baseline scripts; the qualitative reading carries through under the methodology of the other rows (every regime-switching or i.i.d.-emission generator produces a near-zero raw ACF in expectation).}
 \label{tab:extended_baselines}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{l cc cc c cc cc cc}
 \toprule
 & \multicolumn{2}{c}{KS (\%) $\uparrow$} & \multicolumn{2}{c}{AD (\%) $\uparrow$} & Kurt & \multicolumn{2}{c}{ACF-MAE} & \multicolumn{2}{c}{$1\%$ tail} & \multicolumn{2}{c}{$5\%$ tail} \\
@@ -327,7 +330,8 @@ SM-CHMM-L ($K = 18$) & $80.4$ & $69.1$ & $21.0$ & $58.9$ & $6.4$  & $0.0581$ & -
 \midrule
 QuantGAN            & $0.0$  & $0.0$  & $0.0$  & $0.0$  & $2.1$  & $0.0591$ & --       & $1.0$ & $0.01$ & $3.3$ & $3.83$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 First, none of the extended GARCH variants challenges the CHMM family on the joint (KS, ACF) corner. GARCH(1,1)-$t$ is the strongest extended row on KS ($57.3\%$ IS, $80.8\%$ OoS) but its IS excess kurtosis of $15.1$ overshoots the observed $7.7$ by a factor of two and its ACF-MAE of $0.0316$ is below the CHMM's only because the GARCH variance recursion is hard-wired to track conditional volatility; CHMM at $K = 18$ matches GARCH on ACF-MAE within $0.02$ while gaining $36$ to $36.5$ percentage points on IS KS. EGARCH undershoots kurtosis decisively, GJR-GARCH improves on threshold asymmetry but not on the headline gap, and HAR-RV is degenerate on the daily-RV proxy used here (see methods note above).

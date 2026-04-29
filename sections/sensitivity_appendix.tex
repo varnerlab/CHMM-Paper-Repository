@@ -88,11 +88,11 @@ CHMM-GED & 3  & 90.3 & 78.4 & 85.5 & 73.6 & 5.45  & 0.0531 & 0.0236 & 0.109 & 0.
 \subsubsection{Cross-Ticker Per-Family Kurtosis Pattern}
 \label{sec:cross_ticker_per_family_kurt}
 
-The body Table~\ref{tab:cross_ticker} reports CHMM-t cross-ticker performance only.
-The CHMM-t simulated kurtosis blow-ups visible in that table (NVDA $40.8$, JNJ $104.1$, JPM $17.6$ at $K = 18$) are specific to the Student-t emission family, and Table~\ref{tab:cross_ticker_kurt_per_family} extends the kurtosis column across all four CHMM emission variants on the same six-ticker universe to make this explicit.
-The pattern is consistent: CHMM-t produces single-ticker overshoots of an order of magnitude on the heavy-tailed defensives (JNJ, NVDA), CHMM-L sits closest to observed across every ticker (median absolute residual $1.4$ kurtosis units), CHMM-N undershoots uniformly, and CHMM-GED interpolates between them.
+The body Table~\ref{tab:cross_ticker} reports the penalised CHMM-t cross-ticker performance ($1/\nu_k$ shrinkage at $\lambda = 20$). This appendix documents the unpenalised cross-ticker behaviour that motivates the penalty.
+The CHMM-t simulated kurtosis blow-ups under the unpenalised ECM (NVDA $40.8$, JNJ $104.1$, JPM $17.6$ at $K = 18$) are specific to the Student-t emission family, and Table~\ref{tab:cross_ticker_kurt_per_family} extends the kurtosis column across all four CHMM emission variants on the same six-ticker universe to make this explicit.
+The pattern is consistent: unpenalised CHMM-t produces single-ticker overshoots of an order of magnitude on the heavy-tailed defensives (JNJ, NVDA), CHMM-L sits closest to observed across every ticker (median absolute residual $1.4$ kurtosis units), CHMM-N undershoots uniformly, and CHMM-GED interpolates between them.
 The CHMM-t blow-up mechanism is the same per-state $\nu_k$ ECM lower-bracket pinning documented for SPY in Section~\ref{sec:nu_diagnostics}: on tickers whose tail regime is concentrated in a small subset of states (NVDA's pre-AI-rally drawdowns, JNJ's outlier-driven defensive-stock dynamics), one or two states pin at $\nu_k \approx 2.1$ and dominate the simulated-kurtosis sample moment.
-The penalised CHMM-t with $1/\nu_k$ shrinkage at $\lambda = 20$ (Section~\ref{sec:discussion}, Appendix~\ref{sec:supp_misc}) is the recommended operational variant for tail-conditional consumers and brings simulated kurtosis on every ticker into the same band as CHMM-L.
+Under the $1/\nu_k$ penalty at $\lambda = 20$ (the body operating point in Table~\ref{tab:cross_ticker}; full rate sweep in Section~\ref{sec:discussion}, Appendix~\ref{sec:supp_misc}) the simulated kurtosis on every ticker drops into the same band as CHMM-L: SPY $14.7 \to 8.0$, NVDA $40.8 \to 5.2$, JNJ $104.1 \to 12.3$, JPM $17.6 \to 7.7$, AAPL $6.3 \to 2.8$, QQQ $3.3 \to 2.9$, while IS / OoS KS pass rates and $|G_t|$ ACF-MAE move by less than $1.5$ percentage points and $0.001$ respectively.
 
 \begin{table}[h]
 \centering

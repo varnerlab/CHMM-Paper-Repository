@@ -239,6 +239,7 @@ The full per-construction Pipeline~B panel is in Section~\ref{sec:supp_cross_ass
 \small
 \caption{\textbf{Cross-asset dependence summary} (Pipeline~B; CHMM-N marginals at $K = 18$; $200$ paths; seed \texttt{20260422}). Median per-asset KS pass rate (\%) and off-diagonal MAE of the simulated correlation matrix vs.\ observed. Bold marks the column winner. The Student-t copula at $\nu^\star = 6$ is the strongest dependence layer on the two IS columns; on OoS the Gaussian copula attains marginally lower off-diagonal MAE ($0.202$ vs.\ $0.209$) while the truncated C-vine sits between the elliptical copulas and the SIM baseline. Full per-asset detail is in Section~\ref{sec:supp_cross_asset}; the C-vine edge summary is in Table~\ref{tab:cvine_edges}.}
 \label{tab:cross_asset_supp_summary}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{l c c c c}
 \toprule
 & Median IS KS & Median OoS KS & Off-diag MAE IS & Off-diag MAE OoS \\
@@ -248,5 +249,6 @@ Gaussian copula          & $97.8$  & $\mathbf{87.5}$  & $0.030$ & $\mathbf{0.202
 Student-t copula ($\nu^\star = 6$) & $\mathbf{98.8}$  & $85.8$  & $\mathbf{0.027}$ & $0.209$ \\
 Truncated C-vine (root SPY) & $97.2$  & $86.0$  & $0.068$ & $0.235$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}

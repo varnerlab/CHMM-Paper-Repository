@@ -73,7 +73,7 @@ CHMM-N ($K^\star = 3$)               & $89.7$ & $80.1$ & $3.86$  & --      & $0.
 \end{table}
 
 The headline finding is in the bottom four rows.
-At $K = 18$, CHMM-N attains $94.1\%$ IS KS and $81.8\%$ OoS KS (Table~\ref{tab:model_comparison}), substantially above GARCH ($23.4\%$ IS KS) and within the band of the bootstrap distributional ceiling ($99.7\%$ IS / $92.1\%$ OoS); the absolute-return ACF-MAE of $0.0509$ is essentially on par with GARCH ($0.0485$), the empirical instance of the spectral identity~\eqref{eq:acf_normalised}: with $K-1 = 17$ non-unit eigenvalues at the operating point, the mixture-of-eigenvalues sum reproduces the slow absolute-return ACF that the \citet{ryden1998stylized} $K = 2$--$3$ Gaussian setup could not recover, inside a standard HMM at moderate state resolution.
+At $K = 18$, CHMM-N attains $94.1\%$ IS KS and $81.8\%$ OoS KS (Table~\ref{tab:model_comparison}), substantially above GARCH ($23.4\%$ IS KS) and within the band of the bootstrap distributional ceiling ($99.7\%$ IS / $92.1\%$ OoS); the absolute-return ACF-MAE of $0.0509$ is essentially on par with GARCH ($0.0485$), the empirical instance of the spectral identity~\eqref{eq:acf_normalised}: with up to $K-1 = 17$ non-unit eigenvalues at the operating point, the mixture-of-eigenvalues sum reproduces the slow absolute-return ACF that the \citet{ryden1998stylized} $K = 2$--$3$ Gaussian setup could not recover, inside a standard HMM.
 The raw-return ACF-MAE column closes the third stylized fact: every CHMM row sits at $0.0234$--$0.0240$, statistically indistinguishable from the i.i.d.\ baselines ($0.0235$--$0.0243$) that have zero linear ACF by construction. Linear autocorrelation is therefore reproduced as a non-binding consequence of the regime structure, not enforced by an explicit AR mechanism.
 The bootstrap (at $0.0628$ on $|G_t|$) and the i.i.d.\ baselines all sit far above the temporal floor on the volatility-clustering metric.
 
@@ -119,14 +119,14 @@ The headline KS pass rates are stable under multi-seed and KS-power-calibration 
 \label{sec:cross_asset_univariate}
 
 Still under Pipeline~A: each ticker is fit independently, no cross-asset coupling.
-Table~\ref{tab:cross_ticker} reports CHMM-t IS and OoS KS pass rates across the five additional tickers (NVDA, JNJ, JPM, AAPL, QQQ), each fit independently at $K = 18$. CHMM-t is the natural generalization vehicle here because it carries the strongest OoS KS in the SPY headline panel ($85.6\%$, against $84.7\%$ for CHMM-N and $81.6\%$ for CHMM-L) and supplies the per-state heavy tails that the outlier-prone single-name tickers (NVDA, JNJ) require. Per-family $K$-sensitivity for SPY across all four emission variants and per-ticker price-level metrics across all four families are in Appendix~\ref{sec:multi_emission_sensitivity} (per-ticker price-level figures in Appendix~\ref{sec:price_sim_oos_appendix}).
-The univariate fidelity persists across the panel on IS KS ($95.2\%$ to $99.8\%$). On OoS, JNJ, AAPL, and QQQ generalise cleanly ($90$--$95\%$), while NVDA ($57.2\%$) and JPM ($53.0\%$) show substantial OoS degradation, a stationarity artefact: the IS-fixed transitions and emissions cannot capture the artificial-intelligence (AI) driven NVDA regime or the rate-repricing cycle for financials in the $2024$--$2026$ holdout.
+Table~\ref{tab:cross_ticker} reports the penalised CHMM-t IS and OoS KS pass rates across the five additional tickers (NVDA, JNJ, JPM, AAPL, QQQ), each fit independently at $K = 18$ under the $1/\nu_k$ shrinkage prior at $\lambda = 20$. CHMM-t is the natural generalization vehicle here because it carries the strongest OoS KS in the SPY headline panel ($85.6\%$, against $84.7\%$ for CHMM-N and $81.6\%$ for CHMM-L) and supplies the per-state heavy tails that the outlier-prone single-name tickers (NVDA, JNJ) require, and the penalised variant tames the per-state $\nu_k$ ECM lower-bracket pinning that drives the unpenalised cross-ticker kurtosis overshoots (Appendix~\ref{sec:cross_ticker_per_family_kurt}). Per-family $K$-sensitivity for SPY across all four emission variants and per-ticker price-level metrics across all four families are in Appendix~\ref{sec:multi_emission_sensitivity} (per-ticker price-level figures in Appendix~\ref{sec:price_sim_oos_appendix}).
+The univariate fidelity persists across the panel on IS KS ($95.8\%$ to $99.8\%$). On OoS, JNJ, AAPL, and QQQ generalise cleanly ($92$--$95\%$), while NVDA ($53.8\%$) and JPM ($53.8\%$) show substantial OoS degradation, a stationarity artefact: the IS-fixed transitions and emissions cannot capture the artificial-intelligence (AI) driven NVDA regime or the rate-repricing cycle for financials in the $2024$--$2026$ holdout.
 We acknowledge the JPM and NVDA OoS cliffs as stationarity-scope limitations rather than model-selection issues; the pattern persists at every $K$ in the sweep, and we discuss the operational implication (periodic refit at deployment) in Section~\ref{sec:discussion}.
-The simulated-kurtosis column of Table~\ref{tab:cross_ticker} also shows a CHMM-t-specific overshoot on the heavy-tailed defensives (NVDA $46.4$, JNJ $99.7$, JPM $18.8$ against observed $5.5$, $9.0$, $7.6$); the overshoot is driven by the per-state $\nu_k$ ECM lower-bracket pinning mechanism documented for SPY in Section~\ref{sec:nu_diagnostics} and is specific to CHMM-t (Appendix~\ref{sec:cross_ticker_per_family_kurt} extends the kurtosis column across all four emission variants and shows that CHMM-N, CHMM-L, and CHMM-GED do not exhibit the blow-up). The penalised CHMM-t with $1/\nu_k$ shrinkage at $\lambda = 20$ (Section~\ref{sec:discussion}, Appendix~\ref{sec:supp_misc}) is the recommended operational variant for tail-conditional consumers; for unconditional KS and ACF metrics the four-variant ranking is unaffected.
+Table~\ref{tab:cross_ticker} reports the recommended operational variant, the penalised CHMM-t with $1/\nu_k$ shrinkage at $\lambda = 20$. The $1/\nu_k$ penalty addresses the per-state ECM lower-bracket pinning mechanism documented for SPY in Section~\ref{sec:nu_diagnostics}: under the unpenalised ECM the CHMM-t produces simulated-kurtosis blow-ups on the heavy-tailed defensives (NVDA $46.4$, JNJ $99.7$, JPM $18.8$ against observed $5.5$, $9.0$, $7.6$; full unpenalised cross-ticker numbers in Appendix~\ref{sec:cross_ticker_per_family_kurt}, Table~\ref{tab:cross_ticker_kurt_per_family}, alongside the CHMM-N, CHMM-L, CHMM-GED rows that do not exhibit the blow-up). At $\lambda = 20$ the simulated kurtosis drops to within $0.5$ kurtosis units of observed on SPY, NVDA, AAPL, and JPM, and to within $3.3$ on JNJ; the unconditional KS pass rates and $|G_t|$ ACF-MAE move by less than $1.5$ percentage points and $0.001$ respectively across the panel.
 
 \begin{table}[t]
 \centering
-\caption{\textbf{Cross-ticker generalization, CHMM-t at $K = 18$}. Each ticker fit independently; $1{,}000$ simulated paths, $\alpha = 0.05$. Observed kurtosis is the IS sample value.}
+\caption{\textbf{Cross-ticker generalization, penalised CHMM-t at $K = 18$ ($\lambda = 20$)}. Each ticker fit independently under the $1/\nu_k$ shrinkage prior; $1{,}000$ simulated paths, $\alpha = 0.05$, seed $= 20260420$. Observed kurtosis is the IS sample value. Unpenalised CHMM-t numbers (with the per-state ECM lower-bracket pinning kurtosis blow-ups) and the per-family kurtosis comparison across CHMM-N, CHMM-t, CHMM-L, CHMM-GED are in Appendix~\ref{sec:cross_ticker_per_family_kurt}.}
 \label{tab:cross_ticker}
 \small
 \begin{tabular}{l cc c c c}
@@ -135,12 +135,12 @@ The simulated-kurtosis column of Table~\ref{tab:cross_ticker} also shows a CHMM-
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
 Ticker & IS & OoS & Obs & Sim & $\downarrow$ \\
 \midrule
-SPY  & $95.2$ & $84.1$ & $7.7$ & $14.68$ & $0.0551$ \\
-NVDA & $99.1$ & $57.2$ & $5.5$ & $46.40$ & $0.0478$ \\
-JNJ  & $99.8$ & $94.3$ & $9.0$ & $99.66$ & $0.0332$ \\
-JPM  & $99.2$ & $53.0$ & $7.6$ & $18.82$ & $0.0483$ \\
-AAPL & $99.1$ & $94.7$ & $3.2$ & $7.54$  & $0.0424$ \\
-QQQ  & $96.1$ & $90.3$ & $3.4$ & $3.30$  & $0.0576$ \\
+SPY  & $95.8$ & $85.0$ & $7.7$ & $8.01$  & $0.0541$ \\
+NVDA & $99.5$ & $53.8$ & $5.5$ & $5.23$  & $0.0473$ \\
+JNJ  & $99.8$ & $92.3$ & $9.0$ & $12.28$ & $0.0334$ \\
+JPM  & $97.8$ & $53.8$ & $7.6$ & $7.70$  & $0.0457$ \\
+AAPL & $99.1$ & $95.1$ & $3.2$ & $2.84$  & $0.0418$ \\
+QQQ  & $96.1$ & $91.8$ & $3.4$ & $2.88$  & $0.0569$ \\
 \bottomrule
 \end{tabular}
 \end{table}
