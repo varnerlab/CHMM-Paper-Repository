@@ -296,19 +296,19 @@ Figure~\ref{fig:transition_families} shows the $\log_{10}$ transition-matrix hea
 \end{figure}
 
 \paragraph{Sample simulated trajectories.}
-Figure~\ref{fig:trajectory_is_oos} overlays one simulated SPY return path against the observed series under CHMM-N at $K = 18$, separately for the IS and OoS windows. Both panels show the simulated path tracking the volatility-clustering envelope of the observed series at the same overall amplitude; the OoS panel covers the shorter $T_{\text{OoS}} = 572$-day held-out window. CHMM-N is shown as the headline reference; the per-family marginal differences are governed by the emission family rather than by the trajectory representation, and are visualised more directly in Figure~\ref{fig:emissions_families}.
+Figure~\ref{fig:trajectory_is_oos} overlays one simulated SPY return path against the observed series under CHMM-N at $K = 18$, separately for the IS and OoS windows. Both panels show the simulated path tracking the volatility-clustering envelope of the observed series at the same overall amplitude. CHMM-N is shown as the headline reference; per-family marginal differences are governed by the emission family rather than by the trajectory representation, and are visualised more directly in Figure~\ref{fig:emissions_families}.
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.95\textwidth}\centering
+\begin{subfigure}[b]{0.98\textwidth}\centering
 \includegraphics[width=\textwidth]{figs/Fig-Trajectory-IS-K18.pdf}
-\caption{In-sample window (first $500$ trading days of the IS window).}
+\caption{In-sample window, full $T_{\text{IS}} = 2{,}516$ trading days.}
 \end{subfigure}\\[0.6em]
-\begin{subfigure}[b]{0.95\textwidth}\centering
+\begin{subfigure}[b]{0.98\textwidth}\centering
 \includegraphics[width=\textwidth]{figs/Fig-Trajectory-OoS-K18.pdf}
-\caption{Out-of-sample window (first $500$ trading days of the OoS window, or full window if shorter).}
+\caption{Out-of-sample window, full $T_{\text{OoS}} = 572$ trading days.}
 \end{subfigure}
-\caption{Sample simulated return trajectory at $K = 18$ for CHMM-N on SPY (Pipeline~A). Red is the observed series; blue is one simulated path drawn from the fit. Panel~(a): in-sample window. Panel~(b): out-of-sample window. Both panels share the same y-axis convention (annualized excess log return $G_t$).}
+\caption{Sample simulated return trajectory at $K = 18$ for CHMM-N on SPY (Pipeline~A). Orange is the observed series; blue is one simulated path drawn from the fit. Panel~(a): full in-sample window. Panel~(b): full out-of-sample window. Both panels share the same y-axis convention (annualized excess log return $G_t$).}
 \label{fig:trajectory_is_oos}
 \end{figure}
 
