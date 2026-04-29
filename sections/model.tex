@@ -3,12 +3,14 @@
 
 The single-asset analysis uses daily SPDR S\&P~500 ETF (SPY) prices from January~3, 2014 to January~3, 2024 (a ten-year training window, $T_{\text{IS}} = 2{,}516$), with the period from January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 572$) held out.
 Cross-ticker generalization additionally covers NVIDIA (NVDA), Johnson \& Johnson (JNJ), JPMorgan Chase (JPM), Apple (AAPL), and the Invesco QQQ Trust (QQQ).
+Prices are split-adjusted but not dividend-adjusted; a full description of the data sources and the Polygon-to-Alpaca extension boundary is given in the Data and Software Acknowledgments at the end of the manuscript.
 For ticker $i$ and trading day $j$, the annualized excess growth rate is
 \begin{equation}
     G_{i,j} \equiv \frac{1}{\Delta t} \ln\!\left(\frac{P_{i,j}}{P_{i,j-1}}\right) - r_f,
     \qquad \Delta t = 1/252, \quad r_f = 0.
     \label{eq:growth_rate}
 \end{equation}
+Throughout, $P_{i,j}$ is the daily session volume-weighted average price (VWAP) reported by the data provider, rather than the closing print; the choice is uniform across all tickers, all windows, and all runners, so every reported metric (Kolmogorov--Smirnov pass rate, $\text{ACF}(|G_t|)$ mean absolute error, kurtosis, Value-at-Risk and Expected-Shortfall envelopes, cross-asset off-diagonal MAE) is computed on VWAP-to-VWAP log returns.
 
 The empirical study is organised along two pipelines, illustrated in Figure~\ref{fig:pipeline_schematic}. \emph{Pipeline~A} fits a CHMM to each ticker independently and evaluates single-asset marginal, tail, and temporal metrics; this is the scope of the SPY headline panel (Section~\ref{sec:model_comparison}), the cross-ticker generalisation (Section~\ref{sec:cross_asset_univariate}), and the unconditional VaR / ES envelope (Section~\ref{sec:utility}). \emph{Pipeline~B} reuses the per-asset Pipeline-A CHMM fits as \emph{marginals} and injects cross-asset \emph{dependence} through the rank-based Student-t copula of Section~\ref{sec:cross_asset_methods}, evaluated in Section~\ref{sec:cross_asset}.
 

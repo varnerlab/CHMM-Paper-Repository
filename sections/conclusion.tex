@@ -10,6 +10,9 @@ Skew-heavy-tailed emissions, explicit-duration semi-Markov sojourns, and operati
 The simulation scripts and data to reproduce the paper are available under an MIT license at \url{https://github.com/altashly1/CHMM-paper}.
 The companion Julia package \texttt{CHMM-Model.jl} is released alongside this paper at \url{https://github.com/altashly1/CHMM-Model}; the public API listed in Appendix~\ref{sec:supp_chmm_api} regenerates every table and figure from a single seed root under Julia $\geq 1.12$.
 
+\paragraph{Data and software acknowledgments.}
+Daily open/high/low/close/volume bars for the S\&P~500 constituent universe over January~3,~2014 through November~18,~2025 were obtained from Polygon.io via the Massive data platform, to which we are grateful for research-tier historical access. The held-out window was extended through April~20,~2026 using free-tier daily bars from the Alpaca Markets historical-data API (IEX consolidated feed); we thank Alpaca Markets for making this access available at no cost to academic users. Both sources provide split-adjusted (but not dividend-adjusted) prices, and the two segments were stitched preserving a common OHLCV schema. The Alpaca data was pulled using the open-source Julia SDK \texttt{alpaca-markets-sdk} developed in the Varner Lab and released under MIT license at \url{https://github.com/varnerlab/alpaca-markets-sdk}.
+
 \paragraph{Conflict of interest.}
 The authors declare no competing interests.
 
