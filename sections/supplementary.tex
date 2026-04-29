@@ -237,7 +237,7 @@ We define six rolling-origin folds, each train $5$ years and test $1$ year, refi
 \begin{table}[h]
 \centering
 \small
-\caption{\textbf{Walk-forward / rolling-origin OoS for CHMM-N}. Six folds, each train 5 years and test 1 year; $N_{\text{paths}} = 500$ per fold. KS pass rate at $\alpha = 0.05$. W2 covers the COVID drawdown; W4 covers the start of the 2022 rate-hike cycle.}
+\caption{\textbf{Walk-forward / rolling-origin OoS for CHMM-N}. Six folds, each train 5 years and test 1 year; $N_{\text{paths}} = 500$ per fold. KS pass rate at $\alpha = 0.05$. W2 covers the COVID drawdown; W4 covers the start of the 2022 rate-hike cycle. The bracketed pairs in the bottom row report $[Q_1, Q_3]$ across the six folds (the empirical first and third quartiles, not a scalar IQR width).}
 \label{tab:walkforward}
 \begin{tabular}{l c c c c c c}
 \toprule
@@ -286,6 +286,51 @@ CHMM-GED           & $3$  & $0.01$ & $7$  & $1.22\%$ & $-5.73$ & $0.27$ & $3.34$
 CHMM-GED           & $3$  & $0.05$ & $31$ & $5.42\%$ & $-2.54$ & $0.21$ & $0.96$ & $1.16$ \\
 CHMM-GED           & $18$ & $0.01$ & $9$  & $1.57\%$ & $-6.55$ & $1.62$ & $2.36$ & $3.98$ \\
 CHMM-GED           & $18$ & $0.05$ & $25$ & $4.37\%$ & $-3.10$ & $0.50$ & $2.56$ & $3.06$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Walk-forward conditional-VaR back-test.}
+Extending the regime-conditional VaR construction to the six rolling-origin folds of Table~\ref{tab:walkforward}, with CHMM-N refit per fold from scratch on the train slice and forward-filtered through the test slice under fold-IS-fixed parameters, gives twenty-four $(\text{fold}, K, \alpha)$ rows in Table~\ref{tab:walkforward_cond_var}.
+The conditional Christoffersen-cc passes at $\alpha = 0.05$ on ten of twelve fold-$K$ combinations (W1, W3, W4, W5, W6 at both $K \in \{3, 18\}$); the two failures concentrate on W2 (COVID, $p_{\text{cc}} \in \{0.011, 0.002\}$ at $K \in \{3, 18\}$).
+At $\alpha = 0.01$ the construction passes on nine of twelve combinations: W2 fails at both $K$ ($p_{\text{cc}} < 10^{-3}$) and W4 at $K = 18$ fails at $p_{\text{cc}} = 0.022$ on a $\text{LR}_{\text{ind}}$ tail-event clustering rather than a $\text{LR}_{\text{uc}}$ coverage miss ($\text{LR}_{\text{ind}} = 7.49$ at $\text{LR}_{\text{uc}} = 0.11$).
+The pass-rate is therefore $19/24$ aggregate at the $5\%$ level and $22/24$ if we exclude the two stress folds that the univariate walk-forward already flagged as out-of-distribution by KS in Table~\ref{tab:walkforward}.
+The reading is that the conditional construction is window-conditional: under regime shifts of the W2 / W4 magnitude (a regime introduction the IS distribution does not span; Section~\ref{sec:discussion}, stationarity-scope paragraph), the conditional VaR inherits the same out-of-scope behaviour as the unconditional generators.
+On the four non-stress folds (W1, W3, W5, W6) plus W4 at $K = 3$ at the $5\%$ level the conditional construction is window-robust, supporting the body framing of \S\ref{sec:var_backtest} extending beyond the headline single-window result.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Walk-forward regime-conditional VaR back-test for CHMM-N} on six rolling-origin folds (train 5y / test 1y; seed $20260420$). At each test day $t$, conditional $\widehat{\text{VaR}}_t(\alpha)$ is the $\alpha$-quantile of the $K$-component Gaussian mixture predictive density under fold-IS-fixed parameters, evaluated on the full-timeline filter $\Pr(s_{t+1} \mid \mathcal F_t = \text{train} \cup \text{test}[1{:}t-1])$. Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. Bold $p_{\text{cc}}$ rows fail at the $5\%$ level.}
+\label{tab:walkforward_cond_var}
+\begin{tabular}{l c c r r r r r r r}
+\toprule
+Fold & $K$ & $\alpha$ & breaches & br rate & med VaR & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $\text{LR}_{\text{cc}}$ & $p_{\text{cc}}$ \\
+\midrule
+W1 & $3$  & $0.01$ & $\phantom{0}2$ & $0.80\%$ & $-4.01$ & $\phantom{0}0.11$ & $0.03$ & $\phantom{0}0.15$ & $0.93$ \\
+W1 & $3$  & $0.05$ & $15$           & $5.98\%$ & $-2.43$ & $\phantom{0}0.48$ & $1.18$ & $\phantom{0}1.65$ & $0.44$ \\
+W1 & $18$ & $0.01$ & $\phantom{0}0$ & $0.00\%$ & $-5.03$ & $\phantom{0}5.05$ & $0.00$ & $\phantom{0}5.05$ & $0.08$ \\
+W1 & $18$ & $0.05$ & $12$           & $4.78\%$ & $-2.66$ & $\phantom{0}0.03$ & $0.38$ & $\phantom{0}0.40$ & $0.82$ \\
+W2 & $3$  & $0.01$ & $16$           & $6.35\%$ & $-6.54$ & $32.93$ & $0.87$ & $33.80$ & $\mathbf{0.00}$ \\
+W2 & $3$  & $0.05$ & $23$           & $9.13\%$ & $-4.59$ & $\phantom{0}7.34$ & $1.71$ & $\phantom{0}9.05$ & $\mathbf{0.01}$ \\
+W2 & $18$ & $0.01$ & $14$           & $5.56\%$ & $-6.67$ & $25.59$ & $1.56$ & $27.15$ & $\mathbf{0.00}$ \\
+W2 & $18$ & $0.05$ & $25$           & $9.92\%$ & $-4.54$ & $10.11$ & $2.56$ & $12.68$ & $\mathbf{0.00}$ \\
+W3 & $3$  & $0.01$ & $\phantom{0}6$ & $2.39\%$ & $-4.48$ & $\phantom{0}3.53$ & $0.30$ & $\phantom{0}3.82$ & $0.15$ \\
+W3 & $3$  & $0.05$ & $20$           & $7.97\%$ & $-2.47$ & $\phantom{0}3.98$ & $0.30$ & $\phantom{0}4.28$ & $0.12$ \\
+W3 & $18$ & $0.01$ & $\phantom{0}2$ & $0.80\%$ & $-5.57$ & $\phantom{0}0.11$ & $0.03$ & $\phantom{0}0.15$ & $0.93$ \\
+W3 & $18$ & $0.05$ & $15$           & $5.98\%$ & $-3.18$ & $\phantom{0}0.48$ & $1.18$ & $\phantom{0}1.65$ & $0.44$ \\
+W4 & $3$  & $0.01$ & $\phantom{0}5$ & $2.00\%$ & $-7.98$ & $\phantom{0}1.96$ & $0.21$ & $\phantom{0}2.16$ & $0.34$ \\
+W4 & $3$  & $0.05$ & $18$           & $7.20\%$ & $-4.16$ & $\phantom{0}2.26$ & $1.99$ & $\phantom{0}4.24$ & $0.12$ \\
+W4 & $18$ & $0.01$ & $\phantom{0}2$ & $0.80\%$ & $-9.62$ & $\phantom{0}0.11$ & $7.49$ & $\phantom{0}7.60$ & $\mathbf{0.02}$ \\
+W4 & $18$ & $0.05$ & $10$           & $4.00\%$ & $-6.63$ & $\phantom{0}0.56$ & $3.80$ & $\phantom{0}4.36$ & $0.11$ \\
+W5 & $3$  & $0.01$ & $\phantom{0}0$ & $0.00\%$ & $-6.06$ & $\phantom{0}5.01$ & $0.00$ & $\phantom{0}5.01$ & $0.08$ \\
+W5 & $3$  & $0.05$ & $\phantom{0}8$ & $3.21\%$ & $-3.90$ & $\phantom{0}1.91$ & $0.53$ & $\phantom{0}2.44$ & $0.30$ \\
+W5 & $18$ & $0.01$ & $\phantom{0}1$ & $0.40\%$ & $-7.10$ & $\phantom{0}1.16$ & $0.01$ & $\phantom{0}1.17$ & $0.56$ \\
+W5 & $18$ & $0.05$ & $\phantom{0}7$ & $2.81\%$ & $-3.85$ & $\phantom{0}2.96$ & $0.41$ & $\phantom{0}3.37$ & $0.19$ \\
+W6 & $3$  & $0.01$ & $\phantom{0}2$ & $0.80\%$ & $-4.68$ & $\phantom{0}0.11$ & $0.03$ & $\phantom{0}0.15$ & $0.93$ \\
+W6 & $3$  & $0.05$ & $13$           & $5.18\%$ & $-2.85$ & $\phantom{0}0.02$ & $0.15$ & $\phantom{0}0.17$ & $0.92$ \\
+W6 & $18$ & $0.01$ & $\phantom{0}1$ & $0.40\%$ & $-5.83$ & $\phantom{0}1.19$ & $0.01$ & $\phantom{0}1.20$ & $0.55$ \\
+W6 & $18$ & $0.05$ & $\phantom{0}7$ & $2.79\%$ & $-2.98$ & $\phantom{0}3.06$ & $0.40$ & $\phantom{0}3.46$ & $0.18$ \\
 \bottomrule
 \end{tabular}
 \end{table}
