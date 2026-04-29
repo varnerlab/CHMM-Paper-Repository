@@ -61,6 +61,57 @@ The double sum is computed in $O(N \log N)$ via the sorted-ensemble identity $\s
 
 For pairwise comparison we report a Diebold-Mariano test on the per-$t$ loss differential $d_t = \widehat{\text{CRPS}}_t^A - \widehat{\text{CRPS}}_t^B$ with a Newey-West HAC variance under a Bartlett kernel and bandwidth $h = \lfloor T_{\text{OoS}}^{1/3} \rfloor = 8$. Two-sided $p$-values are reported under the standard-normal null. The body claim of Section~\ref{sec:model_comparison} is: CHMM ties or beats every benchmark on mean OoS CRPS, with Gaussian i.i.d.\ the only significantly worse comparator.
 
+\subsubsection{Christoffersen Conditional-Coverage Panel (Companion to Section~\ref{sec:var_backtest})}
+\label{sec:christoffersen_supp}
+
+The body Section~\ref{sec:var_backtest} reports the unconditional Kupiec $\text{LR}_{\text{uc}}$ statistic. This appendix reports the full Christoffersen \cite{christoffersen1998evaluating} panel: $\text{LR}_{\text{uc}}$ (unconditional coverage), $\text{LR}_{\text{ind}}$ (breach independence), and $\text{LR}_{\text{cc}} = \text{LR}_{\text{uc}} + \text{LR}_{\text{ind}}$ (joint conditional coverage), at $\alpha \in \{0.01, 0.05\}$ on the SPY IS and OoS windows. The breach series is constructed from the pooled-archive VaR threshold (the $\alpha$-quantile of $\mathrm{vec}(\text{sim archive})$ across paths and time), then $\text{br}_t = (R_t \le \widehat{\text{VaR}}_\alpha)$.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Christoffersen conditional-coverage VaR back-test} (SPY, seed = $20260420$, $K = 18$, $1{,}000$ simulated paths). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. ``br rate'' is the empirical breach rate; $\text{LR}_{\text{uc}}$ is the Kupiec statistic ($\sim\chi^2_1$ under correct unconditional coverage); $\text{LR}_{\text{ind}}$ is the Christoffersen independence statistic ($\sim\chi^2_1$ under independent breaches); $\text{LR}_{\text{cc}} = \text{LR}_{\text{uc}} + \text{LR}_{\text{ind}}$ is the joint conditional-coverage statistic ($\sim\chi^2_2$). PASS if statistic is below critical. Every unconditional generator (i.i.d.\ bootstrap, GARCH, and all four CHMM variants) rejects independence on OoS at $\alpha = 0.05$, consistent with breach clustering driven by volatility-clustering in $R_{\text{oos}}$ rather than a CHMM-specific mis-specification of conditional dynamics.}
+\label{tab:christoffersen_var}
+\begin{tabular}{l l c r r r r r r r r}
+\toprule
+& & & & & \multicolumn{2}{c}{Kupiec} & \multicolumn{2}{c}{Christ.\ ind} & \multicolumn{2}{c}{Christ.\ cc} \\
+\cmidrule(lr){6-7}\cmidrule(lr){8-9}\cmidrule(lr){10-11}
+Model & Win & $\alpha$ & breaches & br rate & $\text{LR}_{\text{uc}}$ & $p$ & $\text{LR}_{\text{ind}}$ & $p$ & $\text{LR}_{\text{cc}}$ & $p$ \\
+\midrule
+Bootstrap & IS  & $0.01$ & $26$  & $1.03\%$ & $0.03$ & $0.87$ & $15.28$ & $0.00$ & $15.31$ & $0.00$ \\
+Bootstrap & IS  & $0.05$ & $126$ & $5.01\%$ & $0.00$ & $0.99$ & $56.46$ & $0.00$ & $56.46$ & $0.00$ \\
+Bootstrap & OoS & $0.01$ & $5$   & $0.87\%$ & $0.10$ & $0.76$ & $13.18$ & $0.00$ & $13.28$ & $0.00$ \\
+Bootstrap & OoS & $0.05$ & $19$  & $3.32\%$ & $3.83$ & $0.05$ & $5.26$  & $0.02$ & $9.08$  & $0.01$ \\
+\midrule
+GARCH(1,1) & IS  & $0.01$ & $31$  & $1.23\%$ & $1.28$ & $0.26$ & $12.45$ & $0.00$ & $13.72$ & $0.00$ \\
+GARCH(1,1) & IS  & $0.05$ & $139$ & $5.52\%$ & $1.41$ & $0.24$ & $45.38$ & $0.00$ & $46.79$ & $0.00$ \\
+GARCH(1,1) & OoS & $0.01$ & $6$   & $1.05\%$ & $0.01$ & $0.91$ & $20.87$ & $0.00$ & $20.89$ & $0.00$ \\
+GARCH(1,1) & OoS & $0.05$ & $24$  & $4.20\%$ & $0.82$ & $0.37$ & $5.87$  & $0.02$ & $6.69$  & $0.04$ \\
+\midrule
+CHMM-N & IS  & $0.01$ & $20$  & $0.79\%$ & $1.15$ & $0.28$ & $12.80$ & $0.00$ & $13.95$ & $0.00$ \\
+CHMM-N & IS  & $0.05$ & $123$ & $4.89\%$ & $0.07$ & $0.80$ & $47.33$ & $0.00$ & $47.40$ & $0.00$ \\
+CHMM-N & OoS & $0.01$ & $3$   & $0.52\%$ & $1.58$ & $0.21$ & $18.98$ & $0.00$ & $20.56$ & $0.00$ \\
+CHMM-N & OoS & $0.05$ & $19$  & $3.32\%$ & $3.83$ & $0.05$ & $5.26$  & $0.02$ & $9.08$  & $0.01$ \\
+\midrule
+CHMM-t & IS  & $0.01$ & $22$  & $0.87\%$ & $0.42$ & $0.52$ & $11.62$ & $0.00$ & $12.04$ & $0.00$ \\
+CHMM-t & IS  & $0.05$ & $127$ & $5.05\%$ & $0.01$ & $0.91$ & $55.54$ & $0.00$ & $55.55$ & $0.00$ \\
+CHMM-t & OoS & $0.01$ & $4$   & $0.70\%$ & $0.58$ & $0.45$ & $15.53$ & $0.00$ & $16.12$ & $0.00$ \\
+CHMM-t & OoS & $0.05$ & $20$  & $3.50\%$ & $3.03$ & $0.08$ & $4.71$  & $0.03$ & $7.74$  & $0.02$ \\
+\midrule
+CHMM-L & IS  & $0.01$ & $19$  & $0.76\%$ & $1.66$ & $0.20$ & $13.44$ & $0.00$ & $15.11$ & $0.00$ \\
+CHMM-L & IS  & $0.05$ & $134$ & $5.33\%$ & $0.55$ & $0.46$ & $49.43$ & $0.00$ & $49.98$ & $0.00$ \\
+CHMM-L & OoS & $0.01$ & $2$   & $0.35\%$ & $3.26$ & $0.07$ & $9.15$  & $0.00$ & $12.41$ & $0.00$ \\
+CHMM-L & OoS & $0.05$ & $20$  & $3.50\%$ & $3.03$ & $0.08$ & $4.71$  & $0.03$ & $7.74$  & $0.02$ \\
+\midrule
+CHMM-GED & IS  & $0.01$ & $20$  & $0.79\%$ & $1.15$ & $0.28$ & $12.80$ & $0.00$ & $13.95$ & $0.00$ \\
+CHMM-GED & IS  & $0.05$ & $126$ & $5.01\%$ & $0.00$ & $0.99$ & $56.46$ & $0.00$ & $56.46$ & $0.00$ \\
+CHMM-GED & OoS & $0.01$ & $2$   & $0.35\%$ & $3.26$ & $0.07$ & $9.15$  & $0.00$ & $12.41$ & $0.00$ \\
+CHMM-GED & OoS & $0.05$ & $19$  & $3.32\%$ & $3.83$ & $0.05$ & $5.26$  & $0.02$ & $9.08$  & $0.01$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The headline reads as follows. On the unconditional (Kupiec) leg every CHMM variant passes at both levels on both windows; the $\text{LR}_{\text{uc}}$ statistic for the four CHMM rows at $\alpha = 0.05$ on OoS clusters at $3.03$--$3.83$ (just below the $\chi^2_1$ critical value $3.841$), reflecting the integer-breach grid at $T_{\text{OoS}} = 572$ noted in the body table caption. On the independence leg every unconditional generator in the panel (bootstrap, GARCH, and all four CHMM variants) rejects: $\text{LR}_{\text{ind}}$ is in the range $4.71$--$56.46$ across rows. This is structural rather than CHMM-specific. Volatility-clustering in $R_{\text{oos}}$ produces persistent regimes of high and low realised volatility, the OoS-window breaches concentrate inside the high-volatility regime, and a constant-across-$t$ VaR threshold (the construction every unconditional generator uses) cannot track that timing. The natural fix is a regime-conditional VaR that propagates the CHMM latent-state forecast $\Prob(s_{t+1}\,|\,\text{history}_t)$ through the per-state emission-mixture; this is operationally the conditional-VaR companion-paper direction noted in Section~\ref{sec:discussion}.
+
 \subsubsection{VaR / ES Envelope Visualization (Companion to Table~\ref{tab:var_es})}
 \label{sec:var_es_supp}
 

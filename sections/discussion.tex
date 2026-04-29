@@ -1,4 +1,4 @@
-A continuous HMM trained by Baum-Welch at moderate state resolution ($K = 18$) reproduces the three Cont stylized facts simultaneously on SPY ($93.8\%$ IS KS, $84.2\%$ OoS KS, ACF-MAE within $0.003$ of GARCH). Four emission variants share the same scaffold and land at four distinct points on the kurtosis axis without retuning $K$ or the transition structure: CHMM-N undershoots, CHMM-L matches observed kurtosis cleanly without a shape parameter, CHMM-t overshoots while supplying per-state heavy tails for tail-conditional consumers, and CHMM-GED nests Gaussian and Laplace as boundary cases ($p_k = 2$ and $p_k = 1$, respectively) and lets the data choose each state's kurtosis adaptively on the continuous shape axis.
+A continuous HMM trained by Baum-Welch at moderate state resolution ($K = 18$) reproduces the three Cont stylized facts simultaneously on SPY ($93.6$--$95.6\%$ IS KS and $80.8$--$85.7\%$ OoS KS across the four emission variants, Table~\ref{tab:model_comparison}; CHMM-N $|G_t|$ ACF-MAE within $0.003$ of GARCH(1,1)). Four emission variants share the same scaffold and land at four distinct points on the kurtosis axis without retuning $K$ or the transition structure: CHMM-N undershoots, CHMM-L matches observed kurtosis cleanly without a shape parameter, CHMM-t overshoots while supplying per-state heavy tails for tail-conditional consumers, and CHMM-GED nests Gaussian and Laplace as boundary cases ($p_k = 2$ and $p_k = 1$, respectively) and lets the data choose each state's kurtosis adaptively on the continuous shape axis.
 The mechanism behind the simultaneous KS / ACF fit is the spectral identity of equation~\eqref{eq:acf_normalised}: at $K \ge 3$ with quantile-initialised Baum-Welch, the absolute-return ACF is a population-level mixture of geometric decays at the non-unit eigenvalues of $\mathbf T$.
 
 \paragraph{Replicating the slow-ACF behaviour at moderate state resolution.}
@@ -21,7 +21,7 @@ Use-case priority & Recommended variant \\
 \midrule
 Simplest closed-form fit; kurtosis fidelity secondary             & CHMM-N \\
 Cleanest IS kurtosis match; no shape parameter                    & CHMM-L \\
-Per-state heavy tails for tail-conditional consumers              & CHMM-t \\
+Per-state heavy tails for tail-conditional consumers              & CHMM-t with $1/\nu_k$ shrinkage ($\lambda = 20$) \\
 Adaptive per-state shape; data-chosen Gaussian-bulk / Laplace-tail mixture & CHMM-GED \\
 \bottomrule
 \end{tabular}
