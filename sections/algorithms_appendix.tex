@@ -308,27 +308,7 @@ The simulated IS mixture kurtosis of $17.34$ is driven by the posterior mass rou
 \end{figure}
 
 \paragraph{CHMM-GED per-state $p_k$ (Gaussian-bulk / Laplace-tail bimodality).}
-Figure~\ref{fig:p_hist} plots the analogous per-state $p_k$ histogram for the $K = 18$ CHMM-GED fit, alongside the $p_k$ ranking by variance-equivalent state $\sigma$.
-The fit is bimodal: thirteen states attain the upper ECM bracket at $p_k = 3.0$ (Gaussian-shape and beyond), one state lands at intermediate shape $p_k = 1.6$, and four states cluster in the Laplace-shape regime $p_k \in [0.86, 1.24]$.
-The smallest fitted $p_k$ on SPY is $0.86$, well clear of every $p_{\min}$ tested in the bracket sweep below, so the lower bracket is non-binding.
-Crucially the four Laplace-shape states are concentrated in the high-volatility tail of the state ordering: ranks $13$, $15$, and $18$ (by variance-equivalent $\sigma$) all have $\hat p_k$ near $1$.
-This is the data-driven analog of a hand-classified Gaussian-bulk / Laplace-tail hybrid: CHMM-GED finds the partition by ECM, not by a priori state assignment.
-
-\begin{figure}[h]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-p-Histogram-a.pdf}
-\caption{Histogram of fitted $\hat p_k$.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-p-Histogram-b.pdf}
-\caption{$\hat p_k$ vs.\ volatility rank.}
-\end{subfigure}
-\caption{Per-state shape diagnostics for the CHMM-GED fit at $K = 18$ on SPY IS. Panel~(a): histogram of fitted $\hat p_k$ across the eighteen states. The dashed reference lines mark the Laplace shape ($p = 1$) and Gaussian shape ($p = 2$); $\hat p_k$ values cluster in two regimes (bulk near the upper bracket, tail near $p = 1$). Panel~(b): $\hat p_k$ versus state rank ordered by variance-equivalent $\sigma$ (rank $1$ is the calmest state, rank $18$ is the highest-volatility state). The high-volatility ranks $13$, $15$, $18$ sit at the Laplace line; the bulk of states sit at the Gaussian-or-beyond line.}
-\label{fig:p_hist}
-\end{figure}
-
-The bimodal partition replicates across $10$ Monte Carlo seeds (every seed yields the same partition counts to within one state) and across the cross-asset universe (Appendix~\ref{sec:supp_robustness}).
+The body Section~\ref{sec:model_comparison} reports and discusses the $\hat p_k$ partition (Figure~\ref{fig:p_hist}); see also Table~\ref{tab:nu_bracket} below for the parallel CHMM-t bracket sweep. Briefly, the $K = 18$ CHMM-GED fit on SPY IS is bimodal: thirteen states attain the upper ECM bracket at $p_k = 3.0$, one state lands at intermediate $p_k = 1.6$, and four states cluster in the Laplace-shape regime $p_k \in [0.86, 1.24]$, concentrated in the high-volatility ranks. The smallest fitted $p_k$ on SPY is $0.86$, well clear of every $p_{\min}$ tested in the bracket sweep, so the lower bracket is non-binding. The bimodal partition replicates across $10$ Monte Carlo seeds and across the cross-asset universe (Appendix~\ref{sec:supp_robustness}).
 
 Table~\ref{tab:nu_bracket} reports the seven-metric panel for CHMM-t fits whose ECM bracket lower bound is lifted from $\nu_{\min} = 2.1$ through $\{2.5, 3.0, 4.0\}$, plus the Gaussian limit ($\nu = \infty$, equivalent to CHMM-N).
 Lifting the bracket does not reduce the IS kurtosis overshoot: the simulated kurtosis moves within the $12.5$--$14.0$ band across bracket floors and only collapses to $5.05$ in the full Gaussian limit.

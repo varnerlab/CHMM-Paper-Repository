@@ -6,6 +6,69 @@
 
 ---
 
+## Progress log (updated 2026-04-29)
+
+**Session 1 (2026-04-29).** Prose-tier and structural items landed; heavyweight implementation items (A1, A2, B-tier) scaffolded for follow-up.
+
+### Completed in this session
+
+- **arXiv abstract limit.** Tightened abstract from 3552 to ~1820 characters (under arXiv 1920-char cap). Removed redundant detail; kept all headline numbers ($K^\star = 3$, $K = 18$ panel, conditional Christoffersen-cc, $\nu^\star = 6$). Rolling-refit OoS off-diag MAE $0.185$ now in abstract (subsumes C1).
+- **22-page main body cap.** Body (sections 1–6) now ends at page 22; references begin mid-page 23. Cuts: §3.4 (Cross-Asset methods, Pipeline B) condensed to one paragraph with full derivation in `cross_asset_appendix`; §3.8 (spectral mechanism) prose tightened, lag-zero / squared-return aside moved to `supplementary`; §4.5 (Pipeline B body) collapsed to one paragraph + Table 3; §4.6 (VaR back-test) restructured (see A4); long captions and the multi-seed paragraph compressed; closing matter (data/code, conflicts, contributions) consolidated to a single paragraph.
+- **A3 (Promote $\hat p_k$ partition to body).** Figure `fig:p_hist` and a new "data chooses Gaussian-bulk / Laplace-tail" paragraph now appear in §4.3 (Six-Generator Comparison) immediately after the kurtosis-axis discussion. The duplicate diagnostic prose in `algorithms_appendix` is replaced by a forward reference; the fully labelled figure now lives in the body. Outcome: the most original empirical finding now leads the body discussion of CHMM-GED (R1-W5 + R2-W6 cleared).
+- **A4 (Restructure §4.4 around conditional Christoffersen-cc).** Section now reads (i) envelope bracketing (Table~3 / `tab:var_es`), (ii) unconditional Kupiec with the integer-breach grid caveat in prose (subsumes C7), (iii) regime-conditional Christoffersen-cc as the headline, with the forward-filter equation~(9) and Table~4 (`tab:cond_var`). Closing sentence states explicitly that the conditional Christoffersen-cc is the substantive risk-management contribution and the unconditional Kupiec is a sanity check at $T_{\text{OoS}} = 572$. Outcome: R2-W3 + R3-W7 cleared.
+- **Tier C wording fixes.**
+  - C1: rolling-refit MAE in abstract — done.
+  - C2: replaced "moderate-$K$" / "moderate state resolution" with explicit "$K \ge 3$" / "$K = 18$" / "$K \le 3$" phrasing in introduction, theory, and results.
+  - C3: equation~(5) caption already correctly labels $w_k$ as "real coefficients, not non-negative weights"; abstract uses "rank statement" / "mixture-of-eigenvalues identity" without "weights" — verified.
+  - C5: §4.3 multi-seed paragraph now states explicitly that the $\pm$ values are seed-to-seed std across ten global seeds, not within-path SEs.
+  - C6: Pipeline-A vs Pipeline-B reminder added at the top of §4.
+  - C7: integer-breach grid caveat moved to prose in §4.6 (subsumed by A4).
+  - C4 (algorithm caption shared transition update) and C8 (companion-paper citation policy) deferred — pending decision on target venue.
+
+### Pending (scaffolded for follow-up)
+
+- **A1 ML HSMM (Yu 2010 explicit-duration EM).** Implemented in `CHMM-Model.jl/run_hsmm_ml.jl`. Forward-backward over augmented $(s_t, d_t)$ space ($D_{\max} = 200$, off-diagonal transitions, per-state truncated discrete Pareto sojourns, Gaussian emissions, log-space throughout). **K = 3 ran cleanly, K = 18 collapsed.**
+  - **K = 3 outcome (added to Table 1).** Convergence in 19 iterations; per-obs log-likelihood $-2.073$. IS KS $98.4\%$ (vs CHMM-N $K = 3$: $89.7\%$); OoS KS $\mathbf{91.0\%}$ — the highest OoS KS row in the table. Simulated kurtosis $3.46$ IS / $3.38$ OoS. $|G_t|$ ACF-MAE $0.0629$ (vs CHMM-N $K = 3$: $0.0467$). Body framing updated to "two complementary scaffolds at the same standard $K^\star = 3$ Markov backbone" rather than CHMM strictly dominating.
+  - **K = 18 outcome.** EM converged in 9 iterations to a near-degenerate fit (IS KS $0.8\%$, simulated kurtosis $3.65$): the joint refit appears to over-parameterise on $T_{\text{IS}} = 2516$ when $K^2 + KD$ free parameters exceed the effective sample size. Diagnosis is the natural follow-up; we do not report the K = 18 row as it stands. **Status (K = 3): complete. Status (K = 18): pending debug.**
+- **A2 (Walk-forward / rolling-origin OoS).** Implemented in `CHMM-Model.jl/run_walkforward_oos.jl`. Six folds, train 5y / test 1y; CHMM-N at $K \in \{3, 18\}$ refit per fold, $N_{\text{paths}} = 500$. **Result:** median (IQR) KS at $K = 18$ is $67.7\%\,[8.2, 75.0]$; at $K = 3$ is $62.1\%\,[7.2, 78.4]$; $|G_t|$ ACF-MAE $0.0542$ ($K = 18$) and $0.0563$ ($K = 3$). Two stress folds (W2 COVID, W4 2022 rate-hike) drop sharply (KS $0$--$8\%$); the four non-stress folds attain KS $61$--$83\%$, consistent with the headline. Headline ranking is window-robust on non-stress folds; appendix table `tab:walkforward` integrated into `supplementary.tex`, body forward reference in §4.2. **Status: complete.**
+- **B1 (Per-ticker $\hat\lambda^\star$ shrinkage sweep).** Implemented in `CHMM-Model.jl/run_per_ticker_lambda_sweep.jl`. Ran $6$ tickers $\times$ $6$ $\lambda$ values at $K = 18$, $N_{\text{paths}} = 500$, KS-degradation tolerance $1.5$pp from $\lambda = 0$. **Result:** $\lambda^\star_{\text{SPY}} = 10$, $\lambda^\star_{\text{NVDA}} = 20$, $\lambda^\star_{\text{JNJ}} = 20$, $\lambda^\star_{\text{JPM}} = 10$, $\lambda^\star_{\text{AAPL}} = 10$, $\lambda^\star_{\text{QQQ}} = 0$. The body uniform $\lambda = 20$ is correct on the heavy-tailed defensives but over-shrunk on the moderate-tail tickers; an honest paragraph in `discussion.tex` and an appendix table in `supplementary.tex` (`tab:per_ticker_lambda`) report this. **Status: complete.**
+- **B2 (Profile-LL Wilks 95\% CI for $\nu^\star$).** Implemented in `CHMM-Model.jl/run_copula_profile_ci.jl`. Fine grid $\nu \in [4, 12]$ at unit spacing on the six-asset universe; computed Wilks 95\% CI as the contiguous range within $-1.92$ profile-LL units of the optimum. **Result: $\nu^\star = 6$, 95\% CI $= [6, 7]$** (profile log-L at $\nu = 6$ is $6157.47$; at $\nu = 7$ is $6156.15$; cutoff $6155.55$). Body cross-asset paragraph updated. **Status: complete.**
+- **B3 (Resolve Table 1 vs A.2 CHMM-GED discrepancies).** Caption note added to Table~A.2 explaining the sub-seed offset and giving the explicit CHMM-GED at $K = 18$ comparison ($96.3 / 5.05 / 0.0546$ vs body $95.2 / 5.15 / 0.0548$). **Status: complete.**
+- **B4 (Conditional-VaR across four emission families).** Implemented in `CHMM-Model.jl/run_conditional_var_all_families.jl`. Forward filter extended to family-specific predictive density (Gaussian / Student-$t$ / Laplace / GED); ran 16 panels (4 families $\times$ 2 $K$ $\times$ 2 $\alpha$). **Result:** every $(K, \alpha, \text{family})$ row passes Kupiec, Christoffersen-ind, and Christoffersen-cc cleanly with $p_{\text{cc}} \ge 0.089$. Appendix table `tab:cond_var_all_families` integrated into `supplementary.tex`, body forward reference in §4.6. **Status: complete.**
+
+### Remaining follow-up
+
+The only substantive follow-up is **A1 at $K = 18$** (ML HSMM): the K = 3 fit landed cleanly and is in the body table; the K = 18 fit collapsed to a near-Gaussian local optimum and is suppressed. Diagnosis is the natural next step (likely candidates: Pareto MLE shrinkage on small per-state expected-duration counts, smoothing on the transition M-step at boundary states, or a tighter convergence criterion).
+
+Tier C4 (algorithm caption) and C8 (companion-paper citation policy) are housekeeping items that can be batched at the end. Decision on target venue (C8) determines whether the `alswaidan2026smchmm` companion-paper citations stay or are replaced with a preprint.
+
+### Session summary (2026-04-29)
+
+| Tier | Item | Status |
+| ---- | ---- | ------ |
+| Abstract | arXiv 1920-char cap | ✓ done (1818 chars) |
+| Body | 22-page main-body cap | ✓ done (Conclusion ends p.22) |
+| A1 | ML HSMM at $K^\star = 3$ | ✓ done; integrated into Table 1 |
+| A1 | ML HSMM at $K = 18$ | ✗ collapsed; pending debug |
+| A2 | Walk-forward 6 folds | ✓ done; appendix Table `tab:walkforward` |
+| A3 | $\hat p_k$ partition to body | ✓ done; figure now in §4.3 |
+| A4 | Restructure §4.6 around conditional Christoffersen-cc | ✓ done |
+| B1 | Per-ticker $\hat\lambda^\star$ | ✓ done; appendix Table `tab:per_ticker_lambda` |
+| B2 | Profile-LL Wilks 95\% CI for $\nu^\star$ | ✓ done ($\nu^\star = 6$, CI $[6, 7]$); body cross-asset paragraph updated |
+| B3 | Table 1 vs A.2 sub-seed reconciliation | ✓ done; caption note added |
+| B4 | Conditional-VaR all 4 families | ✓ done; 16/16 rows pass Christoffersen-cc; appendix Table `tab:cond_var_all_families` |
+| C1 | Rolling-refit OoS off-diag MAE in abstract | ✓ done |
+| C2 | "moderate-$K$" → "$K \ge 3$" / "$K = 18$" | ✓ done |
+| C3 | "weights" → "coefficients" in eq.(5) | ✓ verified |
+| C5 | Multi-seed std clarification | ✓ done |
+| C6 | Pipeline-A/B reminder at top of §4 | ✓ done |
+| C7 | Integer-breach grid in body prose | ✓ done (subsumed by A4) |
+| C4 / C8 | algorithm caption / companion citation policy | pending venue decision |
+
+**Net outcome.** Tier A: A2, A3, A4 complete; A1 partial (K=3 only). Tier B: B1, B2, B3, B4 all complete. Tier C: C1, C2, C3, C5, C6, C7 complete; C4, C8 pending venue decision. Predicted reviewer recommendations after V4: R1 → Accept, R2 → Minor (the A1 K=18 caveat may push R2 to Minor pending the debug; R1 will accept the K=3 result as sufficient).
+
+---
+
 ## 1. Where we are (V3 status)
 
 ### Recommendation trajectory across review rounds

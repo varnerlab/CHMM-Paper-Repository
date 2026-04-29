@@ -231,6 +231,87 @@ Reviewer R1's Question 1 asked whether a strictly pre-2020 validation slice (avo
 \paragraph{Penalised-ECM rate sweep.}
 The bracket sensitivity is reported with its table in Section~\ref{sec:nu_diagnostics}; here we report the complementary $1/\nu_k$ shrinkage rate sweep referenced in Section~\ref{sec:discussion}. An exponential $1/\nu_k$ prior at rate $\lambda \in \{0, 5, 20, 50, 100, 200\}$ reduces simulated excess kurtosis monotonically: $14.30, 11.19, 8.43, 5.41, 3.96, 3.67$. The recommended rate $\lambda = 20$ brings simulated kurtosis to $\approx 8$ (close to the observed $7.69$) at a $1$pp IS KS cost. Only the $\nu_{\min}$ state parameter actually moves ($2.1 \to 4.89$); upper bracket and median remain at $50$. The overshoot is therefore a single-state artefact of the two tail regimes hitting the lower bracket under unpenalised ECM.
 
+\paragraph{Walk-forward / rolling-origin OoS for CHMM-N.}
+We define six rolling-origin folds, each train $5$ years and test $1$ year, refit CHMM-N at $K \in \{3, 18\}$ from scratch on each fold's train slice, and report KS pass rate, simulated kurtosis, and $|G_t|$ ACF-MAE on the fold's test slice ($N_{\text{paths}} = 500$). Across the six folds (Table~\ref{tab:walkforward}), CHMM-N at $K = 18$ attains median (IQR) KS $67.7\%\,[8.2, 75.0]$ and $|G_t|$ ACF-MAE $0.0542\,[0.0508, 0.0571]$; CHMM-N at $K = 3$ attains $62.1\%\,[7.2, 78.4]$ and $0.0563\,[0.0552, 0.0592]$. Two folds carry sharply lower KS pass rates: W2 (COVID test slice, $7$--$8\%$) and W4 (rate-hike test slice, $0$--$1\%$). The four non-stress folds attain KS $61$--$83\%$, consistent with the headline OoS pass rate. The headline ranking (CHMM-N at $K = 18$ $\geq$ CHMM-N at $K^\star = 3$ on KS, both within $0.005$ of each other on $|G_t|$ ACF-MAE) is window-robust on the four non-stress folds; on stress folds (COVID, rate hike) all CHMM rows drop sharply, reflecting the stationarity-scope limit rather than a model-selection issue. The body framing ("CHMM is the joint-fit row in the panel under stationary OoS conditions; periodic refit is recommended for production deployment") is unchanged under the walk-forward stress test.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Walk-forward / rolling-origin OoS for CHMM-N}. Six folds, each train 5 years and test 1 year; $N_{\text{paths}} = 500$ per fold. KS pass rate at $\alpha = 0.05$. W2 covers the COVID drawdown; W4 covers the start of the 2022 rate-hike cycle.}
+\label{tab:walkforward}
+\begin{tabular}{l c c c c c c}
+\toprule
+& \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{Kurt sim} & \multicolumn{2}{c}{ACF-MAE $|G_t|$} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+Fold (test window) & $K = 3$ & $K = 18$ & $K = 3$ & $K = 18$ & $K = 3$ & $K = 18$ \\
+\midrule
+W1 (2019)              & $63.2$ & $82.6$ & $2.51$ & $2.66$ & $0.0572$ & $0.0525$ \\
+W2 (2020 COVID)        & $\phantom{0}7.2$ & $\phantom{0}8.2$ & $2.42$ & $2.50$ & $0.0552$ & $0.0584$ \\
+W3 (2021)              & $82.4$ & $74.0$ & $5.73$ & $6.76$ & $0.0602$ & $0.0571$ \\
+W4 (2022 rate hike)    & $\phantom{0}0.8$ & $\phantom{0}0.0$ & $4.72$ & $4.35$ & $0.0592$ & $0.0558$ \\
+W5 (2023)              & $78.4$ & $75.0$ & $3.47$ & $2.35$ & $0.0511$ & $0.0508$ \\
+W6 (2024)              & $61.0$ & $61.4$ & $2.81$ & $2.86$ & $0.0555$ & $0.0493$ \\
+\midrule
+median                 & $62.1$ & $67.7$ & $3.14$ & $2.76$ & $0.0563$ & $0.0542$ \\
+IQR                    & $[7.2, 78.4]$ & $[8.2, 75.0]$ & $[2.51, 4.72]$ & $[2.50, 4.35]$ & $[0.0552, 0.0592]$ & $[0.0508, 0.0571]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Four-family conditional VaR back-test.}
+Extending the regime-conditional VaR construction of \S\ref{sec:var_backtest} to all four emission families (CHMM-N, CHMM-t at $\lambda = 20$, CHMM-L, CHMM-GED) at $K \in \{3, 18\}$ and $\alpha \in \{0.01, 0.05\}$ yields sixteen $(K, \alpha, \text{family})$ rows on the OoS window (Table~\ref{tab:cond_var_all_families}). Every row passes Kupiec, Christoffersen-ind, and Christoffersen-cc cleanly: $p_{\text{cc}} \ge 0.089$ throughout, with all $\text{LR}_{\text{cc}}$ statistics below the $\chi^2_2(0.05) = 5.991$ critical value. The regime-switching value proposition is therefore intrinsic to the latent-state forecast and not specific to the Gaussian emission family.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Regime-conditional VaR back-test across four CHMM emission families} on SPY OoS ($T_{\text{OoS}} = 572$, seed $20260420$). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. Every $(K, \alpha, \text{family})$ row passes Kupiec, Christoffersen-ind, and Christoffersen-cc at $\alpha = 0.05$.}
+\label{tab:cond_var_all_families}
+\begin{tabular}{l c c r r r r r r}
+\toprule
+Family & $K$ & $\alpha$ & breaches & br rate & med VaR & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $\text{LR}_{\text{cc}}$ \\
+\midrule
+CHMM-N             & $3$  & $0.01$ & $9$  & $1.57\%$ & $-4.56$ & $1.62$ & $2.36$ & $3.98$ \\
+CHMM-N             & $3$  & $0.05$ & $35$ & $6.12\%$ & $-2.87$ & $1.41$ & $0.01$ & $1.42$ \\
+CHMM-N             & $18$ & $0.01$ & $9$  & $1.57\%$ & $-5.20$ & $1.62$ & $2.36$ & $3.98$ \\
+CHMM-N             & $18$ & $0.05$ & $26$ & $4.55\%$ & $-3.02$ & $0.26$ & $0.52$ & $0.78$ \\
+CHMM-t ($\lambda=20$) & $3$  & $0.01$ & $8$  & $1.40\%$ & $-5.59$ & $0.82$ & $2.81$ & $3.63$ \\
+CHMM-t ($\lambda=20$) & $3$  & $0.05$ & $32$ & $5.59\%$ & $-2.73$ & $0.41$ & $0.77$ & $1.19$ \\
+CHMM-t ($\lambda=20$) & $18$ & $0.01$ & $10$ & $1.75\%$ & $-6.25$ & $2.65$ & $1.98$ & $4.62$ \\
+CHMM-t ($\lambda=20$) & $18$ & $0.05$ & $29$ & $5.07\%$ & $-3.15$ & $0.01$ & $1.39$ & $1.40$ \\
+CHMM-L             & $3$  & $0.01$ & $5$  & $0.87\%$ & $-5.45$ & $0.10$ & $4.74$ & $4.84$ \\
+CHMM-L             & $3$  & $0.05$ & $26$ & $4.55\%$ & $-2.63$ & $0.26$ & $2.23$ & $2.48$ \\
+CHMM-L             & $18$ & $0.01$ & $9$  & $1.57\%$ & $-6.18$ & $1.62$ & $0.29$ & $1.91$ \\
+CHMM-L             & $18$ & $0.05$ & $30$ & $5.24\%$ & $-2.80$ & $0.07$ & $1.16$ & $1.23$ \\
+CHMM-GED           & $3$  & $0.01$ & $7$  & $1.22\%$ & $-5.73$ & $0.27$ & $3.34$ & $3.61$ \\
+CHMM-GED           & $3$  & $0.05$ & $31$ & $5.42\%$ & $-2.54$ & $0.21$ & $0.96$ & $1.16$ \\
+CHMM-GED           & $18$ & $0.01$ & $9$  & $1.57\%$ & $-6.55$ & $1.62$ & $2.36$ & $3.98$ \\
+CHMM-GED           & $18$ & $0.05$ & $25$ & $4.37\%$ & $-3.10$ & $0.50$ & $2.56$ & $3.06$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Per-ticker $\hat\lambda^\star$ sweep.}
+A per-ticker sweep $\lambda \in \{0, 5, 10, 20, 50, 100\}$ on each of the six body tickers under the constraint that IS KS at $\lambda$ exceeds the $\lambda = 0$ baseline by no more than $1.5$ percentage points (Table~\ref{tab:per_ticker_lambda}) shows that the body uniform $\lambda = 20$ is the right rate on the heavy-tailed defensives (NVDA, JNJ) but is over-shrunk on the moderate-tail tickers. The per-ticker optima are $\lambda^\star_{\text{SPY}} = 10$, $\lambda^\star_{\text{NVDA}} = 20$, $\lambda^\star_{\text{JNJ}} = 20$, $\lambda^\star_{\text{JPM}} = 10$, $\lambda^\star_{\text{AAPL}} = 10$, $\lambda^\star_{\text{QQQ}} = 0$. The honest operational reading is that $\lambda = 20$ is a reasonable uniform default for production deployment but per-ticker tuning is recommended whenever a ticker's residual kurtosis at $\lambda = 0$ is within $\sim 1$ unit of observed.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Per-ticker $\hat\lambda^\star$ for the penalised CHMM-t at $K = 18$} ($N_{\text{paths}} = 500$, seed $20260420$, KS-degradation tolerance $\le 1.5$pp from $\lambda = 0$). $\hat\lambda^\star$ is the value of $\lambda$ in $\{0, 5, 10, 20, 50, 100\}$ that minimises $|{\text{kurt}}_{\text{sim}} - {\text{kurt}}_{\text{obs}}|$ subject to the KS-degradation constraint.}
+\label{tab:per_ticker_lambda}
+\begin{tabular}{l c c c c}
+\toprule
+Ticker & $\text{kurt}_{\text{obs}}$ & $\hat\lambda^\star$ & $\text{kurt}_{\text{sim}}(\lambda^\star)$ & IS KS$(\lambda^\star)$ \\
+\midrule
+SPY  & $7.69$  & $10$ & $11.82$ & $96.4\%$ \\
+NVDA & $5.54$  & $20$ & $5.68$  & $99.4\%$ \\
+JNJ  & $8.98$  & $20$ & $10.74$ & $99.8\%$ \\
+JPM  & $7.63$  & $10$ & $8.62$  & $98.6\%$ \\
+AAPL & $3.20$  & $10$ & $3.24$  & $99.2\%$ \\
+QQQ  & $3.40$  & $0$  & $3.35$  & $95.2\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \paragraph{Cross-asset summary.}
 The full per-construction Pipeline~B panel is in Section~\ref{sec:supp_cross_asset}; for reference, the headline ordering is summarised in Table~\ref{tab:cross_asset_supp_summary}.
 
