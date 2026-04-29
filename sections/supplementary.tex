@@ -56,6 +56,124 @@ Let $\tilde g_{j, 1:T}$ be a sample of size $T$ from the per-asset CHMM marginal
 \end{proposition}
 \noindent\emph{Proof sketch.} The map $t \mapsto r_{j,t}^{(p)}$ is a permutation almost surely, so the multiset of values is preserved; the empirical CDF depends only on the multiset.
 
+\subsection{Spectral ACF Identity: Extended Derivation}
+\label{sec:supp_spectral_acf}
+
+The closed-form spectral identity~\eqref{eq:acf_normalised} is the central technical contribution of Section~\ref{sec:theory} and is invoked throughout Sections~\ref{sec:results}--\ref{sec:discussion}. The main-body derivation is intentionally compressed; we restate it here as a self-contained theorem with a step-by-step proof, and record the lag-zero behaviour and the complex / non-diagonalisable extensions that the main body does not.
+
+\begin{theorem}[Mixture-of-eigenvalues identity for the absolute-return ACF]
+\label{thm:supp_spectral_acf}
+Let $\{(s_t, G_t)\}_{t \in \mathbb{Z}}$ be a stationary CHMM on $\{1, \ldots, K\}$ with irreducible aperiodic transition matrix $\mathbf T$ (Assumption~\ref{ass:irred}) and per-state emissions of finite second moment (Assumption~\ref{ass:moments}). Write $\bar{\boldsymbol\pi}$ for the unique stationary distribution, $\mathbf D = \mathrm{diag}(\bar{\boldsymbol\pi})$, $m_k = \E[|G_t| \mid s_t = k]$, $\mathbf m = (m_1, \ldots, m_K)^\top$, $\mu = \E|G_t| = \bar{\boldsymbol\pi}^\top \mathbf m$, and $\sigma_{|G|}^2 = \mathrm{Var}(|G_t|)$. Assume $\mathbf T$ is diagonalisable with right eigenvectors $\mathbf v_k$ and left eigenvectors $\mathbf w_k$ biorthonormal, $\mathbf w_k^\top \mathbf v_l = \delta_{kl}$, indexed so that $\lambda_1 = 1 > |\lambda_2| \ge \cdots \ge |\lambda_K|$. Then for every integer lag $\tau \ge 1$,
+\begin{equation*}
+    \rho_{|G|}(\tau)
+    \;=\; \sum_{k=2}^{K} w_k\, \lambda_k^{\tau},
+    \qquad
+    w_k \;=\; \frac{(\mathbf m^\top \mathbf D\, \mathbf v_k)\,(\mathbf w_k^\top \mathbf m)}{\sigma_{|G|}^2}.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+The proof is organised in six steps.
+
+\paragraph{Step 1 (Definitions).}
+The autocorrelation of $|G_t|$ at lag $\tau \ge 0$ is, by stationarity,
+\[
+    \rho_{|G|}(\tau)
+    \;=\; \frac{\mathrm{Cov}\!\left(|G_t|,\, |G_{t+\tau}|\right)}{\sigma_{|G|}^2}
+    \;=\; \frac{\E[|G_t|\,|G_{t+\tau}|] - \mu^2}{\sigma_{|G|}^2}.
+\]
+The task reduces to evaluating $\E[|G_t|\,|G_{t+\tau}|]$ in closed form for $\tau \ge 1$.
+
+\paragraph{Step 2 (Conditioning on the latent state pair).}
+For $\tau \ge 1$, by the law of total expectation conditional on $(s_t, s_{t+\tau})$,
+\[
+    \E[|G_t|\,|G_{t+\tau}|]
+    \;=\; \sum_{i,j=1}^K \Prob(s_t = i, s_{t+\tau} = j)\,
+        \E\!\left[|G_t|\,|G_{t+\tau}| \,\big|\, s_t = i, s_{t+\tau} = j\right].
+\]
+The HMM emission structure gives the conditional independence $G_t \perp G_{t+\tau} \mid (s_t, s_{t+\tau})$ for $\tau \ge 1$: each emission depends only on its current state, and integrating the intermediate states $s_{t+1:t+\tau-1}$ out of the full-sequence factorisation $\big(\prod_{u} b_{s_u}(G_u)\big)\, p(s_{t+1:t+\tau-1} \mid s_t, s_{t+\tau})$ leaves the endpoint emissions decoupled. Hence
+\[
+    \E\!\left[|G_t|\,|G_{t+\tau}| \,\big|\, s_t = i, s_{t+\tau} = j\right]
+    \;=\; \E[|G_t| \mid s_t = i]\,\E[|G_{t+\tau}| \mid s_{t+\tau} = j]
+    \;=\; m_i\, m_j.
+\]
+The joint state probability factors by stationarity and the Markov property, $\Prob(s_t = i, s_{t+\tau} = j) = \bar\pi_i\, (\mathbf T^\tau)_{ij}$. Substituting and noting $[\mathbf D \mathbf T^\tau]_{ij} = \bar\pi_i (\mathbf T^\tau)_{ij}$,
+\begin{equation}
+    \E[|G_t|\,|G_{t+\tau}|] \;=\; \mathbf m^\top \mathbf D\, \mathbf T^\tau\, \mathbf m,
+    \qquad \tau \ge 1.
+    \label{eq:supp_bilinear}
+\end{equation}
+
+\paragraph{Step 3 (Spectral preliminaries).}
+For irreducible aperiodic $\mathbf T$, Perron--Frobenius applied to row-stochastic matrices gives $\lambda_1 = 1$ as a simple eigenvalue with all other eigenvalues strictly inside the unit disk \citep{levinperes2017markov}. The right eigenvector for $\lambda_1$ is $\mathbf v_1 = \mathbf 1$, since $\mathbf T \mathbf 1 = \mathbf 1$ from the row-sum constraint, and the left eigenvector is $\mathbf w_1 = \bar{\boldsymbol\pi}$, since $\bar{\boldsymbol\pi}^\top \mathbf T = \bar{\boldsymbol\pi}^\top$ by definition of the stationary distribution. Biorthonormality $\mathbf w_1^\top \mathbf v_1 = \bar{\boldsymbol\pi}^\top \mathbf 1 = 1$ is automatic since $\bar{\boldsymbol\pi}$ is a probability vector.
+
+\paragraph{Step 4 (Spectral decomposition of $\mathbf T^\tau$).}
+Diagonalisability with biorthonormality gives the dyadic expansion
+\[
+    \mathbf T^\tau
+    \;=\; \sum_{k=1}^K \lambda_k^\tau\, \mathbf v_k \mathbf w_k^\top
+    \;=\; \mathbf 1\, \bar{\boldsymbol\pi}^\top \;+\; \sum_{k=2}^K \lambda_k^\tau\, \mathbf v_k \mathbf w_k^\top,
+\]
+isolating the dominant ($k = 1$) projection from the contractive spectrum. The dominant projector $\mathbf P_1 = \mathbf 1\bar{\boldsymbol\pi}^\top$ is the rank-one stationary projection: $\mathbf P_1 \mathbf x = (\bar{\boldsymbol\pi}^\top \mathbf x)\,\mathbf 1$.
+
+\paragraph{Step 5 (Evaluation of the bilinear form).}
+Substituting the spectral decomposition into~\eqref{eq:supp_bilinear},
+\[
+    \E[|G_t|\,|G_{t+\tau}|]
+    \;=\; \mathbf m^\top \mathbf D\, \mathbf 1\, \bar{\boldsymbol\pi}^\top \mathbf m
+    \;+\; \sum_{k=2}^K \lambda_k^\tau\, (\mathbf m^\top \mathbf D\, \mathbf v_k)\,(\mathbf w_k^\top \mathbf m).
+\]
+The $k = 1$ term simplifies to $\mu^2$: $\mathbf D \mathbf 1$ is the column vector $\bar{\boldsymbol\pi}$, so $\mathbf m^\top \mathbf D \mathbf 1 = \bar{\boldsymbol\pi}^\top \mathbf m = \mu$, and likewise $\bar{\boldsymbol\pi}^\top \mathbf m = \mu$, giving the product $\mu \cdot \mu = \mu^2$. Denoting the $k \ge 2$ scalar coefficients
+\[
+    c_k \;=\; (\mathbf m^\top \mathbf D\, \mathbf v_k)\,(\mathbf w_k^\top \mathbf m),
+\]
+we obtain
+\[
+    \E[|G_t|\,|G_{t+\tau}|] \;=\; \mu^2 \;+\; \sum_{k=2}^K c_k\, \lambda_k^\tau,
+    \qquad \tau \ge 1.
+\]
+
+\paragraph{Step 6 (Autocovariance and autocorrelation).}
+Subtracting $\mu^2$ from Step 1 cancels the dominant term, leaving
+\[
+    \mathrm{Cov}\!\left(|G_t|,\, |G_{t+\tau}|\right)
+    \;=\; \sum_{k=2}^K c_k\, \lambda_k^\tau,
+    \qquad \tau \ge 1,
+\]
+which is equation~\eqref{eq:acf_exact}. Dividing by $\sigma_{|G|}^2 = \gamma(0)$ gives $\rho_{|G|}(\tau) = \sum_{k \ge 2} w_k\, \lambda_k^\tau$ with $w_k = c_k / \sigma_{|G|}^2$, equation~\eqref{eq:acf_normalised}.
+\end{proof}
+
+\paragraph{Lag zero, the sum of weights, and the within-state white-noise contribution.}
+The bilinear identity~\eqref{eq:supp_bilinear} fails at $\tau = 0$, where $G_t = G_{t+\tau}$ and the conditional product is the per-state second moment $M_i = \E[G_t^2 \mid s_t = i]$ rather than $m_i^2$. The eigenvalue completeness $\sum_{k=1}^K \mathbf v_k \mathbf w_k^\top = I$ instead gives the identity
+\[
+    \sum_{k=2}^K c_k
+    \;=\; \mathbf m^\top \mathbf D\, \mathbf m \;-\; \mu^2
+    \;=\; \sum_{i=1}^K \bar\pi_i\, m_i^2 \;-\; \mu^2
+    \;=\; \mathrm{Var}\!\big(m_{s_t}\big),
+\]
+the between-state variance of $|G_t|$, equal to the variance of the conditional-mean random variable $m_{s_t}$ under $\bar{\boldsymbol\pi}$. By the law of total variance, $\sigma_{|G|}^2 = \mathrm{Var}(m_{s_t}) + \E[\mathrm{Var}(|G_t| \mid s_t)]$, so
+\[
+    \sum_{k=2}^K w_k
+    \;=\; \frac{\mathrm{Var}(m_{s_t})}{\sigma_{|G|}^2}
+    \;\in\; [0, 1],
+\]
+with equality to $1$ if and only if every per-state distribution is degenerate at $m_i$. The residual $1 - \sum_{k \ge 2} w_k = \E[\mathrm{Var}(|G_t| \mid s_t)]\, /\, \sigma_{|G|}^2$ is the within-state variance ratio: it contributes to $\sigma_{|G|}^2$ but not to $\mathrm{Cov}(|G_t|, |G_{t+\tau}|)$ at any positive lag, and is the source of the discontinuity from $\rho_{|G|}(0) = 1$ to $\rho_{|G|}(1) = \sum_{k \ge 2} w_k\, \lambda_k$ at the first lag. The substantive consequence for moderate-$K$ CHMM is unchanged: at every $\tau \ge 1$ the autocorrelation lies in the span of the geometric decays $\{\lambda_k^\tau\}_{k \ge 2}$, and the slow-decay envelope is governed by the largest non-unit eigenvalue.
+
+\paragraph{Squared-return analogue.}
+Replacing $|G_t|$ with $G_t^2$ and $\mathbf m$ with $\mathbf M = (M_1, \ldots, M_K)^\top$ in Steps~1--6 above is termwise valid for $\tau \ge 1$ (the conditional independence and stationarity arguments are unaffected), giving the squared-return analogue
+\[
+    \rho_{G^2}(\tau) \;=\; \sum_{k=2}^K \tilde w_k\, \lambda_k^\tau,
+    \qquad
+    \tilde w_k \;=\; \frac{(\mathbf M^\top \mathbf D\, \mathbf v_k)\,(\mathbf w_k^\top \mathbf M)}{\sigma_{G^2}^2}.
+\]
+The non-unit spectrum of $\mathbf T$ that determines $\rho_{|G|}(\tau)$ also determines $\rho_{G^2}(\tau)$; only the linear projection of the per-state moment vector onto the eigenmodes changes.
+
+\paragraph{Remark (complex eigenvalues).}
+For real $\mathbf T$ without self-adjoint structure, eigenvalues outside $\R$ occur in complex conjugate pairs with conjugate eigenvectors. A pair $(\lambda_k, \bar\lambda_k)$ at $\lambda_k = r e^{i\theta}$ contributes a real damped-oscillation term of the form $A\, r^\tau \cos(\theta\tau) + B\, r^\tau \sin(\theta\tau)$ to $\gamma(\tau)$, with $(A, B)$ determined from $(\mathrm{Re}\, c_k, \mathrm{Im}\, c_k)$. Theorem~\ref{thm:supp_spectral_acf} as stated remains valid; only the interpretation of the individual modes shifts from monotone geometric to damped sinusoidal. For $\mathbf T$ estimated on equity returns at the operating point of Section~\ref{sec:results}, the slow-decay mode at $\lambda_2 \approx \exp(-1/\tau^*)$ is real and positive, and the mono-exponential interpretation of the dominant timescale used in Section~\ref{sec:theory} carries through.
+
+\paragraph{Remark (non-diagonalisable $\mathbf T$).}
+Diagonalisability is generic: for $\mathbf T$ estimated by Baum--Welch in the interior of a non-degenerate parameter region, the eigenvalues are almost surely distinct, and the sample paths used in this paper realise this generic case at every $K$ in the sweep. Should $\mathbf T$ admit a non-trivial Jordan block of size $J$, the dyadic expansion of Step~4 acquires polynomial-in-$\tau$ prefactors $\binom{\tau}{j}\, \lambda_k^{\tau - j}$ for $j = 0, \ldots, J - 1$ on the off-diagonal blocks, and $\rho_{|G|}(\tau)$ becomes a finite sum of polynomial-times-geometric terms with the same exponential rate $\max_{k \ge 2} |\lambda_k|$. The substantive content of Theorem~\ref{thm:supp_spectral_acf}, that the absolute-return ACF is determined entirely by the non-unit spectrum of $\mathbf T$, is unchanged.
+
 \subsection{State-Resolution and Multi-Emission Sensitivity}
 \label{sec:supp_sensitivity}
 

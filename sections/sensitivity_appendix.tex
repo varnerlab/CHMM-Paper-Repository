@@ -250,12 +250,12 @@ The $K = 18$ transition matrices and stationary distributions learned under CHMM
 \end{figure}
 
 \paragraph{IS comparison.}
-Figures~\ref{fig:is_families}--\ref{fig:is_families_GED} reproduce the three-panel IS comparison (density, ACF of $|G_t|$, tail Q-Q) at $K = 18$ for the three non-Gaussian emission families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
+Figures~\ref{fig:is_families}--\ref{fig:is_families_GED} reproduce the four-panel IS comparison (marginal density, tail Q-Q, raw-return ACF, $|G_t|$ ACF) at $K = 18$ for the three non-Gaussian emission families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t.pdf}
-\caption{IS SPY model comparison at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) marginal density with KS pass rate, (b) ACF of $|G_t|$, and (c) tail Q-Q plot. The CHMM-N counterpart is Figure~\ref{fig:is_comparison}; the CHMM-L and CHMM-GED counterparts are Figures~\ref{fig:is_families_L} and~\ref{fig:is_families_GED}.}
+\caption{IS SPY model comparison at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) marginal density with KS pass rate, (b) tail Q-Q plot, (c) ACF of raw $G_t$ (linear autocorrelation, with the $99\%$ Bartlett band), and (d) ACF of $|G_t|$ (volatility clustering). The CHMM-N counterpart is Figure~\ref{fig:is_comparison}; the CHMM-L and CHMM-GED counterparts are Figures~\ref{fig:is_families_L} and~\ref{fig:is_families_GED}.}
 \label{fig:is_families}
 \end{figure}
 
@@ -280,7 +280,7 @@ The CHMM-t panel demonstrates the OoS kurtosis alignment noted in the main text,
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t.pdf}
-\caption{OoS SPY validation at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) KS $p$-values, (b) OoS density fan, and (c) OoS ACF of $|G_t|$. The CHMM-N counterpart is Figure~\ref{fig:oos_validation}; the CHMM-L and CHMM-GED counterparts are Figures~\ref{fig:oos_families_L} and~\ref{fig:oos_families_GED}.}
+\caption{OoS SPY validation at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) OoS density fan, (b) KS $p$-value histogram with the $\alpha = 0.05$ threshold, (c) OoS ACF of raw $G_t$ (linear autocorrelation, with the $99\%$ Bartlett band), and (d) OoS ACF of $|G_t|$ (volatility clustering). The CHMM-N counterpart is Figure~\ref{fig:oos_validation}; the CHMM-L and CHMM-GED counterparts are Figures~\ref{fig:oos_families_L} and~\ref{fig:oos_families_GED}.}
 \label{fig:oos_families}
 \end{figure}
 
