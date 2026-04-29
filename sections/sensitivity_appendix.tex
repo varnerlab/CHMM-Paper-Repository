@@ -246,7 +246,29 @@ The CHMM-t panel's per-state $\nu_k$ allocation is visible in the narrower modes
 \end{figure}
 
 \paragraph{Transition matrices and stationary distributions.}
-The $K = 18$ transition matrices and stationary distributions learned under CHMM-t and CHMM-L are visually indistinguishable from their CHMM-N counterparts: the near-diagonal band, the magnitude of self-transition probabilities, and the mass concentration at central states are features of the regime structure, not the emission family. This is consistent with the ACF-MAE being stable across the family axis (Table~\ref{tab:sensitivity_multi}). The per-family residence times $\tau_k = 1/(1 - T_{kk})$, which magnify small differences in the self-transition probabilities each family recovers, are compared in Figure~\ref{fig:residence_families}.
+Figure~\ref{fig:transition_families} shows the $\log_{10}$ transition-matrix heatmaps at $K = 18$ across the four emission families. The four panels are visually indistinguishable: the same near-uniform interior, the same characteristic boundary states (rows $1$ and $K$) with a small handful of low-mass entries, and self-transition probabilities of comparable magnitude. The eigenvalue spectrum of $\mathbf T$ that drives the absolute-return ACF identity~\eqref{eq:acf_normalised} is therefore set by the $K$-rank regime structure rather than by the emission family. This is consistent with the ACF-MAE being stable across the family axis (Table~\ref{tab:sensitivity_multi}). The per-family residence times $\tau_k = 1/(1 - T_{kk})$, which magnify small differences in the self-transition probabilities each family recovers, are compared in Figure~\ref{fig:residence_families}.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-N.pdf}
+    \caption{CHMM-N (Gaussian).}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-t.pdf}
+    \caption{CHMM-t (Student-t).}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-L.pdf}
+    \caption{CHMM-L (Laplace).}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-GED.pdf}
+    \caption{CHMM-GED (per-state $p_k$).}
+\end{subfigure}
+\caption{$\log_{10}$ transition-matrix heatmaps at $K = 18$ across the four emission families on SPY IS (Pipeline~A). Color scale is $\log_{10} T_{ij}$ with a $10^{-10}$ floor for the near-zero entries. The cross-family similarity supports the rank/spectral interpretation of Section~\ref{sec:theory}: the regime structure (and thus the eigenvalue spectrum that drives the absolute-return ACF) is largely a property of $K$ and the data, not of the emission family.}
+\label{fig:transition_families}
+\end{figure}
 
 \begin{figure}[H]
 \centering
