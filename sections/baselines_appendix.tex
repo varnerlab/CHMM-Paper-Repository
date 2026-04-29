@@ -341,3 +341,31 @@ Second, the SM-CHMM rows are weaker than the headline CHMM rows on every metric 
 Third, the QuantGAN deep-generative row (Appendix~\ref{sec:quantgan_supp}) is the weakest entry in the panel on every distributional metric. IS and OoS KS pass rates collapse to $0\%$ at $\alpha = 0.05$ across all $1{,}000$ simulated paths, IS and OoS AD pass rates are also $0\%$, and simulated IS excess kurtosis of $2.1$ undershoots the observed $7.7$ by more than a factor of three. ACF-MAE of $0.0591$ is comparable to the i.i.d.\ baselines of Table~\ref{tab:model_comparison} ($0.0628$), so the GAN does not recover absolute-return autocorrelation either. The convolutional WGAN reproduces some surface-level visual properties of the return series but the stitched-window simulation scheme has no mechanism for modelling either the heavy-tailed marginal or the persistent absolute-return autocorrelation; this matches the documented failure mode of GAN-based generators on financial-time-series volatility-clustering benchmarks \citep{takahashi2019modeling, kwon2024can}. The runner is a repo-native convolutional WGAN with critic weight clipping (Appendix~\ref{sec:quantgan_supp}), materially smaller than the original temporal convolutional network of \citet{wiese2020quantgan} (a seven-block TCN with $127$-day receptive field, hidden width $80$, plus Lambert-W input pre-processing that the original authors credit with most of the tail-fidelity); the row therefore reads as the panel's deep-generative negative control rather than a verdict on the WGAN literature as a whole. The QuantGAN row complements the i.i.d.\ Gaussian negative control of the headline Table~\ref{tab:model_comparison}.
 
 
+
+\subsubsection{Stochastic-Volatility, Multifractal, and Jump-Diffusion Baselines}
+\label{sec:sv_msm_jd_baselines}
+
+Peer-review item~2 asks for the canonical state-space and jump baselines that the body Table~\ref{tab:model_comparison} does not exercise: a stochastic-volatility (SV-AR(1)) row in the Taylor 1986 / Harvey-Ruiz-Shephard 1994 lognormal log-AR(1) tradition; a Markov-switching multifractal (MSM, Calvet-Fisher 2004) row at $\bar k = 8$ multipliers; and a Merton 1976 Poisson-Gaussian jump-diffusion row. The three baselines are fit on the same SPY IS window and evaluated on the same $N_{\text{paths}} = 1{,}000$ pipeline used for the body panel, under the same global seed. Implementation lives in \texttt{src/SVMSMBaselines.jl} of the companion \texttt{CHMM-Model.jl} package; results in \texttt{results/sv\_msm\_jd/sv\_msm\_jd\_baselines.txt}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Stochastic-volatility / multifractal / jump-diffusion baselines on SPY.} Same IS / OoS windows, $N_{\text{paths}} = 1{,}000$, seed = 20260420 as Table~\ref{tab:model_comparison}. Observed kurtosis: $7.68$ IS, $5.29$ OoS.}
+\label{tab:sv_msm_jd}
+\begin{tabular}{l cc cc cc}
+\toprule
+& \multicolumn{2}{c}{KS (\%) $\uparrow$} & \multicolumn{2}{c}{Kurtosis} & \multicolumn{2}{c}{ACF-MAE $\downarrow$} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+Model & IS & OoS & IS & OoS & $|G_t|$ & $G_t$ \\
+\midrule
+SV-AR(1)        & $38.2$ & $35.3$ & $7.52$ & $5.26$ & $0.0466$ & $0.0239$ \\
+MSM ($\bar k = 8$) & $\phantom{0}0.0$ & $\phantom{0}7.2$ & $0.62$ & $0.60$ & $0.0605$ & $0.0235$ \\
+Merton-JD       & $98.3$ & $91.1$ & $3.12$ & $2.98$ & $0.0627$ & $0.0236$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.} 
+\emph{SV-AR(1)} reproduces the IS kurtosis target ($7.52$ vs. observed $7.68$) almost exactly and matches CHMM-N's $|G_t|$ ACF-MAE within $0.0003$ ($0.0466$ vs $0.0467$ at $K^\star = 3$); its KS pass rate is poor ($38.2\%$ IS / $35.3\%$ OoS) because the Gaussian-conditional-on-volatility marginal cannot reproduce the bimodal-bulk / heavy-tail empirical density that the regime-mixture CHMM marginals can. \emph{Merton-JD} is the inverse trade-off: KS at $98.3\%$ IS / $91.1\%$ OoS (the highest OoS KS in the panel except for the i.i.d.\ bootstrap), but kurtosis $3.12$ undershoots $7.68$ by half and the absolute-return ACF-MAE regresses to the i.i.d.\ baseline level ($0.0627$, the same level as the bootstrap row of Table~\ref{tab:model_comparison}) because the constant-volatility diffusion plus i.i.d.\ jumps carries no temporal persistence. \emph{MSM} under the moment-matching fit reported here (closed-form ACF-of-log$|r|$ matching with $\bar k = 8$ binomial multipliers) does not converge to a viable generator on this $T_{\text{IS}} = 2{,}516$ window: the marginal kurtosis collapses to $0.62$ and KS drops to $0\%$. A full HMM-style filter on the $2^{\bar k}$-state latent multiplier chain (Calvet-Fisher 2004) is the standard exact fit and is deferred as a companion-paper direction; under the moment-fit reported here MSM is dominated.
+
+The headline conclusion of Table~\ref{tab:model_comparison} survives the addition of these three rows: no single competitor occupies the joint-fit corner that the CHMM family at $K = 18$ does (KS $\ge 80\%$, kurtosis within $1$ unit of observed, $|G_t|$ ACF-MAE $\le 0.06$). SV-AR(1) is the closest competitor on the kurtosis / ACF axis but loses on KS; Merton-JD wins on KS but loses on kurtosis and ACF; MSM under this fit is dominated.

@@ -268,7 +268,7 @@ Extending the regime-conditional VaR construction of \S\ref{sec:var_backtest} to
 \label{tab:cond_var_all_families}
 \begin{tabular}{l c c r r r r r r}
 \toprule
-Family & $K$ & $\alpha$ & breaches & br rate & med VaR & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $\text{LR}_{\text{cc}}$ \\
+Family & $K$ & $\alpha$ & breaches & br rate & median $\widehat{\text{VaR}}_t$ & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $\text{LR}_{\text{cc}}$ \\
 \midrule
 CHMM-N             & $3$  & $0.01$ & $9$  & $1.57\%$ & $-4.56$ & $1.62$ & $2.36$ & $3.98$ \\
 CHMM-N             & $3$  & $0.05$ & $35$ & $6.12\%$ & $-2.87$ & $1.41$ & $0.01$ & $1.42$ \\
@@ -305,7 +305,7 @@ On the four non-stress folds (W1, W3, W5, W6) plus W4 at $K = 3$ at the $5\%$ le
 \label{tab:walkforward_cond_var}
 \begin{tabular}{l c c r r r r r r r}
 \toprule
-Fold & $K$ & $\alpha$ & breaches & br rate & med VaR & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $\text{LR}_{\text{cc}}$ & $p_{\text{cc}}$ \\
+Fold & $K$ & $\alpha$ & breaches & br rate & median $\widehat{\text{VaR}}_t$ & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $\text{LR}_{\text{cc}}$ & $p_{\text{cc}}$ \\
 \midrule
 W1 & $3$  & $0.01$ & $\phantom{0}2$ & $0.80\%$ & $-4.01$ & $\phantom{0}0.11$ & $0.03$ & $\phantom{0}0.15$ & $0.93$ \\
 W1 & $3$  & $0.05$ & $15$           & $5.98\%$ & $-2.43$ & $\phantom{0}0.48$ & $1.18$ & $\phantom{0}1.65$ & $0.44$ \\

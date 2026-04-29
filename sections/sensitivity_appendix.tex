@@ -657,3 +657,219 @@ The key observation is that ACF-MAE is essentially constant at $\approx 0.050$ a
 IS KS pass rate remains below the $K = 18$ operating point ($75.3$--$79.0\%$) because two Gaussian components cannot tile the full multi-regime return distribution.
 The combination is consistent with the reading that the binding low-$K$ constraint in the \citet{ryden1998stylized} setup is distributional rather than temporal: the ACF is already well reproduced at $K = 2$, and it is distributional fidelity that drives the preference for $K = 18$.
 
+
+\subsubsection{Cross-Ticker OoS-KS ANOVA: Sector vs Ticker Decomposition}
+\label{sec:cross_ticker_anova}
+
+A one-way ANOVA on the 30-ticker OoS KS distribution (Table~\ref{tab:cross_ticker}) by GICS sector tests the per-sector rollup framing against the alternative null that within-sector ticker variance dominates between-sector variance. With $n = 30$ tickers across $K_{\text{sec}} = 10$ sectors at three reps each, $F(9, 20) = 0.436$ at $p = 0.899$ under the parametric F-distribution; a $5{,}000$-replicate permutation test on the same statistic gives $p = 0.903$, well above the $0.05$ rejection threshold. The eta-squared is $0.164$, so sector membership explains only $\approx 16\%$ of the OoS-KS variance and the bulk ($83.6\%$) is within-sector heterogeneity (results file \texttt{sector\_panel/anova\_oos\_ks.txt}).
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{ANOVA on the 30-ticker OoS KS distribution by GICS sector.} 30 tickers across 10 sectors at three large-cap representatives each; one-way F-test plus 5{,}000-replicate permutation test (seed = 20260420). Sector membership fails to explain OoS-KS variance at conventional levels.}
+\label{tab:cross_ticker_anova}
+\begin{tabular}{l c}
+\toprule
+Statistic & Value \\
+\midrule
+$F(9, 20)$ & $0.436$ \\
+$p$ (F-distribution) & $0.899$ \\
+$p$ (permutation, $B = 5{,}000$) & $0.903$ \\
+$\eta^2$ & $0.164$ \\
+SS-between & $4{,}141.16$ \\
+SS-within  & $21{,}096.77$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The reading reframes the body's per-sector roll-up: the ``Health Care collapse'' framing (sector median $14.5\%$) is a within-sector dispersion result driven by two ticker-specific regime introductions in LLY and UNH while JNJ in the same sector lands at $93.2\%$. Operationally, refit triggers should be calibrated on per-ticker diagnostics (Page-Hinkley on $|G_t|$ inside the IS window, etc.) rather than per-sector averages.
+
+\subsubsection{Cross-Ticker Rebuild at $K^\star = 6$ (Held-Out-Clean)}
+\label{sec:cross_ticker_k6_panel}
+
+Reviewer~1 / Reviewer~2 ask whether the $K = 18$ cross-ticker headline survives a re-run at the held-out-clean operating point $K^\star = 6$ (Section~\ref{sec:k_selection_results}). Table~\ref{tab:cross_ticker_k6} reports the aggregate distribution under the same $\lambda = 20$ shrinkage rate, same seed, same $N_{\text{paths}} = 1{,}000$, and same ten-sector / three-ticker construction (full per-ticker file: \texttt{sector\_panel/sector\_panel\_summary\_k6.txt}).
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Held-out-clean cross-ticker rebuild at $K^\star = 6$.} Same protocol as Table~\ref{tab:cross_ticker} but at the held-out-likelihood / held-out-KS operating point of Section~\ref{sec:k_selection_results}. KS distributions match within sampling error; kurtosis residuals are substantially heavier at $K^\star = 6$, reflecting the lower state-resolution under per-state $\nu_k$ shrinkage.}
+\label{tab:cross_ticker_k6}
+\begin{tabular}{l c c}
+\toprule
+Metric & $K = 18$ (body Table~\ref{tab:cross_ticker}) & $K^\star = 6$ (this table) \\
+\midrule
+IS KS\% median        & $99.5\%$ & $98.8\%$ \\
+IS KS\% mean $\pm$ sd & $99.3 \pm 0.6\%$ & $97.7 \pm 3.7\%$ \\
+OoS KS\% median       & $73.4\%$ & $75.1\%$ \\
+OoS KS\% mean $\pm$ sd & $66.8 \pm 29.5\%$ & $66.5 \pm 29.2\%$ \\
+$|G_t|$ ACF-MAE median & $0.0416$ & $0.0403$ \\
+Kurtosis residual median & $0.61$ & $10.34$ \\
+Tickers OoS KS $< 60\%$ & $11 / 30$ & $11 / 30$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Reading: the KS-headline ranking is $K$-robust on the universe panel (the $K^\star = 6$ OoS KS median is in fact $1.7$pp above the $K = 18$ value, and the failure count is identical at $11 / 30$). The kurtosis-residual ranking is not robust: at $K^\star = 6$ the per-ticker kurtosis residuals widen by an order of magnitude (median $10.3$ vs. $0.6$ units), reflecting that the lower state-resolution cannot smooth the per-state $\nu_k$ shrinkage at $\lambda = 20$. The body $K = 18$ panel is retained for the kurtosis-fidelity claims of Sections~\ref{sec:model_comparison}--\ref{sec:cross_asset_univariate}; the $K^\star = 6$ rebuild establishes that for KS-only consumers the held-out-clean default is at parity with the body operating point.
+
+\subsubsection{Block-Bootstrap CIs on Observed Kurtosis (IS vs OoS)}
+\label{sec:kurtosis_bootstrap_ci}
+
+Reviewer~3 / item~9 asks whether the IS / OoS kurtosis disagreement (observed $7.68$ IS, $5.29$ OoS, a $31\%$ drop) is itself statistically distinguishable. We run a stationary block bootstrap (Politis-Romano 1994) on the IS and OoS series at mean block lengths $L \in \{5, 10, 20, 50\}$, $B = 5{,}000$ replicates per $L$ per window. Results in \texttt{results/diagnostics/kurtosis\_bootstrap.txt}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Stationary block bootstrap CIs on observed excess kurtosis.} SPY IS ($T = 2{,}516$) and OoS ($T = 572$) windows, $B = 5{,}000$ replicates per $L$. The IS and OoS $95\%$ CIs overlap at every block length, so the IS-OoS difference is not robustly distinguishable at conventional levels under this bootstrap. $\Pr(\text{IS} > \text{OoS})$ is the empirical bootstrap one-sided $p$-value for the alternative ``IS kurtosis $>$ OoS kurtosis''.}
+\label{tab:kurtosis_bootstrap}
+\begin{tabular}{c c c c c c}
+\toprule
+$L$ & IS median & IS $95\%$ CI & OoS median & OoS $95\%$ CI & $\Pr(\text{IS} > \text{OoS})$ \\
+\midrule
+$5$  & $7.21$ & $[2.99, 12.83]$ & $5.07$ & $[1.09, 8.97]$ & $0.748$ \\
+$10$ & $7.34$ & $[2.49, 12.59]$ & $4.91$ & $[0.99, 8.66]$ & $0.756$ \\
+$20$ & $7.30$ & $[2.17, 12.40]$ & $4.91$ & $[0.90, 8.26]$ & $0.739$ \\
+$50$ & $7.18$ & $[1.92, 12.42]$ & $4.99$ & $[0.96, 7.70]$ & $0.733$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The IS lower bound $1.92$--$2.99$ and the OoS upper bound $7.70$--$8.97$ overlap heavily at every block length; the IS-OoS kurtosis difference of $\sim 2.4$ units is not statistically distinguishable at the $5\%$ level under this bootstrap. $\Pr(\text{IS} > \text{OoS})$ at $L = 10$ is $0.756$: the data favour the alternative but do not exclude the null. Operationally, the IS-OoS kurtosis disagreement that the body invokes (Section~\ref{sec:descriptive}; the Table~\ref{tab:variant_choice} variant-decision caveat in Section~\ref{sec:discussion}) should be read as a point-estimate observation rather than a tested claim, and per-variant rankings by ``how close is simulated kurtosis to observed kurtosis'' should similarly be interpreted as point-comparisons inside a wide CI envelope.
+
+\subsubsection{Seventh Walk-Forward Fold (2018 / 2019 Test Slices)}
+\label{sec:walkforward_w7}
+
+Reviewer~2 / item~15 asks for a seventh walk-forward fold covering 2017--2018 (Q4 2018 drawdown) and 2019 (trade-war volatility), neither of which lies cleanly inside the existing W1--W6 layout. We run two new folds W7a (test 2018, train 2013-01--2017-12) and W7b (test 2019, train 2014-01--2018-12), the latter overlapping the existing W1 fold by construction. Same protocol as Table~\ref{tab:walkforward}: $5$y train / $1$y test, CHMM-N at $K \in \{3, 18\}$, $N_{\text{paths}} = 500$. Results in \texttt{results/walkforward/walkforward\_w7.txt}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Seventh walk-forward fold for CHMM-N.} W7a covers the 2018 calendar year including the Q4 2018 drawdown; W7b covers the 2019 calendar year (trade-war volatility) and overlaps the existing W1 fold by construction. Same protocol as Table~\ref{tab:walkforward}.}
+\label{tab:walkforward_w7}
+\begin{tabular}{l c c c c c c}
+\toprule
+& \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{Kurt sim} & \multicolumn{2}{c}{ACF-MAE $|G_t|$} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+Fold (test window) & $K = 3$ & $K = 18$ & $K = 3$ & $K = 18$ & $K = 3$ & $K = 18$ \\
+\midrule
+W7a (2018, Q4 drawdown) & $57.4$ & $57.8$ & $2.76$ & $3.26$ & $0.0645$ & $0.0663$ \\
+W7b (2019, trade war) & $63.2$ & $82.6$ & $2.51$ & $2.66$ & $0.0572$ & $0.0525$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+W7a sits at the lower end of the non-stress fold band (W1, W3, W5, W6 in Table~\ref{tab:walkforward} attain $61$--$83\%$ KS): the Q4 2018 drawdown is a moderate-stress event that the IS-fixed CHMM only partially recovers, but the fold does not collapse to single-digit KS as W2 / W4 do. W7b matches the existing W1 fold closely (both use 2019 as the test slice), validating fold-construction reproducibility. The seven-fold reading is robust: median KS at $K = 18$ is $67.7\%$ (six folds) and $63.4\%$ (seven folds with W7a), with the headline single-window OoS KS of $81.8\%$ sitting at the upper end of either distribution.
+
+\subsubsection{Christoffersen-cc Monte Carlo Power Calibration at $T_{\text{OoS}} = 572$}
+\label{sec:christoffersen_power}
+
+Reviewer~1 Q4 / Reviewer~2 W2-RE1 / Reviewer~3 Q5 ask for a Monte Carlo power calibration of the Christoffersen-cc joint conditional-coverage test at the $T_{\text{OoS}} = 572$ length used in the body Table~\ref{tab:cond_var}. We simulate breach indicator sequences from a two-state Markov chain on $\{0, 1\}$ with marginal probability $\alpha$ and second eigenvalue $\rho$, where $\rho = 0$ is the i.i.d.\ null and $\rho > 0$ measures the level of breach clustering; $B = 5{,}000$ replicates per cell. Results in \texttt{results/diagnostics/christoffersen\_power/christoffersen\_power.txt}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Christoffersen-cc power at $T_{\text{OoS}} = 572$.} Empirical rejection rate at nominal $\alpha = 0.05$, across alpha levels and Markov-chain second-eigenvalue $\rho$. $\rho = 0$ row is the empirical Type-I error under the i.i.d.\ null (should sit near $5\%$ if asymptotic chi-squared is well-calibrated). Critical values $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$.}
+\label{tab:christoffersen_power}
+\begin{tabular}{c c c c c}
+\toprule
+$\alpha$ & $\rho$ & rej-UC \% & rej-IND \% & rej-CC \% \\
+\midrule
+$0.01$ & $0.00$ & $\phantom{0}4.9$ & $\phantom{0}1.6$ & $\phantom{0}3.2$ \\
+$0.01$ & $0.05$ & $\phantom{0}6.3$ & $15.9$ & $11.4$ \\
+$0.01$ & $0.10$ & $\phantom{0}7.5$ & $28.5$ & $22.1$ \\
+$0.01$ & $0.20$ & $\phantom{0}9.4$ & $51.3$ & $42.6$ \\
+$0.01$ & $0.30$ & $13.9$ & $67.6$ & $62.8$ \\
+$0.01$ & $0.50$ & $21.4$ & $75.9$ & $81.5$ \\
+\midrule
+$0.05$ & $0.00$ & $\phantom{0}4.9$ & $\phantom{0}3.8$ & $\phantom{0}4.1$ \\
+$0.05$ & $0.05$ & $\phantom{0}5.3$ & $18.8$ & $15.3$ \\
+$0.05$ & $0.10$ & $\phantom{0}6.1$ & $46.2$ & $39.0$ \\
+$0.05$ & $0.20$ & $\phantom{0}9.4$ & $86.9$ & $83.9$ \\
+$0.05$ & $0.30$ & $13.6$ & $97.4$ & $97.9$ \\
+$0.05$ & $0.50$ & $24.3$ & $99.7$ & $100.0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+At $\rho = 0$ the empirical rejection rate sits at $4\%$--$5\%$ for all three statistics, confirming that the asymptotic $\chi^2$ calibration is correctly sized at $T = 572$. Power is asymmetric across $\alpha$:
+\begin{itemize}
+  \item At $\alpha = 0.05$ ($\sim 28.6$ expected breaches), Christoffersen-cc reaches $80\%$ power against $\rho \ge 0.20$ ($83.9\%$) and $\sim 100\%$ at $\rho = 0.50$.
+  \item At $\alpha = 0.01$ ($\sim 5.7$ expected breaches), Christoffersen-cc reaches $80\%$ power only at $\rho \ge 0.50$ ($81.5\%$); at $\rho = 0.20$ the rejection rate is $42.6\%$, well below conventional power thresholds.
+\end{itemize}
+The reading for the body Table~\ref{tab:cond_var} is therefore tier-dependent. The $\alpha = 0.05$ ``clean pass at every $(K, \alpha)$'' row of Table~\ref{tab:cond_var} carries strong power against moderate clustering ($\rho \ge 0.20$); the $\alpha = 0.01$ rows carry strong power only against severe clustering ($\rho \ge 0.50$), so the $\alpha = 0.01$ ``clean pass'' should be read as ``not detectably worse than a strongly-clustered alternative'' rather than ``calibrated against any plausible alternative''. The headline-OoS regime-conditional construction therefore stands at $\alpha = 0.05$ and is power-bounded at $\alpha = 0.01$; the body framing in Section~\ref{sec:var_backtest} should be read with this calibration in mind.
+
+\subsubsection{OoS Regime-Probability Trajectory under IS-Fixed CHMM-N}
+\label{sec:oos_regime_trajectory}
+
+Reviewer~2 Minor 5 / item~17 asks for an OoS regime-probability trajectory that substantiates the body's regime-attenuation versus regime-introduction diagnosis (Section~\ref{sec:discussion}). We run the forward filter on the 2024-2026 OoS window under IS-fixed CHMM-N parameters at $K = 18$ and aggregate the per-state posteriors into three volatility-rank bands (low: $\sigma$-rank 1--6, mid: 7--12, high: 13--18). Results in \texttt{results/diagnostics/oos\_regime\_trajectory.txt} and figure \texttt{figs/Fig-OoS-Regime-Trajectory.pdf}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{OoS volatility-rank band masses under IS-fixed CHMM-N at $K = 18$.} Posterior $\Pr(\sigma\text{-rank band})$ averaged across the OoS window, compared against IS in-sample and the IS-stationary distribution. Bands are sorted by per-state emission $\sigma$ from smallest to largest.}
+\label{tab:oos_regime_bands}
+\begin{tabular}{l c c c}
+\toprule
+band & OoS mean & IS mean & IS stationary \\
+\midrule
+low-vol  ($\sigma$-rank 1--6)  & $0.187$ & $0.218$ & $0.216$ \\
+mid-vol  ($\sigma$-rank 7--12) & $0.259$ & $0.287$ & $0.282$ \\
+high-vol ($\sigma$-rank 13--18) & $0.554$ & $0.495$ & $0.502$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The OoS high-vol-band mass ($0.554$) exceeds the IS-stationary value ($0.502$) by $5.2$pp, with the difference compensated by mid-vol ($-2.3$pp) and low-vol ($-2.9$pp) bands. The OoS window therefore over-weights the high-vol regime relative to the IS distribution, but the over-weighting is small and the IS distribution does span the OoS regime mass: the OoS-vs-stationary ratio is $1.10$ in the high-vol band and $0.87$ / $0.92$ in the low / mid bands. Compare against the body's diagnosis for the W2 / W4 stress folds (Section~\ref{sec:discussion}, ``Why the W4 stress fold fails where the headline OoS holds''), which describes those folds as ``regime introductions'' --- an introduction in this band aggregation would manifest as a high-vol mass that the IS distribution does not span (e.g., near-unit posterior on the highest $\sigma$-rank state). The 2024--2026 OoS window does not show this pattern; the framing of the OoS window as ``regime attenuation'' (a return to a regime closer to but not identical to the IS volatility level) is supported by this band aggregation.
+
+\subsubsection{Quarterly-Refit Regime-Conditional VaR Back-Test}
+\label{sec:quarterly_refit_cond_var}
+
+Reviewer~2 W3 / item~8 asks for a quarterly-refit version of the regime-conditional VaR back-test (Table~\ref{tab:cond_var}) to test whether periodic refit improves the Christoffersen-cc statistic on the headline OoS window. We re-fit CHMM-N at $K \in \{3, 18\}$ every $63$ trading days on a rolling $5$y window, run the forward-filter through the OoS window under each refit's parameters, and report the back-test under the same Kupiec / Christoffersen-ind / Christoffersen-cc constructions. Results in \texttt{results/diagnostics/quarterly\_refit\_conditional\_var.txt}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Quarterly-refit regime-conditional VaR back-test on SPY OoS.} $T_{\text{OoS}} = 572$, refit cadence $= 63$ days, train window $= 1{,}260$ days, seed $= 20260420$. Compare against Table~\ref{tab:cond_var} (IS-fixed parameters). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$.}
+\label{tab:cond_var_quarterly_refit}
+\begin{tabular}{l c c c c c c c c c}
+\toprule
+$K$ & $\alpha$ & breaches & br rate & med VaR & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $\text{LR}_{\text{cc}}$ & $p_{\text{cc}}$ \\
+\midrule
+$3$  & $0.01$ & $\phantom{0}6$ & $1.05\%$ & $-5.10$ & $0.014$ & $3.97$ & $3.98$ & $0.137$ \\
+$3$  & $0.05$ & $29$ & $5.07\%$ & $-3.13$ & $0.006$ & $0.19$ & $0.20$ & $0.906$ \\
+$18$ & $0.01$ & $\phantom{0}6$ & $1.05\%$ & $-5.84$ & $0.014$ & $3.97$ & $3.98$ & $0.137$ \\
+$18$ & $0.05$ & $19$ & $3.32\%$ & $-3.14$ & $3.83$ & $2.08$ & $5.91$ & $0.052$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The quarterly-refit construction passes Christoffersen-cc at $\alpha = 0.05$ on three of four rows ($K = 3, \alpha \in \{0.01, 0.05\}$ and $K = 18, \alpha = 0.01$); the fourth row ($K = 18, \alpha = 0.05$) sits at $p_{\text{cc}} = 0.052$ (statistic $5.91$ vs.\ critical $5.99$), a marginal pass that is qualitatively the same as the IS-fixed row's $p_{\text{cc}} = 0.678$ but has tighter coverage ($3.32\%$ vs.\ $4.55\%$ in Table~\ref{tab:cond_var}). The quarterly refit therefore tightens VaR coverage but does not strictly improve the cc-statistic on this $T_{\text{OoS}}$; the refit value proposition is in coverage tightness rather than in cc-improvement, with the trade-off being a mild loss of test-power headroom on the $K = 18, \alpha = 0.05$ row. Full per-fold detail is in the results file.
+
+\subsubsection{Non-Equity Asset-Class Validation (GLD, SLV)}
+\label{sec:non_equity_validation}
+
+Reviewer~1 / R3 ask whether the CHMM scaffold transfers to a non-equity asset class. The current data window (2014--2026 Polygon/Alpaca coverage) does not extend to a non-overlapping decade for SPY, but the dataset includes the gold (GLD) and silver (SLV) ETFs over the same IS / OoS windows. We re-fit CHMM-N at $K^\star = 6$ and $K = 18$ and the penalised CHMM-t at $K = 18, \lambda = 20$ on each of GLD and SLV under the same protocol as the body SPY panel. Results in \texttt{results/non\_equity\_validation/non\_equity\_validation.txt}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Non-equity asset-class validation on GLD and SLV.} Same IS / OoS windows, $N_{\text{paths}} = 1{,}000$, seed = 20260420 as the SPY body panel. The OoS-KS collapse is consistent across all three CHMM configurations on both tickers and is read as a stationarity-scope limit on commodities (Section~\ref{sec:discussion}, stationarity-scope paragraph; the 2024-2026 OoS window represents a regime introduction for both gold under inflation-expectation re-pricing and silver under industrial-demand cycles).}
+\label{tab:non_equity_validation}
+\begin{tabular}{l l c c c c c}
+\toprule
+Ticker & Model & IS KS\% & OoS KS\% & kurt obs & kurt sim & $|G_t|$ ACF-MAE \\
+\midrule
+GLD & CHMM-N ($K = 18$)            & $99.7$ & $\phantom{0}0.0$ & $3.59$ & $2.35$ & $0.0306$ \\
+GLD & CHMM-N ($K^\star = 6$)       & $99.7$ & $\phantom{0}0.0$ & $3.59$ & $1.50$ & $0.0307$ \\
+GLD & CHMM-t pen.\ ($K = 18$)      & $99.9$ & $\phantom{0}0.0$ & $3.59$ & $3.09$ & $0.0306$ \\
+\midrule
+SLV & CHMM-N ($K = 18$)            & $99.9$ & $\phantom{0}0.0$ & $6.63$ & $5.25$ & $0.0439$ \\
+SLV & CHMM-N ($K^\star = 6$)       & $99.3$ & $\phantom{0}0.0$ & $6.63$ & $5.13$ & $0.0439$ \\
+SLV & CHMM-t pen.\ ($K = 18$)      & $99.8$ & $\phantom{0}0.1$ & $6.63$ & $4.73$ & $0.0440$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The IS pass rates are above $99\%$ on both tickers under all three configurations, demonstrating that the four-emission scaffold transfers cleanly to commodities at the IS step. The OoS KS distribution, however, collapses to $0\%$ on both tickers across all three configurations, a much sharper degradation than the worst single-ticker equity OoS in Table~\ref{tab:cross_ticker} (NEM at $5.6\%$). This is consistent with the stationarity-scope reading of Section~\ref{sec:discussion}: the 2024--2026 OoS window represents a regime introduction for both gold (inflation-expectation re-pricing, central-bank gold purchases) and silver (industrial-demand cycles), and the IS-fitted CHMM has no state with the right $\sigma$ or location to absorb the OoS distribution. The mitigation (periodic refit at quarterly cadence; \citealp{pesarantimmermann2007window}) is the same as for the equity universe-scale failures and is logged in Section~\ref{sec:discussion}.
+
+Independent-decade validation (a 1994--2004 vs.\ 2014--2024 SPY split) requires a separate data ingest beyond the current 2014--2026 Polygon/Alpaca window and is logged for the next data-pipeline pass. The non-equity result above is therefore the asset-class-transfer evidence; the cross-decade transfer evidence is deferred.

@@ -187,7 +187,7 @@ Pipeline~B reuses each per-asset CHMM marginal from Pipeline~A and injects cross
 
 For each model we simulate $P = 1{,}000$ independent paths of length $T$ and evaluate four core metrics, following the framework of \cite{stenger2024thinking}.
 All experiments use a deterministic global random seed ($20260420$); per-experiment sub-seeds are derived additively so that each block is independently reproducible from a single seed root.
-The two-sample Kolmogorov--Smirnov \cite{kolmogorov1933, smirnov1948} pass rate at $\alpha = 0.05$ over the $1{,}000$ paths scores distributional fidelity; the mean simulated excess kurtosis scores tail behaviour; and the mean absolute error of the absolute-return ACF over $L = 252$ lags,
+The two-sample Kolmogorov--Smirnov \cite{kolmogorov1933, smirnov1948} pass rate at $\alpha = 0.05$ over the $1{,}000$ paths scores distributional fidelity; the mean simulated excess kurtosis scores tail behaviour; and the mean absolute error of the absolute-return ACF (also written ACF of $|G_t|$ when paired with a panel-content figure caption; the two phrases are interchangeable throughout) over $L = 252$ lags,
 \begin{equation}
     \text{ACF-MAE} = \frac{1}{L}\sum_{\tau=1}^{L} \left| \hat\rho^{\text{obs}}_{|G|}(\tau) - \bar{\hat\rho}^{\,\text{sim}}_{|G|}(\tau) \right|,
     \label{eq:acf_mae}
