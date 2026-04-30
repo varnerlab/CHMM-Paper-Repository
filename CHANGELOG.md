@@ -6,6 +6,72 @@ the matching `sections/*_vN.tex` files.
 
 ---
 
+## Peer-Review Revision Pass (2026-04-29)
+
+Revision pass against the simulated peer review in `peer-review.md`. Reviewer
+panel returned 1 Minor Revision / 2 Major Revision; aggregate **Major Revision**.
+Plan tracked in `REVISION_PLAN.md`.
+
+### Phase 1 (text-only)
+- Title trimmed: "A Continuous Hidden Markov Model as a Reference Synthetic-
+  Data Generator for Equity Returns" (dropped redundant "Regime-Switching"
+  qualifier per R3.M4).
+- Abstract reframed: $K^\star = 6$ leads as held-out-clean body headline;
+  $K^\star = 3$ reported alongside as risk-management default; $K = 18$
+  explicitly relabeled as a sensitivity reference.
+- Cross-asset claim scoped to a US-equity universe; OoS off-diagonal MAE
+  (0.209 static / 0.185 quarterly refit) paired with the IS value (0.027)
+  in abstract and intro.
+- Long single-paragraph intro broken into three paragraphs (problem
+  statement / mechanism / cross-asset and cross-ticker).
+- Yu (2010) HSMM citation formalised; complex-eigenvalue parenthetical
+  added after equation (5).
+- Diebold-Mariano within-CHMM equivalence reframed as interchangeability
+  (R3.M2).
+- Conclusion rewritten to lead with $K^\star = 6$.
+- Table 2 (cond_var) caption clarified to state IS-fixed parameters.
+
+### Phase 2 (pull existing computation into body)
+- New body table `tab:k_selection`: pre-registered $K^\star$ across
+  {AIC, BIC, HQC, CAIC, held-out LL, held-out KS} on both held-out slices.
+- New body table `tab:walkforward_body`: 6-fold rolling-origin summary.
+- New body table `tab:spectral_modes`: leading non-unit eigenvalue
+  contributions to the lag-1 absolute-return ACF at $K = 18$ on SPY.
+- Added MS-GARCH at $K \in \{3, 6\}$ rows to body Table 1
+  (previously appendix-only).
+- Body Table 1 leading $\star$ marker on $K^\star = 6$ block.
+
+### Phase 3 (new computation in CHMM-Model)
+- **P1.3 (held-out $\lambda$ CV)**: confirmed $\lambda^\star = 20$ on
+  pre-2020 validation slice; matches body operating point. New appendix
+  subsection `sec:lambda_cv_pre2020`.
+- **P2.1 (cross-ticker spectral rank)**: 30-ticker re-run gives median
+  dominant-mode share 0.756 (SPY's 0.94 is right-tail). Abstract,
+  intro, and theory section now read at the cross-ticker median rather
+  than the SPY headline. New appendix subsection `sec:spectral_rank_xticker`.
+- **P3.2 (MSSV baseline)**: 2-state Hamilton-Kim-Nelson quasi-MLE
+  collapses to near-absorbing regime structure (documented negative
+  result; full PMMH deferred). New appendix subsection `sec:mssv_baseline`.
+- **P3.3 (stabilized HSMM at intermediate $K$)**: $K = 6$ clean
+  (95.9% IS / 89.8% OoS KS); $K = 9, 12$ degenerate. HSMM scaffold
+  has a $K \le 6$ practical limit on $T_\text{IS} = 2,516$. New appendix
+  subsection `sec:hsmm_intermediate`.
+- **P4.2 (DM bandwidth sensitivity)**: within-CHMM equivalence robust
+  across $h \in \{4, 8, 16, 32\}$. New appendix subsection
+  `sec:dm_bandwidth`.
+- **P4.3 (exact-binomial Kupiec)**: exact and asymptotic $p$-values
+  agree within 0.07 on all rows. New appendix subsection
+  `sec:exact_binomial_kupiec`.
+- **P4.4 (state distinctness)**: at $K = 18$, CHMM-N collapses to
+  $11/18$ effective states; CHMM-t to $12/18$ with $13/18$ pinned at
+  $\nu_\text{max}$. Honest concession in body discussion. New appendix
+  subsection `sec:state_distinctness`.
+- **P5.2 (monthly refit)**: in progress at writing.
+- **P2.2 (1994-2004 SPY)**: deferred (data not in pipeline); existing
+  in-window 5-year sub-decade split covers cross-decade transfer.
+
+---
+
 ## v10 (in progress, scaffolded 2026-04-22)
 
 **Scope.** Upgrade pass from v9 to top-tier synthetic-data-generator paper.

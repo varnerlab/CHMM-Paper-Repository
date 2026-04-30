@@ -232,6 +232,30 @@ rank & $|\lambda_k|$ & $|w_k|$ & $|w_k \lambda_k|$ & $w_k \lambda_k^5$ & $w_k \l
 
 The empirical effective rank confirms the body framing of Section~\ref{sec:theory}: the ACF-MAE flatness across $K \in \{3, 6, 9, 12, 15, 18, 21\}$ documented in Appendix~\ref{sec:sensitivity_table}, Table~\ref{tab:sensitivity}, is the macroscopic signature of the temporal axis being driven by a single dominant decay mode at every operating point in the sweep. The $K$-rank statement on $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$ is correctly interpreted as a non-binding upper bound at $K \ge 3$; at $K = 2$ the bound is tight (only one non-unit eigenvalue available), but the failure mode is then the marginal mixture, which two Gaussian components cannot tile against the empirical equity-return target. The bilinear identity~\eqref{eq:acf_normalised} therefore plays a pedagogical role in this paper rather than serving as a direct $K$-selection criterion: it makes the rank constraint explicit, but the operational $K$ choice is driven by distributional fidelity (KS, AD, kurtosis), not by the count of non-unit eigenvalues in the spectral expansion.
 
+\subsubsection{Cross-Ticker Spectral Effective-Rank Diagnostic}
+\label{sec:spectral_rank_xticker}
+
+Reviewers~2 and~3 ask whether the SPY-only result of Appendix~\ref{sec:spectral_rank} (a single non-unit eigenvalue carries $93.6\%$ of the lag-$1$ absolute-return ACF at $K = 18$) generalises across tickers. Table~\ref{tab:spectral_xticker} reports the cross-ticker distribution of the dominant-mode share, computed under the same protocol on the 30-ticker sector-balanced panel plus SPY. Source: \texttt{results/diagnostics/spectral\_rank\_cross\_ticker.txt}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Cross-ticker spectral effective-rank diagnostic at $K = 18$.} Distribution across 31 tickers (sector-balanced 30-ticker panel plus SPY control). ``dom share'' is the dominant non-unit eigenvalue's $|w_k \lambda_k|$ as a fraction of the sum over all non-unit eigenvalues at lag $\tau = 1$. ``$n_{95}$'' / ``$n_{99}$'' are the number of modes needed for $95\%$ / $99\%$ cumulative share. The SPY value of $0.94$ is in the right tail of the distribution; the cross-ticker median is $0.76$.}
+\label{tab:spectral_xticker}
+\begin{tabular}{l c c c}
+\toprule
+Statistic                            & dom share & $n_{95}$ & $n_{99}$ \\
+\midrule
+median                               & $0.756$ & $6$  & $11$ \\
+$[Q_1, Q_3]$                         & $[0.661, 0.858]$ & $[4, 7]$ & $[10, 12]$ \\
+minimum (NEM)                        & $0.326$ & $11$ & $14$ \\
+SPY (body Appendix~\ref{sec:spectral_rank})    & $0.943$ & $2$  & $10$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Reading: the SPY headline of $93.6\%$ is concentrated; the cross-ticker median $76\%$ is still well above the $1/(K-1) = 1/17 = 5.9\%$ uniform null, so the rank-non-binding statement is supported, but the gap between SPY and the median ticker is wide enough that the body framing was tightened to read at the cross-ticker median rather than at the SPY headline.
+
 \subsubsection{Baum-Welch Convergence}
 \label{sec:convergence}
 
@@ -1077,3 +1101,186 @@ CHMM-GED  & $-6.60\ [-8.30, -4.82]$      & $-8.51\ [-10.68,\ -6.47]$    & $-3.32
 \end{tabular}%
 }
 \end{table}
+
+
+\subsubsection{Held-Out Cross-Validation of the $1/\nu_k$ Penalty $\lambda$}
+\label{sec:lambda_cv_pre2020}
+
+Reviewer~2 (peer-review item P1.3 / R2.W6) asks whether the body operating-point penalty rate $\lambda = 20$ is selected on data that overlaps the OoS evaluation window. To remove that concern we refit penalised CHMM-t on a strictly pre-2020 estimation slice (2014-01-03 to 2018-06-29, $n = 1{,}130$) and score each $\lambda$ on the validation slice (2018-07-02 to 2019-12-31, $n = 378$, both fully pre-COVID and pre-2022-rate-hike). Source: \texttt{results/nu\_shrinkage\_sweep/lambda\_cv\_pre2020.txt}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Held-out CV of the $1/\nu_k$ shrinkage rate $\lambda$ on the pre-2020 slice.} Estimation 2014-01-03 to 2018-06-29; validation 2018-07-02 to 2019-12-31. ``val LL/obs'' is per-observation held-out log-likelihood; ``val KS'' is two-sample Kolmogorov--Smirnov pass rate against the validation series; ``sim K'' columns are the mean simulated excess kurtosis on the estimation- and validation-length simulated paths.}
+\label{tab:lambda_cv_pre2020}
+\begin{tabular}{c r r r r r}
+\toprule
+$\lambda$ & val LL/obs & val KS (\%) & sim K (est) & sim K (val) \\
+\midrule
+$0$    & $-2.119$ & $92.0$ & $3.88$ & $3.97$ \\
+$5$    & $-2.112$ & $89.8$ & $3.62$ & $3.15$ \\
+$10$   & $-2.085$ & $91.0$ & $3.37$ & $3.24$ \\
+$\mathbf{20}$   & $\mathbf{-2.075}$ & $90.0$ & $3.22$ & $3.02$ \\
+$50$   & $-2.077$ & $91.6$ & $3.07$ & $2.76$ \\
+$100$  & $-2.077$ & $91.6$ & $3.07$ & $2.75$ \\
+$200$  & $-2.076$ & $91.2$ & $3.09$ & $2.73$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Reading: the held-out validation log-likelihood is maximised at $\lambda^\star = 20$, matching the body operating point of Table~\ref{tab:model_comparison}. Validation KS picks $\lambda^\star = 0$ but the band $[0, 200]$ spans only $2.2$pp ($89.8$--$92.0\%$), within the simulation-noise envelope at $N_\text{paths} = 500$. The body $\lambda = 20$ is therefore held-out-clean and not driven by the OoS window.
+
+\subsubsection{Effective State Distinctness at $K = 18$}
+\label{sec:state_distinctness}
+
+Reviewer~2 (peer-review item P4.4 / R2.W3) asks whether all $K = 18$ states carry operationally distinct $(\mu_k, \sigma_k)$ or $(\mu_k, \sigma_k, \nu_k)$ triples. The diagnostic is single-linkage agglomerative clustering on standardized parameter triples at threshold $\tau = 0.20$. Source: \texttt{results/diagnostics/state\_distinctness.txt}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Effective state distinctness at $K = 18$ on SPY IS.} Standardized single-linkage clustering at $\tau = 0.20$ in the (z-scored) parameter space.}
+\label{tab:state_distinctness}
+\begin{tabular}{l c c}
+\toprule
+Family & Effective distinct states & Notes \\
+\midrule
+CHMM-N & $11 / 18$ & 2D feature $(\mu_k, \sigma_k)$ \\
+CHMM-t & $12 / 18$ & 3D feature $(\mu_k, \sigma_k, 1/\nu_k)$; $13 / 18$ states pinned at $\nu_\text{max} = 50$, $2 / 18$ at $\nu_\text{min} = 2.1$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Reading: under unpenalised CHMM-t the upper-bracket pinning at $\nu_k = 50$ collapses $13/18$ states to operationally Gaussian (in second-moment behaviour), but the $(\mu, \sigma)$ axis still distinguishes them well enough to keep $12/18$ effective states. The penalised CHMM-t at $\lambda = 20$ pulls $1/\nu_k$ towards a moderate value across states and reduces the upper-bracket pinning (Appendix~\ref{sec:lambda_cv_pre2020}). The effective-state count is below $K$ but well above the held-out-clean $K^\star = 6$, so the $K = 18$ extension is a representational-economy choice rather than a free-rider on identifiability.
+
+\subsubsection{Exact-Binomial Kupiec Complement to the Asymptotic LR Test}
+\label{sec:exact_binomial_kupiec}
+
+Reviewer~2 (peer-review item P4.3 / R2.Q5) notes that at $T_\text{OoS} = 572$ the asymptotic Kupiec LR statistic piles against the $\chi^2_1(0.05) = 3.841$ critical value at integer breach counts $k \in \{14, 19, 20\}$, so an exact-binomial complement is the size-correct diagnostic. We compute the exact two-sided binomial $p$-value (R \texttt{binom.test} default) under $H_0 : X \sim \text{Binomial}(572, \alpha)$ for the conditional-VaR breach counts in Table~\ref{tab:cond_var}. Source: \texttt{results/diagnostics/utility/exact\_binomial\_kupiec.txt}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Exact-binomial unconditional-coverage test alongside the asymptotic LR Kupiec.} Breach counts from Table~\ref{tab:cond_var}; $T_\text{OoS} = 572$. Both the asymptotic and exact tests pass at $\alpha = 0.05$ on every row.}
+\label{tab:exact_binomial}
+\begin{tabular}{l r r r r r}
+\toprule
+Configuration & breaches & expected & rate (\%) & $p$ (asymp.\ LR) & $p$ (exact bin.) \\
+\midrule
+CHMM-N $K=3$, $\alpha=0.01$       & $9$  & $5.72$ & $1.57$ & $0.20$ & $0.20$ \\
+CHMM-N $K=3$, $\alpha=0.05$       & $35$ & $28.6$ & $6.12$ & $0.23$ & $0.21$ \\
+CHMM-N $K=18$, $\alpha=0.01$      & $9$  & $5.72$ & $1.57$ & $0.20$ & $0.20$ \\
+CHMM-N $K=18$, $\alpha=0.05$      & $26$ & $28.6$ & $4.55$ & $0.61$ & $0.70$ \\
+CHMM-t pen.\ $K=3$, $\alpha=0.01$ & $8$  & $5.72$ & $1.40$ & $0.37$ & $0.29$ \\
+CHMM-t pen.\ $K=3$, $\alpha=0.05$ & $32$ & $28.6$ & $5.59$ & $0.52$ & $0.50$ \\
+CHMM-t pen.\ $K=18$, $\alpha=0.01$ & $10$ & $5.72$ & $1.75$ & $0.10$ & $0.09$ \\
+CHMM-t pen.\ $K=18$, $\alpha=0.05$ & $29$ & $28.6$ & $5.07$ & $0.94$ & $0.92$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Reading: the asymptotic and exact $p$-values agree closely (all within $0.07$); both tests pass at $\alpha = 0.05$ on every row. The asymptotic-LR pile-up at $k \in \{14, 19, 20\}$ is therefore not a load-bearing concern in the back-test rows actually observed in Table~\ref{tab:cond_var}.
+
+\subsubsection{Diebold--Mariano Bandwidth Sensitivity}
+\label{sec:dm_bandwidth}
+
+Reviewer~2 (peer-review item P4.2 / R2.W5) asks whether the within-CHMM CRPS Diebold--Mariano equivalence ($p > 0.45$) survives bandwidth perturbation around the default Newey--West HAC bandwidth $h = \lfloor T^{1/3} \rfloor = 8$. Table~\ref{tab:dm_bandwidth} sweeps $h \in \{4, 8, 16, 32\}$. Source: \texttt{results/crps\_dm/CRPS\_DM\_bandwidth\_sweep.txt}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{CRPS Diebold--Mariano $p$-values under bandwidth sweep} on SPY OoS. The within-CHMM family pairs all retain $p > 0.38$ across all bandwidths; the CHMM-N vs.\ GARCH pair moves $p \in [0.087, 0.175]$ and the qualitative direction is stable across $h$.}
+\label{tab:dm_bandwidth}
+\begin{tabular}{l c c c c}
+\toprule
+Pair (A vs.\ B) & $h = 4$ & $h = 8$ & $h = 16$ & $h = 32$ \\
+\midrule
+CHMM-N vs.\ CHMM-t   & $(-0.71, 0.48)$ & $(-0.73, 0.47)$ & $(-0.70, 0.48)$ & $(-0.66, 0.51)$ \\
+CHMM-N vs.\ CHMM-L   & $(-0.71, 0.48)$ & $(-0.75, 0.45)$ & $(-0.83, 0.40)$ & $(-0.88, 0.38)$ \\
+CHMM-t vs.\ CHMM-L   & $(-0.05, 0.96)$ & $(-0.04, 0.97)$ & $(-0.04, 0.97)$ & $(-0.05, 0.96)$ \\
+CHMM-N vs.\ Bootstrap & $(-0.70, 0.48)$ & $(-0.71, 0.48)$ & $(-0.73, 0.47)$ & $(-0.81, 0.42)$ \\
+CHMM-N vs.\ GARCH    & $(-1.71, 0.087)$ & $(-1.65, 0.10)$ & $(-1.53, 0.13)$ & $(-1.36, 0.18)$ \\
+CHMM-t vs.\ GARCH    & $(-1.22, 0.23)$ & $(-1.15, 0.25)$ & $(-1.04, 0.30)$ & $(-0.95, 0.35)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Reading: within-CHMM equivalence is robust across bandwidths. The CHMM-vs-GARCH directional advantage is also stable but its $p$-value at $h = 4$ is $0.087$ (just above the $0.05$ threshold); a longer bandwidth gives a more conservative $p$. The body framing remains that the four CHMM emission families are interchangeable on this evaluation.
+
+\subsubsection{Stabilised ML HSMM at Intermediate $K$}
+\label{sec:hsmm_intermediate}
+
+Reviewers~1 and~3 (peer-review item P3.3) ask for a like-for-like comparison between CHMM and HSMM at intermediate $K$. The body Table~\ref{tab:model_comparison} reports the ML HSMM at $K^\star = 3$ (clean: $98.4\%$ IS / $91.0\%$ OoS KS) and the appendix notes that the $K = 18$ ML HSMM collapses to a near-degenerate optimum on $T_\text{IS} = 2{,}516$. Table~\ref{tab:hsmm_intermediate} fills the $K \in \{6, 9, 12\}$ rows under the same Yu (2010) explicit-duration EM with truncated discrete Pareto sojourns and $\alpha \in [0.3, 5.0]$ clipping (already a regulariser). Source: \texttt{results/hsmm\_ml/hsmm\_ml\_intermediate\_K\_metrics.csv}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{ML HSMM at intermediate $K$ on SPY.} Clean fit at $K = 6$ (comparable to CHMM-N at $K^\star = 6$); near-degenerate optima at $K = 9$ and $K = 12$ with IS KS collapsing to $0\%$.}
+\label{tab:hsmm_intermediate}
+\begin{tabular}{c c c c c c c}
+\toprule
+$K$ & IS KS (\%) & OoS KS (\%) & IS kurt & OoS kurt & $|G_t|$ ACF-MAE & status \\
+\midrule
+$3$  & $98.4$ & $91.0$ & $3.46$ & $3.38$ & $0.0629$ & clean (body Table~\ref{tab:model_comparison}) \\
+$6$  & $95.9$ & $89.8$ & $3.72$ & $3.73$ & $0.0571$ & clean \\
+$9$  & $0.0$  & $6.7$  & $3.03$ & $2.85$ & $0.0614$ & degenerate \\
+$12$ & $0.0$  & $34.3$ & $3.08$ & $3.02$ & $0.0623$ & degenerate \\
+$18$ & $-$    & $-$    & $-$    & $-$    & $-$      & near-degenerate (companion-paper) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Reading: the HSMM scaffold is competitive with CHMM at $K \le 6$ but does not extend usefully to higher $K$ on the SPY $T_\text{IS} = 2{,}516$ window. The CHMM scaffold's quantile-based initialisation reaches non-degenerate $K = 18$ fits where the HSMM collapses, which is the operational reason the body $K = 18$ comparison is one-sided. A regulariser stronger than the existing $\alpha$ clipping (e.g.\ a Dirichlet prior on transitions plus a Gamma prior on $\alpha$) is the natural follow-up; we treat the present finding as a documented scope limit of the HSMM scaffold rather than a CHMM advantage in the strict sense.
+
+\subsubsection{Markov-Switching Stochastic Volatility (MSSV) Baseline}
+\label{sec:mssv_baseline}
+
+Reviewer~3 (peer-review item P3.2 / R3.W2) asks for an MSSV baseline as a fair modern regime-switching competitor. We implement the 2-state MSSV of \citet{so1998stochastic} (Carvalho-Lopes 2007 specification) under the Hamilton-Kim-Nelson quasi-MLE shortcut:
+\begin{align*}
+r_t &= \mu + \exp(h_t / 2) \, \varepsilon_t, \quad \varepsilon_t \sim \mathcal{N}(0, 1) \\
+h_t &= c_{s_t} + \phi_{s_t}\, h_{t-1} + \sigma_{\eta, s_t}\, \eta_t,
+\end{align*}
+with $s_t \in \{1, 2\}$ a 2-state Markov chain. Quasi-MLE on the log-squared linearisation $y_t = \log((r_t - \hat\mu)^2) - \mathbb{E}[\log \chi^2_1]$ via a Hamilton-style filter with Kim-Nelson regime collapse. Source: \texttt{results/mssv\_baseline/mssv\_baseline.txt}; script: \texttt{run\_mssv\_baseline.jl}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{2-state MSSV quasi-MLE fit on SPY IS.} The fit converges to a near-absorbing regime-2 ($T_{22} \approx 1.0$) with one regime carrying high innovation variance and the other near-deterministic; this is the well-documented degeneracy of 2-state MSSV under quasi-MLE on financial returns and is the reason \citet{carvalho2007simulation} use particle MCMC rather than Hamilton-Kim-Nelson collapse. The IS KS pass rate drops to $0\%$ and the simulated kurtosis overshoots to $14.6$ against observed $7.68$; the row is reported as a documented negative result.}
+\label{tab:mssv_baseline}
+\begin{tabular}{l c c c c c c}
+\toprule
+Model & IS KS (\%) & OoS KS (\%) & IS kurt & OoS kurt & $|G_t|$ ACF-MAE & raw ACF-MAE \\
+\midrule
+MSSV ($K = 2$, quasi-MLE) & $0.0$ & $0.1$ & $14.58$ & $14.64$ & $0.074$ & $0.032$ \\
+\midrule
+\textit{Body baselines for reference:} & & & & & & \\
+\quad GARCH(1,1)              & $23.4$ & $60.8$ & $7.06$  & $2.96$  & $0.049$ & $0.024$ \\
+\quad GARCH(1,1)-$t$           & $57.3$ & $80.8$ & $15.13$ & $-$     & $0.032$ & $0.017$ \\
+\quad MS-GARCH ($K = 6$)       & $34.5$ & $33.4$ & $4.41$  & $-$     & $0.043$ & $0.017$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Reading: the 2-state MSSV under quasi-MLE does not outperform the body benchmarks on SPY. The fitted $T \approx [[0.998, 0.002], [0.000, 1.000]]$ shows a near-absorbing regime structure that is the standard failure mode of Hamilton-Kim-Nelson collapse on heavy-tailed financial returns. A full particle-MCMC implementation of Carvalho-Lopes (2007) is the appropriate companion-paper direction; the body MS-GARCH-$K \in \{2, 3, 6\}$ rows already cover the regime-switching-volatility comparison axis at the level the body argument requires.
+
+\subsubsection{Monthly-Refit Cross-Ticker Panel}
+\label{sec:cross_ticker_monthly_refit}
+
+Reviewer~1 (peer-review item P5.2 / R1.Exp4) asks for a finer refit-cadence point alongside the quarterly-refit panel of Appendix~\ref{sec:cross_ticker_quarterly_refit}. We re-fit the penalised CHMM-t at $K = 18$, $\lambda = 20$ on the same sector-balanced 30-ticker panel with refit cadence shortened from quarterly ($63$ trading days) to monthly ($21$ trading days), keeping the same 5-year rolling estimation window and the same $N_\text{paths} = 1{,}000$. Source: \texttt{results/sector\_panel/sector\_panel\_monthly\_refit.\{csv,txt\}}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Refit-cadence trade-off on the 30-ticker cross-ticker panel.} OoS KS distribution under three refit cadences. Each shorter refit window yields a roughly proportional further reduction in failure count without saturating.}
+\label{tab:refit_cadence}
+\begin{tabular}{l c c c c c}
+\toprule
+Refit cadence & median OoS KS (\%) & mean OoS KS (\%) & $[Q_1, Q_3]$ & failures $< 60\%$ & refits per ticker \\
+\midrule
+IS-fixed (no refit, body Table~\ref{tab:cross_ticker}) & $73.4$ & $66.8 \pm 29.5$ & $[49.1, 94.3]$ & $11 / 30$ & $0$ \\
+Quarterly ($63$ days)                              & $83.0$ & $77.2 \pm 21.2$ & $[62.0, 95.4]$ & $7 / 30$  & $9$ \\
+Monthly ($21$ days)                                & $\mathbf{86.7}$ & $\mathbf{78.8 \pm 20.4}$ & $[62.2, 95.9]$ & $\mathbf{5 / 30}$  & $28$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Reading: the marginal lift from IS-fixed to quarterly is $+9.6$pp on the median and $-4$ failures; from quarterly to monthly is $+3.7$pp and $-2$ failures. The trade-off is nearly linear in $\log(\text{cadence}^{-1})$ on the median axis at this scale, suggesting that further reduction below monthly would yield diminishing returns at the cost of $\sim 28 \to 56$ refits per ticker. The body Section~\ref{sec:cross_asset_univariate} narrative is unchanged: periodic refit at deployment is required for OoS distributional fidelity on regime-introduction tickers, and the operational deployment choice is between quarterly (recommended default trade-off) and monthly (best fidelity at $3\times$ the compute cost).

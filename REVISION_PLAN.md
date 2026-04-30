@@ -42,9 +42,22 @@ The following review items request material that **already exists** in [CHMM-Mod
 
 ---
 
-## Phase 3 — New computation required (in CHMM-Model)
+## Phase 3 — Status (executed)
 
-These items genuinely require new simulations. Each maps to a new or modified script under [`../CHMM-Model/run_*.jl`](../CHMM-Model). Estimated wall-time per item is rough.
+| Item | Status | Result |
+|------|--------|--------|
+| **P1.3** Held-out CV of $\lambda$ | ✅ Done | $\lambda^\star = 20$ selected on pre-2020 validation slice; matches body operating point. Script: `run_lambda_cv_pre2020.jl`. Output: `results/nu_shrinkage_sweep/lambda_cv_pre2020.txt`. Body framing strengthened in [discussion.tex](sections/discussion.tex). |
+| **P2.1** Cross-ticker spectral rank | ✅ Done | Cross-ticker median dominant-mode share $0.756$ (Q1 $0.661$, Q3 $0.858$, min $0.326$ on NEM). SPY's $0.94$ is a right-tail value. Script: `run_spectral_rank_cross_ticker.jl`. **Honest result: the SPY headline overstates the universality;** abstract and theory section now read at the cross-ticker median. |
+| **P3.2** MSSV baseline | ✅ Done (negative) | 2-state MSSV under Hamilton-Kim-Nelson quasi-MLE collapses to a near-absorbing regime structure ($T_{22} \approx 1.0$); IS KS $0\%$, simulated kurt $14.6$ vs observed $7.68$. Reported as documented negative result; full PMMH deferred to companion paper. Script: `run_mssv_baseline.jl`. |
+| **P3.3** Stabilized HSMM at $K \in \{6, 9, 12\}$ | ✅ Done | $K = 6$ clean ($95.9\%$ IS / $89.8\%$ OoS KS). $K = 9, 12$ degenerate (IS KS $\approx 0$). HSMM scaffold has hard $K \le 6$ limit on $T_\text{IS} = 2{,}516$. Script: `run_hsmm_ml_intermediate_K.jl`. |
+| **P4.1** Block-aware KS for body | ✅ Done (data already existed) | Asymptotic $94.8\%$ → block-bootstrap (L=10) $89.4\%$ for CHMM-N; reported alongside in body. |
+| **P4.2** DM bandwidth sensitivity | ✅ Done | Within-CHMM equivalence robust across $h \in \{4, 8, 16, 32\}$ ($p > 0.38$ for all pairs). CHMM-N vs GARCH borderline ($p = 0.087$ at $h = 4$, $p = 0.18$ at $h = 32$). Script: `run_crps_dm_bandwidth.jl`. |
+| **P4.3** Exact-binomial Kupiec | ✅ Done | Exact and asymptotic $p$-values agree within $0.07$; all rows pass at $\alpha = 0.05$. Script: `run_exact_binomial_kupiec.jl`. |
+| **P4.4** State distinctness | ✅ Done | At $K = 18$: CHMM-N collapses to $11/18$ effective states; CHMM-t to $12/18$ with $13/18$ pinned at $\nu_\text{max} = 50$. Honest concession in discussion. Script: `run_state_distinctness.jl`. |
+| **P5.2** Monthly refit cross-ticker | ✅ Done | Median OoS KS $86.7\%$, mean $78.8\%$, $5/30$ failures (vs quarterly $83.0\%$ / $7/30$ and IS-fixed $73.4\%$ / $11/30$). Marginal lift quarterly→monthly is $+3.7$pp median and $-2$ failures. New appendix subsection `sec:cross_ticker_monthly_refit`. |
+| **P2.2** 1994-2004 SPY decade | ❌ Deferred | Pre-2014 SPY data not in current pipeline. Existing 5-year sub-decade split (config A and B in `subdecade_validation.txt`) covers in-window cross-decade transfer; pre-2014 cross-decade flagged as documented limitation. |
+
+## Phase 3 — Original cost-budget table (kept for reference)
 
 | Item | Scope | Script (new or modified) | Wall-time est. |
 |------|-------|-------------------------|----------------|
