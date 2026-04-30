@@ -21,7 +21,7 @@ and define $\widehat{\text{VaR}}_t(\alpha) = F_t^{-1}(\alpha)$ where $F_t(\cdot)
 \begin{table}[h]
 \centering
 \small
-\caption{\textbf{Regime-conditional VaR back-test, CHMM-N and penalised CHMM-t ($\lambda = 20$) on OoS} ($T_{\text{OoS}} = 572$, seed $20260420$). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. Every $(K, \alpha, \text{family})$ row passes Kupiec, Christoffersen-ind, and Christoffersen-cc cleanly at $\alpha = 0.05$.}
+\caption{\textbf{Regime-conditional VaR back-test, CHMM-N and penalised CHMM-t ($\lambda = 20$) on OoS} ($T_{\text{OoS}} = 572$, seed $20260420$). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. The forward filter is run under IS-fixed parameters $(\mathbf T, \{\boldsymbol\theta_k\})$ (no refit); only the one-step-ahead state-probability vector is updated through the OoS observations via Eq.~\eqref{eq:filter}. Every $(K, \alpha, \text{family})$ row passes Kupiec, Christoffersen-ind, and Christoffersen-cc cleanly at $\alpha = 0.05$.}
 \label{tab:cond_var}
 \begin{tabular}{l c c c c c c c c c}
 \toprule

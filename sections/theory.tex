@@ -63,9 +63,29 @@ and the autocorrelation
     w_k = c_k / \sigma_{|G|}^2.
     \label{eq:acf_normalised}
 \end{equation}
-Equation~\eqref{eq:acf_normalised} is the closed-form mixture-of-eigenvalues identity for the absolute-return ACF: at every positive lag $\tau \ge 1$ the autocorrelation is a real-coefficient sum of geometric decays at the non-unit eigenvalues of $\mathbf T$. The $w_k$ are real coefficients (not non-negative weights), but their cumulative sum is non-negative because it equals the between-state variance ratio of $|G_t|$. The lag-zero behaviour, the squared-return ACF, and a self-contained proof are in Appendix~\ref{sec:supp_spectral_acf}.
+Equation~\eqref{eq:acf_normalised} is the closed-form mixture-of-eigenvalues identity for the absolute-return ACF: at every positive lag $\tau \ge 1$ the autocorrelation is a real-coefficient sum of geometric decays at the non-unit eigenvalues of $\mathbf T$. The $w_k$ are real coefficients (not non-negative weights), but their cumulative sum is non-negative because it equals the between-state variance ratio of $|G_t|$. Complex-conjugate $\lambda_k$ pairs combine into damped oscillatory modes of the form $|\lambda_k|^\tau \cos(\tau \arg \lambda_k + \phi_k)$; non-diagonalisable $\mathbf T$ adds polynomial-times-geometric prefactors via Jordan blocks. The lag-zero behaviour, the squared-return ACF, and a self-contained proof are in Appendix~\ref{sec:supp_spectral_acf}.
 
 \paragraph{Ryd\'{e}n separation as a $K$-rank statement.}
-At $K = 2$, equation~\eqref{eq:acf_normalised} reduces to the mono-exponential form $\rho_{|G|}(\tau) = \lambda_2^\tau$ with $\lambda_2 = T_{11} + T_{22} - 1$; slow decay is matched by tuning $T_{11} + T_{22}$. The temporal axis is therefore satisfiable; the binding axis is the two-component marginal, which cannot match the empirical kurtosis target. At $K \ge 3$ the matrix admits multiple non-unit eigenvalues and the marginal mixture has enough components to match the observed tail. The Ryd\'{e}n et al.\ low-$K$ failure is therefore a rank statement on two coupled axes: $\mathrm{rank}(\mathbf T - \mathbf 1 \bar{\boldsymbol\pi}^\top) \le K - 1$ bounds the decay modes available to $\rho_{|G|}(\tau)$, and $K$ simultaneously bounds the marginal mixture's component count. Empirically, ACF-MAE is essentially flat across $K \in \{3, 6, \ldots, 21\}$ while KS rises (Section~\ref{sec:results}); a direct effective-rank diagnostic (Appendix~\ref{sec:spectral_rank}) shows a single non-unit eigenvalue carries $93.6\%$ of the lag-1 ACF at $K = 18$ on SPY, so the $K$-rank upper bound is non-binding at $K \ge 3$.
+At $K = 2$, equation~\eqref{eq:acf_normalised} reduces to the mono-exponential form $\rho_{|G|}(\tau) = \lambda_2^\tau$ with $\lambda_2 = T_{11} + T_{22} - 1$; slow decay is matched by tuning $T_{11} + T_{22}$. The temporal axis is therefore satisfiable; the binding axis is the two-component marginal, which cannot match the empirical kurtosis target. At $K \ge 3$ the matrix admits multiple non-unit eigenvalues and the marginal mixture has enough components to match the observed tail. The Ryd\'{e}n et al.\ low-$K$ failure is therefore a rank statement on two coupled axes: $\mathrm{rank}(\mathbf T - \mathbf 1 \bar{\boldsymbol\pi}^\top) \le K - 1$ bounds the decay modes available to $\rho_{|G|}(\tau)$, and $K$ simultaneously bounds the marginal mixture's component count. Empirically, ACF-MAE is essentially flat across $K \in \{3, 6, \ldots, 21\}$ while KS rises (Section~\ref{sec:results}); a direct effective-rank diagnostic (Appendix~\ref{sec:spectral_rank}) shows a single non-unit eigenvalue carries $93.6\%$ of the lag-1 ACF at $K = 18$ on SPY, so the $K$-rank upper bound is non-binding at $K \ge 3$ on this instance. The cumulative-contribution profile is monotone and concentrated: Table~\ref{tab:spectral_modes} reports the leading non-unit modes at $K = 18$; three modes carry $\ge 95\%$ of the lag-1 ACF and twelve modes carry $\ge 99\%$ (Appendix~\ref{sec:spectral_rank}, full per-mode panel).
+
+\begin{table}[t]
+\centering
+\small
+\caption{\textbf{Leading non-unit-eigenvalue contributions to the lag-$1$ absolute-return ACF}, CHMM-N on SPY IS at $K = 18$ (\texttt{results/diagnostics/spectral\_rank.txt}). Modes ordered by $|w_k \lambda_k|$ descending. ``cum lag-1'' is the cumulative fraction of $\sum_{k=2}^{K} w_k \lambda_k$ accounted for through that rank. The dominant non-unit mode at $|\lambda_2| = 0.929$ carries $93.6\%$ of the lag-1 ACF; the remainder is spread thinly across the lower-magnitude modes.}
+\label{tab:spectral_modes}
+\begin{tabular}{c c c c c}
+\toprule
+rank $k$ & $|\lambda_k|$ & $|w_k|$ & $|w_k \lambda_k|$ & cum.\ lag-1 \\
+\midrule
+$2$  & $0.929$ & $0.324$ & $0.301$ & $0.936$ \\
+$3$  & $0.335$ & $0.012$ & $0.0039$ & $0.948$ \\
+$4$  & $0.854$ & $0.003$ & $0.0022$ & $0.955$ \\
+$5$  & $0.231$ & $0.008$ & $0.0019$ & $0.961$ \\
+$6$  & $0.231$ & $0.008$ & $0.0019$ & $0.967$ \\
+$\vdots$ & & & & \\
+$13$ & $0.119$ & $0.006$ & $0.0007$ & $0.995$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 EM monotonicity \citep{wu1983convergence, mengrubin1993ecm} on the compact $\nu_k$ and $p_k$ brackets, identifiability up to label permutation across the four emission families \citep{allman2009identifiability, yakowitzspragins1968}, and MLE consistency \citep{bickel1998asymptotic, doucmoulinesryden2004} under Assumptions~\ref{ass:irred}--\ref{ass:moments} are collected with proof sketches in Appendix~\ref{sec:supp_propositions}.
