@@ -2,7 +2,7 @@
 
 A from-scratch walkthrough for prepping the meeting with the professor. Assumes no prior background in finance, hidden Markov models, or time-series statistics.
 
-Full title: *"A Regime-Switching Continuous Hidden Markov Model as a Reference Synthetic-Data Generator for Equity Returns"*
+Full title (post-review trim): *"A Continuous Hidden Markov Model as a Reference Synthetic-Data Generator for Equity Returns"* (the "Regime-Switching" qualifier was dropped per R3 to remove redundancy: the CHMM is regime-switching by construction).
 Authors: Abdulrahman Alswaidan, Cade Jin, Jeffrey D. Varner.
 
 ---
@@ -132,7 +132,7 @@ where $\lambda_2, \ldots, \lambda_K$ are the non-unit eigenvalues of the transit
 This identity is **folklore in the regime-switching literature** (Hamilton 1994, Krolzig 1997, Timmermann 2000), and we are explicit that we are not claiming to re-derive it. The substantive contribution is the **empirical effective-rank diagnostic** on the fitted $\hat{\mathbf{T}}$:
 
 - The algebraic upper bound on the number of distinct decay modes is $K - 1$ (the rank of $\mathbf{T} - \mathbf{1}\bar{\boldsymbol\pi}^\top$).
-- We measure the *effective* rank empirically and find it is non-binding at every $K \geq 3$ on equity-return data: a single non-unit eigenvalue carries **96.8% of the lag-1 absolute-return ACF at $K = 3$** and **93.6% at $K = 18$**.
+- We measure the *effective* rank empirically and find a single non-unit eigenvalue carries **96.8% of the lag-1 absolute-return ACF at $K = 3$** and **93.6% at $K = 18$** on SPY. The post-review 30-ticker re-run (P2.1) gives **median dominant-mode share 0.756 and minimum 0.326 on NEM**, so the SPY headline is a right-tail value. The "rank-non-binding at $K \geq 3$" claim is now scoped to the cross-ticker median, not generalized from SPY alone.
 - This reframes the Rydén low-K failure precisely. At $K = 2$ the rank constraint is binding (one mode, two-component marginal), and the empirical failure mode is *distributional* (KS on a Gaussian K = 2 mixture is 67-72% on SPY; ACF-MAE is essentially the same as at K = 18). At $K \geq 3$ the temporal axis decouples and the marginal-mixture component count drives the joint fit.
 - The semi-Markov scaffold relaxes the temporal axis with an explicit sojourn distribution. But on equity-return data the temporal axis is *already non-binding* at $K \geq 3$ under standard Baum-Welch with quantile init. The operationally informative comparison between the CHMM and HSMM scaffolds therefore runs on the **distributional** axis.
 
@@ -200,7 +200,8 @@ The paper now reports **three operating points** for the CHMM:
 | **ML HSMM-N ($K^\star = 3$)** | 98.4% | **91.0%** | 3.46 | 3.38 | 0.0629 | -- |
 | **CHMM-N (K=18)** | 94.1% | 81.8% | 5.04 | 4.44 | 0.0509 | **1.0384** |
 | **CHMM-t pen. ($\lambda{=}20$, K=18)** | 95.0% | **85.8%** | **8.56** | **7.07** | 0.0542 | 1.0392 |
-| CHMM-t unpen. (K=18) | 95.6% | 85.7% | 14.35 | 10.71 | 0.0549 | 1.0399 |
+| CHMM-t unpen. ($\nu_{\min}{=}2.1$, K=18) | 95.6% | 85.7% | 14.35 | 10.71 | 0.0549 | 1.0399 |
+| CHMM-t unpen. ($\nu_{\min}{=}4$, K=18) [P1.2 ablation] | 95.5% | 85.0% | 13.25 | 9.39 | 0.0545 | 1.0397 |
 | **CHMM-L (K=18)** | 93.6% | 80.8% | 6.63 | 6.18 | 0.0567 | 1.0400 |
 | **CHMM-GED (K=18)** | **95.2%** | 84.3% | 5.15 | 4.80 | 0.0548 | 1.0406 |
 
@@ -208,7 +209,7 @@ The paper now reports **three operating points** for the CHMM:
 
 1. **The four CHMM variants at $K^\star = 6$ are the held-out-clean synthetic-data default.** CHMM-N's simulated kurtosis 5.26 matches observed OoS 5.29 within 0.03; ACF-MAE 0.0502 is on par with GARCH's 0.0485; KS 92.6% IS / 78.3% OoS sits well above every Gaussian-tailed peer.
 
-2. **The penalised CHMM-t at $\lambda = 20$ in the $K = 18$ block is the cleanest single-row IS / OoS kurtosis match.** Simulated kurtosis 8.56 IS / 7.07 OoS bracket observed 7.68 / 5.29 cleanly. Without the shrinkage prior, unpenalised CHMM-t IS kurtosis is 14.35, an artefact of one or two states pinning to the lower $\nu_k$ bracket.
+2. **The penalised CHMM-t at $\lambda = 20$ in the $K = 18$ block is the cleanest single-row IS / OoS kurtosis match.** Simulated kurtosis 8.56 IS / 7.07 OoS bracket observed 7.68 / 5.29 cleanly. Without the shrinkage prior, unpenalised CHMM-t IS kurtosis is 14.35, an artefact of one or two states pinning to the lower $\nu_k$ bracket. The reviewer-pressed $\nu_{\min} = 4$ ablation (P1.2) drops kurtosis to 13.25 IS / 9.39 OoS but does *not* bring it inside the bootstrap CI of observed: the bracket lift is worth roughly one kurtosis unit, so the $\lambda = 20$ shrinkage is doing real work the bracket alone cannot replicate.
 
 3. **ML HSMM-N at $K^\star = 3$ is a co-headline result, not a displaced one.** It posts the highest single-window OoS KS in the entire panel (91.0%), but its absolute-return ACF-MAE is 0.0629, indistinguishable from the i.i.d. baseline level, because the fitted Pareto sojourn concentrates probability mass on a single low-volatility state. The CHMM and HSMM scaffolds are best read as two complementary attacks on the same Markov backbone with different KS / ACF trade-offs.
 
@@ -240,6 +241,10 @@ We organise the diagnostics in three layers:
 **(iii) Regime-conditional Christoffersen-cc — the new headline.** At each OoS day $t$ we run the forward filter through $\mathcal F_{t-1}$ to get the one-step-ahead state forecast $\Prob(s_t = k \mid \mathcal F_{t-1})$, then define $\widehat{\text{VaR}}_t(\alpha) = F_t^{-1}(\alpha)$ where $F_t$ is the family-appropriate predictive mixture CDF. **Every $(K, \alpha, \text{family})$ row passes Kupiec, Christoffersen-ind, and Christoffersen-cc cleanly at $\alpha = 0.05$ on OoS.** The independence statistic improves from 5.26 (unconditional) to 0.52 (conditional) at $K = 18, \alpha = 0.05$: this is the regime-switching value proposition that the unconditional Kupiec headline did not exercise. Every constant-across-$t$ generator (CHMM unconditional, GARCH, bootstrap) rejects breach independence.
 
 The conditional construction extends to a **six-fold rolling-origin walk-forward with a 19/24 aggregate pass-rate** at $\alpha = 0.05$. The two failures concentrate on the COVID and 2022 rate-hike-onset stress folds, which the univariate walk-forward already flags as out-of-distribution by KS.
+
+**Multiple-testing correction (post-review, P1.3).** R2 pressed that 40+ Christoffersen-cc tests across the headline + walk-forward + four-family panels constitute an implicit multiple-comparison exposure. Benjamini-Hochberg at FDR $= 0.05$ over the 40 tests rejects 3/40 (vs 5/40 uncorrected); Bonferroni at $0.05/40$ rejects the same 3 rows. Excluding the W2 (COVID) stress fold, every row passes under both corrections. The conditional-VaR claim therefore *strengthens* under multiple-testing correction: the residual failures concentrate exactly where the body already says they would.
+
+**Exact-binomial Kupiec (P4.3).** Exact and asymptotic Kupiec $p$-values agree within 0.07 on every row at $T_{\text{OoS}} = 572$, so the unconditional-coverage layer is not an asymptotic artefact at this sample size.
 
 ### 8.2 Cross-ticker generalization (Pipeline A): sector-balanced 30-ticker panel
 
@@ -344,3 +349,82 @@ Stated plainly:
 - *"What about the OoS failures on the 30-ticker panel?"* Honest stationarity-scope limitation, not a model failure. 11/30 below 60% OoS KS at the IS-fixed univariate scale, concentrated in single-name regime introductions (LLY weight-loss-drug, UNH 2024 healthcare-policy compression). Quarterly refit shifts the median from 73.4% to 83.0% and reduces failures to 7/30. Failures are ticker-specific not sector-specific (ANOVA $F(9,20) = 0.44$, $p = 0.90$).
 - *"What about W2 COVID and W4 2022-rate-hike-onset failing the walk-forward?"* Those are the two stress folds where the IS distribution genuinely does not span the realised regime. Every constant-across-$t$ generator under any refit cadence fails KS on those folds. The regime-conditional Christoffersen-cc still passes 19/24 across the rolling-origin walk-forward.
 - *"What would scaling up look like?"* Skew-heavy-tailed emissions (skew-t, skew-Laplace), explicit-duration semi-Markov sojourns at higher $K$, untruncated regular vines or factor copulas for larger $d$, and an independent-decade validation (1994-2004 vs 2014-2024) are flagged as companion-paper directions.
+
+### 11.1 Questions specifically anticipated from the post-review pass
+
+- *"The IS bootstrap beats every CHMM operating point on raw OoS KS (92.1% vs 78-79%). Why is this not the headline?"* It is, on raw OoS KS at this single window, and the body now states that explicitly. The CHMM contribution is reframed around three use cases the bootstrap cannot serve: (i) **regime-conditional VaR**, since the bootstrap has no latent state forecast to condition on; (ii) **multi-asset copula composition**, since rank-reordering needs an analytic CDF per asset; (iii) **privacy / licensing**, since the bootstrap ships actual rows of the original data. On raw KS at this $T_{\text{OoS}}$, the bootstrap is the simpler choice; on the use cases the abstract names, only a parametric scaffold can serve.
+- *"You admit $K_{\text{eff}} \approx 11$ at $K = 18$. Doesn't that invalidate the Table 1 comparison against MS-GARCH at $K \in \{2, 3, 4, 6\}$?"* The state-distinctness diagnostic (P4.4) is now in the body. CHMM-N collapses to 11/18 effective states; CHMM-t to 12/18. The honest reading is that the rank-non-binding claim should be phrased at $K_{\text{eff}}$, not $K_{\text{nom}}$. The $K_{\text{eff}}$-corrected information-criterion re-rank is logged as deferred to the journal-revision pass; the body comparison still uses $K_{\text{nom}}$ but flags the gap explicitly.
+- *"You said the 30-ticker dominant-mode share has minimum 32.6% on NEM. Doesn't that break the rank-non-binding claim?"* On NEM specifically, yes: at 33% dominant-mode share, at least three modes carry comparable lag-1 ACF mass. The cross-ticker median 75.6% is the right framing, not the SPY 94%. The abstract and Section 5.3 now read at the median.
+- *"Did the multiple-testing correction kill the conditional-VaR claim?"* The opposite. BH at FDR 0.05 over 40 tests rejects 3/40 (vs 5/40 uncorrected); Bonferroni rejects the same 3 rows. Excluding W2 (COVID), every row passes under both corrections.
+- *"Did the $\nu_{\min} = 4$ ablation make the $\lambda = 20$ penalty unnecessary?"* No. The bracket lift to $\nu_{\min} = 4$ drops simulated kurtosis by roughly one unit (14.35 to 13.25 IS) but does not bring it inside the bootstrap CI of observed (7.68 IS). The $\lambda = 20$ shrinkage is a substantive design choice, not a bracket-choice artefact.
+- *"What changed in the deep-generative comparison?"* The body QuantGAN row is now the Wiese-style 7-block dilated-TCN architecture (no Lambert-W input pre-processing), not the 3-conv-layer baseline. KS still 0% IS / 0% OoS. The deep-generative class functions as a negative control on this dataset under WGAN training, and the body now says so plainly with the right architecture in the panel.
+- *"Why should anyone read this as a CHMM paper if ML HSMM wins on OoS KS?"* Because the abstract explicitly reframes CHMM and ML HSMM as complementary scaffolds with KS / ACF / kurtosis trade-offs selected by use case. ML HSMM-N at $K^\star = 3$ posts 91.0% OoS KS but 0.0629 ACF-MAE (i.i.d.-baseline level); the volatility-clustering diagnostic is essentially lost there. The post-review HSMM stabilization run (P3.3) shows the explicit-duration scaffold has a $K \leq 6$ practical limit on $T_{\text{IS}} = 2{,}516$, which scopes the "co-headline" to a narrow $K$ range.
+
+---
+
+## 12. What Changed After the Peer Review (and What It Means)
+
+This section is a delta-summary of the post-review revision pass against `peer-review.md`. Useful if the professor opens the meeting with "what's new since last time?"
+
+### 12.1 The reviewer panel and the verdict
+
+Three simulated reviewers (one moderate empirical-finance / regime-switching researcher, one hard financial-time-series econometrician, one very-hard skeptical comparator-method specialist) returned 1 Minor Revision and 2 Major Revision; aggregate verdict: **Major Revision**. The consolidated punch list ran to 28 actionable items across four tiers. The Phase 1 pass closed every Tier 1 item that was implementable inside the Julia pipeline and most Tier 2 items; Tier 3 / Tier 4 framing items were absorbed into the body and abstract; a small set of items (MS-GARCH R-package re-run, $K_{\text{eff}}$-corrected IC, sector-stratified random draw, independent-decade validation, random-init Rydén at $K=3$, conditional-VaR with quarterly refit) is logged as deferred to a journal-revision pass.
+
+### 12.2 Title and abstract framing changes
+
+- **Title trimmed.** "Regime-Switching" qualifier dropped (R3.M4): the CHMM is regime-switching by construction, the qualifier was redundant. New title: *A Continuous Hidden Markov Model as a Reference Synthetic-Data Generator for Equity Returns*.
+- **$K^\star = 6$ leads as the held-out-clean body headline** (R1.S3, R2.W5). Previously the abstract led with $K = 18$ kurtosis numbers; now $K^\star = 6$ is the headline operating point and $K = 18$ is explicitly relabeled as a sensitivity reference, not held-out-clean.
+- **ML HSMM as a co-headline, surfaced in the abstract** (R1.W2 + R3.W1 consensus). The strongest single-window OoS KS row in the panel was ML HSMM-N at $K^\star = 3$ (91.0%), beating every CHMM row. The abstract now reads CHMM and ML HSMM as complementary scaffolds with KS / ACF / kurtosis trade-offs, selected by use case.
+- **Cross-ticker spectral-rank claim now reads at the cross-ticker median** (R3.W3). Replaced "the rank constraint is non-binding at $K \geq 3$" with the cross-ticker median 75.6% / minimum 32.6% (NEM) framing.
+- **Walk-forward-median caveat in the abstract opener** (R3.M2). The single OoS window sits at the upper end of the rolling-origin distribution (median $\sim 67\%$ at $K = 18$, $\sim 62\%$ at $K^\star = 3$); that caveat is now in the abstract opener, not buried.
+- **Cross-asset claim scoped to the US-equity universe**, with both the IS off-diagonal MAE (0.027) and OoS off-diagonal MAE (0.209 static / 0.185 quarterly refit) paired in abstract and intro (R1.W4).
+
+### 12.3 New body content (pulled from existing computation)
+
+- **`tab:k_selection`**: pre-registered $K^\star$ across {AIC, BIC, HQC, CAIC, held-out LL, held-out KS} on both held-out slices. Makes it visually unambiguous that no held-out criterion picks $K = 18$ (R2.W5).
+- **`tab:walkforward_body`**: the 6-fold rolling-origin summary, formerly appendix-only.
+- **`tab:spectral_modes`**: leading non-unit eigenvalue contributions to lag-1 absolute-return ACF at $K = 18$ on SPY.
+- **MS-GARCH at $K \in \{3, 6\}$** rows added to body Table 1 (was appendix-only).
+- **TCN-architecture QuantGAN row promoted into Table 2** (R3.W7). Wiese-style 7-block dilated-TCN, no Lambert-W. KS IS 0% / OoS 0%, kurt IS 0.56 / OoS 0.53, $|G_t|$ ACF-MAE 0.0617. Body now states plainly that the deep-generative class functions as a negative control on this dataset under WGAN training, with the right architecture in the panel.
+
+### 12.4 New computation driven directly by reviewer requests
+
+- **CHMM-t $\nu_{\min} = 4$ bracket ablation (P1.2 / R1.W1 + R2.W1).** Re-fit CHMM-t at $K = 18$ with $\nu_{\min} = 4$, no penalty. Outcome: KS 95.5% IS / 85.0% OoS, kurt 13.25 IS / 9.39 OoS. The bracket lift drops kurtosis by $\sim 1$ unit but does *not* bring it inside the bootstrap CI of observed. Honest reading: the $\lambda = 20$ shrinkage is doing real work the bracket alone cannot replicate. Both rows now reported in Table 2 alongside.
+- **Benjamini-Hochberg correction on the conditional-VaR panel (P1.3 / R2.W2).** 40 Christoffersen-cc tests across the headline + walk-forward + four-family panels. BH at FDR $= 0.05$: **37/40 pass** (vs 35/40 uncorrected); Bonferroni at $0.05/40$: same 3 rejections. The 3 persistent failures concentrate on the W2 (COVID) stress fold the body already flags as out-of-distribution. Net effect: BH correction *strengthens* the conditional-VaR claim.
+- **Bootstrap-vs-CHMM use-case paragraph (P1.5 / R3.W2).** The IS bootstrap (99.7% IS / 92.1% OoS KS) beats every CHMM operating point on raw OoS KS at this single window. Body now states this explicitly and reframes the CHMM contribution around three use cases the bootstrap cannot serve: regime-conditional VaR (no latent state forecast in the bootstrap), multi-asset copula composition (rank-reordering needs an analytic CDF per asset), and privacy / licensing (the bootstrap ships actual rows of the original data).
+- **State-distinctness diagnostic (P4.4 / R2.W1).** At $K = 18$, CHMM-N collapses to 11/18 effective states under a single-linkage standardized-distance criterion; CHMM-t to 12/18, with 13/18 of CHMM-t's states pinned at the upper $\nu$ bracket. Honest concession in the body discussion. Operationally: the rank-non-binding claim should be read at $K_{\text{eff}} \approx 11$, not $K_{\text{nom}} = 18$.
+- **Held-out $\lambda$ cross-validation (P1.3).** Pre-2020 validation slice confirms $\lambda^\star = 20$, matching the body operating point. The penalty rate is no longer an in-sample-only choice.
+- **Cross-ticker spectral rank (P2.1).** 30-ticker re-run gives median dominant-mode share 0.756, minimum 0.326 on NEM. SPY's 0.94 is a right-tail value, not a representative central one.
+- **MSSV baseline (P3.2).** 2-state Hamilton-Kim-Nelson quasi-MLE collapses to a near-absorbing regime structure on the SPY window. Documented as a negative result; full PMMH MSSV deferred. Addresses R2's "what about a regime-switching SV alternative?" question with at least the QMLE point.
+- **Stabilized HSMM at intermediate $K$ (P3.3).** $K = 6$ HSMM-N is clean (95.9% IS / 89.8% OoS KS); $K = 9$ and $K = 12$ are degenerate. The HSMM scaffold has a $K \leq 6$ practical limit on $T_{\text{IS}} = 2{,}516$. This re-scopes the ML HSMM "co-headline" to the precise $K$ range where the explicit-duration scaffold is operationally usable.
+- **DM bandwidth sensitivity (P4.2 / R2.W7).** Within-CHMM CRPS-DM equivalence robust across truncation lag $h \in \{4, 8, 16, 32\}$. The interchangeability claim survives the long-run-variance specification probe.
+- **Exact-binomial Kupiec (P4.3).** Exact and asymptotic $p$-values agree within 0.07 on every row at $T_{\text{OoS}} = 572$. The unconditional-coverage layer is not an asymptotic artefact at this sample size.
+
+### 12.5 What was deferred and why
+
+| Deferred item | Reviewer | Reason for deferral |
+|---|---|---|
+| MS-GARCH `MSGARCH` R-package re-run (Ardia 2019) | R1.E3 + R2.E2 | Requires R install outside the Julia pipeline. Highest-priority deferred control. |
+| $K_{\text{eff}}$-corrected information-criterion re-rank | R2.E3 | Substantive rewrite; deferred. |
+| Sector-stratified random draw of 30 large-caps | R1.E4 | Data-collection task. |
+| Independent-decade validation 1994-2004 | R3.W8 | Data unavailable on Polygon / Alpaca. |
+| Random-init Rydén replication at $K = 3$ | R3.E3 | $K = 2$ replication remains in the body. |
+| Conditional-VaR with quarterly-refit forward filter | R2.E4 | Substantive; deferred. |
+| Per-ticker $\hat\lambda^\star$ across cross-ticker panel | R1.Q1 | Production recipe documented; full panel rerun deferred. |
+| Initialization-robustness sweep at $K \in \{6, 18\}$ | R1.E2 | Defer; one supplementary table. |
+| Bootstrap-CI midpoint as kurtosis target | R1.Q2 | Cosmetic reframe; defer. |
+| NEM diagnostic at $K \in \{3, 6, 18\}$ | R3.E4 | One-ticker followup; defer. |
+
+### 12.6 Bottom line for the meeting
+
+The post-review pass changes the framing but not the empirical conclusion. The CHMM still reproduces the three Cont stylized facts simultaneously at the held-out-clean $K^\star = 6$ operating point. The regime-conditional Christoffersen-cc still passes after multiple-testing correction. The cross-ticker generalisation still holds at the median. The four-emission-family panel still gives a clean tail-heaviness slider, with the penalised CHMM-t at $\lambda = 20$ as the kurtosis-fidelity row.
+
+What changed is the *honesty* of the framing:
+
+1. ML HSMM and the IS bootstrap are now openly conceded as winners on the raw single-window OoS KS metric.
+2. The rank-non-binding claim is scoped to the cross-ticker median (75.6%), not the SPY headline (94%).
+3. The $K_{\text{eff}} < K_{\text{nom}}$ at $K = 18$ admission is now in the body discussion.
+4. The TCN QuantGAN row replaces the truncated 3-conv-layer negative control in the body table.
+5. The defensible contribution is framed around the three use cases (regime-conditional VaR, multi-asset copula, privacy / licensing) that the IS bootstrap cannot serve, not around panel-leading raw KS.
+
+If the professor pushes on "what's the actual contribution after all these concessions?", the one-sentence answer is: a single reproducible Julia-package CHMM scaffold that lives in the joint-fit corner where prior simple Markov-backbone baselines could not, with three operating points calibrated to different consumer use cases and a regime-conditional VaR construction that survives multiple-testing correction and exercises the latent-state forecast directly, framed honestly relative to two stronger-on-one-axis alternatives (ML HSMM on KS, IS bootstrap on raw OoS KS).
