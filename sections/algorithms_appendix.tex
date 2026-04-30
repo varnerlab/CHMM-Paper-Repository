@@ -5,16 +5,16 @@ For reference, the in-text Baum-Welch description of Section~\ref{sec:chmm_def} 
 Define the forward variable $\alpha_t(k) = \Prob(O_{1:t}, S_t = k \mid \mathcal{M})$ and the backward variable $\beta_t(k) = \Prob(O_{t+1:T} \mid S_t = k, \mathcal{M})$.
 The log-space recursions are
 \begin{align}
-    \log \alpha_1(k) &= \log \pi_k + \log b_k(O_1), \label{eq:forward_init} \\
-    \log \alpha_t(j) &= \underset{i}{\text{logsumexp}}\!\left(\log \alpha_{t-1}(i) + \log T_{ij}\right) + \log b_j(O_t), \quad t = 2, \ldots, T, \label{eq:forward} \\[4pt]
+    \log \alpha_1(k) &= \log \pi_k + \log f_k(O_1), \label{eq:forward_init} \\
+    \log \alpha_t(j) &= \underset{i}{\text{logsumexp}}\!\left(\log \alpha_{t-1}(i) + \log T_{ij}\right) + \log f_j(O_t), \quad t = 2, \ldots, T, \label{eq:forward} \\[4pt]
     \log \beta_T(k) &= 0, \label{eq:backward_init} \\
-    \log \beta_t(i) &= \underset{j}{\text{logsumexp}}\!\left(\log T_{ij} + \log b_j(O_{t+1}) + \log \beta_{t+1}(j)\right), \quad t = T{-}1, \ldots, 1, \label{eq:backward}
+    \log \beta_t(i) &= \underset{j}{\text{logsumexp}}\!\left(\log T_{ij} + \log f_j(O_{t+1}) + \log \beta_{t+1}(j)\right), \quad t = T{-}1, \ldots, 1, \label{eq:backward}
 \end{align}
 where $\text{logsumexp}_i(x_i) = x_{\max} + \log \sum_i \exp(x_i - x_{\max})$.
 The posterior state-occupancy $\gamma_t(k)$ and pair-occupancy $\xi_t(i, j)$ quantities are
 \begin{equation}
     \gamma_t(k) = \frac{\alpha_t(k) \beta_t(k)}{\sum_j \alpha_t(j) \beta_t(j)}, \qquad
-    \xi_t(i, j) = \frac{\alpha_t(i)\, T_{ij}\, b_j(O_{t+1})\, \beta_{t+1}(j)}{\sum_{m,n} \alpha_t(m)\, T_{mn}\, b_n(O_{t+1})\, \beta_{t+1}(n)},
+    \xi_t(i, j) = \frac{\alpha_t(i)\, T_{ij}\, f_j(O_{t+1})\, \beta_{t+1}(j)}{\sum_{m,n} \alpha_t(m)\, T_{mn}\, f_n(O_{t+1})\, \beta_{t+1}(n)},
     \label{eq:gamma_xi}
 \end{equation}
 and the closed-form M-step updates are
@@ -28,7 +28,7 @@ and the closed-form M-step updates are
 The convergence criterion is $|\mathcal{L}^{(n)} - \mathcal{L}^{(n-1)}| < 10^{-4}$ with $\mathcal{L}^{(n)} = \text{logsumexp}_k \log \alpha_T^{(n)}(k)$, and simulation draws $S_1 \sim \text{Categorical}(\boldsymbol{\pi})$ and then iterates $G_t \sim \mathcal{N}(\mu_{S_t}, \sigma_{S_t}^2)$, $S_{t+1} \sim \text{Categorical}(\mathbf{T}_{S_t, \cdot})$ with no jump process.
 
 \paragraph{CHMM-t M-step (per-state ECM, closed form given $u_{t,k}$).}
-For Student-t emissions $b_k(x) = t_{\nu_k}(x; \mu_k, \sigma_k)$ the ECM formulation of \citet{peel2000robust, liu1995ml} treats the latent precision as an augmented E-step quantity,
+For Student-t emissions $f_k(x) = t_{\nu_k}(x; \mu_k, \sigma_k)$ the ECM formulation of \citet{peel2000robust, liu1995ml} treats the latent precision as an augmented E-step quantity,
 \begin{equation}
     u_{t,k} = \frac{\nu_k + 1}{\nu_k + ((O_t - \mu_k)/\sigma_k)^2},
     \label{eq:tprecision_supp}
@@ -49,7 +49,7 @@ We extend this M-step with an optional exponential shrinkage prior on $1/\nu_k$,
 maximised by the same golden-section search ($\lambda = 0$ recovers the unpenalised \citet{peel2000robust, liu1995ml} ECM; the rate sweep and its effect on simulated IS kurtosis are in Section~\ref{sec:discussion}).
 
 \paragraph{CHMM-L M-step (closed-form weighted Laplace MLE).}
-For Laplace emissions $b_k(x) = \tfrac{1}{2 \beta_k} \exp(-|x - \mu_k|/\beta_k)$ (with the per-state Laplace scale renamed from the conventional $b_k$ to $\beta_k$ to avoid the symbol collision with the emission-density notation $b_k(\cdot;\boldsymbol\theta_k)$ used in Section~\ref{sec:chmm_def}) the weighted-MLE estimators are available in closed form:
+For Laplace emissions $f_k(x) = \tfrac{1}{2 \beta_k} \exp(-|x - \mu_k|/\beta_k)$ (with the per-state Laplace scale denoted $\beta_k$ rather than the canonical Laplace-scale symbol $b$) the weighted-MLE estimators are available in closed form:
 \begin{equation}
     \mu_k^{\text{new}} = \text{WeightedMedian}\!\left(O_{1:T};\, \gamma_{1:T}(k)\right),\qquad
     \beta_k^{\text{new}} = \frac{\sum_t \gamma_t(k)\, |O_t - \mu_k^{\text{new}}|}{\sum_t \gamma_t(k)}.
@@ -59,7 +59,7 @@ The weighted median is computed by cumulative-weight bracketing with linear inte
 The Laplace M-step carries no shape parameter, so CHMM-L is strictly cheaper per iteration than CHMM-t (which requires the per-state $Q_k$ search).
 
 \paragraph{CHMM-GED M-step (three-stage ECM with closed-form scale).}
-For Generalized Error Distribution emissions $b_k(x) = \mathrm{GED}(x; \mu_k, \alpha_k, p_k) = \frac{p_k}{2 \alpha_k \Gamma(1/p_k)} \exp\!\big(-(|x - \mu_k|/\alpha_k)^{p_k}\big)$ the M-step decomposes into three CM updates per state. Given current $(\mu_k^{(n)}, \alpha_k^{(n)}, p_k^{(n)})$, CM-1 updates the location by minimising the per-state weighted $L^{p_k}$ loss,
+For Generalized Error Distribution emissions $f_k(x) = \mathrm{GED}(x; \mu_k, \alpha_k, p_k) = \frac{p_k}{2 \alpha_k \Gamma(1/p_k)} \exp\!\big(-(|x - \mu_k|/\alpha_k)^{p_k}\big)$ the M-step decomposes into three CM updates per state. Given current $(\mu_k^{(n)}, \alpha_k^{(n)}, p_k^{(n)})$, CM-1 updates the location by minimising the per-state weighted $L^{p_k}$ loss,
 \begin{equation}
     \mu_k^{(n+1)} \;=\; \arg\min_{\mu \in [\hat\mu_k - 5\alpha_k,\, \hat\mu_k + 5\alpha_k]} \;\sum_t \gamma_t(k)\, \big|O_t - \mu\big|^{p_k^{(n)}},
     \label{eq:ged_mu}
@@ -71,7 +71,7 @@ by a $40$-iteration golden-section search; CM-2 updates the scale in closed form
 \end{equation}
 and CM-3 updates the shape by maximising the per-state $Q$-function over the bracket,
 \begin{equation}
-    p_k^{(n+1)} \;=\; \arg\max_{p \in [p_{\min},\, p_{\max}]} \;\sum_t \gamma_t(k)\, \log b_k\!\big(O_t;\, \mu_k^{(n+1)},\, \alpha_k^{(n+1)},\, p\big),
+    p_k^{(n+1)} \;=\; \arg\max_{p \in [p_{\min},\, p_{\max}]} \;\sum_t \gamma_t(k)\, \log f_k\!\big(O_t;\, \mu_k^{(n+1)},\, \alpha_k^{(n+1)},\, p\big),
     \label{eq:ged_p}
 \end{equation}
 again by a $40$-iteration golden-section search over $[p_{\min}, p_{\max}] = [0.5, 3.0]$. Equation~\eqref{eq:ged_alpha} is the unique zero of $\partial Q_k/\partial \alpha$, so CM-2 is exact maximization. CM-1 and CM-3 are bracketed maximization. Each CM step is therefore a partial maximization, and the standard ECM monotonicity result \citep{mengrubin1993ecm} applies on the compact bracket; Proposition~\ref{prop:ecm_monotone} states the guarantee in full. Boundary cases: $p_k = 2$ recovers Gaussian (with $\sigma = \alpha/\sqrt{2}$); $p_k = 1$ recovers Laplace (with $b = \alpha$).

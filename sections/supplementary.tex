@@ -35,7 +35,17 @@ This appendix collects the algorithmic content for the CHMM family: the forward-
 \subsection{Formal Theoretical Statements}
 \label{sec:supp_propositions}
 
-The following propositions are referenced in Section~\ref{sec:theory} and stated formally here for reference; each is a one-line specialisation of a standard result and the proof sketch is one sentence.
+The following assumptions and propositions are referenced in Section~\ref{sec:theory} and stated formally here for reference; each is a one-line specialisation of a standard result and the proof sketch is one sentence.
+
+\begin{assumption}[Irreducibility and aperiodicity]
+\label{ass:irred}
+The transition matrix $\mathbf T \in \R^{K \times K}$ is irreducible and aperiodic on the state space $\{1, \ldots, K\}$, so the chain admits a unique stationary distribution $\bar{\boldsymbol\pi}$ satisfying $\bar{\boldsymbol\pi}\,\mathbf T = \bar{\boldsymbol\pi}$ and $\lambda_1 = 1$ is a simple eigenvalue with all other eigenvalues strictly inside the unit disk \citep{levinperes2017markov}.
+\end{assumption}
+
+\begin{assumption}[Finite second moment and emission contrast]
+\label{ass:moments}
+Each per-state emission density $f_k(\cdot;\boldsymbol\theta_k)$ has finite second moment, $\E_{f_k}[G^2] < \infty$, and at least two states differ in either location $\mu_k$ or scale $\sigma_k$.
+\end{assumption}
 
 \begin{proposition}[ECM monotonicity for CHMM-t and CHMM-GED (and EM monotonicity for CHMM-N, CHMM-L)]
 \label{prop:ecm_monotone}
@@ -163,8 +173,10 @@ Subtracting $\mu^2$ from Step 1 cancels the dominant term, leaving
     \mathrm{Cov}\!\left(|G_t|,\, |G_{t+\tau}|\right)
     \;=\; \sum_{k=2}^K c_k\, \lambda_k^\tau,
     \qquad \tau \ge 1,
+    \qquad
+    c_k = \big(\mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\, \mathbf v_k\big)\big(\mathbf w_k^\top \mathbf m\big).
 \]
-which is equation~\eqref{eq:acf_exact}. Dividing by $\sigma_{|G|}^2 = \gamma(0)$ gives $\rho_{|G|}(\tau) = \sum_{k \ge 2} w_k\, \lambda_k^\tau$ with $w_k = c_k / \sigma_{|G|}^2$, equation~\eqref{eq:acf_normalised}.
+Dividing by $\sigma_{|G|}^2 = \gamma(0)$ gives $\rho_{|G|}(\tau) = \sum_{k \ge 2} w_k\, \lambda_k^\tau$ with $w_k = c_k / \sigma_{|G|}^2$, equation~\eqref{eq:acf_normalised}.
 \end{proof}
 
 \paragraph{Lag zero, the sum of weights, and the within-state white-noise contribution.}
@@ -236,7 +248,7 @@ Aggregate (mean / s.d.\ across the four folds) of per-observation held-out log-l
 
 \textbf{Robustness check at half-year cadence.} To verify that the result is not an artefact of the one-year fold cadence, we re-ran the same diagnostic with six expanding-window folds at half-year validation cadence (covering 2017--2019 in non-overlapping six-month chunks; train windows $\sim 3.0$y to $\sim 5.5$y). Source: \texttt{results/robustness/k\_selection\_kfold\_h12y\_pre2020.csv} and \texttt{\_agg.csv}; runner: \texttt{run\_k\_selection\_kfold\_h12y\_pre2020.jl}. Aggregate per-observation held-out log-likelihood (mean / s.d.\ across six folds): $-1.9221$ / $0.341$ at $K = 3$; $-1.9160$ / $0.346$ at $K = 6$; $-1.9568$ / $0.323$ at $K = 9$; $-2.0109$ / $0.315$ at $K = 12$; $-2.1281$ / $0.259$ at $K = 18$. Sampling-error reads: $K = 6$ vs $K = 3$ has mean diff $+0.006$, pooled SE $0.140$, approximate $z = +0.04$; $K = 18$ vs $K = 6$ has mean diff $-0.212$, pooled SE $0.125$, approximate $z = -1.70$. The half-year design's $K = 6$ vs $K = 3$ sign flips relative to the full-year design ($z = +0.04$ vs $z = -0.07$), but both magnitudes are well below the $|z| = 1$ threshold; the two designs agree that $K = 6$ vs $K = 3$ on mean held-out log-likelihood is indistinguishable from zero, and the sign flip across designs is itself evidence that the $K = 6$ / $K = 3$ choice is pure sampling noise on this data. The $K = 18$ vs $K = 6$ borderline result also replicates ($z = -1.70$ at half-year cadence vs $z = -1.92$ at full-year).
 
-\textbf{Reading.} The two-design k-fold result triggers R1 W1's contingency: $K = 6$ does not remain significantly preferred over $K = 3$ on held-out per-observation log-likelihood under expanding-window rolling-origin CV at either yearly or half-yearly fold cadence. The single-fold result that initially selected $K^\star = 6$ is one realisation; both four-fold and six-fold means cannot distinguish $K = 3$ from $K = 6$ at conventional levels. The held-out KS pass-rate criterion is not informative on either design (between-fold s.d.\ is dominated by 2017 calendar-year artefacts that hit every $K$ uniformly). The substantive read is that held-out-clean state-resolution selection on the strictly pre-2020 slice cannot distinguish $K = 3$ from $K = 6$ at conventional levels under either fold design; under R1 W1's explicit instruction the body operating point should be rebuilt at $K^\star = 3$. We have pre-positioned $K^\star = 3$ as a ``lower-state-count default for risk-management consumers'' in Table~\ref{tab:cond_var}; the rebuild is in scope for this revision and is described in the response-to-reviewers letter.
+\textbf{Reading.} The two-design k-fold result triggers R1 W1's contingency: $K = 6$ does not remain significantly preferred over $K = 3$ on held-out per-observation log-likelihood under expanding-window rolling-origin CV at either yearly or half-yearly fold cadence. The single-fold result that initially selected $K^\star = 6$ is one realisation; both four-fold and six-fold means cannot distinguish $K = 3$ from $K = 6$ at conventional levels. The held-out KS pass-rate criterion is not informative on either design (between-fold s.d.\ is dominated by 2017 calendar-year artefacts that hit every $K$ uniformly). The substantive read is that the held-out state-resolution selection on the strictly pre-2020 slice cannot distinguish $K = 3$ from $K = 6$ at conventional levels under either fold design; under R1 W1's explicit instruction the body operating point should be rebuilt at $K^\star = 3$. We have pre-positioned $K^\star = 3$ as a ``lower-state-count default for risk-management consumers'' in Table~\ref{tab:cond_var}; the rebuild is in scope for this revision and is described in the response-to-reviewers letter.
 
 \paragraph{Penalised-ECM rate sweep.}
 The bracket sensitivity is reported with its table in Section~\ref{sec:nu_diagnostics}; here we report the complementary $1/\nu_k$ shrinkage rate sweep referenced in Section~\ref{sec:discussion}. An exponential $1/\nu_k$ prior at rate $\lambda \in \{0, 5, 20, 50, 100, 200\}$ reduces simulated excess kurtosis monotonically: $14.30, 11.19, 8.43, 5.41, 3.96, 3.67$. The recommended rate $\lambda = 20$ brings simulated kurtosis to $\approx 8$ (close to the observed $7.69$) at a $1$pp IS KS cost. Only the $\nu_{\min}$ state parameter actually moves ($2.1 \to 4.89$); upper bracket and median remain at $50$. The overshoot is therefore a single-state artefact of the two tail regimes hitting the lower bracket under unpenalised ECM.

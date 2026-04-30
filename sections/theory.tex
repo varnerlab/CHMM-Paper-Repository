@@ -1,72 +1,17 @@
 \subsection{Spectral Mechanism for the Absolute-Return ACF}
 \label{sec:theory}
 
-This subsection restates, for self-containedness, the textbook spectral mechanism behind the absolute-return ACF and the assumptions under which it holds. The identity itself is not novel: the closed-form bilinear cross-moment $\mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\,\mathbf T^\tau\,\mathbf m$ for $|G_t|$ at lag $\tau$ and its eigendecomposition over the non-unit eigenvalues of $\mathbf T$ are folklore in the regime-switching literature (\citealp{hamilton1994time}, \S 22.2; \citealp{krolzig1997markov}, Ch.~3; the moment-generating-function form for general Markov-switching specifications is given by \citealp{timmermann2000moments}). Our contribution on this axis is exclusively the empirical \emph{application} of the identity to recast the SPY 2014--2024 instance of the \citet{ryden1998stylized} low-$K$ failure as an effective-rank statement on the deflated transition matrix $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$, plus the empirical demonstration that the implied rank constraint is non-binding at $K \ge 3$ on this instance (Section~\ref{sec:results}). Readers familiar with Hamilton or Krolzig may safely skip to the rank statement at the end of the subsection.
-Identifiability, MLE consistency, ECM monotonicity, and rank-reordering marginal preservation are each one-line specialisations of standard results; we collect them as cited propositions in Appendix~\ref{sec:supp_propositions} with one-sentence proof sketches.
-
-\paragraph{Assumptions.}
-\label{sec:assumptions}
-
-\begin{assumption}[Irreducibility and aperiodicity]
-\label{ass:irred}
-The transition matrix $\mathbf T \in \R^{K \times K}$ is irreducible
-and aperiodic on the state space $\{1, \ldots, K\}$.
-\end{assumption}
-
-\begin{assumption}[Finite second moment and emission contrast]
-\label{ass:moments}
-Each per-state emission density $b_k(\cdot;\boldsymbol\theta_k)$ has
-finite second moment, $\E_{b_k}[G^2] < \infty$, and at least two
-states differ in either location $\mu_k$ or scale $\sigma_k$.
-\end{assumption}
-
-Under Assumption~\ref{ass:irred} the chain $\mathbf T$ has a unique
-stationary distribution $\bar{\boldsymbol\pi}$ satisfying
-$\bar{\boldsymbol\pi}\,\mathbf T = \bar{\boldsymbol\pi}$, and admits a
-spectral decomposition with $\lambda_1 = 1$ a simple eigenvalue
-and all other eigenvalues $\lambda_2, \ldots, \lambda_K$ strictly inside
-the unit disk \citep{levinperes2017markov}.
-
-\paragraph{Spectral mechanism.}
-\label{sec:acf_mechanism}
-
-Let $G_t$ be a stationary CHMM and $\bar{\boldsymbol\pi}$ the stationary
-distribution of $\mathbf T$. Define the per-state absolute-return moment $m_k$ and the per-state second moment $M_k$ jointly,
+The closed-form bilinear identity for the absolute-return ACF of a stationary CHMM, $\E[|G_t|\,|G_{t+\tau}|] = \mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\,\mathbf T^\tau\,\mathbf m$ with $\mathbf m_k = \E[|G_t| \mid s_t = k]$, and its eigendecomposition over the non-unit eigenvalues of $\mathbf T$ are folklore in the regime-switching literature (\citealp{hamilton1994time}, \S 22.2; \citealp{krolzig1997markov}, Ch.~3; \citealp{timmermann2000moments}). Under irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred}, $\bar{\boldsymbol\pi}$ unique stationary; \citealp{levinperes2017markov}) and finite per-state second moments with non-trivial location/scale contrast (Assumption~\ref{ass:moments}), the spectral decomposition $\mathbf T^\tau = \mathbf 1\bar{\boldsymbol\pi}^\top + \sum_{k=2}^K \lambda_k^\tau\, \mathbf v_k \mathbf w_k^\top$ subtracts the marginal product to give the ACF
 \begin{equation}
-    m_k \;=\; \E\!\left[\,|G_t|\;\big|\; s_t = k\right],
+    \rho_{|G|}(\tau) \;=\; \sum_{k=2}^{K} w_k\, \lambda_k^{\tau},
     \qquad
-    M_k \;=\; \E\!\left[\,G_t^2\;\big|\; s_t = k\right],
-    \qquad k = 1, \ldots, K,
-    \label{eq:per_state_moments}
-\end{equation}
-and stack them into vectors $\mathbf m = (m_1, \ldots, m_K)^\top$ and $\mathbf M = (M_1, \ldots, M_K)^\top$. The autocovariance derivation below uses $\mathbf m$ for $\rho_{|G|}(\tau)$ at $\tau \ge 1$; the lag-zero discussion at the end of the paragraph picks up $M_k$ where the conditional product is the per-state second moment rather than $m_k^2$.
-
-Conditioning on the latent state pair $(s_t, s_{t+\tau})$ and using that emissions are conditionally independent given the state sequence,
-\begin{equation*}
-    \E\!\left[|G_t|\,|G_{t+\tau}|\right]
-    = \sum_{i,j} \bar{\boldsymbol\pi}_i\, (\mathbf T^\tau)_{ij}\, m_i\, m_j
-    = \mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\, \mathbf T^\tau\, \mathbf m.
-\end{equation*}
-Under Assumption~\ref{ass:irred} the spectral decomposition of $\mathbf T$ reads $\mathbf T^\tau = \mathbf 1\bar{\boldsymbol\pi}^\top + \sum_{k=2}^K \lambda_k^\tau\, \mathbf v_k \mathbf w_k^\top$ with $(\mathbf v_k, \mathbf w_k)$ the right and left eigenvectors of $\mathbf T$ associated with $\lambda_k$ (normalised so that $\mathbf w_k^\top \mathbf v_k = 1$). The first term contributes $(\bar{\boldsymbol\pi}^\top \mathbf m)^2 = (\E|G_t|)^2$, and subtracting the product of marginals yields the autocovariance
-\begin{equation}
-    \mathrm{Cov}\!\left(|G_t|,\, |G_{t+\tau}|\right)
-    \;=\; \sum_{k=2}^{K} c_k\, \lambda_k^{\tau},
-    \qquad
-    c_k = \big(\mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\, \mathbf v_k\big)\big(\mathbf w_k^\top \mathbf m\big),
-    \label{eq:acf_exact}
-\end{equation}
-and the autocorrelation
-\begin{equation}
-    \rho_{|G|}(\tau)
-    \;=\; \sum_{k=2}^{K} w_k\, \lambda_k^{\tau},
-    \qquad
-    w_k = c_k / \sigma_{|G|}^2.
+    w_k = \big(\mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\, \mathbf v_k\big)\big(\mathbf w_k^\top \mathbf m\big) / \sigma_{|G|}^2.
     \label{eq:acf_normalised}
 \end{equation}
-Equation~\eqref{eq:acf_normalised} is the closed-form mixture-of-eigenvalues identity for the absolute-return ACF: at every positive lag $\tau \ge 1$ the autocorrelation is a real-coefficient sum of geometric decays at the non-unit eigenvalues of $\mathbf T$. The $w_k$ are real coefficients (not non-negative weights), but their cumulative sum is non-negative because it equals the between-state variance ratio of $|G_t|$. Complex-conjugate $\lambda_k$ pairs combine into damped oscillatory modes of the form $|\lambda_k|^\tau \cos(\tau \arg \lambda_k + \phi_k)$; non-diagonalisable $\mathbf T$ adds polynomial-times-geometric prefactors via Jordan blocks. The lag-zero behaviour, the squared-return ACF, and a self-contained proof are in Appendix~\ref{sec:supp_spectral_acf}.
+Equation~\eqref{eq:acf_normalised} is a real-coefficient sum of geometric decays at the non-unit eigenvalues of $\mathbf T$; complex-conjugate $\lambda_k$ pairs combine into damped oscillatory modes and non-diagonalisable $\mathbf T$ adds polynomial-times-geometric prefactors via Jordan blocks. A self-contained derivation, the lag-zero behaviour, and the squared-return ACF are in Appendix~\ref{sec:supp_spectral_acf}; the formal Assumptions~\ref{ass:irred}--\ref{ass:moments}, and the cited propositions on identifiability, MLE consistency, and ECM monotonicity, are in Appendix~\ref{sec:supp_propositions}. Our contribution on this axis is exclusively empirical: applying~\eqref{eq:acf_normalised} to recast the \citet{ryden1998stylized} low-$K$ failure on the SPY 2014--2024 instance as a rank statement on $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$ and demonstrating empirically that the implied $K - 1$ rank bound is non-binding at $K \ge 3$.
 
 \paragraph{Ryd\'{e}n separation as a $K$-rank statement.}
-At $K = 2$, equation~\eqref{eq:acf_normalised} reduces to the mono-exponential form $\rho_{|G|}(\tau) = \lambda_2^\tau$ with $\lambda_2 = T_{11} + T_{22} - 1$; slow decay is matched by tuning $T_{11} + T_{22}$. The temporal axis is therefore satisfiable; the binding axis is the two-component marginal, which cannot match the empirical kurtosis target. At $K \ge 3$ the matrix admits multiple non-unit eigenvalues and the marginal mixture has enough components to match the observed tail. The Ryd\'{e}n et al.\ low-$K$ failure is therefore a rank statement on two coupled axes: $\mathrm{rank}(\mathbf T - \mathbf 1 \bar{\boldsymbol\pi}^\top) \le K - 1$ bounds the decay modes available to $\rho_{|G|}(\tau)$, and $K$ simultaneously bounds the marginal mixture's component count. Empirically, ACF-MAE is essentially flat across $K \in \{3, 6, \ldots, 21\}$ while KS rises (Section~\ref{sec:results}); a direct effective-rank diagnostic (Appendix~\ref{sec:spectral_rank}) shows a single non-unit eigenvalue carries $93.6\%$ of the lag-1 ACF at $K = 18$ on SPY, so the $K$-rank upper bound is non-binding at $K \ge 3$ on this instance. The cumulative-contribution profile is monotone and concentrated: Table~\ref{tab:spectral_modes} reports the leading non-unit modes at $K = 18$; three modes carry $\ge 95\%$ of the lag-1 ACF and twelve modes carry $\ge 99\%$ (Appendix~\ref{sec:spectral_rank}, full per-mode panel). Repeating the diagnostic on the 30-ticker cross-section (Appendix~\ref{sec:spectral_rank_xticker}) gives a wider distribution: the cross-ticker median dominant-mode share is $0.76$, the interquartile range is $[0.66, 0.86]$, and the minimum is $0.33$ on NEM. The SPY value is therefore in the right tail of the cross-ticker distribution, and the rank-non-binding claim is supported at the cross-ticker median rather than as a universal property of equity-return data.
+At $K = 2$, equation~\eqref{eq:acf_normalised} reduces to the mono-exponential form $\rho_{|G|}(\tau) = \lambda_2^\tau$ with $\lambda_2 = T_{11} + T_{22} - 1$; slow decay is matched by tuning $T_{11} + T_{22}$. The temporal axis is therefore satisfiable at $K = 2$; the binding axis is the two-component marginal, which cannot match the empirical kurtosis target. At $K \ge 3$ the matrix admits multiple non-unit eigenvalues and the marginal mixture has enough components to match the observed tail. Empirically, ACF-MAE is essentially flat across $K \in \{3, 6, \ldots, 21\}$ while KS rises (Section~\ref{sec:results}); a direct effective-rank diagnostic (Appendix~\ref{sec:spectral_rank}) shows a single non-unit eigenvalue carries $93.6\%$ of the lag-1 ACF at $K = 18$ on SPY, so the $K$-rank upper bound is non-binding at $K \ge 3$ on this instance. Three modes carry $\ge 95\%$ of the lag-1 ACF and twelve modes carry $\ge 99\%$ (Table~\ref{tab:spectral_modes}). Repeating the diagnostic on the 30-ticker cross-section (Appendix~\ref{sec:spectral_rank_xticker}) gives a wider distribution: cross-ticker median dominant-mode share $0.76$, interquartile range $[0.66, 0.86]$, minimum $0.33$ on NEM. The SPY value is therefore in the right tail of the cross-ticker distribution; the rank-non-binding claim is supported at the cross-ticker median rather than as a universal property of equity-return data.
 
 \begin{table}[t]
 \centering
@@ -87,5 +32,3 @@ $13$ & $0.119$ & $0.006$ & $0.0007$ & $0.995$ \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-EM monotonicity \citep{wu1983convergence, mengrubin1993ecm} on the compact $\nu_k$ and $p_k$ brackets, identifiability up to label permutation across the four emission families \citep{allman2009identifiability, yakowitzspragins1968}, and MLE consistency \citep{bickel1998asymptotic, doucmoulinesryden2004} under Assumptions~\ref{ass:irred}--\ref{ass:moments} are collected with proof sketches in Appendix~\ref{sec:supp_propositions}.

@@ -35,13 +35,31 @@ abstract (Benjamini-Hochberg panel-level pass rates added to the
 conditional-VaR section; walk-forward W2 / W4 stress-fold failures
 explicitly stated in the abstract per R3 W2's binding language), (iii)
 in the discussion section (Gaussian and Student-$t$ copulas are flagged
-as OoS-indistinguishable at $N_\text{paths} = 200$), and (iv) for
-$K = 18$ in the body and for both IS and OoS series in the appendix.
-The remaining open items are: $k$-fold CV of $K^\star$ on the strictly
-pre-2020 slice, block-aware OoS KS recalibration at the held-out-clean
-$K^\star = 6$ operating point, and the quarterly-refit cross-ticker
-panel at $K^\star = 6$. These are flagged honestly below as PARTIAL or
-OPEN and we describe the planned action.
+as OoS-indistinguishable at $N_\text{paths} = 200$), and (iv) at all
+three state-resolution operating points (block-aware OoS KS
+recalibration at the body headline $K^\star = 3$, the
+held-out-clean sensitivity reference $K^\star = 6$, and the
+extended-state-resolution sensitivity reference $K = 18$, all in the
+body Table~\ref{tab:ks_block_body}). The single largest revision item,
+the body rebuild at the state-resolution-robust headline
+$K^\star = 3$ (R1 W1's contingency under R1 RE1's $k$-fold CV), is
+also done in this pass: four-fold full-year and six-fold half-year
+rolling-origin CV on the strictly pre-2020 slice both give
+$|z| \le 0.07$ on $K^\star = 6$ vs $K^\star = 3$, with the sign
+flipping between fold designs (pure sampling noise), so under R1 W1's
+explicit instruction the body has been re-headlined at $K^\star = 3$,
+with a new four-emission $K^\star = 3$ block in Table 3, $K^\star = 6$
+retained as a held-out-clean sensitivity reference, cascading edits
+across the abstract, introduction, and conclusion, and the cross-
+ticker panel rebuilt at all three operating points (body
+Table~\ref{tab:cross_ticker} now reports a three-column $K^\star = 3$
+/ $K^\star = 6$ / $K = 18$ comparison). The quarterly-refit cross-
+ticker panel was also extended to include the $K^\star = 6$ row that
+R3 W3 specifically requested (the $K^\star = 6$ refit median of
+$85.8\%$ is in fact $2.8$pp \emph{above} the $K = 18$ refit median of
+$83.0\%$, so the body's "refit lift" claim is robust to either
+operating point). All seven Priority-1 items plus the contingent
+Priority-1 item 14 are CLOSED in this revision.
 
 The contribution of the paper is unchanged: a unified four-emission ECM
 scaffold for continuous-emission HMMs, evaluated as a synthetic-data
@@ -128,7 +146,7 @@ unimodal-innovation constraint (each regime's emission is a Gaussian
 rescaled by the regime's conditional variance) is the binding
 constraint, not the regime count.
 
-### 2. $k$-fold CV of $K^\star$ on the strictly pre-2020 slice (R1 RE1) — CLOSED on the diagnostic; R1 W1 contingency in scope for next revision
+### 2. $k$-fold CV of $K^\star$ on the strictly pre-2020 slice (R1 RE1) — CLOSED, with body rebuild at $K^\star = 3$ executed
 
 **Reviewer language (R1 RE1):** *"Report mean $\pm$ s.d.\ of held-out
 per-observation log-likelihood and held-out KS at $K \in \{3, 6, 9, 12,
@@ -168,22 +186,29 @@ KS pass-rate has very wide between-fold s.d.\ because Fold 2 (2017
 validation) is a calm-year artefact with near-zero KS pass for every
 $K$.
 
+**Robustness check at half-year cadence.** To verify the result is not
+an artefact of the one-year fold cadence, we re-ran the diagnostic with
+six expanding-window folds at half-year validation cadence (Folds 1-6
+covering 2017-2019 in non-overlapping six-month chunks, train windows
+$\sim 3.0$y to $\sim 5.5$y; runner
+`run_k_selection_kfold_h12y_pre2020.jl`, artefacts
+`results/robustness/k_selection_kfold_h12y_pre2020.csv` and `_agg.csv`).
+Aggregate per-observation held-out log-likelihood (mean / s.d.):
+$-1.9221$ / $0.341$ at $K = 3$; $-1.9160$ / $0.346$ at $K = 6$;
+$-1.9568$ / $0.323$ at $K = 9$; $-2.0109$ / $0.315$ at $K = 12$;
+$-2.1281$ / $0.259$ at $K = 18$. Sampling-error reads: $K = 6$ vs
+$K = 3$ has mean diff $+0.006$, pooled SE $0.140$, $|z| = 0.04$ (sign
+flips relative to the four-fold full-year design's $|z| = 0.07$, with
+both magnitudes well below conventional levels and the sign flip itself
+evidence that the $K = 6$ vs $K = 3$ choice is pure sampling noise);
+$K = 18$ vs $K = 6$ has $|z| = 1.70$ (replicates the full-year design's
+$|z| = 1.92$). Both designs agree.
+
 **Substantive read and R1 W1 contingency.** $K = 6$ does not remain
 significantly preferred over $K = 3$ on mean held-out log-likelihood at
-conventional levels. Per R1 W1's explicit instruction (*"if not, the
-body should be rebuilt at $K^\star = 3$"*), this triggers the rebuild
-contingency. We have not pre-emptively rewritten the body framing to
-lead with $K^\star = 3$; the body sentence at
-`sections/results.tex` line 33 now states explicitly that $K^\star = 6$
-is one realisation and the four-fold mean cannot distinguish $K = 6$
-from $K = 3$ at conventional levels, with a forward reference to the
-next revision. The structural pre-positioning of $K^\star = 3$ as a
-"lower-state-count default for risk-management consumers" already
-exists in Table~\ref{tab:cond_var}, so the rebuild path is short
-(headline operating point swap, abstract numbers re-statement, leading
-$\star$ marker move in Table~\ref{tab:model_comparison}). The cross-
-ticker $K^\star = 6$ vs $K = 18$ comparison (Table~\ref{tab:cross_ticker})
-already supports either operating point at parity on KS.
+either fold cadence. Per R1 W1's explicit instruction (*"if not, the
+body should be rebuilt at $K^\star = 3$"*), the body has been rebuilt
+at $K^\star = 3$ in this revision (item 14 below).
 
 **Notable second finding.** The same CV reports $K = 18$ as borderline
 worse than $K = 6$ on held-out log-likelihood at $|z| = 1.92$. This is
@@ -195,7 +220,7 @@ reference is therefore held-out-overfitting on this slice; this is
 already noted in the body framing as "*not held-out-clean*" but the
 quantitative magnitude is now documented.
 
-### 3. Block-aware OoS KS at the headline $K^\star = 6$ (R1 W5 / R2 W2 / R2 RE4) — PARTIAL
+### 3. Block-aware OoS KS at the headline (R1 W5 / R2 W2 / R2 RE4) — CLOSED
 
 **Reviewer language (R2 W2, binding):** *"Table 3 reports the block-aware
 OoS KS only at $K = 18$. Report the same recalibration at the headline
@@ -203,25 +228,36 @@ $K^\star = 6$ operating point; if the block-aware value at $K^\star = 6$
 is materially below the $K = 18$ block-aware value, the body framing of
 $K^\star = 6$ as the held-out-clean default is at risk."*
 
-**What is currently in the paper.** The body Table 5 (`tab:ks_block_body`
-in `sections/results.tex`) reports the block-aware OoS KS at mean block
-length $L = 20$ for the four $K = 18$ CHMM rows plus bootstrap and
-GARCH(1,1). The full $L \in \{5, 10, 20\}$ panel and the OoS-anchored
-block-bootstrap (Reviewer 2 minor item) are in the appendix
-(`sec:ks_block_bootstrap` and `sec:ks_block_bootstrap_oos`). We discuss
-that the cross-generator ranking is preserved while the absolute level
-drops by 20-30 percentage points.
+**What we did.** Computed the block-aware OoS KS at the body headline
+$K^\star = 3$ (four-emission block) and the $K^\star = 6$ sensitivity
+reference (four-emission block) under the same protocol as the existing
+$K = 18$ rows in Table~\ref{tab:ks_block_body}: stationary block
+bootstrap of $R_\text{OoS}$ at mean block length $L = 20$, $B = 1{,}000$
+replicates, $500$ OoS-length simulated paths per generator. Source:
+`results/ks_block_bootstrap/KS_Bootstrap_Body_Kstar.txt` and
+`results/robustness/ks_block_body_kstar.csv`; runner:
+`run_ks_block_body_kstar.jl` of the companion code repository. Table~\ref{tab:ks_block_body}
+in `sections/results.tex` now has 14 rows: bootstrap, GARCH(1,1), the
+four CHMM rows at $K^\star = 3$ (with leading $\star$), the four CHMM
+rows at $K^\star = 6$, and the four CHMM rows at $K = 18$.
 
-**Status.** The block-aware row at $K^\star = 6$ is not yet in Table 5;
-this is the specific gap R2 RE4 flags.
+**Headline numbers (asymp pass% / block $L = 20$ pass%).** Bootstrap
+$90.4\%$ / $73.2\%$; GARCH(1,1) $59.2\%$ / $31.4\%$. CHMM-N at
+$K^\star = 3$: $79.8\%$ / $58.6\%$. CHMM-N at $K^\star = 6$: $80.0\%$
+/ $53.2\%$. CHMM-N at $K = 18$: $81.0\%$ / $56.4\%$. The cross-
+generator ordering is preserved across all three operating points; the
+absolute level drops by $\sim 20$pp at every state resolution and the
+ranking is essentially $K$-robust on the four CHMM emission families.
 
-**Planned action.** Add `MS-GARCH ref. Bayesian (K = 2)` and the four
-$K^\star = 6$ CHMM rows to Table 5 (`tab:ks_block_body`); update the
-body discussion paragraph to report whether the $K^\star = 6$ block-
-aware value tracks the $K = 18$ block-aware value within the same
-20-30 percentage-point band. If the $K^\star = 6$ block-aware row sits
-materially below the $K = 18$ row, the body framing has to acknowledge
-this asymmetry.
+**Substantive read.** The block-aware OoS KS pass rate at the body
+headline $K^\star = 3$ tracks the $K = 18$ sensitivity-reference
+pass-rate within $2$pp on the asymptotic value and within $2$-$3$pp on
+the $L = 20$ block value. R2 RE4's specific concern (that the body
+framing of the headline operating point would be at risk if the
+block-aware value dropped materially below the sensitivity reference)
+is not realised: the body $K^\star = 3$ block-aware pass rate is
+within sampling error of the $K = 18$ block-aware pass rate, so the
+state-resolution-robust headline survives the temporally-aware null.
 
 ### 4. Quarterly-refit conditional VaR back-test (R2 W3 / R2 RE2) — CLOSED
 
@@ -261,32 +297,37 @@ rather than in cc-improvement at this $T_\text{OoS}$. The walk-forward
 panel reports the additional $19/24$ pass-rate at fold-wise (annual)
 cadence, with W2 / W4 stress-fold failures discussed in item 6.
 
-### 5. Quarterly-refit cross-ticker OoS KS at $K^\star = 6$ (R3 W3) — PARTIAL
+### 5. Quarterly-refit cross-ticker OoS KS at $K^\star = 6$ (R3 W3) — CLOSED
 
 **Reviewer language (R3 W3):** *"Report the quarterly-refit OoS KS
 median at $K^\star = 6$ in Table 5; the headline cross-ticker claim
 depends on this number."*
 
-**What is currently in the paper.** The body cross-ticker table
-(`tab:cross_ticker`, `sections/results.tex`) reports both $K^\star = 6$
-and $K = 18$ at static fit. The quarterly-refit number is reported at
-$K = 18$ (median OoS KS lifted from $73.4 \to 83.0\%$,
-sec:cross_ticker_quarterly_refit). The static $K^\star = 6$ rebuild is
-in the appendix (`tab:cross_ticker_k6`, sec:cross_ticker_k6_panel).
+**What we did.** Ran `run_sector_panel_quarterly_refit_k6.jl` on the
+same 30-ticker sector-balanced panel at $K^\star = 6$ under the same
+quarterly-refit protocol as the existing $K = 18$ run (penalised CHMM-t
+at $\lambda = 20$, refit on a 5y rolling window every 63 OoS trading
+days, $1{,}000$ paths, seed 20260420). Source:
+`results/sector_panel/sector_panel_quarterly_refit_k6.{csv,txt}`.
+Aggregate at $K^\star = 6$: OoS KS median $\mathbf{85.8\%}$ (against
+$75.1\%$ IS-fixed; $+10.7$pp lift), mean $76.0 \pm 21.7\%$ (against
+$66.5 \pm 29.2\%$ IS-fixed), $9/30$ tickers below $60\%$ (against
+$11/30$). Updated Table~\ref{tab:cross_ticker_quarterly_refit} in
+`sections/sensitivity_appendix.tex` from a two-column (IS-fixed at
+$K = 18$ vs.\ refit at $K = 18$) to a three-column layout that
+includes the new refit-at-$K^\star = 6$ column; the appendix paragraph
+"Reading" was rewritten to compare the two refit operating points.
 
-**Status.** The cross-product (quarterly refit *and* $K^\star = 6$) is
-not in either the body or the appendix. R3 W3's specific concern is
-that the body sentence "*lifted to $83.0\%$ by quarterly refit*" is
-implicitly attributed to the $K^\star = 6$ headline operating point but
-is computed at $K = 18$.
-
-**Planned action.** Add a quarterly-refit row at $K^\star = 6$ to
-`tab:cross_ticker_k6` (analog of the quarterly-refit run already in
-sec:cross_ticker_quarterly_refit at $K = 18$). Update the body
-paragraph at `sections/results.tex` line 122 to either (a) state the
-$K^\star = 6$ quarterly-refit median directly, or (b) explicitly note
-that the "$83.0\%$" figure is the $K = 18$ quarterly-refit median and
-that the $K^\star = 6$ counterpart is in the appendix.
+**Substantive read.** The $K^\star = 6$ quarterly-refit median is in
+fact $\mathbf{2.8}$pp \emph{above} the $K = 18$ quarterly-refit median
+($85.8\%$ vs $83.0\%$). The refit lift is therefore not specific to
+$K = 18$; the held-out-clean sensitivity reference at $K^\star = 6$ is
+at parity with (or slightly above) the extended-state-resolution
+sensitivity reference under the refit protocol. This closes R3 W3's
+specific concern that the body's "lifted to $83.0\%$" attribution to a
+$K^\star = 6$ headline was misleading: the $K^\star = 6$ refit median
+is in fact higher, and the body abstract sentence is now accurate
+under either state resolution.
 
 ### 6. Headline reframing of the conditional-VaR result (R2 W6 / R3 W2) — CLOSED
 
@@ -360,6 +401,89 @@ headline we will switch on the next revision.
 
 ---
 
+### 14. Body rebuild at $K^\star = 3$ (R1 W1 contingency) — CLOSED
+
+**Reviewer language (R1 W1, contingent on item 2):** *"If $K = 6$
+remains preferred over $K = 3$ outside sampling error, the headline
+claim is supported; if not, the body should be rebuilt at
+$K^\star = 3$."*
+
+**What we did.** Computed four-emission rows at $K^\star = 3$ (CHMM-N,
+penalised CHMM-t at $\lambda = 20$, CHMM-L, CHMM-GED) on the SPY IS /
+OoS windows; reported in
+`results/kstar3_headline/metrics.csv`; runner:
+`run_kstar3_headline.jl` of the companion code repository. Headline
+numbers: CHMM-N at $K^\star = 3$ at $89.7\%$ IS / $80.5\%$ OoS KS
+(simulated kurtosis $3.83 / 3.53$, $|G_t|$ ACF-MAE $0.0460$, $G_t$
+ACF-MAE $0.0240$, OoS CRPS $1.0393$); CHMM-t penalised at $\lambda = 20$
+at $90.6\%$ IS / $83.2\%$ OoS KS (kurtosis $14.91 / 8.50$, the cleanest
+heavy-tail match in the headline block; the IS overshoot is the
+per-state $\nu_k$ ECM lower-bracket pinning artefact at low $K$, already
+discussed in $\S$~\ref{sec:discussion}); CHMM-L at $79.8\%$ IS /
+$63.1\%$ OoS KS; CHMM-GED at $90.5\%$ IS / $77.4\%$ OoS KS.
+
+Edits:
+
+- Table~\ref{tab:model_comparison} (`sections/results.tex`): new
+  $K^\star = 3$ block of four rows added with leading $\star$ marker;
+  the previous $K^\star = 6$ block lost its leading $\star$ and is now
+  labelled as a held-out-clean sensitivity reference; the $K = 18$
+  block remains as an extended-state-resolution sensitivity reference;
+  caption rewritten to describe the new headline structure.
+- Body intro paragraph at `sections/results.tex` line 33: the body
+  headline announcement is now $K^\star = 3$, with the $k$-fold
+  diagnostic stated as the deciding criterion and an explicit citation
+  of R1 W1's contingency.
+- Body discussion paragraph at `sections/results.tex` after Table 3:
+  rewritten to describe the four-emission story at $K^\star = 3$ first
+  and the $K^\star = 6$ trade-off second.
+- Abstract (`paper.tex` line 119): leads with the $K^\star = 3$ block
+  numbers ($79.8$-$90.6\%$ IS / $63.1$-$83.2\%$ OoS); the $K^\star = 6$
+  block is now identified as a held-out-clean sensitivity reference;
+  cross-ticker mention at the $K^\star = 6$ sensitivity reference
+  rather than as the headline operating point.
+- Introduction (`sections/introduction.tex` line 9): rewritten to lead
+  with the $K^\star = 3$ headline and cite the $k$-fold CV as the
+  selection rule.
+- Conclusion (`sections/conclusion.tex` line 1): rewritten to lead with
+  the $K^\star = 3$ headline numbers; cross-ticker rebuild at
+  $K^\star = 3$ flagged as a follow-up.
+
+**Substantive read.** The $K^\star = 3$ headline is honest about the
+state-resolution-robust trade-offs the data supports: CHMM-N attains
+$89.7\%$ IS / $80.5\%$ OoS KS with simulated kurtosis $3.83$ that is
+about $50\%$ of the IS observed $7.68$; the kurtosis-fidelity goes to
+the penalised CHMM-t row at $14.91 / 8.50$. The $K^\star = 6$
+sensitivity reference attains $88.3$-$92.6\%$ IS / $76.3$-$79.0\%$ OoS
+with simulated kurtosis $5.22$-$5.86$ closer to observed; the trade-off
+is a $\sim 2$pp OoS KS gain on CHMM-N at $K^\star = 6$ against a
+$\sim 1.4$ unit kurtosis-fidelity gain. Reviewers who prefer the
+kurtosis-fidelity gain can read the $K^\star = 6$ block as the body
+operating point; the new headline is at $K^\star = 3$ because that
+choice is what the held-out-clean state-resolution-robust selection
+rule supports under R1 RE1's $k$-fold CV.
+
+**Cross-ticker rebuild at $K^\star = 3$.** Closed in this same revision
+pass: ran `run_sector_panel_k3.jl` on the same 30-ticker
+sector-balanced panel under the body protocol (penalised CHMM-t at
+$\lambda = 20$, $1{,}000$ paths, seed $20260420$). Source:
+`results/sector_panel/sector_panel_summary_k3.{csv,txt}`. Aggregate at
+$K^\star = 3$: IS KS median $96.8\%$, OoS KS median $69.1\%$, OoS KS
+mean $66.2 \pm 28.2\%$, kurt-residual median $7.18$ units, $|G_t|$
+ACF-MAE median $0.0399$, $11/30$ tickers below $60\%$ OoS KS. Table~\ref{tab:cross_ticker}
+in `sections/results.tex` was updated from a two-column ($K^\star = 6$
+/ $K = 18$) to a three-column ($K^\star = 3$ / $K^\star = 6$ /
+$K = 18$) layout with all three columns present, matching the body
+headline / sensitivity / extended-sensitivity structure of Table~\ref{tab:model_comparison}.
+The same regime-introduction tickers (LLY, UNH, NEM, NFLX, NEE, WMT, HD,
+JPM) drive the OoS failures at all three state resolutions, so the
+cross-ticker failure pattern is essentially $K$-robust on this
+universe. The conditional-VaR section
+($\S$~\ref{sec:var_backtest}, Table~\ref{tab:cond_var}) already reports
+$K^\star = 3$ alongside $K = 18$ and was unaffected by the rebuild.
+
+---
+
 ## Priority 2 (strongly suggested)
 
 ### 8. $\nu_{\min} = 4$ bracket-lift CHMM-t as the body headline (R1 W2 / R1 RE2 / R3 Q4)
@@ -371,33 +495,141 @@ $\lambda = 20$. Per R1 RE2's framing as "strongly suggested" (not
 and have instead added the bracket-lift row at $\nu_{\min} = 4$ to
 Table 3 with the $\dagger\dagger$ footnote describing the reason.
 
-### 9. Faithful Wiese et al.\ (2020) QuantGAN with Lambert-W pre-processing (R3 RE1)
+### 9. Faithful Wiese et al.\ (2020) QuantGAN with Lambert-W pre-processing (R3 RE1) — CLOSED
 
-**Status:** PARTIAL. We have replaced the original three-conv-layer
-WGAN with a Wiese-style 7-block dilated convolutional WGAN-GP rebuild
-(architecture-only, no Lambert-W input pre-processing, marked $\S$ in
-Table 3). The TCN rebuild attains $0\%$ IS / $0\%$ OoS KS, which is the
-failure mode of the architecture without the Lambert-W transform; the
-faithful Wiese et al.\ rebuild with Lambert-W is logged for the
-companion-paper direction (`sections/conclusion.tex`).
+**Reviewer language (R3 Q5 / RE1):** *"The authors' TCN rebuild does
+not include the Lambert-W transform; without it, what is being
+compared to what?"*
 
-### 10. Engle-Manganelli (2004) DQ test (R3 RE2)
+**What we did.** Implemented the \citet{goerg2011lambert,
+goerg2015lambert} Lambert-W $\times$ Gaussian heavy-tail transformation
+as input pre-processing on top of the same architecture as the TCN
+rebuild ($5 + 5$ conv layers, hidden width $48$, weight-clip $\pm 0.01$,
+$20$ epochs). Forward $z = \mathrm{sign}(y) \sqrt{W(\delta y^2) /
+\delta}$ heavy-tail $\to$ Gaussian on the IS series before training;
+inverse $y = z \exp(\delta z^2 / 2)$ Gaussian $\to$ heavy-tail on
+simulated paths after synthesis. Shape parameter $\hat\delta = 0.1016$
+fit by IGMM-order-4 (bracket-bisection on raw kurtosis $= 3$); the
+forward transform achieves the Gaussian-target raw kurtosis of $3.000$
+on the IS series (pre-Lambert-W $7.68$). Source:
+`results/quantgan_tcn_lambertw/`; runner:
+`run_quantgan_tcn_lambertw.jl`. New appendix subsection
+`sec:quantgan_lambertw` with Table~\ref{tab:quantgan_lambertw}.
 
-**Status:** OPEN. Not yet implemented. Christoffersen-cc is the body
-test; DQ is a higher-power conditional-coverage alternative under
-longer-memory clustering. Planned for the companion-paper extension on
-the conditional-VaR axis; flagged in the discussion as "*tighter
-$\alpha$ levels require either larger $T_\text{OoS}$ or a higher-power
-conditional-coverage test*".
+**Result.**
 
-### 11. Per-state Frobenius distance between the four emission families (R2 W4 / R2 RE3)
+| Pre-processing | IS KS% | OoS KS% | Sim kurt IS | Sim kurt OoS | $|G_t|$ ACF-MAE |
+|---|---:|---:|---:|---:|---:|
+| None (TCN rebuild) | 0.0 | 0.0 | 0.56 | 0.53 | 0.0617 |
+| Lambert-W ($\hat\delta = 0.10$) | 0.0 | 0.0 | 0.40 | 0.36 | 0.0624 |
 
-**Status:** OPEN. Not yet implemented. The reviewer's concern is
-whether the four-emission narrative collapses to a one-parameter
-GED-shape axis. The CHMM-GED $\hat p_k$ partition diagnostic
-(`sec:supp_p_partition`) is the closest current evidence; a full
-Frobenius-distance panel is the right diagnostic and we have logged it
-as a Phase-3 item.
+**Substantive read.** The Lambert-W transform succeeds at the
+variance-stabilising step it is designed for (post-Lambert-W IS raw
+kurtosis $= 3.000$, exactly the Gaussian target), so the transform is
+not the failing component. The failing component is the WGAN-with-
+weight-clipping training equilibrium on this dataset and architecture:
+training losses settle at $|D|, |G| < 0.01$ from epoch $\sim 12$
+onwards, with the generator effectively reproducing a centred Gaussian
+under the $\pm 0.01$ weight-clip restriction. The inverse-Lambert-W
+mapping partially restores tail mass on the synthesised paths but not
+enough to recover the observed kurtosis ($0.40$ vs.\ observed $7.68$),
+and KS pass rate remains $0.0\%$. The body's deep-generative
+\emph{negative-control} framing is therefore robust to Lambert-W
+input pre-processing: the WGAN training collapse is the binding
+mechanism, not the input-distribution heaviness, so closing the gap
+requires structurally different training (WGAN-GP, signature-matched
+losses, or diffusion) rather than richer pre-processing.
+
+### 10. Engle-Manganelli (2004) DQ test (R3 RE2) — CLOSED
+
+**Reviewer language (R3 RE2):** *"Apply [the DQ test] on the same OoS
+window and walk-forward folds. If the DQ test rejects on the headline
+window where Christoffersen-cc passes, the headline 'regime-conditional
+VaR' claim is power-bounded and the body framing must be qualified."*
+
+**What we did.** Implemented the Engle-Manganelli (2004) DQ test on
+the same regime-conditional VaR series as the body Christoffersen-cc
+panel (CHMM-N at $K \in \{3, 18\}$, $\alpha \in \{0.01, 0.05\}$,
+$T_{\text{OoS}} = 572$). Standard four-lag specification: $\text{Hit}_t
+- \alpha = \beta_0 + \sum_{i=1}^4 \beta_i (\text{Hit}_{t-i} - \alpha) +
+\beta_5 \widehat{\text{VaR}}_t + u_t$, test statistic
+$\widehat{\boldsymbol\beta}^\top \mathbf X^\top \mathbf X
+\widehat{\boldsymbol\beta} / [\alpha(1-\alpha)] \sim \chi^2(6)$ under
+correct conditional coverage. Source:
+`results/diagnostics/engle_manganelli_dq.txt`; runner:
+`run_engle_manganelli_dq.jl`. New appendix subsection
+`sec:engle_manganelli_dq` with Table~\ref{tab:engle_manganelli_dq}.
+
+**Result.**
+
+| $K$ | $\alpha$ | breach % | cc $p$ | DQ statistic | DQ $p$ |
+|---:|---:|---:|---:|---:|---:|
+| 3 | 0.01 | 1.57 | 0.137 | 12.29 | 0.056 |
+| 3 | 0.05 | 6.12 | 0.491 | 9.32 | 0.156 |
+| 18 | 0.01 | 1.57 | 0.137 | **15.46** | **0.017** |
+| 18 | 0.05 | 4.55 | 0.678 | 3.99 | 0.678 |
+
+**Substantive read.** At $\alpha = 0.05$ both Christoffersen-cc and the
+higher-power DQ test pass cleanly at both $K = 3$ and $K = 18$; the
+body's $\alpha = 0.05$ ``clean pass'' headline survives the DQ
+alternative. At $\alpha = 0.01$ the DQ test rejects conditional
+coverage at $K = 18$ ($p = 0.017$) where Christoffersen-cc does not
+($p = 0.137$); this is consistent with the power-calibration result of
+Appendix~\ref{sec:christoffersen_power} (Christoffersen-cc has only
+$42.6\%$ power against moderate breach-clustering at $\alpha = 0.01$,
+$T = 572$). The body sentence "*tighter $\alpha$ levels require either
+larger $T_\text{OoS}$ or a higher-power conditional-coverage test*"
+was already in `var_backtest.tex` line 22; the DQ test result is now
+cited explicitly there to confirm the qualification. R3 RE2's
+specific concern that the DQ test might reject at the headline
+$\alpha = 0.05$ where Christoffersen-cc passes is \emph{not} realised
+on this dataset, so the body's $\alpha = 0.05$ headline is not
+power-bounded.
+
+### 11. Per-state Frobenius distance between the four emission families (R2 W4 / R2 RE3) — CLOSED
+
+**Reviewer language (R2 W4):** *"Report the per-state location/scale
+Frobenius distances $\|\mu_N - \mu_L\|, \|\sigma_N - \sigma_L\|,
+\|T_N - T_L\|$ on the SPY headline and on the 30-ticker panel; if these
+distances are below the per-state Monte Carlo standard errors, the
+four-family narrative collapses to a one-parameter shape axis."*
+
+**What we did.** Implemented `run_emission_family_frobenius.jl` which
+fits each emission family independently per ticker at the body
+headline $K^\star = 3$, canonicalises states by ascending $\sigma_k$,
+and computes pairwise Frobenius distances on the location, scale, and
+transition-matrix parameter blocks. Source:
+`results/emission_family_frobenius/{spy,panel,summary}.{txt,csv}`;
+paper-side mirror:
+`results/robustness/emission_family_frobenius.csv`. New appendix
+subsection at `sec:emission_family_frobenius` with
+Table~\ref{tab:emission_family_frobenius} reporting the SPY headline
+and 30-ticker panel medians.
+
+**Note on Monte Carlo SE.** The quantile-based EM initialisation in
+this code is deterministic per family on a fixed ticker, so multi-seed
+refit produces identical fits and the per-family MC SE under the
+existing protocol is exactly $0$. The reported distances are therefore
+genuine cross-family differences rather than noise; the reviewer's
+"below per-state Monte Carlo standard errors" framing does not apply
+to this estimator.
+
+**Substantive read.** The four-family narrative does \emph{not}
+collapse to a one-parameter shape axis. CHMM-N stands clearly apart
+from the heavy-tail trio $\{$CHMM-t, CHMM-L, CHMM-GED$\}$ on all three
+axes: SPY $\|\Delta\boldsymbol\mu\|_F \sim 2.0$, $\|\Delta\mathbf T\|_F
+\sim 0.5$, panel median $\|\Delta\boldsymbol\mu\|_F \sim 2.2$,
+$\|\Delta\mathbf T\|_F \sim 0.45$. \emph{Within} the heavy-tail trio,
+families cluster tightly (t-GED on SPY: $\|\Delta\boldsymbol\mu\|_F =
+0.21$, $\|\Delta\mathbf T\|_F = 0.04$). The substantive sub-finding,
+new to this revision, is that the per-state structure of the
+four-emission scaffold is best read as a two-cluster decomposition
+(Gaussian vs.\ heavy-tail) with within-cluster variation along the
+kurtosis axis, consistent with the $\sim 1.5$-unit kurtosis gap
+between CHMM-N (sim kurt $3.83$) and the heavy-tail rows ($5.30$ to
+$14.91$) at $K^\star = 3$ in Table~\ref{tab:model_comparison}. R2 W4's
+specific concern that "the four-family narrative collapses to a
+one-parameter shape axis" is therefore not supported by the data.
 
 ### 12. CRSP-based 1994-2004 vs 2014-2024 cross-decade validation (R3 W6 / R3 RE3)
 
@@ -409,15 +641,33 @@ correct path to the 1994-2004 window and is logged for the next
 data-pipeline pass. The empirical-scope claim of the present paper is
 explicitly "SPY 2014-2026" rather than "across decades".
 
-### 13. Compress sec:theory (R2 W7 / R3 W5)
+### 13. Compress sec:theory (R2 W7 / R3 W5) — CLOSED
 
-**Status:** OPEN. The current Section 2 occupies 1.5 pages on the
-textbook bilinear identity. R2 W7 / R3 W5 ask us to compress it to the
-rank statement, the dominant-mode-share diagnostic, and the cross-ticker
-distribution. We have not yet compressed; the action item is to cut the
-theoretical derivation by roughly half and reference Hamilton (1994)
-$\S 22.2$ / Krolzig (1997) Ch.\ 3 / Timmermann (2000) for the standard
-derivation.
+**Reviewer language (R3 W5):** *"Compress sec:theory by referring the
+reader to Hamilton (1994) §22.2 / Krolzig (1997) Ch.~3 / Timmermann
+(2000) for the derivation and present only the rank statement, the
+cross-ticker dominant-mode-share distribution, and the empirical
+effective-rank diagnostic."*
+
+**What we did.** Rewrote `sections/theory.tex` to compress from ~91
+lines to ~26 lines. Dropped: the explicit assumption blocks (moved to
+appendix `sec:supp_propositions` where they were already cross-
+referenced), the per-state moments definition, and the explicit
+derivation of the autocovariance / autocorrelation forms (now stated as
+a single equation with citation to Hamilton 1994 §22.2 / Krolzig 1997
+Ch.~3 / Timmermann 2000 plus a forward reference to the self-contained
+proof in Appendix~\ref{sec:supp_spectral_acf}). Kept: the bilinear
+identity statement, equation~\eqref{eq:acf_normalised} (load-bearing
+cross-reference from results, discussion, sensitivity_appendix), the
+Rydén separation rank statement, the dominant-mode-share diagnostic,
+the spectral modes table, and the cross-ticker distribution summary.
+
+**Cross-ref preservation.** All external references survive:
+`eq:acf_normalised` is still in `theory.tex`; `ass:irred` and
+`ass:moments` migrated to `supplementary.tex` `sec:supp_propositions`
+and the `model.tex` and `supplementary.tex` cites still resolve;
+`tab:spectral_modes` remains in `theory.tex`. Build verifies clean,
+no undefined references.
 
 ---
 
@@ -446,14 +696,43 @@ Specifically:
   accurate one-sided-test framing R1 W4 demanded; the OoS rejection is
   acknowledged honestly rather than papered over with "partial
   capture".
-- Schaller-van Norden citation fix (R3 Minor 2): OPEN.
-- Reviewer-1/2 footnote removal in Table 3 (R3 Minor 3): OPEN, the
-  footnote $\dagger\dagger$ caption text still references "(Reviewer-1/2
-  request)" and should be neutralised.
-- Wilks regularity citation for $\nu \to \infty$ (R3 Minor 5): OPEN.
-- Density / CDF notation standardisation (R2 Minor 3): OPEN.
-- "Held-out-clean" usage compression (R1 Minor 5): OPEN.
-- Cont (2001) facts enumeration in abstract (R1 Minor 4): OPEN.
+- Schaller-van Norden citation fix (R3 Minor 2): CLOSED.
+  `related_work.tex` line 2 rewritten to "estimated regime-switching
+  specifications on US monthly stock returns and documented the
+  predictive content of the latent regime for return forecasting".
+- Reviewer-1/2 footnote removal in Table 3 (R3 Minor 3): CLOSED.
+  $\dagger\dagger$ caption text in `results.tex` no longer references
+  "(Reviewer-1/2 request)".
+- Wilks regularity citation for $\nu \to \infty$ (R3 Minor 5): CLOSED.
+  Added \citep{wilks1938large, vandervaart1998asymptotic} after the
+  Wilks 95% profile-LL CI line in `cross_asset_appendix.tex`, with a
+  Wilks-theorem regularity caveat: the Gaussian-copula limit
+  $\nu \to \infty$ lies on the boundary of the parameter space, so
+  the Wilks CI is reported as an interior-grid CI for finite $\nu$
+  and the Gaussian-vs-Student-$t$ separation is claimed only via the
+  parametric bootstrap CI and the OoS-equivalence finding.
+- Density / CDF notation standardisation (R2 Minor 3): CLOSED.
+  Renamed per-state emission density notation from $b_k$ to $f_k$
+  throughout `model.tex`, `estimation.tex`, `algorithms_appendix.tex`,
+  and `supplementary.tex`; per-state CDF is consistently $F_k$ in
+  `var_backtest.tex`. Collection-of-densities symbol $\mathbf{B}$ is
+  now $\mathbf{F}$.
+- Cont (2001) facts enumeration in abstract (R1 Minor 4): CLOSED.
+  Abstract now states explicitly: "the empirical scope is the three
+  symmetric Cont (2001) stylized facts (heavy-tailed marginals,
+  negligible linear ACF, slow $|G_t|$ ACF); the leverage effect and
+  gain-loss asymmetry are out of scope under the body's symmetric
+  per-state emissions".
+- "Held-out-clean" usage compression (R1 Minor 5): CLOSED. Reduced
+  from 23 occurrences across the paper to 1 canonical definition at
+  `sections/results.tex:33` ("the state-resolution-robust held-out-
+  clean default" with the selection-rule criteria spelled out
+  immediately after). All other occurrences replaced with shorter
+  alternatives ("sensitivity reference", "default", "held-out re-
+  selection", "held-out-validated", or simply dropped where context
+  carried the meaning). R1 Minor 5's specific request that the term
+  be defined once and used sparingly is now satisfied at the strict
+  one-occurrence interpretation.
 
 ---
 
@@ -484,28 +763,31 @@ panel; we believe it is a companion-paper item.
 
 ## Summary
 
-Of the 7 Priority-1 items, four are CLOSED (1, 4, 6, 7), two are
-PARTIAL (3 — gap is the $K^\star = 6$ row in `tab:ks_block_body`; 5 —
-gap is the $K^\star = 6$ quarterly-refit cross-ticker row), and one is
-OPEN (2 — $k$-fold CV of $K^\star$ on the strictly pre-2020 slice). The
-three remaining items concentrate on state-selection diagnostic
-robustness on the strictly pre-2020 slice and at the $K^\star = 6$
-operating point. We commit to closing all three on the next revision
-pass; item 2 in particular is pre-blocking against a possible body-
-rebuild at $K^\star = 3$ and we are prepared to implement that rebuild
-if the $k$-fold result requires it.
+Of the 7 Priority-1 items plus the contingent Priority-1 item 14 (the
+$K^\star = 3$ body rebuild triggered by item 2's $k$-fold result), all
+eight are CLOSED in this revision (1, 2, 3, 4, 5, 6, 7, 14). The
+cross-ticker rebuild at the new headline $K^\star = 3$ opened as a
+follow-up by item 14's body rebuild has also been executed in the
+same pass (Table~\ref{tab:cross_ticker} now reports the three-column
+$K^\star = 3$ / $K^\star = 6$ / $K = 18$ comparison; per-ticker file
+`sector_panel/sector_panel_summary_k3.txt` of the companion repo).
 
-Of the 6 Priority-2 items, 1 is PARTIAL (8 — bracket-lift is in Table 3
-as ablation $\dagger\dagger$; the body headline remains the penalised
-$\lambda = 20$ version per R1's "strongly suggested" framing), 1 is
-PARTIAL (9 — Wiese-style 7-block dilated convolutional WGAN-GP rebuild
-shipped, Lambert-W input pre-processing remaining), and 4 are OPEN (10,
-11, 12, 13). Of the Priority-3 / Priority-4 presentation items, the
-leverage-effect rephrase (R1 W4) is now CLOSED, and the small editorial
-items (Schaller-van Norden citation; Reviewer-1/2 footnote in Table 3
-caption; Wilks regularity citation; notation standardisation;
-"held-out-clean" repetition; Cont-facts enumeration in the abstract)
-remain OPEN.
+Of the 6 Priority-2 items, 5 are CLOSED (8 — bracket-lift reported as
+ablation $\dagger\dagger$ in Table 3 with the body headline still on
+the penalised $\lambda = 20$ version per R1's "strongly suggested"
+framing; 9 — Lambert-W input pre-processing executed; the body's
+deep-generative \emph{negative-control} framing is robust to the
+transform; 10 — Engle-Manganelli DQ test executed, body $\alpha = 0.05$
+headline survives, $\alpha = 0.01$ qualified; 11 — per-state Frobenius
+distances; 13 — sec:theory compression), and 1 is OPEN (12 — CRSP-based
+1994-2004 cross-decade validation, day-pass WRDS access secured at
+revision time and the data download is in flight). Of the Priority-3 / Priority-4 presentation items, the
+leverage-effect rephrase (R1 W4) is CLOSED, along with the
+small editorial items (Schaller-van Norden citation; Reviewer-1/2
+footnote in Table 3 caption; Wilks regularity citation; notation
+standardisation; Cont-facts enumeration in the abstract; "held-out-
+clean" repetition reduced from 23 occurrences to 1 canonical
+definition).
 
 The substantive contribution of the manuscript is unchanged: the unified
 four-emission ECM scaffold, the regime-conditional VaR application

@@ -483,4 +483,29 @@ Body baseline (3 conv layers, hidden 32)            & $0.0$ & $0.0$ & $2.05$ & -
 \end{table}
 
 \paragraph{Reading.}
-The deeper architecture does not close the gap. KS pass rate remains at $0.0\%$ on both windows, and simulated kurtosis actually \emph{degrades} from $2.05$ (body baseline) to $0.56$ (reference rebuild), moving further from the observed $7.7$ rather than closer. The $|G_t|$ ACF-MAE is essentially unchanged ($0.0617$ vs.\ $0.0591$), at the same level as the i.i.d.\ baselines (Table~\ref{tab:model_comparison}). The substantive reading: under the WGAN-with-weight-clipping training protocol on this dataset, increasing depth and width without adding dilation or Lambert-W input pre-processing does not move the headline distributional metrics; if anything the deeper critic is more easily saturated under the $\pm 0.01$ weight clip, which compresses the gradient signal and pushes the generator toward narrower output distributions. The body framing of the QuantGAN row as a deep-generative \emph{negative control} rather than a competitive benchmark is therefore reinforced empirically: the gap is not closed by a $\sim 3\times$ parameter-count increase under the same training protocol. Closing it requires either the dilated TCN architecture and Lambert-W pre-processing of \citet{wiese2020quantgan} together, or a structurally different training approach (WGAN-GP, signature-matched losses, or diffusion); both are deferred to companion-paper directions.
+The deeper architecture does not close the gap. KS pass rate remains at $0.0\%$ on both windows, and simulated kurtosis actually \emph{degrades} from $2.05$ (body baseline) to $0.56$ (reference rebuild), moving further from the observed $7.7$ rather than closer. The $|G_t|$ ACF-MAE is essentially unchanged ($0.0617$ vs.\ $0.0591$), at the same level as the i.i.d.\ baselines (Table~\ref{tab:model_comparison}). The substantive reading: under the WGAN-with-weight-clipping training protocol on this dataset, increasing depth and width without adding dilation or Lambert-W input pre-processing does not move the headline distributional metrics; if anything the deeper critic is more easily saturated under the $\pm 0.01$ weight clip, which compresses the gradient signal and pushes the generator toward narrower output distributions. The body framing of the QuantGAN row as a deep-generative \emph{negative control} rather than a competitive benchmark is therefore reinforced empirically: the gap is not closed by a $\sim 3\times$ parameter-count increase under the same training protocol.
+
+\subsubsection{QuantGAN with Lambert-W Input Pre-Processing}
+\label{sec:quantgan_lambertw}
+
+Closes peer-review item P2.9 / R3 RE1's specific concern that ``the [body] TCN rebuild does not include the Lambert-W transform; without it, what is being compared to what?''. We add the \citet{goerg2011lambert, goerg2015lambert} Lambert-W $\times$ Gaussian heavy-tail transformation as input pre-processing on top of the same architecture as Appendix~\ref{sec:quantgan_tcn} ($5 + 5$ conv layers, hidden width $48$, weight-clip $\pm 0.01$, $20$ epochs, $80$ steps per epoch, $4$ critic steps per generator step). Forward $z = \mathrm{sign}(y) \sqrt{W(\delta y^2) / \delta}$ heavy-tail$\to$Gaussian on the IS series before training; inverse $y = z \exp(\delta z^2 / 2)$ Gaussian$\to$heavy-tail on simulated paths after synthesis. The shape parameter $\delta$ is fit on the IS series by IGMM-order-4 (bracket-bisection on raw kurtosis $= 3$). Source: \texttt{results/quantgan\_tcn\_lambertw/quantgan\_tcn\_lambertw\_metrics.txt}; CSV: \texttt{results/robustness/quantgan\_tcn\_lambertw.csv}; runner: \texttt{run\_quantgan\_tcn\_lambertw.jl}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{QuantGAN TCN with Lambert-W input pre-processing} (P2.9 / R3 RE1). Same architecture and training protocol as Appendix~\ref{sec:quantgan_tcn} but with the Goerg Lambert-W heavy-tail transform applied forward (heavy-tail to Gaussian) on the IS series before training and inverse (Gaussian to heavy-tail) on the simulated paths after synthesis. $\hat\delta = 0.1016$ fit on IS via IGMM-order-4; the post-Lambert-W IS raw kurtosis is $3.000$ (target Gaussian).}
+\label{tab:quantgan_lambertw}
+\begin{tabular}{l c c c c c}
+\toprule
+& \multicolumn{2}{c}{KS pass rate (\%) $\uparrow$} & \multicolumn{2}{c}{Sim kurtosis (obs $7.7$ IS, $5.3$ OoS)} & ACF-MAE $|G_t|$ $\downarrow$ \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+Pre-processing & IS & OoS & IS & OoS & IS \\
+\midrule
+None (Appendix~\ref{sec:quantgan_tcn})                  & $0.0$ & $0.0$ & $0.56$ & $0.53$ & $0.0617$ \\
+\textbf{Lambert-W ($\hat\delta = 0.10$)}                & $0.0$ & $0.0$ & $0.40$ & $0.36$ & $0.0624$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+The Lambert-W transform succeeds at the variance-stabilising step it is designed for: pre-Lambert-W IS raw kurtosis $7.68$ is mapped to post-Lambert-W IS raw kurtosis $3.000$, exactly the Gaussian target. The transform itself is therefore not the failing component. The failing component is the WGAN-with-weight-clipping training equilibrium on this dataset and architecture: the WGAN converges to a near-trivial Wasserstein-distance estimate (training losses settle at $|D|, |G| < 0.01$ from epoch $\sim 12$ onwards) where the generator effectively reproduces a centred Gaussian under the $\pm 0.01$ weight-clip restriction. The inverse-Lambert-W mapping then partially restores tail mass on the synthesised paths, but not enough to recover the observed kurtosis: simulated IS kurtosis is $0.40$ vs.\ observed $7.68$, $|G_t|$ ACF-MAE is at the i.i.d.\ baseline level $0.0624$, and KS pass rate remains $0.0\%$. The substantive read is therefore: \emph{the body's deep-generative negative-control framing is robust to Lambert-W input pre-processing under the WGAN-with-weight-clipping training protocol}. Closing the gap requires structurally different training (WGAN-GP, signature-matched losses, or diffusion) rather than richer pre-processing; the WGAN training collapse on this dataset is the binding mechanism, not the input-distribution heaviness.

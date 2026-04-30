@@ -109,6 +109,142 @@ Plan tracked in `REVISION_PLAN.md`.
   \texttt{r\_msgarch/} (R-side scaffolding under \texttt{renv}),
   \texttt{test/test\_msgarch\_reference.jl} (smoke test, skips cleanly
   without R).
+- **R3.W2 (abstract conditional-VaR W2/W4 callout)** (2026-04-30): closed.
+  Added one sentence to the abstract stating the conditional-VaR rejects
+  on the W2 / W4 walk-forward folds at $p < 10^{-3}$, per R3 W2's
+  binding language.
+- **R1.W4 (leverage-effect rephrase)** (2026-04-30): closed. Discussion
+  paragraph header and closing sentence rewritten to drop the
+  ``partially captured'' framing and use the accurate one-sided-test
+  framing (envelope brackets IS observed, OoS observed sits below
+  envelope). Reviewer 1 W4's specific phrasing demand satisfied.
+- **R2.W3 (var\_backtest cross-ref fix)** (2026-04-30): closed.
+  Body sentence at \texttt{sections/var\_backtest.tex} line 45 was
+  citing the wrong tables for the quarterly-refit conditional VaR;
+  fixed to point at \texttt{tab:cond\_var\_quarterly\_refit} (the
+  actual quarterly-refit table in \texttt{sec:quarterly\_refit\_cond\_var}).
+- **R1.RE1 (k-fold K-selection on pre-2020)** (2026-04-30): closed.
+  Implemented two rolling-origin CV designs on the strictly pre-2020
+  slice: four-fold full-year and six-fold half-year. Both fail to
+  distinguish $K^\star = 6$ from $K^\star = 3$ on mean held-out
+  per-observation log-likelihood at conventional levels (full-year
+  $|z| = 0.07$, half-year $|z| = 0.04$, sign flips between designs;
+  $K = 18$ borderline worse than $K^\star = 6$ at $|z| = 1.92$ /
+  $1.70$). Triggers R1 W1's contingency for body rebuild at
+  $K^\star = 3$. New runners: \texttt{run\_k\_selection\_kfold\_pre2020.jl},
+  \texttt{run\_k\_selection\_kfold\_h12y\_pre2020.jl}. Artefacts under
+  \texttt{results/robustness/k\_selection\_kfold\*}. New appendix
+  paragraph at \texttt{sections/supplementary.tex:230} with label
+  \texttt{sec:k\_selection\_kfold\_pre2020}.
+- **R1.W1 (body rebuild at $K^\star = 3$)** (2026-04-30): closed.
+  Computed four-emission rows at $K^\star = 3$ (CHMM-N, penalised
+  CHMM-t at $\lambda = 20$, CHMM-L, CHMM-GED) on SPY IS / OoS via
+  \texttt{run\_kstar3\_headline.jl}. Headline numbers: CHMM-N at
+  $89.7\%$ IS / $80.5\%$ OoS, penalised CHMM-t at $90.6\%$ /
+  $\mathbf{83.2\%}$ (cleanest IS/OoS heavy-tail match in headline
+  block at $14.91 / 8.50$ vs observed $7.68 / 5.29$), CHMM-GED at
+  $90.5\%$ / $77.4\%$, CHMM-L at $79.8\%$ / $63.1\%$. Cascading edits:
+  Table~\ref{tab:model_comparison} now has new $K^\star = 3$ block
+  with leading $\star$, $K^\star = 6$ demoted to held-out-clean
+  sensitivity reference; abstract / introduction / conclusion / body
+  intro paragraph all flipped to lead with $K^\star = 3$ numbers and
+  cite the $k$-fold CV.
+- **R1.W5 / R2.W2 / R2.RE4 (block-aware OoS KS at K* operating points)**
+  (2026-04-30): closed. Computed block-aware OoS KS at the body
+  headline $K^\star = 3$ and the $K^\star = 6$ sensitivity reference,
+  alongside existing $K = 18$ rows in
+  Table~\ref{tab:ks_block_body}. Eight new rows added; cross-generator
+  ranking $K$-robust. Runner: \texttt{run\_ks\_block\_body\_kstar.jl}.
+- **R3.W3 (cross-ticker rebuild at $K^\star = 3$)** (2026-04-30): closed
+  in same pass as R1.W1. Ran 30-ticker sector-balanced panel at
+  $K^\star = 3$ via \texttt{run\_sector\_panel\_k3.jl}; OoS KS
+  median $69.1\%$ at identical $11/30$ failure count. Body
+  Table~\ref{tab:cross_ticker} now reports three columns
+  ($K^\star = 3$ / $K^\star = 6$ / $K = 18$).
+- **R3.W3 (quarterly-refit cross-ticker at $K^\star = 6$)**
+  (2026-04-30): closed. Ran the same protocol as the existing
+  $K = 18$ quarterly-refit but at $K^\star = 6$ via
+  \texttt{run\_sector\_panel\_quarterly\_refit\_k6.jl}; refit median
+  OoS KS $\mathbf{85.8\%}$ ($+10.7$pp lift), in fact $2.8$pp above
+  the $K = 18$ refit median of $83.0\%$. Appendix
+  Table~\ref{tab:cross_ticker_quarterly_refit} extended from two
+  columns to three; ``Reading'' paragraph rewritten to compare the
+  two refit operating points.
+- **R2.W4 / R2.RE3 (per-state Frobenius distances across emission
+  families)** (2026-04-30): closed. Implemented
+  \texttt{run\_emission\_family\_frobenius.jl}; fits all four families
+  per ticker at $K^\star = 3$, canonicalises states by ascending
+  $\sigma_k$, computes pairwise Frobenius distances on
+  $(\boldsymbol\mu, \boldsymbol\sigma, \mathbf T)$ on SPY headline and
+  the 30-ticker panel. New appendix subsection
+  \texttt{sec:emission\_family\_frobenius} with Table~\ref{tab:emission_family_frobenius}.
+  Substantive finding: the four-family narrative does NOT collapse to
+  a one-parameter shape axis as R2 W4 hypothesised; CHMM-N stands
+  apart from the heavy-tail trio $\{$t, L, GED$\}$ at SPY
+  $\|\Delta\boldsymbol\mu\|_F \sim 2.0$, $\|\Delta\mathbf T\|_F \sim
+  0.5$, but the heavy-tail families cluster tightly (t-GED on SPY:
+  $\|\Delta\boldsymbol\mu\|_F = 0.21$, $\|\Delta\mathbf T\|_F = 0.04$).
+  The structure is two-cluster (Gaussian vs heavy-tail) with within-
+  cluster variation along the kurtosis axis.
+- **R2.W7 / R3.W5 (compress sec:theory)** (2026-04-30): closed.
+  Rewrote \texttt{sections/theory.tex} from $\sim 91$ lines to
+  $\sim 26$ lines. Dropped the explicit assumption blocks (moved to
+  appendix \texttt{sec:supp\_propositions}), the per-state moments
+  definition, and the explicit derivation of the autocovariance /
+  autocorrelation forms. Kept: the bilinear identity statement,
+  equation~\eqref{eq:acf_normalised} (load-bearing cross-reference),
+  the Rydén separation rank statement, the dominant-mode-share
+  diagnostic, the spectral modes table, and the cross-ticker
+  distribution summary. All external cross-references preserved
+  (\texttt{eq:acf\_normalised}, \texttt{ass:irred},
+  \texttt{ass:moments}, \texttt{tab:spectral\_modes}).
+- **R3.RE2 (Engle-Manganelli DQ test)** (2026-04-30): closed.
+  Implemented \texttt{run\_engle\_manganelli\_dq.jl}; standard four-
+  lag specification. Result: at $\alpha = 0.05$ the DQ test passes
+  cleanly at both $K = 3$ ($p = 0.156$) and $K = 18$ ($p = 0.678$);
+  at $\alpha = 0.01$ the DQ test rejects conditional coverage at
+  $K = 18$ ($p = 0.017$) where Christoffersen-cc does not
+  ($p = 0.137$). New appendix subsection
+  \texttt{sec:engle\_manganelli\_dq}; body
+  \texttt{var\_backtest.tex} sentence updated to cite the DQ
+  cross-check.
+- **R3.Minor 2 (Schaller-van Norden citation)** (2026-04-30): closed.
+  \texttt{related\_work.tex} rewritten to "estimated regime-switching
+  specifications on US monthly stock returns".
+- **R3.Minor 3 (Reviewer-1/2 footnote in Table 3)** (2026-04-30):
+  closed. Removed.
+- **R3.Minor 5 (Wilks regularity citation)** (2026-04-30): closed.
+  Added \citet{wilks1938large, vandervaart1998asymptotic} citations
+  and a regularity caveat for the Gaussian-copula limit
+  $\nu \to \infty$.
+- **R2.Minor 3 (notation $f_k$ for density, $F_k$ for CDF)**
+  (2026-04-30): closed. Renamed $b_k \to f_k$ throughout
+  \texttt{model.tex}, \texttt{estimation.tex},
+  \texttt{algorithms\_appendix.tex}, \texttt{supplementary.tex};
+  collection symbol $\mathbf{B} \to \mathbf{F}$.
+- **R1.Minor 4 (Cont 2001 facts in abstract)** (2026-04-30):
+  closed. Abstract now enumerates the three symmetric Cont stylized
+  facts and acknowledges leverage / gain-loss asymmetry as out of
+  scope.
+- **R1.Minor 5 ("held-out-clean" repetition)** (2026-04-30): closed.
+  Reduced from 23 occurrences across the paper to 1 canonical
+  definition at \texttt{sections/results.tex:33}. All other
+  occurrences replaced with ``sensitivity reference'', ``default'',
+  ``held-out re-selection'', ``held-out-validated'', or dropped
+  where context carried the meaning.
+- **R3.RE1 / R3.Q5 (Lambert-W input pre-processing)** (2026-04-30):
+  closed. Implemented \texttt{run\_quantgan\_tcn\_lambertw.jl}:
+  Goerg (2011, 2015) Lambert-W $\times$ Gaussian heavy-tail
+  transformation as input pre-processing on the QuantGAN TCN ($\hat
+  \delta = 0.1016$ via IGMM-order-4; pre-Lambert-W IS raw kurtosis
+  $7.68 \to$ post-Lambert-W $3.000$). Result: $0.0\%$ IS / $0.0\%$
+  OoS KS, simulated kurtosis $0.40$ vs.\ observed $7.68$. Substantive
+  finding: the Lambert-W transform succeeds at variance-stabilising
+  but the WGAN-with-weight-clipping training collapses to the
+  trivial Wasserstein equilibrium under the $\pm 0.01$ weight clip
+  on this dataset, so the body's deep-generative \emph{negative-
+  control} framing is robust to Lambert-W input pre-processing. New
+  appendix subsection \texttt{sec:quantgan\_lambertw}.
 
 ---
 
