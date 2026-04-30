@@ -30,21 +30,18 @@ $K^\star = 6$ choice and the conditional-VaR pass-rate, (iii) honesty of
 the cross-asset Student-$t$ copula choice on OoS, and (iv) recalibration
 of the asymptotic OoS KS pass rate under temporally-aware nulls. We
 have closed (i) on the MS-GARCH axis (reference Bayesian re-run via the
-canonical `MSGARCH` R package), (ii) substantively at the body level
-(Benjamini-Hochberg panel-level pass rates added to the conditional-VaR
-section, walk-forward W2 / W4 stress-fold failures explicitly stated;
-the abstract sentence demanded by R3 W2 is the one remaining open piece
-of this item), (iii) in the discussion section (Gaussian and
-Student-$t$ copulas are flagged as OoS-indistinguishable at
-$N_\text{paths} = 200$), and (iv) for $K = 18$ in the body and for both
-IS and OoS series in the appendix. The remaining open items are:
-$k$-fold CV of $K^\star$ on the strictly pre-2020 slice, block-aware
-OoS KS recalibration at the held-out-clean $K^\star = 6$ operating
-point, the quarterly-refit cross-ticker panel at $K^\star = 6$, the
-abstract callout of the conditional-VaR W2 / W4 rejection demanded by
-R3 W2, and the leverage-effect rephrase demanded by R1 W4. These are
-flagged honestly below as PARTIAL or OPEN and we describe the planned
-action.
+canonical `MSGARCH` R package), (ii) at the body level and in the
+abstract (Benjamini-Hochberg panel-level pass rates added to the
+conditional-VaR section; walk-forward W2 / W4 stress-fold failures
+explicitly stated in the abstract per R3 W2's binding language), (iii)
+in the discussion section (Gaussian and Student-$t$ copulas are flagged
+as OoS-indistinguishable at $N_\text{paths} = 200$), and (iv) for
+$K = 18$ in the body and for both IS and OoS series in the appendix.
+The remaining open items are: $k$-fold CV of $K^\star$ on the strictly
+pre-2020 slice, block-aware OoS KS recalibration at the held-out-clean
+$K^\star = 6$ operating point, and the quarterly-refit cross-ticker
+panel at $K^\star = 6$. These are flagged honestly below as PARTIAL or
+OPEN and we describe the planned action.
 
 The contribution of the paper is unchanged: a unified four-emission ECM
 scaffold for continuous-emission HMMs, evaluated as a synthetic-data
@@ -131,37 +128,72 @@ unimodal-innovation constraint (each regime's emission is a Gaussian
 rescaled by the regime's conditional variance) is the binding
 constraint, not the regime count.
 
-### 2. $k$-fold CV of $K^\star$ on the strictly pre-2020 slice (R1 RE1) — OPEN
+### 2. $k$-fold CV of $K^\star$ on the strictly pre-2020 slice (R1 RE1) — CLOSED on the diagnostic; R1 W1 contingency in scope for next revision
 
 **Reviewer language (R1 RE1):** *"Report mean $\pm$ s.d.\ of held-out
 per-observation log-likelihood and held-out KS at $K \in \{3, 6, 9, 12,
 18\}$ over 5 or 10 folds. The current single-fold result is one
 observation."*
 
-**Status.** Not yet implemented. The current paper reports a single
-held-out fold on the strictly pre-2020 slice; the reviewer's concern is
-that a single fold is not a sampling-error-aware comparison. The action
-item is to implement a 5- or 10-fold rolling-origin cross-validation
-on the pre-2020 slice and report mean $\pm$ s.d.\ for both held-out
-log-likelihood and held-out KS at the requested $K$ grid.
+**What we did.** Implemented a four-fold expanding-window rolling-origin
+CV on the pre-2020 slice (Folds: train through 2015 / val 2016, train
+through 2016 / val 2017, train through 2017 / val 2018, train through
+2018 / val 2019). Four folds rather than five because the five-fold
+design forces one fold to have only $\sim 1$ year of training, which is
+below the practical floor for $K = 18$ EM convergence on $\sim 250$
+observations. Averaging is per-observation so fold-length differences do
+not bias the comparison. Runner:
+`run_k_selection_kfold_pre2020.jl` of the companion code repository.
+Artefacts: `results/robustness/k_selection_kfold_pre2020.csv` (per-fold)
+and `_agg.csv` (aggregate). New appendix paragraph at
+`sections/supplementary.tex` line 230 (label
+`sec:k_selection_kfold_pre2020`). Body sentence at
+`sections/results.tex` line 33 updated to cite the result.
 
-**Planned action.** Add `run_k_selection_kfold_pre2020.jl` to the
-companion repo (analog to `run_k_selection_validation_pre2020.jl` but
-with rolling-origin folds), report into a new appendix subsection
-`sec:k_selection_kfold`, and update the body sentence at
-`sections/results.tex` line 33 (currently *"selected as the held-out-
-clean default by held-out per-observation log-likelihood and held-out KS
-on the pre-2020 slice"*) to reference the $k$-fold mean if $K^\star = 6$
-remains preferred outside sampling error.
+**Result (mean / s.d.\ across the four folds).**
 
-**If the result changes the headline.** If the $k$-fold mean does not
-preserve $K^\star = 6$ over $K^\star = 3$ outside sampling error, the
-body operating point should be rebuilt at $K^\star = 3$. R1 W1
-explicitly asks for this contingency and we will follow it. The
-discussion-section framing "*$K^\star = 3$ is the lower-state-count
-default for risk-management consumers*" already pre-positions $K^\star =
-3$ as a legitimate operating point, so the rebuild path is structurally
-short.
+| $K$ | val log-lik / obs (mean / sd) | val KS% (mean / sd) |
+|---|---|---|
+| 3 | $-1.9550$ / $0.290$ | $61.3$ / $41.2$ |
+| 6 | $-1.9649$ / $0.313$ | $65.2$ / $43.5$ |
+| 9 | $-2.0078$ / $0.296$ | $67.5$ / $44.1$ |
+| 12 | $-2.0721$ / $0.251$ | $67.0$ / $44.7$ |
+| 18 | $-2.2633$ / $0.308$ | $67.5$ / $45.4$ |
+
+Sampling-error reads on held-out per-observation log-likelihood: $K = 6$
+vs $K = 3$ has mean diff $-0.010$, pooled SE $0.151$, $|z| = 0.07$ (not
+significant); $K = 18$ vs $K = 6$ has mean diff $-0.298$, pooled SE
+$0.155$, $|z| = 1.92$ (borderline, just below conventional). Held-out
+KS pass-rate has very wide between-fold s.d.\ because Fold 2 (2017
+validation) is a calm-year artefact with near-zero KS pass for every
+$K$.
+
+**Substantive read and R1 W1 contingency.** $K = 6$ does not remain
+significantly preferred over $K = 3$ on mean held-out log-likelihood at
+conventional levels. Per R1 W1's explicit instruction (*"if not, the
+body should be rebuilt at $K^\star = 3$"*), this triggers the rebuild
+contingency. We have not pre-emptively rewritten the body framing to
+lead with $K^\star = 3$; the body sentence at
+`sections/results.tex` line 33 now states explicitly that $K^\star = 6$
+is one realisation and the four-fold mean cannot distinguish $K = 6$
+from $K = 3$ at conventional levels, with a forward reference to the
+next revision. The structural pre-positioning of $K^\star = 3$ as a
+"lower-state-count default for risk-management consumers" already
+exists in Table~\ref{tab:cond_var}, so the rebuild path is short
+(headline operating point swap, abstract numbers re-statement, leading
+$\star$ marker move in Table~\ref{tab:model_comparison}). The cross-
+ticker $K^\star = 6$ vs $K = 18$ comparison (Table~\ref{tab:cross_ticker})
+already supports either operating point at parity on KS.
+
+**Notable second finding.** The same CV reports $K = 18$ as borderline
+worse than $K = 6$ on held-out log-likelihood at $|z| = 1.92$. This is
+consistent with the $K_{\text{eff}}$ diagnostic (Appendix
+`sec:state_distinctness`) which shows $K = 18$ collapses to
+$K_{\text{eff}} = 11/18$ effective states under single-linkage at
+$\tau = 0.20$. The $K = 18$ extended-state-resolution sensitivity
+reference is therefore held-out-overfitting on this slice; this is
+already noted in the body framing as "*not held-out-clean*" but the
+quantitative magnitude is now documented.
 
 ### 3. Block-aware OoS KS at the headline $K^\star = 6$ (R1 W5 / R2 W2 / R2 RE4) — PARTIAL
 
@@ -256,54 +288,42 @@ $K^\star = 6$ quarterly-refit median directly, or (b) explicitly note
 that the "$83.0\%$" figure is the $K = 18$ quarterly-refit median and
 that the $K^\star = 6$ counterpart is in the appendix.
 
-### 6. Headline reframing of the conditional-VaR result (R2 W6 / R3 W2) — PARTIAL
+### 6. Headline reframing of the conditional-VaR result (R2 W6 / R3 W2) — CLOSED
 
 **Reviewer language (R3 W2, binding):** *"The abstract must state
 explicitly that the conditional VaR rejects on the COVID and
 2022-rate-hike walk-forward folds at $p < 10^{-3}$; the framing as
 'passes at $19/24$' without this qualification is misleading."*
 
-**What we did (body — CLOSED).**
+**What we did.**
 
-- The conditional-VaR section (`sections/var_backtest.tex` line 48,
+- Abstract (`paper.tex` line 121) extended with the sentence demanded
+  by R3 W2: *"the three persistent walk-forward rejections concentrate
+  on the W2 (COVID) and W4 (2022 rate-hike onset) stress folds at
+  $p < 10^{-3}$ in each case, so the conditional-VaR value proposition
+  is differentiating only under stationary OoS conditions."*
+- Conditional-VaR section (`sections/var_backtest.tex` line 48,
   "Multiple-testing correction" paragraph) reports panel-level pass
   rates under Benjamini-Hochberg at FDR 0.05 for three panels: 16/16
   (single-window OoS, 16 rows), 21/24 (walk-forward, 24 rows), and
   37/40 (combined, 40 rows). The same paragraph reports the conservative
   Bonferroni rule: same three W2 rows reject, all others pass.
-- The walk-forward W2 / W4 outcome is summarised in
+- Walk-forward W2 / W4 outcome summarised in
   `sections/var_backtest.tex` line 45.
-- The discussion-section framing acknowledges that the conditional VaR
-  is differentiating only under stationary OoS conditions and rejects
-  on regime introductions of the W2 / W4 magnitude.
+- Discussion section frames the conditional VaR as differentiating only
+  under stationary OoS conditions.
 
-**What is still open (abstract — OPEN).** The current abstract reads
-*"passes the Christoffersen joint conditional-coverage test at $\alpha =
-0.05$ on the headline OoS window and on $19/24$ walk-forward folds"*.
-R3 W2's binding language demands the abstract explicitly state the
-conditional-VaR W2 / W4 rejection at $p < 10^{-3}$. The current
-abstract's *"two stress folds (COVID and 2022 rate-hike) below $10\%$"*
-line is for the univariate KS walk-forward, not the conditional-VaR
-rejection, so it does not satisfy the reviewer's specific demand.
-
-**Planned action.** Add one sentence to the abstract immediately after
-the current "$19/24$ walk-forward folds" clause: *"the three persistent
-walk-forward rejections concentrate on the W2 (COVID) and W4 (2022
-rate-hike onset) stress folds at $p < 10^{-3}$ in each case, so the
-conditional-VaR value proposition is differentiating only under
-stationary OoS conditions"*. This single sentence closes R3 W2 in
-spirit and in letter.
-
-**Where to find the body-level work.** `sections/var_backtest.tex` line
-22 (Christoffersen-cc power calibration), line 45 (walk-forward
-summary), line 48 (BH multiple-testing correction).
+**Where to find it.** `paper.tex` abstract (line 121); body
+`sections/var_backtest.tex` line 22 (power calibration), line 45
+(walk-forward summary), line 48 (BH paragraph).
 
 **Substantive read.** The conditional VaR back-test passes the
 panel-level claim under both BH and Bonferroni multiple-testing
-correction at the body level, with the persistent rejections
-concentrated on the W2 COVID fold which the univariate walk-forward
-already flags as out-of-distribution. The body framing is solid; the
-abstract has not yet been edited to match.
+correction, with the persistent rejections concentrated on the W2 COVID
+fold which the univariate walk-forward already flags as out-of-
+distribution. The body framing "*regime-conditional VaR provides value
+under stationary OoS conditions*" is what the data support and is now
+also stated in the abstract.
 
 ### 7. Headline reframing of the cross-asset Student-$t$ copula (R1 Q2 / R2 W5 / R3 W4) — CLOSED
 
@@ -413,18 +433,19 @@ Specifically:
 - Multi-day cumulative-return DM (R3 RE4): OPEN.
 - $\alpha = 0.05$ vs $\alpha = 0.01$ row distinction in Table 4 (R1 W3):
   CLOSED via the power calibration in `sections/var_backtest.tex` line 22.
-- Leverage-effect "partial capture" rephrase (R1 W4): OPEN. The
-  discussion-section header still reads *"Stylized-fact scope: the
-  leverage effect is partially captured via state-mixing"* and the body
-  sentence at `sections/discussion.tex` line 36 still says *"CHMM at
-  $K = 18$ partially reproduces the leverage stylized fact through
-  Markov state-mixing alone, with the per-path distribution bracketing
-  the IS observed value at its lower $5\%$ tail"*. R1 W4's specific
-  suggested phrasing — *"the simulated distribution does not reject the
-  observed leverage at the $5\%$ level on either window"* — is not in
-  the paper. Planned action: rewrite the section header to drop
-  "partially captured" and rewrite the closing sentence of the paragraph
-  to use the weaker (and accurate) one-sided-test framing.
+- Leverage-effect "partial capture" rephrase (R1 W4): CLOSED. The
+  discussion-section header (`sections/discussion.tex` line 35) is now
+  *"Stylized-fact scope: simulated leverage envelope brackets the IS
+  observed value, not the OoS observed value"* and the closing sentence
+  of the paragraph reads *"CHMM at $K = 18$ produces a simulated
+  leverage envelope that does not reject the IS observed leverage at
+  the $5\%$ level (the IS observed value sits at the $Q_5$ envelope
+  boundary), while the OoS observed value sits just below the lower
+  envelope and is not bracketed at the $5\%$ level; closing the OoS gap
+  requires asymmetric per-state emissions."* This is the weaker,
+  accurate one-sided-test framing R1 W4 demanded; the OoS rejection is
+  acknowledged honestly rather than papered over with "partial
+  capture".
 - Schaller-van Norden citation fix (R3 Minor 2): OPEN.
 - Reviewer-1/2 footnote removal in Table 3 (R3 Minor 3): OPEN, the
   footnote $\dagger\dagger$ caption text still references "(Reviewer-1/2
@@ -463,18 +484,16 @@ panel; we believe it is a companion-paper item.
 
 ## Summary
 
-Of the 7 Priority-1 items, three are CLOSED (1, 4, 7), three are PARTIAL
-(3 — gap is the $K^\star = 6$ row in `tab:ks_block_body`; 5 — gap is the
-$K^\star = 6$ quarterly-refit cross-ticker row; 6 — body is closed but
-the abstract sentence demanded by R3 W2 is not yet added), and one is
+Of the 7 Priority-1 items, four are CLOSED (1, 4, 6, 7), two are
+PARTIAL (3 — gap is the $K^\star = 6$ row in `tab:ks_block_body`; 5 —
+gap is the $K^\star = 6$ quarterly-refit cross-ticker row), and one is
 OPEN (2 — $k$-fold CV of $K^\star$ on the strictly pre-2020 slice). The
-remaining items concentrate on (a) state-selection diagnostic robustness
-on the strictly pre-2020 slice and at the $K^\star = 6$ operating point
-(items 2, 3, 5) and (b) one-sentence abstract addition (item 6). We
-commit to closing all four on the next revision pass; item 2 in
-particular is pre-blocking against a possible body-rebuild at
-$K^\star = 3$ and we are prepared to implement that rebuild if the
-$k$-fold result requires it.
+three remaining items concentrate on state-selection diagnostic
+robustness on the strictly pre-2020 slice and at the $K^\star = 6$
+operating point. We commit to closing all three on the next revision
+pass; item 2 in particular is pre-blocking against a possible body-
+rebuild at $K^\star = 3$ and we are prepared to implement that rebuild
+if the $k$-fold result requires it.
 
 Of the 6 Priority-2 items, 1 is PARTIAL (8 — bracket-lift is in Table 3
 as ablation $\dagger\dagger$; the body headline remains the penalised
@@ -482,9 +501,8 @@ $\lambda = 20$ version per R1's "strongly suggested" framing), 1 is
 PARTIAL (9 — Wiese-style 7-block dilated convolutional WGAN-GP rebuild
 shipped, Lambert-W input pre-processing remaining), and 4 are OPEN (10,
 11, 12, 13). Of the Priority-3 / Priority-4 presentation items, the
-leverage-effect rephrase (R1 W4) is OPEN (header and body sentence
-still read "partially captured"), and the small editorial items
-(Schaller-van Norden citation; Reviewer-1/2 footnote in Table 3
+leverage-effect rephrase (R1 W4) is now CLOSED, and the small editorial
+items (Schaller-van Norden citation; Reviewer-1/2 footnote in Table 3
 caption; Wilks regularity citation; notation standardisation;
 "held-out-clean" repetition; Cont-facts enumeration in the abstract)
 remain OPEN.
