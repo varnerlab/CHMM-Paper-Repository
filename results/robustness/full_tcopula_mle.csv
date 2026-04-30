@@ -1,0 +1,16 @@
+estimator,nu_hat,log_likelihood,n_tickers,tickers
+two-step (Kendall + profile MLE),6.0,6157.4722,6,"SPY;NVDA;JNJ;JPM;AAPL;QQQ"
+full one-shot MLE,6.4025,6163.0217,6,"SPY;NVDA;JNJ;JPM;AAPL;QQQ"
+
+nu,profile_log_L_at_Sigma_full,in_wilks_ci
+2.0,5344.0226,false
+3.0,5923.4307,false
+4.0,6091.8197,false
+5.0,6146.8158,false
+6.0,6162.0622,true
+7.0,6161.4211,true
+8.0,6154.0321,false
+10.0,6132.5438,false
+15.0,6079.3387,false
+20.0,6038.8873,false
+30.0,5985.3126,false

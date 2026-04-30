@@ -1284,3 +1284,26 @@ Monthly ($21$ days)                                & $\mathbf{86.7}$ & $\mathbf{
 \end{table}
 
 Reading: the marginal lift from IS-fixed to quarterly is $+9.6$pp on the median and $-4$ failures; from quarterly to monthly is $+3.7$pp and $-2$ failures. The trade-off is nearly linear in $\log(\text{cadence}^{-1})$ on the median axis at this scale, suggesting that further reduction below monthly would yield diminishing returns at the cost of $\sim 28 \to 56$ refits per ticker. The body Section~\ref{sec:cross_asset_univariate} narrative is unchanged: periodic refit at deployment is required for OoS distributional fidelity on regime-introduction tickers, and the operational deployment choice is between quarterly (recommended default trade-off) and monthly (best fidelity at $3\times$ the compute cost).
+
+\subsubsection{Alpaca Data-Depth Probe for the Independent-Decade Validation}
+\label{sec:alpaca_depth_probe}
+
+The Section~\ref{sec:discussion} Limitations paragraph notes that the body data pipeline (Polygon.io via Massive, $2014$-$01$-$03$ onwards; Alpaca / IEX held-out extension to $2026$-$04$-$20$) does not reach the $1994$-$2004$ window required for an independent-decade SPY validation. We attempted the validation by pulling SPY daily bars for $1994$-$01$-$01$ to $2004$-$12$-$31$ via the sibling Alpaca Markets SDK (\texttt{alpaca-markets-sdk} at $\texttt{../alpaca-markets-sdk}$ relative to the model project, runner: \texttt{run\_fetch\_spy\_independent\_decade.jl}). Both feeds returned zero bars for the target window. A finer probe at two-year intervals from $1994$ to $2018$ (Table~\ref{tab:alpaca_depth_probe}; runner: \texttt{run\_probe\_alpaca\_history.jl}) shows that on the credentials available for this study the SIP feed begins at $2016$-$01$-$04$ and the IEX feed begins at $2018$-$11$-$01$.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Alpaca SDK SPY data-depth probe.} Counts of daily bars returned by \texttt{get\_bars(client, "SPY", "1Day"; start, finish, feed)} for each calendar year $1994$ through $2018$ (two-year stride). Empty rows omitted. The SIP feed reaches back to $2016$-$01$-$04$; the IEX feed reaches back to $2018$-$11$-$01$ (one bar in the $2018$ row reflects the late-November activation date). Years $1994$ through $2014$ all returned zero bars on both feeds. The independent-decade SPY validation $(1994$--$2004$ versus $2014$--$2024)$ is therefore not feasible through this SDK.}
+\label{tab:alpaca_depth_probe}
+\begin{tabular}{c c c c c}
+\toprule
+year & IEX bars & IEX first date & SIP bars & SIP first date \\
+\midrule
+$2014$ and earlier & $0$ & --- & $0$ & --- \\
+$2016$ & $0$ & --- & $252$ & $2016$-$01$-$04$ \\
+$2018$ & $1$ & $2018$-$11$-$01$ & $251$ & $2018$-$01$-$02$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Polygon.io / Massive feed already in the body pipeline begins at $2014$-$01$-$03$, so the available data sources span $2014$-$2026$ inclusive without a pre-$2014$ extension. Independent-decade validation of the headline claims requires a different data source (e.g., Bloomberg, Refinitiv, or a CRSP licence with deep historical coverage) and is logged for the next data-pipeline pass. The empirical scope of the present paper is therefore strictly the $2014$-$2026$ SPY window and the OoS extension reported in the body.
