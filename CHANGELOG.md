@@ -69,6 +69,46 @@ Plan tracked in `REVISION_PLAN.md`.
 - **P5.2 (monthly refit)**: in progress at writing.
 - **P2.2 (1994-2004 SPY)**: deferred (data not in pipeline); existing
   in-window 5-year sub-decade split covers cross-decade transfer.
+- **R2.W1 / R1.W1 / R3.RE1 (reference MS-GARCH)** (2026-04-30): closed.
+  Re-run the Markov-switching GARCH(1,1) baseline at $K \in \{2, 3, 4\}$
+  through the canonical \texttt{MSGARCH} R package (Ardia et al.\ 2019, JSS;
+  version $2.51$), driven from the Julia harness via \texttt{RCall.jl}.
+  Fully Bayesian DEMC sampler, $12{,}500$ MCMC draws, $2{,}500$ burn-in,
+  thin $10$, single chain; $1{,}000$ posterior-predictive paths per $K$
+  (one path per retained posterior draw) so the simulated marginal
+  integrates parameter uncertainty path-by-path. Reproducibility pinned
+  via \texttt{renv} (\texttt{r\_msgarch/renv.lock}, $11$ R packages plus
+  R $4.6.0$); explicit seed at every entry point.
+  Headline numbers (\texttt{results/msgarch\_reference/metrics.csv} of
+  the companion code repository): IS KS $0.0\%$ ($K = 2$), $0.1\%$
+  ($K = 3$), $0.0\%$ ($K = 4$); OoS KS $5.8\%, 5.1\%, 5.3\%$;
+  posterior-mean LL $-5{,}667, -5{,}667, -5{,}565$. Lower KS than our
+  in-house frequentist Nelder-Mead fit ($27$--$37\%$ IS plateau) is
+  methodological inflation from posterior-predictive variance, not
+  estimator regression: the in-house simulates $1{,}000$ paths from one
+  MLE point estimate, while the Bayesian re-run samples one set of
+  parameters per path from the posterior. The body conclusion ``the
+  multi-state benefit is specific to the CHMM scaffold rather than to
+  multi-state regime-switching per se'' is therefore robust to estimator
+  choice on this dataset under either flavour.
+  Paper edits: three new rows in body Table~\ref{tab:model_comparison}
+  (\texttt{sections/results.tex}, marked $\P$); body sentence at
+  \texttt{sections/results.tex} extended to cite both estimators; new
+  paragraph + three rows in \texttt{sections/baselines_appendix.tex}
+  under \texttt{tab:extended_baselines}; ``Baseline-implementation
+  caveats'' paragraph in \texttt{sections/discussion.tex} reframed (MS-
+  GARCH dropped from self-implementation caveat list, replaced with
+  ``two flavours'' framing); ``six items closed'' counter in the
+  Limitations paragraph updated from five; \texttt{sections/conclusion.tex}
+  no longer lists MS-GARCH in companion-paper directions. Plan
+  artefact: \texttt{PLAN\_MSGARCH\_RCALL.md} (supersedes
+  \texttt{PLAN\_MSGARCH\_JULIA.md} and \texttt{PLAN\_MSGARCH\_PUBLIC\_PACKAGE.md}
+  for the resubmission timeline). Companion-repo additions:
+  \texttt{src/MSGARCHReference.jl} (Julia bridge),
+  \texttt{run\_msgarch\_reference.jl} (runner),
+  \texttt{r\_msgarch/} (R-side scaffolding under \texttt{renv}),
+  \texttt{test/test\_msgarch\_reference.jl} (smoke test, skips cleanly
+  without R).
 
 ---
 
