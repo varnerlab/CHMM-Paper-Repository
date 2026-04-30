@@ -49,10 +49,10 @@ We extend this M-step with an optional exponential shrinkage prior on $1/\nu_k$,
 maximised by the same golden-section search ($\lambda = 0$ recovers the unpenalised \citet{peel2000robust, liu1995ml} ECM; the rate sweep and its effect on simulated IS kurtosis are in Section~\ref{sec:discussion}).
 
 \paragraph{CHMM-L M-step (closed-form weighted Laplace MLE).}
-For Laplace emissions $b_k(x) = \tfrac{1}{2 b_k} \exp(-|x - \mu_k|/b_k)$ the weighted-MLE estimators are available in closed form:
+For Laplace emissions $b_k(x) = \tfrac{1}{2 \beta_k} \exp(-|x - \mu_k|/\beta_k)$ (with the per-state Laplace scale renamed from the conventional $b_k$ to $\beta_k$ to avoid the symbol collision with the emission-density notation $b_k(\cdot;\boldsymbol\theta_k)$ used in Section~\ref{sec:chmm_def}) the weighted-MLE estimators are available in closed form:
 \begin{equation}
     \mu_k^{\text{new}} = \text{WeightedMedian}\!\left(O_{1:T};\, \gamma_{1:T}(k)\right),\qquad
-    b_k^{\text{new}} = \frac{\sum_t \gamma_t(k)\, |O_t - \mu_k^{\text{new}}|}{\sum_t \gamma_t(k)}.
+    \beta_k^{\text{new}} = \frac{\sum_t \gamma_t(k)\, |O_t - \mu_k^{\text{new}}|}{\sum_t \gamma_t(k)}.
     \label{eq:lupdate_supp}
 \end{equation}
 The weighted median is computed by cumulative-weight bracketing with linear interpolation between adjacent order statistics at the half-total weight crossing.
@@ -457,7 +457,7 @@ Sweep & $p_{\min}$ & $p_{\max}$ & LL & $\hat p_{\min}$ & nG & nI & nL & nS & KS 
 \node[emit, minimum width=28mm, right=2mm of eN] (eT)
     {\textbf{CHMM-t} \\ $b_k = t_{\nu_k}(\mu_k, \sigma_k)$};
 \node[emit, minimum width=28mm, right=2mm of eT] (eL)
-    {\textbf{CHMM-L} \\ $b_k = \mathrm{Laplace}(\mu_k, b_k)$};
+    {\textbf{CHMM-L} \\ $b_k = \mathrm{Laplace}(\mu_k, \beta_k)$};
 \node[emit, minimum width=28mm, right=2mm of eL] (eG)
     {\textbf{CHMM-GED} \\ $b_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$};
 \node[lbl, above=1mm of eT, anchor=south] {per-state emission family (one per CHMM variant)};
