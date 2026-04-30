@@ -30,17 +30,21 @@ $K^\star = 6$ choice and the conditional-VaR pass-rate, (iii) honesty of
 the cross-asset Student-$t$ copula choice on OoS, and (iv) recalibration
 of the asymptotic OoS KS pass rate under temporally-aware nulls. We
 have closed (i) on the MS-GARCH axis (reference Bayesian re-run via the
-canonical `MSGARCH` R package), (ii) substantively (Benjamini-Hochberg
-panel-level pass rates added to the conditional-VaR section, walk-forward
-W2 / W4 stress-fold failures explicitly stated), (iii) in the discussion
-section (Gaussian and Student-$t$ copulas are flagged as OoS-
-indistinguishable at $N_\text{paths} = 200$), and (iv) for $K = 18$ in
-the body and for both IS and OoS series in the appendix. The remaining
-open items are: $k$-fold CV of $K^\star$ on the strictly pre-2020 slice,
-block-aware OoS KS recalibration at the held-out-clean $K^\star = 6$
-operating point, and the quarterly-refit cross-ticker panel at
-$K^\star = 6$. These are flagged honestly below as OPEN and we describe
-the planned action.
+canonical `MSGARCH` R package), (ii) substantively at the body level
+(Benjamini-Hochberg panel-level pass rates added to the conditional-VaR
+section, walk-forward W2 / W4 stress-fold failures explicitly stated;
+the abstract sentence demanded by R3 W2 is the one remaining open piece
+of this item), (iii) in the discussion section (Gaussian and
+Student-$t$ copulas are flagged as OoS-indistinguishable at
+$N_\text{paths} = 200$), and (iv) for $K = 18$ in the body and for both
+IS and OoS series in the appendix. The remaining open items are:
+$k$-fold CV of $K^\star$ on the strictly pre-2020 slice, block-aware
+OoS KS recalibration at the held-out-clean $K^\star = 6$ operating
+point, the quarterly-refit cross-ticker panel at $K^\star = 6$, the
+abstract callout of the conditional-VaR W2 / W4 rejection demanded by
+R3 W2, and the leverage-effect rephrase demanded by R1 W4. These are
+flagged honestly below as PARTIAL or OPEN and we describe the planned
+action.
 
 The contribution of the paper is unchanged: a unified four-emission ECM
 scaffold for continuous-emission HMMs, evaluated as a synthetic-data
@@ -196,24 +200,34 @@ If the Christoffersen-cc pass rate degrades materially under refit, the
 'regime-switching value proposition' of $\S$VaR is partly an IS-specific
 artefact and the body framing must be qualified."*
 
-**What we did.** The walk-forward conditional-VaR panel
-(`tab:walkforward_cond_var`, sec:supp_misc) reports the conditional VaR
-across six rolling-origin folds; Table 6 includes the quarterly-refit
-extension and a four-family extension.
+**What we did.** Refit CHMM-N at $K \in \{3, 18\}$ every 63 trading days
+on a rolling 5-year window through the OoS span, ran the forward filter
+through the OoS window under each refit's parameters, and re-ran the
+Kupiec / Christoffersen-ind / Christoffersen-cc constructions. Reported
+in `tab:cond_var_quarterly_refit` of Appendix
+`sec:quarterly_refit_cond_var` (file
+`sections/sensitivity_appendix.tex`, line 851 onwards). Source data:
+`results/diagnostics/quarterly_refit_conditional_var.txt` of the
+companion code repository.
 
-**Where to find it.** `sections/var_backtest.tex` references
-`tab:walkforward_cond_var` and `tab:cond_var_all_families`; the
-sec:supp_misc walk-forward table covers fold-wise refit at quarterly
-cadence; cond_var_all_families covers the family extension at the
-single-window OoS plus the refit cross-product.
+**Where to find it.** `sections/sensitivity_appendix.tex` lines 848-870
+(paragraph + table); the body cross-ref is at
+`sections/var_backtest.tex` line 45 and was corrected in this revision
+to point at `tab:cond_var_quarterly_refit` (the prior wording was
+misleading because it cited only the walk-forward and four-family tables
+and labelled them collectively as "quarterly-refit and four-family
+extensions").
 
-**Substantive read.** The conditional Christoffersen-cc passes at
-$\alpha = 0.05$ on $19/24$ rows uncorrected and $21/24$ under
-Benjamini-Hochberg at FDR 0.05. The W2 (COVID) and W4 (2022 rate-hike
-onset) stress folds reject at $p < 10^{-3}$; this is exactly the regime
-the conditional VaR is supposed to provide value in, and we now state
-this explicitly in the body framing (item 6 below) rather than claiming
-"clean pass" without qualification.
+**Substantive read.** The quarterly refit passes Christoffersen-cc at
+$\alpha = 0.05$ on three of four rows ($K = 3$ at $\alpha \in \{0.01,
+0.05\}$, $K = 18$ at $\alpha = 0.01$); the fourth row
+($K = 18, \alpha = 0.05$) sits at $p_{\text{cc}} = 0.052$, a marginal
+pass that is qualitatively the same as the IS-fixed row's
+$p_{\text{cc}} = 0.678$ but with tighter coverage ($3.32\%$ vs.\ $4.55\%$
+in `tab:cond_var`). The refit value proposition is in coverage tightness
+rather than in cc-improvement at this $T_\text{OoS}$. The walk-forward
+panel reports the additional $19/24$ pass-rate at fold-wise (annual)
+cadence, with W2 / W4 stress-fold failures discussed in item 6.
 
 ### 5. Quarterly-refit cross-ticker OoS KS at $K^\star = 6$ (R3 W3) — PARTIAL
 
@@ -242,40 +256,54 @@ $K^\star = 6$ quarterly-refit median directly, or (b) explicitly note
 that the "$83.0\%$" figure is the $K = 18$ quarterly-refit median and
 that the $K^\star = 6$ counterpart is in the appendix.
 
-### 6. Headline reframing of the conditional-VaR result (R2 W6 / R3 W2) — CLOSED
+### 6. Headline reframing of the conditional-VaR result (R2 W6 / R3 W2) — PARTIAL
 
 **Reviewer language (R3 W2, binding):** *"The abstract must state
 explicitly that the conditional VaR rejects on the COVID and
 2022-rate-hike walk-forward folds at $p < 10^{-3}$; the framing as
 'passes at $19/24$' without this qualification is misleading."*
 
-**What we did.**
+**What we did (body — CLOSED).**
 
-- Walk-forward W2 / W4 stress-fold failures are now stated explicitly in
-  the abstract and in `sections/results.tex` ("*two stress folds (W2
-  COVID, W4 2022 rate-hike onset) below $10\%$ and explicitly out-of-
-  distribution by KS for every generator in the panel*").
 - The conditional-VaR section (`sections/var_backtest.tex` line 48,
   "Multiple-testing correction" paragraph) reports panel-level pass
   rates under Benjamini-Hochberg at FDR 0.05 for three panels: 16/16
   (single-window OoS, 16 rows), 21/24 (walk-forward, 24 rows), and
   37/40 (combined, 40 rows). The same paragraph reports the conservative
   Bonferroni rule: same three W2 rows reject, all others pass.
+- The walk-forward W2 / W4 outcome is summarised in
+  `sections/var_backtest.tex` line 45.
 - The discussion-section framing acknowledges that the conditional VaR
-  is "differentiating only under stationary OoS conditions" and rejects
+  is differentiating only under stationary OoS conditions and rejects
   on regime introductions of the W2 / W4 magnitude.
 
-**Where to find it.** `sections/results.tex` line 87 (body sentence),
-`sections/var_backtest.tex` line 48 (BH paragraph),
-`sections/var_backtest.tex` line 22 (Christoffersen-cc power calibration
-paragraph).
+**What is still open (abstract — OPEN).** The current abstract reads
+*"passes the Christoffersen joint conditional-coverage test at $\alpha =
+0.05$ on the headline OoS window and on $19/24$ walk-forward folds"*.
+R3 W2's binding language demands the abstract explicitly state the
+conditional-VaR W2 / W4 rejection at $p < 10^{-3}$. The current
+abstract's *"two stress folds (COVID and 2022 rate-hike) below $10\%$"*
+line is for the univariate KS walk-forward, not the conditional-VaR
+rejection, so it does not satisfy the reviewer's specific demand.
+
+**Planned action.** Add one sentence to the abstract immediately after
+the current "$19/24$ walk-forward folds" clause: *"the three persistent
+walk-forward rejections concentrate on the W2 (COVID) and W4 (2022
+rate-hike onset) stress folds at $p < 10^{-3}$ in each case, so the
+conditional-VaR value proposition is differentiating only under
+stationary OoS conditions"*. This single sentence closes R3 W2 in
+spirit and in letter.
+
+**Where to find the body-level work.** `sections/var_backtest.tex` line
+22 (Christoffersen-cc power calibration), line 45 (walk-forward
+summary), line 48 (BH multiple-testing correction).
 
 **Substantive read.** The conditional VaR back-test passes the
 panel-level claim under both BH and Bonferroni multiple-testing
-correction, with the persistent rejections concentrated on the W2 COVID
-fold which the univariate walk-forward already flags as out-of-
-distribution. The body framing "*regime-conditional VaR provides value
-under stationary OoS conditions*" is what the data support.
+correction at the body level, with the persistent rejections
+concentrated on the W2 COVID fold which the univariate walk-forward
+already flags as out-of-distribution. The body framing is solid; the
+abstract has not yet been edited to match.
 
 ### 7. Headline reframing of the cross-asset Student-$t$ copula (R1 Q2 / R2 W5 / R3 W4) — CLOSED
 
@@ -385,10 +413,18 @@ Specifically:
 - Multi-day cumulative-return DM (R3 RE4): OPEN.
 - $\alpha = 0.05$ vs $\alpha = 0.01$ row distinction in Table 4 (R1 W3):
   CLOSED via the power calibration in `sections/var_backtest.tex` line 22.
-- Leverage-effect "partial capture" rephrase (R1 W4): CLOSED in
-  `sections/discussion.tex` line 35 ("*the simulated distribution does
-  not reject the observed leverage at the 5\% level on either window*"
-  is the post-revision phrasing).
+- Leverage-effect "partial capture" rephrase (R1 W4): OPEN. The
+  discussion-section header still reads *"Stylized-fact scope: the
+  leverage effect is partially captured via state-mixing"* and the body
+  sentence at `sections/discussion.tex` line 36 still says *"CHMM at
+  $K = 18$ partially reproduces the leverage stylized fact through
+  Markov state-mixing alone, with the per-path distribution bracketing
+  the IS observed value at its lower $5\%$ tail"*. R1 W4's specific
+  suggested phrasing — *"the simulated distribution does not reject the
+  observed leverage at the $5\%$ level on either window"* — is not in
+  the paper. Planned action: rewrite the section header to drop
+  "partially captured" and rewrite the closing sentence of the paragraph
+  to use the weaker (and accurate) one-sided-test framing.
 - Schaller-van Norden citation fix (R3 Minor 2): OPEN.
 - Reviewer-1/2 footnote removal in Table 3 (R3 Minor 3): OPEN, the
   footnote $\dagger\dagger$ caption text still references "(Reviewer-1/2
@@ -427,19 +463,31 @@ panel; we believe it is a companion-paper item.
 
 ## Summary
 
-Of the 7 Priority-1 items, four are CLOSED (1, 4, 6, 7), one is PARTIAL
-(3, gap is the $K^\star = 6$ block-aware row), one is PARTIAL (5, gap is
-the $K^\star = 6$ quarterly-refit row), and one is OPEN (2, $k$-fold CV
-of $K^\star$). The three remaining items are all in the same family
-(state-selection diagnostic robustness on the strictly pre-2020 slice
-and at the $K^\star = 6$ operating point). We commit to closing all
-three on the next revision pass; 2 in particular is pre-blocking against
-a possible body-rebuild at $K^\star = 3$ and we are prepared to
-implement that rebuild if the $k$-fold result requires it.
+Of the 7 Priority-1 items, three are CLOSED (1, 4, 7), three are PARTIAL
+(3 — gap is the $K^\star = 6$ row in `tab:ks_block_body`; 5 — gap is the
+$K^\star = 6$ quarterly-refit cross-ticker row; 6 — body is closed but
+the abstract sentence demanded by R3 W2 is not yet added), and one is
+OPEN (2 — $k$-fold CV of $K^\star$ on the strictly pre-2020 slice). The
+remaining items concentrate on (a) state-selection diagnostic robustness
+on the strictly pre-2020 slice and at the $K^\star = 6$ operating point
+(items 2, 3, 5) and (b) one-sentence abstract addition (item 6). We
+commit to closing all four on the next revision pass; item 2 in
+particular is pre-blocking against a possible body-rebuild at
+$K^\star = 3$ and we are prepared to implement that rebuild if the
+$k$-fold result requires it.
 
-Of the 6 Priority-2 items, 1 is CLOSED (8), 2 is PARTIAL (9, the QuantGAN
-TCN rebuild without Lambert-W), and the remaining 4 (10, 11, 12, 13) are
-OPEN.
+Of the 6 Priority-2 items, 1 is PARTIAL (8 — bracket-lift is in Table 3
+as ablation $\dagger\dagger$; the body headline remains the penalised
+$\lambda = 20$ version per R1's "strongly suggested" framing), 1 is
+PARTIAL (9 — Wiese-style 7-block dilated convolutional WGAN-GP rebuild
+shipped, Lambert-W input pre-processing remaining), and 4 are OPEN (10,
+11, 12, 13). Of the Priority-3 / Priority-4 presentation items, the
+leverage-effect rephrase (R1 W4) is OPEN (header and body sentence
+still read "partially captured"), and the small editorial items
+(Schaller-van Norden citation; Reviewer-1/2 footnote in Table 3
+caption; Wilks regularity citation; notation standardisation;
+"held-out-clean" repetition; Cont-facts enumeration in the abstract)
+remain OPEN.
 
 The substantive contribution of the manuscript is unchanged: the unified
 four-emission ECM scaffold, the regime-conditional VaR application
