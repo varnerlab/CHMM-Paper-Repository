@@ -69,10 +69,21 @@ performance.
 
 ### Priority-2 closures
 
-**P7 (R1#3) — Refit-cadence cond-VaR sweep (monthly/weekly).** *Deferred
-as documented follow-up.* The walk-forward refit panel construction is
-heavy and not load-bearing for the resubmission's substantive findings;
-documented as an explicit follow-up direction in the conclusion.
+**P7 (R1#3) — Refit-cadence cond-VaR sweep (monthly/weekly).** *Closed
+with a substantive negative finding.* Runner:
+`run_walkforward_cond_var_refit_cadence.jl`. Scoped at K=3 / α=0.05
+across the six walk-forward folds. Faster refit does **not** close the W2
+(COVID) Christoffersen-cc rejection at any cadence (p_cc = 0.011 → 0.017
+→ 0.023 across fold-IS-fixed, monthly, weekly), and monthly refit
+*introduces* new failures on W3 (p_cc = 0.118 → 0.047) and W4 (0.120 →
+0.022) from refit-cycle parameter drift that the fold-IS-fixed baseline
+does not have. Weekly refit recovers W4 (back to 0.100) but still rejects
+W3 (0.025) and W2. Rejection counts: fold-IS-fixed 1/6, monthly 3/6,
+weekly 2/6. The W2 failure is intrinsic regime-break; closing it requires
+a model class with explicit regime-introduction handling (skew-emission
+HMMs, online-EM constructions), not faster refit cadence on the symmetric
+scaffold. New appendix `sec:walkforward_refit_cadence` +
+`tab:walkforward_refit_cadence`; body callout in `sections/var_backtest.tex`.
 
 **P8 (R2#req-2) — Bootstrap-CI placement of penalised CHMM-t IS
 kurtosis.** *Closed with a positive finding.* Runner:
@@ -169,15 +180,17 @@ log clean).
 
 ### Aggregate
 
-26 of 28 actionable items closed substantively in this round (P7 refit-
-cadence sweep and P10 sector expansion deferred as documented follow-
-ups). Two of the closures (P2 multi-day DM replication, P3 HAC K-
-selection) shift framing toward more conservative readings of the data;
-one closure (P9 shared-ν ablation) introduces a structurally cleaner
-alternative to the body's per-state ν_k construction that the body now
-references explicitly.
+27 of 28 actionable items closed substantively in this round (P10 sector
+expansion deferred as documented follow-up). Three of the closures (P2
+multi-day DM replication, P3 HAC K-selection, P7 refit-cadence sweep)
+shift framing toward more conservative readings of the data; one closure
+(P9 shared-ν ablation) introduces a structurally cleaner alternative to
+the body's per-state ν_k construction that the body now references
+explicitly.
 
-The paper is now publication-ready for round-2 resubmission.
+The paper is now publication-ready for round-2 resubmission. Final state
+after the P7 follow-up: 127 pages, build clean, no unresolved
+references.
 
 ---
 

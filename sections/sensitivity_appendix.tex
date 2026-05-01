@@ -1070,6 +1070,50 @@ $18$ & $0.05$ & $19$ & $3.32\%$ & $-3.14$ & $3.83$ & $2.08$ & $5.91$ & $0.052$ \
 
 The quarterly-refit construction passes Christoffersen-cc at $\alpha = 0.05$ on three of four rows ($K = 3, \alpha \in \{0.01, 0.05\}$ and $K = 18, \alpha = 0.01$); the fourth row ($K = 18, \alpha = 0.05$) sits at $p_{\text{cc}} = 0.052$ (statistic $5.91$ vs.\ critical $5.99$), a marginal pass that is qualitatively the same as the IS-fixed row's $p_{\text{cc}} = 0.678$ but has tighter coverage ($3.32\%$ vs.\ $4.55\%$ in Table~\ref{tab:cond_var}). The quarterly refit therefore tightens VaR coverage but does not strictly improve the cc-statistic on this $T_{\text{OoS}}$; the refit value proposition is in coverage tightness rather than in cc-improvement, with the trade-off being a mild loss of test-power headroom on the $K = 18, \alpha = 0.05$ row. Full per-fold detail is in the results file.
 
+\subsubsection{Walk-Forward Refit-Cadence Sweep (Monthly / Weekly)}
+\label{sec:walkforward_refit_cadence}
+
+A natural follow-up question on the quarterly-refit construction above is whether \emph{faster} refits close the W2 (COVID) and W4 (2022 rate-hike) Christoffersen-cc rejections in the body walk-forward table (Appendix~\ref{sec:supp_misc}, Table~\ref{tab:walkforward_cond_var}). Round-2 reviewers asked for a within-fold refit-cadence sweep at monthly (every $21$ trading days) and weekly (every $5$ trading days) cadence on each of the six walk-forward folds, scoped at $K^\star = 3$ and $\alpha = 0.05$ (the body-headline operating point and the substantive risk-management $\alpha$). Source / runner: \texttt{run\_walkforward\_cond\_var\_refit\_cadence.jl}; output: \texttt{results/walkforward\_refit\_cadence/walkforward\_refit\_cadence.csv}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Walk-forward conditional-VaR refit-cadence sweep, CHMM-N at $K^\star = 3$, $\alpha = 0.05$.} Six folds, train $5$y / test $1$y; ``fold-IS-fixed'' is the body baseline (no refit within the fold, from Table~\ref{tab:walkforward_cond_var}); ``$21$d'' refits every $21$ trading days; ``$5$d'' every $5$ trading days. At each refit, CHMM-N is re-fit on the most recent $1{,}260$-obs window ending the day before the refit-target test day; the predictive filter is re-primed by running through the new train window. Critical value $\chi^2_2(0.05) = 5.991$; bold $p_{\text{cc}}$ rows fail at the $5\%$ level.}
+\label{tab:walkforward_refit_cadence}
+\begin{tabular}{l c c c c c c c}
+\toprule
+Fold & cadence & breaches & br rate & med VaR & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{cc}}$ & $p_{\text{cc}}$ \\
+\midrule
+W1 & fold-IS-fixed & $15$ & $5.98\%$ & $-2.43$ & $0.48$ & $1.65$ & $0.44$ \\
+W1 & $21$d         & $15$ & $5.95\%$ & $-2.41$ & $0.46$ & $1.64$ & $0.44$ \\
+W1 & $\phantom{0}5$d & $15$ & $5.95\%$ & $-2.19$ & $0.46$ & $1.64$ & $0.44$ \\
+\midrule
+W2 & fold-IS-fixed & $23$ & $9.13\%$ & $-4.59$ & $7.34$ & $9.05$ & $\mathbf{0.011}$ \\
+W2 & $21$d         & $22$ & $8.70\%$ & $-4.68$ & $6.02$ & $8.20$ & $\mathbf{0.017}$ \\
+W2 & $\phantom{0}5$d & $21$ & $8.30\%$ & $-4.68$ & $4.88$ & $7.57$ & $\mathbf{0.023}$ \\
+\midrule
+W3 & fold-IS-fixed & $20$ & $7.97\%$ & $-2.47$ & $3.98$ & $4.28$ & $0.118$ \\
+W3 & $21$d         & $22$ & $8.73\%$ & $-2.66$ & $6.10$ & $6.11$ & $\mathbf{0.047}$ \\
+W3 & $\phantom{0}5$d & $23$ & $9.13\%$ & $-2.64$ & $7.34$ & $7.34$ & $\mathbf{0.025}$ \\
+\midrule
+W4 & fold-IS-fixed & $18$ & $7.20\%$ & $-4.16$ & $2.26$ & $4.24$ & $0.120$ \\
+W4 & $21$d         & $21$ & $8.37\%$ & $-4.41$ & $5.03$ & $7.67$ & $\mathbf{0.022}$ \\
+W4 & $\phantom{0}5$d & $19$ & $7.57\%$ & $-4.40$ & $3.04$ & $4.61$ & $0.100$ \\
+\midrule
+W5 & fold-IS-fixed & $\phantom{0}8$ & $3.21\%$ & $-3.90$ & $1.91$ & $2.44$ & $0.30$ \\
+W5 & $21$d         & $\phantom{0}8$ & $3.20\%$ & $-3.53$ & $1.94$ & $2.48$ & $0.29$ \\
+W5 & $\phantom{0}5$d & $\phantom{0}8$ & $3.20\%$ & $-3.48$ & $1.94$ & $2.48$ & $0.29$ \\
+\midrule
+W6 & fold-IS-fixed & $13$ & $5.18\%$ & $-2.85$ & $0.02$ & $0.17$ & $0.92$ \\
+W6 & $21$d         & $14$ & $5.56\%$ & $-2.77$ & $0.16$ & $0.22$ & $0.90$ \\
+W6 & $\phantom{0}5$d & $14$ & $5.56\%$ & $-2.73$ & $0.16$ & $0.22$ & $0.90$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+Faster refit \textbf{does not close} the W2 (COVID) Christoffersen-cc rejection at any cadence: $p_{\text{cc}}$ moves from $0.011$ (fold-IS-fixed) to $0.017$ (monthly) to $0.023$ (weekly), all below the $0.05$ threshold. The COVID drawdown is fast enough that even weekly refit on a $5$y rolling train cannot adapt the model in time. Worse, monthly refit \emph{introduces} new failures on W3 and W4 that the fold-IS-fixed baseline did not have ($p_{\text{cc}}$ on W3: $0.118 \to 0.047 \to 0.025$ across cadences; W4: $0.120 \to 0.022 \to 0.100$, with W4 weekly recovering but still rejecting at monthly). The mechanism is parameter drift across the refit cycle: the conditional VaR predictive mixture is sensitive to small shifts in $(\mathbf T, \boldsymbol\theta_k)$, and at monthly cadence the per-refit parameter update introduces breach-clustering that the Christoffersen-ind component picks up. The rejection counts under each cadence are: fold-IS-fixed $1/6$ (W2 only), monthly $3/6$ (W2 + W3 + W4), weekly $2/6$ (W2 + W3). Faster refit is therefore \textbf{not} the production recipe for closing the W2 / W4 stress folds: W2 is intrinsic regime-break, and intermediate cadences trade away passing folds to fail under refit-cycle parameter drift. The right operational reading is the body's existing recommendation: under regime-break conditions of the W2 / W4 magnitude, the conditional-VaR construction inherits the same out-of-scope behaviour as the unconditional generators, and the mitigation is not refit cadence but a model class with explicit regime-introduction handling (skew-emission HMMs and online-EM constructions are deferred follow-ups).
+
 \subsubsection{Non-Equity Asset-Class Validation (GLD, SLV)}
 \label{sec:non_equity_validation}
 

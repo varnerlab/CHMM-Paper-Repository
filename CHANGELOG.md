@@ -75,6 +75,25 @@ unresolved references or citations.
 4. K=11 nominal = K=18 nominal on every metric axis (B6); K=18 is a
    parameter-counting artefact.
 
+### Post-round-2 follow-up: P7 closed (2026-04-30)
+
+- B5 — Walk-forward refit-cadence sweep
+  (`run_walkforward_cond_var_refit_cadence.jl`). Scoped at K=3 / α=0.05 across
+  the six walk-forward folds at monthly (21d) and weekly (5d) cadence against
+  the body fold-IS-fixed baseline. **Negative finding**: faster refit does
+  NOT close the W2 (COVID) Christoffersen-cc rejection (p_cc = 0.011 → 0.017
+  → 0.023 across cadences, all rejecting), and monthly refit *introduces*
+  new failures on W3 (0.118 → 0.047) and W4 (0.120 → 0.022) from refit-cycle
+  parameter drift. Weekly refit recovers W4 (back to 0.100) but still rejects
+  W3 (0.025) and W2. Rejection counts: fold-IS-fixed 1/6, monthly 3/6, weekly
+  2/6. The W2 failure is intrinsic regime-break; closing it requires a model
+  class with explicit regime-introduction handling (skew-emission HMMs,
+  online-EM constructions), not faster refit cadence on the symmetric
+  scaffold. New appendix `sec:walkforward_refit_cadence` +
+  `tab:walkforward_refit_cadence`; body callout in `sections/var_backtest.tex`.
+
+Final state after P7 integration: 127 pages, build clean, no unresolved refs.
+
 ---
 
 ## Peer-Review Revision Pass (2026-04-29)
