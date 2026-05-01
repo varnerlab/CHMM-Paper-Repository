@@ -157,6 +157,9 @@ Tickers OoS KS $< 60\%$ (IS-fixed)    & $11 / 30$         & $11 / 30$         & 
 \end{tabular}
 \end{table}
 
+\paragraph{Cross-decade validation.}
+A CRSP-sourced cross-decade split (1994--2004 IS / 2004--2006 OoS; full panel in Appendix~\ref{sec:cross_decade_validation}) tests whether the body's stylized-fact reproduction transfers across non-overlapping decades. The IS axis is decade-robust: at $K \in \{3, 18\}$ CHMM-N attains $84$--$90\%$ IS KS pass rate against the $90$--$94\%$ obtained on the body 2014--2024 IS window. The 2004--2006 OoS pass rate, however, collapses to $3$--$5\%$ because the calm post-dot-com bull-market slice has observed excess kurtosis $0.06$ (essentially Gaussian) against the 1994--2004 IS kurtosis of $3.05$. The cross-decade pattern matches the W2 (COVID 2020) and W4 (2022 rate-hike) walk-forward stress folds (Table~\ref{tab:walkforward_body}, both with OoS KS $< 10\%$): the IS axis transfers cleanly across decades, but a static-IS-fitted CHMM cannot bracket OoS slices whose marginal moves outside the IS regime library. The operational implication parallels the cross-ticker panel above: the static-fit OoS pass rate is OoS-slice-specific and the deployment recipe is the periodic-refit construction (the cross-ticker quarterly-refit panel in Appendix~\ref{sec:cross_ticker_quarterly_refit} and the rolling-copula construction of \S\ref{sec:cross_asset}), not the single-window static fit.
+
 \subsection{Cross-Asset Dependence (Pipeline~B): Student-t Copula}
 \label{sec:cross_asset}
 
