@@ -54,7 +54,7 @@ Two patterns emerge that the asymptotic pass-rate metric of the main panel does 
 
 \paragraph{OoS-anchored block-bootstrap recalibration.}
 \label{sec:ks_block_bootstrap_oos}
-The body block-bootstrap recalibration above is anchored on the IS series; Reviewer~2 / minor item asks whether the same construction holds on the OoS window. We repeat the procedure with the stationary block bootstrap re-anchored on $R_{\text{OoS}}$ ($n_{\text{OoS}} = 572$, $B = 1{,}000$, $L \in \{5, 10, 20\}$, $N_{\text{paths}} = 500$). Block-bootstrap critical values: $0.0577$, $0.0629$, $0.0647$ at $L = 5, 10, 20$ respectively, against asymptotic $0.0804$. Table~\ref{tab:ks_block_bootstrap_oos} reports the OoS-anchored panel (source: \texttt{results/robustness/ks\_block\_bootstrap\_oos.csv}).
+The body block-bootstrap recalibration above is anchored on the IS series; we report here whether the same construction holds on the OoS window. We repeat the procedure with the stationary block bootstrap re-anchored on $R_{\text{OoS}}$ ($n_{\text{OoS}} = 572$, $B = 1{,}000$, $L \in \{5, 10, 20\}$, $N_{\text{paths}} = 500$). Block-bootstrap critical values: $0.0577$, $0.0629$, $0.0647$ at $L = 5, 10, 20$ respectively, against asymptotic $0.0804$. Table~\ref{tab:ks_block_bootstrap_oos} reports the OoS-anchored panel (source: \texttt{results/robustness/ks\_block\_bootstrap\_oos.csv}).
 
 \begin{table}[h]
 \centering
@@ -404,7 +404,7 @@ The headline conclusion of Table~\ref{tab:model_comparison} survives the additio
 \subsubsection{Leverage-Effect Diagnostic}
 \label{sec:leverage_effect}
 
-Reviewer 3 / item P0-7 asks for the Cont (2001) leverage-effect column: the lag-1 correlation $\mathrm{Corr}(G_t, |G_{t+1}|)$ between today's signed return and tomorrow's absolute return, which is negative on equity returns. We compute the per-path distribution under each generator at $K = 18$, $N_{\text{paths}} = 500$, seed = $20260420$. Source: \texttt{results/diagnostics/leverage\_effect/}; CSV at \texttt{results/robustness/leverage\_effect.csv}.
+This appendix reports the Cont (2001) leverage-effect column: the lag-1 correlation $\mathrm{Corr}(G_t, |G_{t+1}|)$ between today's signed return and tomorrow's absolute return, which is negative on equity returns. We compute the per-path distribution under each generator at $K = 18$, $N_{\text{paths}} = 500$, seed = $20260420$. Source: \texttt{results/diagnostics/leverage\_effect/}; CSV at \texttt{results/robustness/leverage\_effect.csv}.
 
 \begin{table}[h]
 \centering
@@ -435,7 +435,7 @@ Three patterns emerge. First, the CHMM family at $K = 18$ does produce a non-tri
 \subsubsection{Full One-Shot Student-t Copula MLE}
 \label{sec:full_tcopula_mle}
 
-Reviewer 2 raised the concern that the body two-step copula estimator (Kendall's-$\tau$ inversion for $\hat\Sigma$, then profile MLE on $\nu$ with $\hat\Sigma$ held fixed) may be biased toward the Gaussian limit when the marginal kurtosis differs across assets. We address this with a coordinate-ascent one-shot MLE that jointly maximises the Student-$t$ copula log-likelihood over $(\Sigma, \nu)$ on the same six-asset US-equity universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ; $T_{\text{IS}} = 2{,}516$, seed $20260420$). The procedure alternates: (i) bracketed golden-section maximisation of $\nu$ at the current $\Sigma$, (ii) method-of-moments refit of $\Sigma$ at the current $\nu$ on the $t$-quantile-transformed pseudo-uniform sample with PSD projection. Iteration terminates at $|\Delta \log L| < 10^{-3}$.
+A natural concern with the body two-step copula estimator (Kendall's-$\tau$ inversion for $\hat\Sigma$, then profile MLE on $\nu$ with $\hat\Sigma$ held fixed) is that it may be biased toward the Gaussian limit when the marginal kurtosis differs across assets. We address this with a coordinate-ascent one-shot MLE that jointly maximises the Student-$t$ copula log-likelihood over $(\Sigma, \nu)$ on the same six-asset US-equity universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ; $T_{\text{IS}} = 2{,}516$, seed $20260420$). The procedure alternates: (i) bracketed golden-section maximisation of $\nu$ at the current $\Sigma$, (ii) method-of-moments refit of $\Sigma$ at the current $\nu$ on the $t$-quantile-transformed pseudo-uniform sample with PSD projection. Iteration terminates at $|\Delta \log L| < 10^{-3}$.
 
 \begin{table}[h]
 \centering
@@ -463,7 +463,7 @@ The full MLE moves $\hat\nu$ from $6.00$ to $6.40$, a change of $0.40$ units, an
 \subsubsection{QuantGAN Deeper-Architecture Reference Rebuild}
 \label{sec:quantgan_tcn}
 
-Reviewer 2 / 3 raised the concern that the body QuantGAN row (Appendix~\ref{sec:quantgan_supp}) is a 3-conv-layer convolutional WGAN that is materially smaller than the seven-block dilated TCN of \citet{wiese2020quantgan}. A fully faithful Wiese reproduction (7 dilated blocks, hidden 80, receptive field 127 days, plus Lambert-W input pre-processing) is substantial new model engineering with significant AD-compilation overhead in Julia Flux on CPU; we report a meaningful intermediate point as a reference comparator. The runner (\texttt{run\_quantgan\_tcn.jl}) trains a deeper plain-conv WGAN with the same WGAN-with-weight-clipping protocol as the body baseline: 5 generator and 5 critic conv layers (vs.\ 3 + 3 in the body baseline), hidden width 48 (vs.\ 32 in the body baseline), kernel size 3, weight-clip $\pm 0.01$, $20$ epochs, $80$ steps per epoch, $4$ critic steps per generator step. Generator parameters $29{,}089$ vs.\ approximately $9{,}000$ for the body baseline. We do not implement dilation or Lambert-W input pre-processing.
+The body QuantGAN row (Appendix~\ref{sec:quantgan_supp}) is a 3-conv-layer convolutional WGAN that is materially smaller than the seven-block dilated TCN of \citet{wiese2020quantgan}. A fully faithful Wiese reproduction (7 dilated blocks, hidden 80, receptive field 127 days, plus Lambert-W input pre-processing) is substantial new model engineering with significant AD-compilation overhead in Julia Flux on CPU; we report a meaningful intermediate point as a reference comparator. The runner (\texttt{run\_quantgan\_tcn.jl}) trains a deeper plain-conv WGAN with the same WGAN-with-weight-clipping protocol as the body baseline: 5 generator and 5 critic conv layers (vs.\ 3 + 3 in the body baseline), hidden width 48 (vs.\ 32 in the body baseline), kernel size 3, weight-clip $\pm 0.01$, $20$ epochs, $80$ steps per epoch, $4$ critic steps per generator step. Generator parameters $29{,}089$ vs.\ approximately $9{,}000$ for the body baseline. We do not implement dilation or Lambert-W input pre-processing.
 
 \begin{table}[h]
 \centering

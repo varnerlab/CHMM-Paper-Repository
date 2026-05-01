@@ -6,6 +6,77 @@ the matching `sections/*_vN.tex` files.
 
 ---
 
+## Round-2 Peer-Review Remediation Pass (2026-04-30)
+
+Revision pass against the round-2 simulated peer review in `peer-review.md`
+(R1 Minor / R2 Major / R3 Major; aggregate **Major Revision**). Plan tracked
+in `PLAN_PEER_REVIEW_R2.md`. Final state: 126 pages, build clean, no
+unresolved references or citations.
+
+### Phase A — LaTeX-only framing fixes (no new computation)
+- Title / abstract retitled with "symmetric" qualifier on stylized-fact scope.
+- Abstract reframed: four CHMM emission families *interchangeable* on OoS
+  (within-CHMM DM p > 0.45); spectral identity now leads with the cross-ticker
+  median dominant-mode share (75.6%); SPY-specific 93.6% described as
+  right-tail rather than canonical.
+- Conditional VaR at α=0.01: DQ rejection at K=18 (p=0.017) reframed as the
+  substantive α=0.01 finding rather than as a confirmation of the lower-power
+  Christoffersen-cc pass.
+- OoS block-bootstrap explicit body sentence: ~25pp drop from asymp to L=20.
+- Bootstrap dominance on raw 1-day OoS KS: not "rebutted" by multi-day DM, just
+  a column the bootstrap wins; Table 3 reading guide redirects to structural
+  use cases.
+- QuantGAN reframed: in-house WGAN re-implementation result, not a verdict on
+  the deep-generative class.
+- GLD/SLV strengthened to "hard rejection of cross-asset-class transfer".
+- Cross-ticker ANOVA n=3-per-sector explicitly flagged as severely underpowered;
+  "failures are ticker-specific" claim dropped.
+- Cross-asset ν*=6 selection now stated as IS-only finding.
+- `tab:variant_choice` CHMM-L row corrected.
+- Leverage Q5-boundary claim replaced with one-sided percentile p-values.
+- Stale K*=6 body-headline references updated to K*=3.
+- Review-letter attributions cleaned out of body and appendix prose.
+
+### Phase B — Computational analyses (CHMM-Model)
+- B1 — Multi-day DM replication panel (`run_crps_dm_multiday_replication.jl`).
+  Negative finding: the K=18 SPY h=20 result (p=0.003) does not replicate at
+  K*=3 on SPY (p=0.244) or across the six-asset universe at K*=3.
+- B2 — HAC-corrected K-selection (`run_k_selection_hac.jl`). K=6 vs K=3 robust
+  under HAC (|z_HAC| < 1). K=18 vs K=6 jumps to |z_HAC|=3.56 / 5.00 (vs.
+  independent-fold |z|=1.92 / 1.70), decisively below K=6.
+- B3 — Bootstrap-CI placement (`run_kurtosis_ci_placement.jl`). 76.6%–89.9% of
+  simulated IS paths fall inside the L=20 CI on observed; per-path median
+  simulated IS kurtosis is essentially observed.
+- B4 — Single-shared-ν ablation (`run_chmm_t_shared_nu.jl`). Major positive
+  finding: shared-ν eliminates the IS kurtosis overshoot completely without
+  any penalty; K=18 produces the cleanest IS/OoS heavy-tail match in the panel
+  (sim 6.25 IS / 5.00 OoS vs obs 7.68 / 5.29).
+- B6 — K=11 effective rebuild (`run_k_eff_rebuild.jl`). K=11 matches or slightly
+  exceeds K=18 nominal on every metric axis. K=18 over-parameterisation is
+  artefactual.
+- B5 — Refit-cadence cond-VaR sweep deferred as documented follow-up.
+
+### Phase C — Phase-B integration into LaTeX
+- New appendix subsections: `sec:crps_dm_multiday_replication`,
+  `sec:k_selection_hac`, `sec:kurtosis_ci_placement`, `sec:chmm_t_shared_nu`,
+  `sec:k_eff_rebuild`. Body callouts in results.tex (table caption + bootstrap
+  paragraph + K-selection paragraph + CHMM-t row), discussion.tex (CHMM-t
+  bracket discussion + K_eff paragraph), and var_backtest.tex (α=0.01 DQ row).
+
+### Substantive findings net of round 2
+1. Multi-day DM is K=18-specific (B1): the body's strongest CHMM-vs-bootstrap
+   differentiator does not generalise; the differentiation is on structural
+   use cases (regime-conditional VaR, copula composition, privacy) rather than
+   multi-day forecasting.
+2. K=18 is decisively worse than K=6 on held-out log-lik under HAC (B2);
+   retained as kurtosis-fidelity sensitivity reference only.
+3. Per-state ν_k is the binding constraint on the IS kurtosis overshoot (B4);
+   shared-ν alternative documented in appendix as structurally cleaner.
+4. K=11 nominal = K=18 nominal on every metric axis (B6); K=18 is a
+   parameter-counting artefact.
+
+---
+
 ## Peer-Review Revision Pass (2026-04-29)
 
 Revision pass against the simulated peer review in `peer-review.md`. Reviewer

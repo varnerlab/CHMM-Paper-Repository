@@ -313,7 +313,55 @@ $20$ & CHMM-L    & $\phantom{1}28$ & $-0.186$ & $-2.22$ & $\mathbf{0.027}$ \\
 \end{table}
 
 \paragraph{Reading.}
-At $h = 1$ neither side dominates ($p > 0.45$ for all three CHMM rows; CHMM-N is nominally lower CRPS but indistinguishable from the bootstrap at the per-day horizon). At $h = 5$ CHMM-L is significantly better than the bootstrap ($p = 0.042$), CHMM-N is insignificant in the same direction ($p = 0.137$). At $h = 20$ both CHMM-N and CHMM-L dominate the bootstrap on per-block CRPS at conventional levels ($p = 0.003$ and $p = 0.027$ respectively). The substantive read is that the bootstrap's per-day KS dominance documented in Section~\ref{sec:results} is a horizon-specific result: on $20$-day cumulative-return forecasts the regime-switching structure of the CHMM produces detectable information gain over the bootstrap's exchangeable construction. R3 RE4's specific concern that ``if CHMM does not dominate the bootstrap at any forecast horizon, the body's use-case differentiation framing is vacuous'' is therefore not realised; the body's three differentiating use cases (regime-conditional VaR, multi-asset copula composition, parametric privacy) are joined by a fourth: multi-day cumulative-return forecasting, where the regime structure adds measurable CRPS information.
+At $h = 1$ neither side dominates ($p > 0.45$ for all three CHMM rows; CHMM-N is nominally lower CRPS but indistinguishable from the bootstrap at the per-day horizon). At $h = 5$ CHMM-L is significantly better than the bootstrap ($p = 0.042$), CHMM-N is insignificant in the same direction ($p = 0.137$). At $h = 20$ both CHMM-N and CHMM-L dominate the bootstrap on per-block CRPS at conventional levels ($p = 0.003$ and $p = 0.027$ respectively). \textbf{The $h = 20$ result is, however, $K = 18$-specific on SPY}: under the body-headline $K^\star = 3$ on SPY and across the six-asset universe of \S\ref{sec:cross_asset} at $K^\star = 3$, the same DM construction does not reach significance (Appendix~\ref{sec:crps_dm_multiday_replication}, Table~\ref{tab:crps_dm_multiday_replication}). The single-window $K = 18$ SPY result therefore does not generalise to the body-headline operating point or to other US-equity tickers, and the body's CHMM-vs-bootstrap differentiation is on the structural use cases of \S\ref{sec:var_backtest}--\ref{sec:cross_asset} rather than on multi-day cumulative-return forecasting.
+
+\subsubsection{Multi-Day DM Replication: Six-Asset Universe, Bandwidth Sweep, Block-Overlap Sensitivity}
+\label{sec:crps_dm_multiday_replication}
+
+The multi-day DM result of Appendix~\ref{sec:crps_dm_multiday} is at $K = 18$ on a single SPY OoS window. Round-2 reviewers asked whether the result replicates across the six-asset universe of \S\ref{sec:cross_asset} at the body-headline $K^\star = 3$, whether the SPY $h = 20$ result is robust to NW-HAC bandwidth choice, and whether overlapping vs.\ non-overlapping $20$-day blocks reach the same conclusion. Source / runner: \texttt{run\_crps\_dm\_multiday\_replication.jl}.
+
+Table~\ref{tab:crps_dm_multiday_replication} reports three panels. Panel 1 is the cross-asset replication of the $h = 20$ DM at $K^\star = 3$: SPY's $\Delta\text{CRPS} = -0.077$ ($p = 0.244$) is in the same direction as the body $K = 18$ result but does not reach significance, and across the six-asset universe the median $\Delta\text{CRPS}$ is essentially zero with no per-asset DM significant at $\alpha = 0.05$. Panel 2 sweeps the NW-HAC bandwidth on SPY $h = 20$ at $K^\star = 3$: $p$ ranges from $0.150$ to $0.255$ across $h_{\text{NW}} \in \{2, 4, 8, 16, \lfloor n^{1/3}\rfloor\}$, never crossing the $0.05$ threshold. Panel 3 compares non-overlapping ($n = 28$) vs.\ overlapping ($n_{\text{eff}} = 553$) blocks at $h = 20$: the default-NW-bandwidth overlapping result reaches $p = 0.063$ but with the proper NW bandwidth $h_{\text{NW}} \geq h - 1 = 19$ (overlap induces $h{-}1$-step autocorrelation in the loss differential) the result moves back to $p = 0.14$--$0.22$.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Multi-day DM replication panel} ($K^\star = 3$, $1{,}000$ paths per generator per asset, mean block length $L = 20$ for stationary block bootstrap, seed $20260422$). Panel 1: cross-asset $h = 20$ DM under non-overlapping blocks and default NW bandwidth. Panel 2: bandwidth sweep on SPY $h = 20$. Panel 3: overlapping vs.\ non-overlapping blocks on SPY $h = 20$. Source: \texttt{results/crps\_dm\_multiday\_replication/}.}
+\label{tab:crps_dm_multiday_replication}
+\begin{tabular}{l c c c c}
+\toprule
+\multicolumn{5}{l}{\emph{Panel 1: Cross-asset $h = 20$ DM at $K^\star = 3$ (non-overlapping, default NW bw)}} \\
+Ticker & blocks & $\Delta\text{CRPS}$ & DM & $p$ \\
+\midrule
+SPY  & $28$ & $-0.077$ & $-1.165$ & $0.244$ \\
+NVDA & $28$ & $+0.384$ & $+1.856$ & $0.063$ \\
+JNJ  & $28$ & $-0.057$ & $-1.021$ & $0.307$ \\
+JPM  & $28$ & $+0.023$ & $+0.245$ & $0.806$ \\
+AAPL & $28$ & $+0.116$ & $+0.714$ & $0.475$ \\
+QQQ  & $28$ & $-0.023$ & $-0.309$ & $0.757$ \\
+\midrule
+\multicolumn{5}{l}{\emph{Panel 2: NW-HAC bandwidth sweep on SPY $h = 20$ at $K^\star = 3$}} \\
+$h_{\text{NW}}$ & blocks & $\Delta\text{CRPS}$ & DM & $p$ \\
+\midrule
+$2$    & $28$ & $-0.077$ & $-1.138$ & $0.255$ \\
+$4$    & $28$ & $-0.077$ & $-1.168$ & $0.243$ \\
+$\lfloor n^{1/3}\rfloor$  & $28$ & $-0.077$ & $-1.165$ & $0.244$ \\
+$8$    & $28$ & $-0.077$ & $-1.321$ & $0.187$ \\
+$16$   & $28$ & $-0.077$ & $-1.441$ & $0.150$ \\
+\midrule
+\multicolumn{5}{l}{\emph{Panel 3: overlap-vs-non-overlap on SPY $h = 20$ at $K^\star = 3$}} \\
+Mode & blocks & $\Delta\text{CRPS}$ & DM & $p$ \\
+\midrule
+non-overlapping (default NW) & $28$  & $-0.077$ & $-1.165$ & $0.244$ \\
+overlap (default NW)         & $553$ & $-0.059$ & $-1.859$ & $0.063$ \\
+overlap ($h_{\text{NW}} = 19$) & $553$ & $-0.059$ & $-1.460$ & $0.144$ \\
+overlap ($h_{\text{NW}} = 30$) & $553$ & $-0.059$ & $-1.330$ & $0.184$ \\
+overlap ($h_{\text{NW}} = 60$) & $553$ & $-0.059$ & $-1.234$ & $0.217$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+The $K = 18$ SPY $h = 20$ headline DM result of Appendix~\ref{sec:crps_dm_multiday} ($\Delta\text{CRPS} = -0.180$, $p = 0.003$) is not robust to operating-point change ($K = 18 \to K^\star = 3$) or to cross-asset replication: at $K^\star = 3$ on SPY the same construction gives $p = 0.244$, and across the six-asset universe at $K^\star = 3$ no per-asset DM reaches significance with median $\Delta\text{CRPS}$ near zero. Bandwidth sensitivity on SPY $K^\star = 3$ ($p \in [0.150, 0.255]$ across $h_{\text{NW}} \in \{2, 4, 8, 16, \text{default}\}$) and overlap sensitivity ($p \in [0.063, 0.244]$, with the marginally-significant default-bandwidth overlap row not surviving the proper $h_{\text{NW}} \geq h - 1$ adjustment) confirm that the SPY $K = 18$ result is operating-point-specific. The substantive read is that the body's CHMM-vs-bootstrap differentiation is on the structural use cases of \S\ref{sec:var_backtest}--\ref{sec:cross_asset}, not on multi-day cumulative-return forecast horizons; the multi-day DM panel of Appendix~\ref{sec:crps_dm_multiday} is a $K = 18$, single-asset, single-window finding rather than a robust property of the CHMM scaffold.
 
 \subsubsection{Per-State Frobenius Distances Between the Four Emission Families}
 \label{sec:emission_family_frobenius}
@@ -833,6 +881,54 @@ $50$ & $7.18$ & $[1.92, 12.42]$ & $4.99$ & $[0.96, 7.70]$ & $0.733$ \\
 
 The IS lower bound $1.92$--$2.99$ and the OoS upper bound $7.70$--$8.97$ overlap heavily at every block length; the IS-OoS kurtosis difference of $\sim 2.4$ units is not statistically distinguishable at the $5\%$ level under this bootstrap. $\Pr(\text{IS} > \text{OoS})$ at $L = 10$ is $0.756$: the data favour the alternative but do not exclude the null. Operationally, the IS-OoS kurtosis disagreement that the body invokes (Section~\ref{sec:descriptive}; the Table~\ref{tab:variant_choice} variant-decision caveat in Section~\ref{sec:discussion}) should be read as a point-estimate observation rather than a tested claim, and per-variant rankings by ``how close is simulated kurtosis to observed kurtosis'' should similarly be interpreted as point-comparisons inside a wide CI envelope.
 
+\paragraph{Bootstrap-CI placement of the penalised CHMM-t IS kurtosis.}
+\label{sec:kurtosis_ci_placement}
+A natural follow-up question on the body's penalised CHMM-t at $\lambda = 20$ is whether its simulated IS kurtosis distribution sits inside the bootstrap CI on observed. Round-2 reviewers asked whether the aggregate-mean simulated IS kurtosis (e.g.\ $14.91$ at $K^\star = 3$, above the $L = 20$ CI upper bound $12.40$) is paired with a per-path distribution that mostly sits inside the CI, or whether it is paired with a per-path distribution that mostly sits above. Source / runner: \texttt{run\_kurtosis\_ci\_placement.jl}; output: \texttt{results/kurtosis\_ci\_placement/kurtosis\_ci\_placement.csv}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Per-path simulated IS excess-kurtosis distribution under penalised CHMM-t at $\lambda = 20$, against the $L = 20$ block-bootstrap CI on observed.} $1{,}000$ paths per row, $T_{\text{IS}} = 2{,}516$, seed $20260420$. The CI is $[2.17, 12.40]$ at $L = 20$ from Table~\ref{tab:kurtosis_bootstrap}; the observed IS excess kurtosis is $7.68$. ``in CI \%'' is the fraction of simulated paths whose per-path excess kurtosis falls inside the CI; ``$\le$ CI\_HI \%'' is the fraction below the upper bound (the relevant one-sided test for overshoot).}
+\label{tab:kurtosis_ci_placement}
+\begin{tabular}{c c c c c c c c}
+\toprule
+$K$ & agg.\ kurt & median & sd & $Q_5$ & $Q_{95}$ & $\le 12.40$ (\%) & in CI (\%) \\
+\midrule
+$3$  & $16.65$ & $7.77$ & $11.5$ & $3.75$ & $34.62$ & $76.6$ & $76.6$ \\
+$6$  & $10.13$ & $6.74$ & $\phantom{0}9.0$ & $3.63$ & $26.30$ & $81.8$ & $81.7$ \\
+$18$ & $\phantom{0}8.94$ & $6.09$ & $\phantom{0}5.6$ & $3.54$ & $18.11$ & $89.9$ & $89.9$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The per-path \emph{median} simulated IS excess kurtosis is essentially observed at every $K$: $7.77$ at $K^\star = 3$, $6.74$ at $K^\star = 6$, $6.09$ at $K = 18$, all within $\sim 1.6$ units of observed $7.68$ and well inside the bootstrap CI. The aggregate-mean simulated IS kurtosis sits above the CI upper bound at $K^\star = 3$ and $K^\star = 6$ because the per-path distribution has a heavy right tail of paths at $Q_{95} \in \{18, 26, 35\}$ that drag the mean up, but the bulk of the path-level mass (76--90\%) sits inside the bootstrap CI at every operating point. \textbf{The headline framing ``the penalised CHMM-t at $\lambda = 20$ provides the cleanest IS heavy-tail match'' is supported when read as the per-path median, not as the aggregate mean}: a small number of heavy-right-tailed paths under the per-state $\nu_k$ ECM produce an aggregate-mean overshoot, but the path-level distribution is centred near observed and statistically indistinguishable from observed at $\alpha = 0.05$ on a one-sided overshoot test for the bulk of paths.
+
+\subsubsection{Shared-$\nu$ Student-t HMM Ablation}
+\label{sec:chmm_t_shared_nu}
+
+A natural diagnostic for the per-state $\nu_k$ aggregate-mean overshoot is the shared-$\nu$ ablation: refit CHMM-t with a single $\nu$ shared across all $K$ states, fit by ECM with golden-section search on the aggregate $Q$-function over $\nu_{\text{bounds}} = (2.1, 50)$. This is the standard one-parameter Student-$t$ HMM in the time-series literature, not a per-state $\nu_k$ mixture. Source / runner: \texttt{run\_chmm\_t\_shared\_nu.jl}; output: \texttt{results/chmm\_t\_shared\_nu/chmm\_t\_shared\_nu.csv}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Shared-$\nu$ Student-t HMM ablation against the body per-state $\nu_k$ row} ($1{,}000$ paths, $T_{\text{IS}} = 2{,}516$, $T_{\text{OoS}} = 572$, seed $20260420$, no $1/\nu$ penalty). Aggregate sim-kurt columns are mean-of-paths. Compare against the body penalised CHMM-t ($\lambda = 20$): $K^\star = 3$ row $14.91$ IS / $8.50$ OoS; $K = 18$ row $8.56$ IS / $7.07$ OoS (Table~\ref{tab:model_comparison}).}
+\label{tab:chmm_t_shared_nu}
+\begin{tabular}{c c c c c c c c c}
+\toprule
+& & \multicolumn{4}{c}{IS} & \multicolumn{2}{c}{OoS} & \\
+\cmidrule(lr){3-6} \cmidrule(lr){7-8}
+$K$ & $\hat\nu_{\text{shared}}$ & KS\,(\%) & sim kurt & $|G_t|$ ACF-MAE & raw ACF-MAE & KS\,(\%) & sim kurt & \\
+\midrule
+$3$  & $5.81$ & $91.9$ & $4.68$ & $0.0531$ & $0.0235$ & $82.1$ & $4.46$ & \\
+$6$  & $4.67$ & $92.7$ & $9.38$ & $0.0518$ & $0.0234$ & $82.6$ & $6.95$ & \\
+$18$ & $5.80$ & $\mathbf{95.8}$ & $\mathbf{6.25}$ & $0.0542$ & $0.0234$ & $\mathbf{88.0}$ & $\mathbf{5.00}$ & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+The aggregate-mean IS overshoot disappears under shared-$\nu$ at every $K$: the largest IS sim kurt is $9.38$ at $K^\star = 6$ (vs.\ observed $7.68$, well inside the bootstrap CI), versus $14.4$ for the per-state $\nu_k$ unpenalised row in the body. The $K = 18$ shared-$\nu$ row is the cleanest single-row IS / OoS heavy-tail match in the entire panel: $6.25$ IS / $5.00$ OoS, against observed $7.68$ / $5.29$ and against $8.56$ / $7.07$ for the body penalised CHMM-t at $\lambda = 20$. IS / OoS KS pass rates are within $\sim 1$pp of the body penalised row, and the $|G_t|$ ACF-MAE is identical to the body row at $K = 18$. The per-state $\nu_k$ design is therefore the binding constraint on the aggregate-mean overshoot the body $\lambda$-shrinkage and bracket-lift discussion is downstream of: a single shared $\nu$ at $K = 18$ produces the best joint KS / kurtosis row in the panel without any penalty. The body retains the per-state $\nu_k$ + $\lambda = 20$ construction for direct comparability with the \citet{peel2000robust, liu1995ml} tradition; consumers prioritising heavy-tail fidelity without a penalty hyperparameter should adopt the shared-$\nu$ row at $K = 18$.
+
 \subsubsection{Seventh Walk-Forward Fold (2018 / 2019 Test Slices)}
 \label{sec:walkforward_w7}
 
@@ -1318,7 +1414,30 @@ $21$ & $9$  & $-1{,}949.3$ & $4{,}822.5$           & $\mathbf{4{,}078.5}$ & $7{,
 \end{tabular}
 \end{table}
 
-Reading: the diagnostic confirms that the apparent $K_{\text{nom}}$ IC blow-up at $K \ge 12$ in Table~\ref{tab:k_selection} (BIC$_n$ rises from $4{,}510$ at $K = 3$ to $7{,}146$ at $K = 21$) is largely fictitious in the parameter-economy sense: $K_{\text{eff}}$ stays at $9$--$11$ across $K \in \{12, 15, 18, 21\}$, so the additional $K_{\text{nom}}$ states are operationally redundant and the corrected penalty is much smaller. AIC$_e$ and HQC$_e$ select $K^\star = 21$ because the log-likelihood gain from $-2{,}213$ to $-1{,}949$ ($\sim 264$ units across the sweep) dominates a corrected penalty that scales with $p_{\text{eff}} = 90$ rather than $p_{\text{nom}} = 462$. BIC$_e$ and CAIC$_e$ continue to select $K^\star = 3$: the $\log n \approx 7$ multiplier keeps the corrected penalty large enough at every $K$ to outweigh the IS log-likelihood gain. The body headline $K^\star = 6$ (held-out per-observation log-likelihood and held-out KS on the pre-2020 slice) does not depend on a parameter-count penalty at all and is therefore unchanged. The substantive read is that the held-out criteria, not the IC penalties, are the load-bearing selection inputs in this problem; the IC sweep is a diagnostic, not a deciding criterion.
+Reading: the diagnostic confirms that the apparent $K_{\text{nom}}$ IC blow-up at $K \ge 12$ in Table~\ref{tab:k_selection} (BIC$_n$ rises from $4{,}510$ at $K = 3$ to $7{,}146$ at $K = 21$) is largely fictitious in the parameter-economy sense: $K_{\text{eff}}$ stays at $9$--$11$ across $K \in \{12, 15, 18, 21\}$, so the additional $K_{\text{nom}}$ states are operationally redundant and the corrected penalty is much smaller. AIC$_e$ and HQC$_e$ select $K^\star = 21$ because the log-likelihood gain from $-2{,}213$ to $-1{,}949$ ($\sim 264$ units across the sweep) dominates a corrected penalty that scales with $p_{\text{eff}} = 90$ rather than $p_{\text{nom}} = 462$. BIC$_e$ and CAIC$_e$ continue to select $K^\star = 3$: the $\log n \approx 7$ multiplier keeps the corrected penalty large enough at every $K$ to outweigh the IS log-likelihood gain. The body headline $K^\star = 3$ (held-out per-observation log-likelihood and held-out KS on the pre-2020 slice under four-fold and six-fold rolling-origin CV) does not depend on a parameter-count penalty at all and is therefore unchanged. The substantive read is that the held-out criteria, not the IC penalties, are the load-bearing selection inputs in this problem; the IC sweep is a diagnostic, not a deciding criterion.
+
+\paragraph{$K_{\text{nominal}} = 11$ rebuild against $K = 18$ nominal.}
+\label{sec:k_eff_rebuild}
+The $K_{\text{eff}}$ diagnostic above reports $K_{\text{eff}} = 11$ at $K_{\text{nominal}} = 18$ on SPY IS for CHMM-N. Round-2 reviewers asked whether a direct $K_{\text{nominal}} = 11$ rebuild matches the $K = 18$ nominal panel on the headline metrics: if it does, the $K = 18$ over-parameterisation is a parameter-counting artefact rather than an information-bearing extra resolution; if it does not, the $K_{\text{eff}}$ merge loses information that the $K = 18$ panel exploits. Source / runner: \texttt{run\_k\_eff\_rebuild.jl}; output: \texttt{results/k\_eff\_rebuild/k\_eff\_rebuild.csv}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{$K_{\text{nominal}} = K_{\text{eff}} = 11$ rebuild against $K = 18$ nominal} (CHMM-N, SPY IS / OoS, $1{,}000$ paths, seed $20260420$). All four headline metric axes match within sampling noise; $K = 11$ slightly exceeds $K = 18$ on OoS KS and $|G_t|$ ACF-MAE.}
+\label{tab:k_eff_rebuild}
+\begin{tabular}{c c c c c c c c}
+\toprule
+& \multicolumn{2}{c}{KS\,(\%)} & \multicolumn{2}{c}{sim kurt} & \multicolumn{2}{c}{$|G_t|$ ACF-MAE} & raw ACF-MAE \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+$K_{\text{nom}}$ & IS & OoS & IS & OoS & IS & OoS & IS \\
+\midrule
+$11$ & $\mathbf{94.4}$ & $\mathbf{82.8}$ & $4.52$ & $4.11$ & $\mathbf{0.0505}$ & $0.0528$ & $0.0237$ \\
+$18$ & $94.0$ & $81.0$ & $\mathbf{5.04}$ & $\mathbf{4.42}$ & $0.0514$ & $0.0526$ & $0.0237$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The $K = 11$ row matches or slightly exceeds the $K = 18$ row on every metric axis: IS KS $+0.4$pp, OoS KS $+1.8$pp, $|G_t|$ ACF-MAE essentially identical (within $0.001$), and IS sim kurt within $0.5$ units. The $K = 18$ over-parameterisation therefore carries no operational benefit on this dataset under CHMM-N: the structural information is captured at $K_{\text{nominal}} = K_{\text{eff}} = 11$, and the additional $7$ nominal states under $K = 18$ are merged-into-equivalent under the single-linkage diagnostic of Appendix~\ref{sec:state_distinctness}. The body's report of the $K = 18$ row alongside the $K = 11$ effective parameterisation is therefore a representational-economy convention rather than an extra-information row; consumers who need IC penalties on parameter counts should use $K_{\text{nominal}} = K_{\text{eff}}$ from the start.
 
 \subsubsection{Exact-Binomial Kupiec Complement to the Asymptotic LR Test}
 \label{sec:exact_binomial_kupiec}

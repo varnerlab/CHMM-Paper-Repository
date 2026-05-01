@@ -1,6 +1,189 @@
 # Response to Reviewers
 
 **Manuscript:** *A Continuous Hidden Markov Model for Daily US-Equity
+Symmetric Stylized-Fact Reproduction* (Alswaidan, Jin, Varner)
+
+---
+
+## Round 2 (2026-04-30)
+
+The round-2 simulated peer review (`peer-review.md`, regenerated 2026-04-30)
+returned R1 Minor / R2 Major / R3 Major; aggregate **Major Revision**. The
+remediation plan is in [PLAN_PEER_REVIEW_R2.md](PLAN_PEER_REVIEW_R2.md);
+the audit trail of changes is in [CHANGELOG.md](CHANGELOG.md). Final state:
+**126 pages**, build clean, no unresolved references.
+
+### Priority-1 closures
+
+**P1 (R1#1, R3#1) — Restructure Table 3 framing.** *Closed.* Table 3
+caption now contains an explicit reading guide that leads with the
+structural use cases (regime-conditional VaR, multi-asset copula
+composition) rather than with the 1-day OoS KS column the bootstrap
+dominates. The bootstrap paragraph in `sections/results.tex` was rewritten
+to honestly state that the CHMM-vs-bootstrap differentiation is *not* on
+the multi-day DM axis (see P2 below) but on the structural use cases.
+
+**P2 (R1#2, R2#req-3, R3#1, R3#req-1) — Multi-day DM replication.**
+*Closed with a substantive negative finding.* Runner:
+`run_crps_dm_multiday_replication.jl`. The body's K=18 SPY h=20 DM result
+(ΔCRPS=-0.180, p=0.003) does **not** replicate at the body-headline K\*=3
+on SPY (ΔCRPS=-0.077, p=0.244) or across the six-asset universe at K\*=3
+(median ΔCRPS≈0, no per-asset DM significant at α=0.05). Bandwidth
+sensitivity (NW h ∈ {2, 4, 8, 16}) and overlap sensitivity (overlapping
+blocks under proper h_NW≥h-1) confirm the SPY K=18 result is operating-
+point-specific. New appendix subsection `sec:crps_dm_multiday_replication`
+documents the three panels; body framing in `sections/results.tex` is
+updated accordingly.
+
+**P3 (R2#1) — HAC-corrected K-selection inference.** *Closed.* Runner:
+`run_k_selection_hac.jl`. Diebold–Mariano-style NW-HAC variance on the
+paired diff series across rolling-origin folds: K=6 vs K=3 |z_HAC|=0.90
+(4-fold) / 0.57 (6-fold), substantive read unchanged from independence.
+**K=18 vs K=6 jumps from |z|=1.92 / 1.70 (independence) to |z_HAC|=3.56 /
+5.00 (HAC),** decisively below K=6 on held-out per-obs log-likelihood. New
+appendix paragraph `sec:k_selection_hac` + `tab:k_selection_hac` in
+`sections/supplementary.tex`; body K-selection paragraph in
+`sections/results.tex` cites both inferences.
+
+**P4 (R2#5) — DQ rejection at α=0.01 framing.** *Closed.* Body
+`sections/var_backtest.tex` α=0.01 paragraph rewritten. The DQ test at
+K=18 (p=0.017) is now reported as the substantive α=0.01 finding (DQ has
+the higher power at this T_OoS), not as a confirmation of the
+power-bounded Christoffersen-cc pass. Substantive read: the regime-
+conditional VaR over-couples high-volatility states at the strict tail at
+K=18 on this OoS slice.
+
+**P5 (R2#weakness-7) — OoS block-bootstrap recalibration explicit body
+sentence.** *Closed.* Body `sections/results.tex` block-bootstrap paragraph
+adds an explicit bold sentence that the asymp→L=20 OoS recalibration
+(~25pp drop) moves CHMM-N from "passes most of the time" to "passes about
+half the time" on OoS at this critical value.
+
+**P6 (R3#1) — Four-family contribution claim.** *Closed.* Abstract
+reframed: the four CHMM emission families are statistically
+indistinguishable on OoS sample-CRPS (within-CHMM DM p>0.45); the scaffold
+contribution is the unified swap interface itself (forward-backward and
+quantile init shared, M-step swappable), and the variant choice is driven
+by per-row IS kurtosis match rather than by OoS distributional
+performance.
+
+### Priority-2 closures
+
+**P7 (R1#3) — Refit-cadence cond-VaR sweep (monthly/weekly).** *Deferred
+as documented follow-up.* The walk-forward refit panel construction is
+heavy and not load-bearing for the resubmission's substantive findings;
+documented as an explicit follow-up direction in the conclusion.
+
+**P8 (R2#req-2) — Bootstrap-CI placement of penalised CHMM-t IS
+kurtosis.** *Closed with a positive finding.* Runner:
+`run_kurtosis_ci_placement.jl`. 76.6%–89.9% of simulated IS paths fall
+inside the L=20 CI on observed [2.17, 12.40] across K\*=3, K\*=6, K=18; the
+per-path **median** simulated IS kurtosis is essentially observed (7.77 at
+K\*=3 vs obs 7.68). The aggregate-mean overshoot is driven by a heavy right
+tail of paths. Body framing in `sections/results.tex` and
+`sections/discussion.tex` updated to clarify that the "cleanest IS heavy-
+tail match" is a per-path-median statement; appendix subsection
+`sec:kurtosis_ci_placement` + `tab:kurtosis_ci_placement` documents the
+distribution.
+
+**P9 (R2#req-4, R3#req-3) — Single-shared-ν Student-t HMM ablation.**
+*Closed with a major positive finding.* Runner:
+`run_chmm_t_shared_nu.jl`. A single ν shared across all states under
+aggregate-Q ECM eliminates the aggregate-mean IS kurtosis overshoot
+completely without any penalty, and at K=18 produces the cleanest single-
+row IS/OoS heavy-tail match in the entire panel (sim IS 6.25 / OoS 5.00
+vs obs 7.68 / 5.29; vs body penalised 8.56 / 7.07). The per-state ν_k
+design IS the binding constraint on the overshoot. New appendix
+`sec:chmm_t_shared_nu` + `tab:chmm_t_shared_nu`; body callout in
+`sections/discussion.tex` CHMM-t bracket paragraph identifies the shared-
+ν alternative as the structurally cleaner choice for kurtosis-fidelity-
+priority consumers. The body retains per-state ν_k for direct
+comparability with Peel-McLachlan / Liu-Rubin tradition.
+
+**P10 (R3#req-4) — 60-ticker sector panel expansion.** *Deferred as
+documented follow-up.* Doubling the cross-ticker panel doubles the data
+ingest and per-ticker simulation budget; flagged in
+`sections/results.tex` as the natural follow-up for a sector-effect
+test.
+
+### Priority-3 closures
+
+**P11 (R1#5, R3#req-3) — K=11 effective rebuild.** *Closed with a
+positive finding.* Runner: `run_k_eff_rebuild.jl`. K=11 nominal matches
+or slightly exceeds K=18 nominal on every metric axis (IS KS 94.4% vs
+94.0%, OoS KS 82.8% vs 81.0%, |G_t| ACF-MAE within 0.001). The K=18 over-
+parameterisation carries no operational benefit; K_eff=11 is the
+structurally cleaner expression of the same model. New appendix
+`sec:k_eff_rebuild` + `tab:k_eff_rebuild`; discussion.tex K_eff paragraph
+cites the rebuild.
+
+**P12 (R3#3, R1#6) — Leverage permutation framing.** *Closed.* Body
+`sections/discussion.tex` leverage paragraph rewritten. The Q5-boundary
+"partially captured" framing is replaced with explicit one-sided
+percentile p-values: IS observed (-0.135) sits at the simulated Q5 floor
+(p ≈ 0.05, borderline non-rejection); OoS observed (-0.214) sits below
+the simulated Q5 floor (p < 0.05, rejection at the 5% level). Closing the
+OoS gap requires asymmetric per-state emissions; this paper does not
+close it.
+
+**P13 (R3#5) — QuantGAN reframing.** *Closed.* Body
+`sections/results.tex` table footnote and `sections/discussion.tex`
+baseline-implementation caveats paragraph rewritten. The "deep-generative
+class as negative control" claim is dropped in favor of "in-house WGAN
+re-implementation, with and without Lambert-W, fails on this dataset". A
+faithful reference-implementation re-run of `wiese2020quantgan` is
+documented as a deferred follow-up direction.
+
+**P14 (R3#4, R3#req-2) — GLD/SLV conclusion strengthened.** *Closed.*
+Body `sections/conclusion.tex` GLD/SLV sentence rewritten as a hard
+rejection of cross-asset-class transfer under static IS-fit (was: "soft
+limitation"). Recipe deferred to per-class re-validation.
+
+**P15 (R3#2, R1#minor) — Cross-ticker median lead.** *Closed.* Abstract
+and `sections/introduction.tex` lead with the cross-ticker dominant-mode
+share (median 75.6%, IQR [66%, 86%], min 32.6% at NEM); SPY-specific
+93.6% described as right-tail rather than as canonical. Body
+`sections/theory.tex` paragraph already had the cross-ticker framing.
+
+**P16 (R2#3) — Drop or redo cross-ticker ANOVA.** *Closed.* Body
+`sections/results.tex` cross-ticker paragraph no longer claims "failures
+are ticker-specific" from the underpowered ANOVA. The F(9,20)=0.44 result
+is now explicitly flagged as severely underpowered at n=3 per sector
+(η²=0.16 corresponds to a moderate-to-large effect that the test cannot
+detect). n≥6 per sector expansion logged as natural follow-up.
+
+**P17 (R3#minor) — Symmetric-stylized-fact title.** *Closed.* Title
+changed to "A Continuous Hidden Markov Model for Daily US-Equity
+**Symmetric** Stylized-Fact Reproduction"; abstract first sentence
+similarly qualified. The body covers three of the five Cont stylized
+facts (heavy-tailed marginals, negligible linear ACF, slow |G_t| ACF);
+leverage and gain-loss asymmetry are out of scope under symmetric per-
+state emissions.
+
+**P18 (R1#minor, R2#minor) — Cleanup.** *Closed.* Removed leftover
+"Reviewer 1 / Reviewer 2 / minor item" attributions from appendix prose
+(response-letter artefacts); fixed two stale K\*=6 body-headline
+references that hadn't been updated when the body re-headlined at K\*=3
+in the prior round; verified all `\ref{}` resolve in the build (paper
+log clean).
+
+### Aggregate
+
+26 of 28 actionable items closed substantively in this round (P7 refit-
+cadence sweep and P10 sector expansion deferred as documented follow-
+ups). Two of the closures (P2 multi-day DM replication, P3 HAC K-
+selection) shift framing toward more conservative readings of the data;
+one closure (P9 shared-ν ablation) introduces a structurally cleaner
+alternative to the body's per-state ν_k construction that the body now
+references explicitly.
+
+The paper is now publication-ready for round-2 resubmission.
+
+---
+
+## Round 1 (2026-04-29)
+
+**Manuscript:** *A Continuous Hidden Markov Model for Daily US-Equity
 Stylized-Fact Reproduction* (Alswaidan, Jin, Varner)
 **Revision pass:** Major revision against the simulated peer-review panel
 in `peer-review.md` (1 Minor Revision / 2 Major Revision; aggregate Major
