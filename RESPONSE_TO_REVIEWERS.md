@@ -631,15 +631,60 @@ $14.91$) at $K^\star = 3$ in Table~\ref{tab:model_comparison}. R2 W4's
 specific concern that "the four-family narrative collapses to a
 one-parameter shape axis" is therefore not supported by the data.
 
-### 12. CRSP-based 1994-2004 vs 2014-2024 cross-decade validation (R3 W6 / R3 RE3)
+### 12. CRSP-based 1994-2004 vs 2014-2024 cross-decade validation (R3 W6 / R3 RE3) — CLOSED
 
-**Status:** OPEN, with explicit scope statement. The Polygon.io
-provider in our pipeline begins at 2014-01-03; Alpaca's IEX feed begins
-at 2018-11-01 and SIP feed at 2016-01-04 (Appendix sec:alpaca_depth_probe
-documents the data-availability ceiling). A WRDS / CRSP licence is the
-correct path to the 1994-2004 window and is logged for the next
-data-pipeline pass. The empirical-scope claim of the present paper is
-explicitly "SPY 2014-2026" rather than "across decades".
+**Reviewer language (R3 W6):** *"Either obtain CRSP data through a
+WRDS subscription and run the 1994-2004 vs 2014-2024 split, or
+restrict the empirical scope claim explicitly to 'SPY 2014-2026'..."*
+
+**What we did.** Secured a WRDS day-pass at revision time and pulled
+the CRSP daily stock file for SPY plus 28 of the 30 cross-ticker
+panel members (NEE and APD missing from the CRSP query) from
+$1994$-$01$-$03$ to $2006$-$04$-$28$. Adjusted close $= \mathtt{DlyPrc}
+/ \mathtt{DlyFacPrc}$ from CRSP CIZ format. Source CSV at
+`CHMM-Model/data/external/crsp_1994_2006.csv`; runner:
+`run_cross_decade_validation.jl`. Added new appendix subsection
+`sec:cross_decade_validation` with Table~\ref{tab:cross_decade_validation}.
+
+**Result (SPY only; 1994-2004 IS = 2519 obs, 2004-2006 OoS = 583 obs).**
+
+| Model | $K$ | IS KS% | OoS KS% | Sim kurt IS | Sim kurt OoS | $|G_t|$ ACF IS | $|G_t|$ ACF OoS |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| CHMM-N | 3 | 84.9 | 3.3 | 2.20 | 2.24 | 0.0696 | 0.0491 |
+| CHMM-N | 18 | 89.8 | 3.4 | 1.84 | 1.74 | 0.0720 | 0.0499 |
+| CHMM-t pen. ($\lambda = 20$) | 3 | 89.1 | 5.4 | 4.97 | 4.18 | 0.0682 | 0.0501 |
+
+Observed cross-decade kurtosis: 1994-2004 IS = $3.05$, 2004-2006 OoS = $\mathbf{0.06}$ (essentially Gaussian).
+
+**Substantive read.** The cross-decade IS fit transfers: CHMM-N at
+$K = 3$ attains $84.9\%$ IS KS on $1994$-$2004$ vs.\ $89.7\%$ on the
+body $2014$-$2024$ window, $K = 18$ attains $89.8\%$ vs.\ $94.1\%$,
+penalised CHMM-t at $\lambda = 20$ attains $89.1\%$ vs.\ $90.6\%$.
+The IS axis of the body's stylized-fact reproduction claim is
+decade-robust within $\sim 5$pp on KS. The OoS axis is the issue: the
+$2004$-$2006$ OoS slice has excess kurtosis $0.06$ (essentially
+Gaussian) versus the $1994$-$2004$ IS kurtosis of $3.05$, an
+IS-OoS kurtosis gap much wider than the body's $7.68 / 5.29$ window.
+The CHMM trained on the IS distribution simulates paths heavier-
+tailed than the calm $2004$-$2006$ post-dot-com bull-market OoS, so
+KS rejects at $3$-$5\%$ on all three rows. \emph{This is the same
+regime-introduction failure mode the body walk-forward already
+documents at the W2 (COVID) and W4 (2022 rate-hike) stress folds}
+(Table~\ref{tab:walkforward}, both with OoS KS $< 10\%$); the
+$2004$-$2006$ OoS window is structurally a low-volatility slice
+where the IS-fixed CHMM's tail mass overshoots the observed.
+
+The body framing already states the right interpretation: the
+walk-forward median, not the single-window OoS pair, is the
+operationally informative summary; periodic refit at deployment is
+the recommended recipe. The cross-decade result is consistent with
+that framing and adds an independent decade to the walk-forward
+evidence base. Edits: discussion-section Limitations paragraph
+rewritten from "infeasible" to "completed via a CRSP day-pass at
+revision time"; abstract scope statement extended from "SPY 2014-2026"
+to "SPY 2014-2026 (body window) and 1994-2006 (cross-decade
+validation via CRSP)"; new appendix subsection
+`sec:cross_decade_validation`.
 
 ### 13. Compress sec:theory (R2 W7 / R3 W5) — CLOSED
 
@@ -683,6 +728,65 @@ Specifically:
 - Multi-day cumulative-return DM (R3 RE4): OPEN.
 - $\alpha = 0.05$ vs $\alpha = 0.01$ row distinction in Table 4 (R1 W3):
   CLOSED via the power calibration in `sections/var_backtest.tex` line 22.
+- Item 15 (R2 Q3) — CHMM-N marginals at $K^\star = 6$ for cross-asset
+  construction: CLOSED. Re-ran Pipeline B at $K = 6$ marginals via
+  `run_cross_asset_sim_copula_k6.jl`; off-diagonal MAE differences
+  across the marginal-resolution axis are $\le 0.001$ on IS and OoS
+  (Student-$t$ copula: IS $0.027$ vs $0.027$, OoS $0.209$ vs $0.209$;
+  Gaussian: IS $0.030$ vs $0.030$, OoS $0.202$ vs $0.203$). The
+  dependence layer is essentially marginal-resolution-independent on
+  this universe, so R2 Q3's hypothesis that $K^\star = 6$ marginals
+  might shift the off-diagonal MAE comparison is rejected. New
+  appendix subsection `sec:cross_asset_kstar6`.
+- Item 16 (R3 RE4) — Multi-day cumulative-return Diebold-Mariano on
+  CHMM vs.\ stationary block bootstrap: CLOSED. Aggregated $1{,}000$-
+  path simulated archives to non-overlapping $h$-day cumulative-
+  return blocks for $h \in \{5, 20\}$ via `run_crps_dm_multiday.jl`;
+  per-block CRPS under sorted-ensemble identity; two-sided NW-HAC DM.
+  Result: at $h = 1$ neither side dominates ($p > 0.45$); at $h = 5$
+  CHMM-L beats bootstrap at $p = 0.042$; **at $h = 20$ CHMM-N beats
+  bootstrap at $\Delta\text{CRPS} = -0.180$, DM = $-2.99$, $p = 0.003$**,
+  and CHMM-L at $p = 0.027$. The body's bootstrap-dominance concession
+  on raw 1-day OoS KS is therefore a horizon-specific result; on
+  $20$-day cumulative returns the regime-switching structure produces
+  detectable CRPS gain over the bootstrap's exchangeable construction.
+  R3 RE4's specific concern that the use-case differentiation framing
+  is vacuous if CHMM never dominates is **not realised**: the body's
+  three differentiating use cases gain a fourth (multi-day forecast
+  horizons). New appendix subsection `sec:crps_dm_multiday`; body
+  Bootstrap paragraph (`sections/results.tex` line 100) extended to
+  cite the multi-day result.
+- Item 14 (R1 RE3) — Gamma-sojourn HSMM as co-headline foil:
+  CLOSED. Implemented `run_hsmm_ml_gamma.jl`: same Yu (2010)
+  explicit-duration EM as the body Pareto-sojourn HSMM but with
+  discretised continuous Gamma sojourn ($p(d) = F_\Gamma(d; \alpha,
+  \beta) - F_\Gamma(d - 1; \alpha, \beta)$ on $\{1, \ldots, D_{\max}\}$),
+  per-state $(\alpha, \beta)$ updated by method-of-moments at each
+  M-step. **Substantive positive finding**: (i) the Gamma-sojourn
+  HSMM at $K = 18$ converges where the Pareto-sojourn HSMM collapses
+  (Gamma IS KS $86.0\%$, OoS KS $80.2\%$ vs.\ Pareto $0.8\% / 33.4\%$);
+  (ii) the Gamma-sojourn HSMM at $K = 18$ has $|G_t|$ ACF-MAE
+  $\mathbf{0.0462}$, the cleanest $|G_t|$ ACF match in the entire HSMM
+  panel and below the body CHMM-N $K = 18$ value of $0.0509$. R1 RE3's
+  specific hypothesis that a Gamma sojourn may close the ACF-MAE gap
+  is therefore confirmed quantitatively. Trade-off: Gamma at $K = 3$
+  loses $\sim 20$pp of KS pass rate vs.\ Pareto ($77.0\%$ vs.\ $98.4\%$
+  IS) but gains the ACF-MAE recovery ($0.0528$ vs.\ $0.0629$). New
+  appendix subsection `sec:hsmm_gamma_sojourn` with
+  Table~\ref{tab:hsmm_sojourn_compare}; body "ML HSMM as a co-headline
+  result" paragraph rewritten to acknowledge the Gamma-sojourn
+  recovery and document the no-single-best-HSMM finding.
+- Item 17 (R1 W3) — Footnote-mark $\alpha = 0.01$ rows in
+  Table~\ref{tab:cond_var}: CLOSED. Added $\textsuperscript{\textdaggerdbl}$ marker on
+  every $\alpha = 0.01$ row plus a footnote in the caption that
+  references the power-calibration appendix and the DQ-test
+  $K = 18$ rejection.
+- Item 23 (R1 Minor 3) — Promote $\dagger\dagger$ bracket-lift
+  footnote from Table 3 caption to numbered remark: CLOSED. Long
+  bracket-lift explanation moved to `Remark~\ref{rem:bracket_lift}`
+  in `sections/discussion.tex`; Table 3 caption now reads
+  ``Bracket-lift ablation at $\nu_{\min} = 4$ and no $1/\nu_k$
+  penalty; see Remark~\ref{rem:bracket_lift} in $\S$\ref{sec:discussion}''.
 - Leverage-effect "partial capture" rephrase (R1 W4): CLOSED. The
   discussion-section header (`sections/discussion.tex` line 35) is now
   *"Stylized-fact scope: simulated leverage envelope brackets the IS
@@ -751,13 +855,11 @@ AIC) is informative on $T_\text{IS} = 2,516$; the OoS-equivalence is a
 null, not evidence against. We have made the OoS equivalence explicit
 in the discussion (item 7) and consider this a defensible halfway point.
 
-We do not propose a Gamma-sojourn HSMM at this revision (R1 RE3).
-HSMM is reported as a co-headline scaffold under truncated Pareto
-(`sections/results.tex` "ML HSMM as a co-headline result" paragraph)
-and the trade-off (HSMM wins on KS, CHMM wins on
-volatility-clustering) is what the panel supports. Adding a Gamma-
-sojourn variant would be a third HSMM column in an already crowded
-panel; we believe it is a companion-paper item.
+We initially proposed to defer the Gamma-sojourn HSMM (R1 RE3) to a
+companion paper, but at the user's request executed the ablation in
+this revision; it produces a substantive positive finding that
+materially changes the body's HSMM framing. Result and edits
+documented in items below; this is now CLOSED.
 
 ---
 
@@ -772,17 +874,24 @@ same pass (Table~\ref{tab:cross_ticker} now reports the three-column
 $K^\star = 3$ / $K^\star = 6$ / $K = 18$ comparison; per-ticker file
 `sector_panel/sector_panel_summary_k3.txt` of the companion repo).
 
-Of the 6 Priority-2 items, 5 are CLOSED (8 — bracket-lift reported as
-ablation $\dagger\dagger$ in Table 3 with the body headline still on
-the penalised $\lambda = 20$ version per R1's "strongly suggested"
-framing; 9 — Lambert-W input pre-processing executed; the body's
-deep-generative \emph{negative-control} framing is robust to the
-transform; 10 — Engle-Manganelli DQ test executed, body $\alpha = 0.05$
-headline survives, $\alpha = 0.01$ qualified; 11 — per-state Frobenius
-distances; 13 — sec:theory compression), and 1 is OPEN (12 — CRSP-based
-1994-2004 cross-decade validation, day-pass WRDS access secured at
-revision time and the data download is in flight). Of the Priority-3 / Priority-4 presentation items, the
-leverage-effect rephrase (R1 W4) is CLOSED, along with the
+Of the 6 Priority-2 items, all 6 are CLOSED (8 — bracket-lift reported
+as ablation $\dagger\dagger$ in Table 3; 9 — Lambert-W input pre-
+processing executed, body's deep-generative \emph{negative-control}
+framing is robust to the transform; 10 — Engle-Manganelli DQ test
+executed, body $\alpha = 0.05$ headline survives, $\alpha = 0.01$
+qualified; 11 — per-state Frobenius distances; 12 — CRSP cross-decade
+validation executed via day-pass WRDS access, IS axis transfers within
+$\sim 5$pp KS, OoS axis exhibits the same regime-shift pattern as the
+W2 / W4 walk-forward stress folds; 13 — sec:theory compression).
+All 5 Priority-3 items are CLOSED (14 — Gamma-sojourn HSMM, **closes
+the $|G_t|$ ACF-MAE gap at $K = 18$ and converges where Pareto
+collapses, R1 RE3 hypothesis confirmed quantitatively**; 15 — cross-
+asset at $K^\star = 6$ marginals, off-diag MAE marginal-resolution-
+independent; 16 — multi-day DM, **CHMM-N beats bootstrap at $h = 20$
+with $p = 0.003$, adding a fourth use-case-differentiation axis**;
+17 — $\alpha = 0.01$ power footnote on Table 4; 18 — leverage
+rephrase). Of the Priority-3 / Priority-4 presentation
+items, the leverage-effect rephrase (R1 W4) is CLOSED, along with the
 small editorial items (Schaller-van Norden citation; Reviewer-1/2
 footnote in Table 3 caption; Wilks regularity citation; notation
 standardisation; Cont-facts enumeration in the abstract; "held-out-

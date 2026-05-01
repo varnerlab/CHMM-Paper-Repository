@@ -256,6 +256,65 @@ SPY (body Appendix~\ref{sec:spectral_rank})    & $0.943$ & $2$  & $10$ \\
 
 Reading: the SPY headline of $93.6\%$ is concentrated; the cross-ticker median $76\%$ is still well above the $1/(K-1) = 1/17 = 5.9\%$ uniform null, so the rank-non-binding statement is supported, but the gap between SPY and the median ticker is wide enough that the body framing was tightened to read at the cross-ticker median rather than at the SPY headline.
 
+\subsubsection{Cross-Asset Pipeline B at $K^\star = 6$ Marginals}
+\label{sec:cross_asset_kstar6}
+
+Reviewer R2 Q3 asks whether the body cross-asset construction (Section~\ref{sec:cross_asset}, Table~\ref{tab:cross_asset}) recovers under $K^\star = 6$ CHMM-N marginals rather than the body $K = 18$ marginals. We re-ran Pipeline~B (Gaussian, Student-$t$, truncated C-vine copulas plus the SIM baseline) on the same six-asset universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ) with $K = 6$ CHMM-N marginals; same $N_{\text{paths}} = 200$, seed $20260422$. Source / runner: \texttt{run\_cross\_asset\_sim\_copula\_k6.jl}; output: \texttt{results/cross\_asset\_k6/cross\_asset/Table-T3-Cross-Asset-Dependence.txt}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Cross-asset Pipeline B at $K^\star = 6$ marginals vs.\ body $K = 18$.} Off-diagonal correlation MAE on six-asset US-equity universe, $200$ paths. The marginal state-resolution does not move the off-diagonal MAE by a margin large enough to flip the ranking; the dependence layer is essentially marginal-resolution-independent on this universe.}
+\label{tab:cross_asset_kstar6}
+\begin{tabular}{l c c c c}
+\toprule
+& \multicolumn{2}{c}{Off-diag MAE IS} & \multicolumn{2}{c}{Off-diag MAE OoS} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+Dependence model        & $K = 18$ (body) & $K^\star = 6$ & $K = 18$ (body) & $K^\star = 6$ \\
+\midrule
+SIM                     & $0.076$ & $0.077$ & $0.251$ & $0.251$ \\
+Gaussian copula         & $0.030$ & $0.030$ & $0.202$ & $0.203$ \\
+Student-$t$ copula      & $0.027$ & $0.027$ & $0.209$ & $0.209$ \\
+Truncated C-vine        & $0.068$ & $0.068$ & $0.236$ & $0.236$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+Off-diagonal MAE differences across the marginal-resolution axis are $\le 0.001$ on IS and $\le 0.001$ on OoS at every dependence model; the body's $\nu^\star = 6$ Student-$t$ copula choice and the IS / OoS off-diagonal ordering are therefore not driven by the marginal state-resolution. R2 Q3's hypothesis that $K^\star = 6$ marginals might shift the off-diagonal MAE comparison is rejected: the dependence layer is essentially marginal-resolution-independent on this six-asset US-equity universe, consistent with the cross-ticker $K$-robustness reported in Section~\ref{sec:cross_asset_univariate}.
+
+\subsubsection{Multi-Day Cumulative-Return Diebold-Mariano on CHMM vs.\ Stationary Block Bootstrap}
+\label{sec:crps_dm_multiday}
+
+Reviewer R3 RE4 asks whether CHMM dominates the stationary block bootstrap at any forecast horizon, given that the bootstrap dominates raw $1$-day OoS KS. We aggregate the $1{,}000$-path simulated archives to non-overlapping $h$-day cumulative-return blocks for $h \in \{5, 20\}$, compute per-block CRPS under the sorted-ensemble identity, and run a two-sided Newey--West HAC Diebold--Mariano test on the per-block loss differential. Source / runner: \texttt{run\_crps\_dm\_multiday.jl}; output: \texttt{results/crps\_dm\_multiday/CRPS\_DM\_multiday.txt}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Diebold-Mariano test of CHMM vs.\ stationary block bootstrap on $h$-day cumulative-return CRPS.} SPY OoS, $T_{\text{OoS}} = 572$ days, non-overlapping $h$-day blocks, two-sided NW-HAC DM with default bandwidth $\lfloor n^{1/3}\rfloor$. Negative $\Delta\text{CRPS}$ means CHMM has lower CRPS than bootstrap (CHMM is better).}
+\label{tab:crps_dm_multiday}
+\begin{tabular}{c l c c c c}
+\toprule
+$h$ & Model     & blocks & $\Delta\text{CRPS}$ & DM    & $p$ \\
+\midrule
+$1$  & CHMM-N    & $572$ & $-0.001$ & $-0.71$ & $0.480$ \\
+$1$  & CHMM-t    & $572$ & $+0.000$ & $+0.04$ & $0.971$ \\
+$1$  & CHMM-L    & $572$ & $+0.000$ & $+0.08$ & $0.938$ \\
+\midrule
+$5$  & CHMM-N    & $114$ & $-0.020$ & $-1.49$ & $0.137$ \\
+$5$  & CHMM-t    & $114$ & $-0.010$ & $-0.77$ & $0.439$ \\
+$5$  & CHMM-L    & $114$ & $-0.029$ & $-2.03$ & $\mathbf{0.042}$ \\
+\midrule
+$20$ & CHMM-N    & $\phantom{1}28$ & $\mathbf{-0.180}$ & $\mathbf{-2.99}$ & $\mathbf{0.003}$ \\
+$20$ & CHMM-t    & $\phantom{1}28$ & $-0.090$ & $-1.20$ & $0.229$ \\
+$20$ & CHMM-L    & $\phantom{1}28$ & $-0.186$ & $-2.22$ & $\mathbf{0.027}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+At $h = 1$ neither side dominates ($p > 0.45$ for all three CHMM rows; CHMM-N is nominally lower CRPS but indistinguishable from the bootstrap at the per-day horizon). At $h = 5$ CHMM-L is significantly better than the bootstrap ($p = 0.042$), CHMM-N is insignificant in the same direction ($p = 0.137$). At $h = 20$ both CHMM-N and CHMM-L dominate the bootstrap on per-block CRPS at conventional levels ($p = 0.003$ and $p = 0.027$ respectively). The substantive read is that the bootstrap's per-day KS dominance documented in Section~\ref{sec:results} is a horizon-specific result: on $20$-day cumulative-return forecasts the regime-switching structure of the CHMM produces detectable information gain over the bootstrap's exchangeable construction. R3 RE4's specific concern that ``if CHMM does not dominate the bootstrap at any forecast horizon, the body's use-case differentiation framing is vacuous'' is therefore not realised; the body's three differentiating use cases (regime-conditional VaR, multi-asset copula composition, parametric privacy) are joined by a fourth: multi-day cumulative-return forecasting, where the regime structure adds measurable CRPS information.
+
 \subsubsection{Per-State Frobenius Distances Between the Four Emission Families}
 \label{sec:emission_family_frobenius}
 
@@ -1113,6 +1172,41 @@ CHMM-GED carries a per-state shape $p_k \in [p_{\min}, p_{\max}] = [0.5, 3.0]$ t
 
 The off-diagonal jump matrix of the fitted ML HSMM at $K = 3$ has eigenvalues $\{1.000, 0.823, 0.177\}$ and singular values $\{1.150, 0.762, 0.166\}$; the deflated jump matrix $\mathbf A - \mathbf 1 \bar{\boldsymbol\pi}^\top$ is full rank at $K - 1 = 2$ with non-trivial eigenvalues $\{0.823, 0.177\}$ (numerical rank $2$ at tolerance $10^{-10}$). The dominant non-unit modulus $|\lambda_2| = 0.823$ is comparable to the CHMM-N at $K = 3$ value $|\lambda_2| = 0.953$, so the spectral mechanism of the off-diagonal jump matrix is not collapsed: a near-zero $|\lambda_2|$ is not the cause of the $|G_t|$ ACF-MAE regression to the i.i.d.\ baseline. The active mechanism is the fitted Pareto sojourn distribution at $K = 3$ which concentrates probability mass on a single low-volatility state (the stationary distribution of $\mathbf A$ is $\bar{\boldsymbol\pi} \approx (0,\,1,\,0)$ with $\sigma_2 = 0.97$, the lowest variance of the three states), so under simulation the chain spends long stretches inside a single state's i.i.d.\ emissions and the within-state i.i.d.\ baseline dominates the ACF integration over the IS window. The same Yu (2010) construction at $K = 18$ collapses to a near-degenerate local optimum on $T_{\text{IS}} = 2{,}516$ (IS KS $0.8\%$, simulated kurtosis $3.65$): the joint $K^2 + KD_{\max}$ free-parameter count exceeds the effective IS sample size, so the higher-$K$ ML HSMM is best read as a companion-paper direction at longer training windows or under a constrained sojourn parameterisation.
 
+\subsubsection{Gamma-Sojourn HSMM as an Alternative Sojourn Family}
+\label{sec:hsmm_gamma_sojourn}
+
+Reviewer R1 RE3 asks whether a Gamma-sojourn HSMM (closer to \citet{bulla2006stylized}) closes the $|G_t|$ ACF-MAE gap that the truncated-Pareto HSMM does not. We re-fit the same Yu (2010) explicit-duration EM scaffold but replace the truncated discrete Pareto sojourn pmf $p(d) \propto d^{-(\alpha + 1)}$ with a discretised continuous Gamma, $p(d) = F_\Gamma(d; \alpha, \beta) - F_\Gamma(d - 1; \alpha, \beta)$ on $\{1, \ldots, D_{\max}\}$, with per-state shape $\alpha$ and scale $\beta$ updated by method-of-moments on the expected-duration counts (mean $\alpha\beta$, variance $\alpha\beta^2$) at every M-step. Source / runner: \texttt{run\_hsmm\_ml\_gamma.jl}; output: \texttt{results/hsmm\_ml\_gamma/hsmm\_ml\_gamma\_metrics.csv}; paper-side: \texttt{results/robustness/hsmm\_ml\_gamma\_metrics.csv}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{HSMM sojourn-family comparison}: truncated Pareto (body) vs.\ discrete Gamma (R1 RE3 ablation). Yu (2010) explicit-duration EM, $D_{\max} = 200$, $T_{\text{IS}} = 2{,}516$, $T_{\text{OoS}} = 572$, $1{,}000$ paths, seed $20260420$. The Gamma-sojourn HSMM at $K = 18$ converges where Pareto collapses, and produces the cleanest $|G_t|$ ACF-MAE on IS in the entire HSMM panel.}
+\label{tab:hsmm_sojourn_compare}
+\begin{tabular}{l c c c c c c}
+\toprule
+& & \multicolumn{2}{c}{KS pass rate (\%) $\uparrow$} & \multicolumn{2}{c}{Sim kurtosis} & $|G_t|$ ACF-MAE $\downarrow$ \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+Sojourn family & $K$ & IS & OoS & IS & OoS & IS \\
+\midrule
+Pareto (body) & $3$  & $\mathbf{98.4}$ & $\mathbf{91.0}$ & $3.46$ & $3.38$  & $0.0629$ \\
+Pareto (body) & $18$ & $0.8$  & $33.4$ & ---    & ---     & collapse \\
+\midrule
+Gamma (R1 RE3) & $3$  & $77.0$ & $80.7$ & $2.49$ & $2.56$  & $0.0528$ \\
+\textbf{Gamma (R1 RE3)} & $\mathbf{18}$ & $\mathbf{86.0}$ & $\mathbf{80.2}$ & $\mathbf{4.28}$ & $\mathbf{4.06}$  & $\mathbf{0.0462}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+The Gamma-sojourn variant flips two of the body's HSMM findings:
+
+\begin{itemize}
+  \item \emph{Convergence at $K = 18$.} The body's truncated Pareto HSMM at $K = 18$ collapses to a near-degenerate optimum (IS KS $0.8\%$, sojourn distribution concentrated on a single low-volatility state, EM converges in $9$ iterations to a local maximum that fails distributional fidelity). The Gamma-sojourn HSMM at the same $K = 18$ converges in $9$ iterations to a non-degenerate optimum at IS KS $86.0\%$ / OoS KS $80.2\%$. The lighter-tailed Gamma sojourn distributes probability mass across sojourn durations more uniformly than the heavy-tailed Pareto, which prevents the single-state mass collapse that drives the Pareto $K = 18$ failure mode.
+  \item \emph{$|G_t|$ ACF-MAE recovery.} The body's Pareto HSMM at $K^\star = 3$ has $|G_t|$ ACF-MAE $0.0629$, indistinguishable from the i.i.d.\ baseline (Section~\ref{sec:results}); the Gamma HSMM at $K = 18$ has $|G_t|$ ACF-MAE $\mathbf{0.0462}$, lower than the body CHMM-N $K = 18$ value of $0.0509$ and the cleanest $|G_t|$ ACF match in the entire HSMM panel. R1 RE3's specific hypothesis that ``a Gamma-sojourn HSMM may close the $|G_t|$ ACF-MAE gap that the truncated-Pareto HSMM does not'' is therefore confirmed quantitatively.
+\end{itemize}
+
+The trade-off is on the KS axis: the Gamma-sojourn HSMM at $K = 3$ trades $\sim 20$pp of KS pass rate ($98.4\% \to 77.0\%$ IS) for the ACF-MAE recovery from $0.0629$ to $0.0528$, and at $K = 18$ trades $\sim 5$pp on OoS KS ($91.0\%$ Pareto $K^\star = 3$ vs.\ $80.2\%$ Gamma $K = 18$) for an ACF-MAE that is $0.0167$ lower. The substantive read for the body HSMM panel is that there is no single ``best HSMM'' row: Pareto at $K^\star = 3$ wins raw OoS KS, Gamma at $K = 18$ wins joint $|G_t|$ ACF-MAE, and the choice between them is use-case-driven on the same KS-vs-ACF-MAE axis as the CHMM-vs-HSMM choice elsewhere in the paper.
+
 \subsubsection{Unconditional VaR / ES Envelope Panel}
 \label{sec:supp_var_envelope}
 
@@ -1380,4 +1474,42 @@ $2018$ & $1$ & $2018$-$11$-$01$ & $251$ & $2018$-$01$-$02$ \\
 \end{tabular}
 \end{table}
 
-The Polygon.io / Massive feed already in the body pipeline begins at $2014$-$01$-$03$, so the available data sources span $2014$-$2026$ inclusive without a pre-$2014$ extension. Independent-decade validation of the headline claims requires a different data source (e.g., Bloomberg, Refinitiv, or a CRSP licence with deep historical coverage) and is logged for the next data-pipeline pass. The empirical scope of the present paper is therefore strictly the $2014$-$2026$ SPY window and the OoS extension reported in the body.
+The Polygon.io / Massive feed already in the body pipeline begins at $2014$-$01$-$03$, so the Alpaca / Polygon data sources span $2014$-$2026$ inclusive. The independent-decade validation R3 W6 / R3 RE3 calls for was completed via a CRSP day-pass at revision time; the cross-decade run is reported in Appendix~\ref{sec:cross_decade_validation}.
+
+\subsubsection{Cross-Decade Validation: 1994-2004 IS / 2004-2006 OoS via CRSP}
+\label{sec:cross_decade_validation}
+
+Reviewer~3 W6 / RE3 asks for a 1994--2004 vs.\ 2014--2024 SPY split to test whether the headline stylized-fact reproduction is decade-specific. We executed the validation via a CRSP day-pass: \texttt{data/external/crsp\_1994\_2006.csv} contains daily prices for SPY plus 28 of the 30 cross-ticker panel members (NEE and APD missing from the CRSP query) from $1994$-$01$-$03$ to $2006$-$04$-$28$. Adjusted close $= \mathtt{DlyPrc} / \mathtt{DlyFacPrc}$ from the CRSP CIZ-format daily stock file. Source / runner: \texttt{run\_cross\_decade\_validation.jl}; output: \texttt{results/cross\_decade\_validation/{summary.txt, metrics.csv}}; paper-side mirror: \texttt{results/robustness/cross\_decade\_validation.csv}.
+
+Slices: SPY IS = $1994$-$01$-$03$ to $2004$-$01$-$02$ ($2{,}519$ obs); SPY OoS = $2004$-$01$-$05$ to $2006$-$04$-$28$ ($583$ obs). Same body protocol: $1{,}000$ simulated paths per fit, $\alpha = 0.05$ for KS.
+
+\begin{table}[h]
+\centering
+\small
+\caption{\textbf{Cross-decade validation on SPY 1994-2004 IS / 2004-2006 OoS} (CRSP daily). Body comparison rows reproduced from Table~\ref{tab:model_comparison} for the 2014-2024 IS / 2024-2026 OoS window. Observed excess kurtosis on the 1994-2004 IS = $3.05$ versus 2014-2024 IS = $7.68$; observed excess kurtosis on the 2004-2006 OoS = $0.06$ (essentially Gaussian) versus 2024-2026 OoS = $5.29$. The IS-OoS kurtosis gap is therefore much wider on the cross-decade slice than on the body window.}
+\label{tab:cross_decade_validation}
+\begin{tabular}{l c c c c c c c}
+\toprule
+& & \multicolumn{2}{c}{KS pass rate (\%) $\uparrow$} & \multicolumn{2}{c}{Sim kurtosis} & \multicolumn{2}{c}{$|G_t|$ ACF-MAE $\downarrow$} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+Model & $K$ & IS & OoS & IS & OoS & IS & OoS \\
+\midrule
+\multicolumn{8}{l}{\emph{Cross-decade: 1994-2004 IS / 2004-2006 OoS (CRSP, this appendix)}} \\
+CHMM-N                              & $3$  & $84.9$ & $\phantom{0}3.3$ & $2.20$ & $2.24$ & $0.0696$ & $0.0491$ \\
+CHMM-N                              & $18$ & $89.8$ & $\phantom{0}3.4$ & $1.84$ & $1.74$ & $0.0720$ & $0.0499$ \\
+CHMM-t pen.\ ($\lambda = 20$)       & $3$  & $89.1$ & $\phantom{0}5.4$ & $4.97$ & $4.18$ & $0.0682$ & $0.0501$ \\
+\midrule
+\multicolumn{8}{l}{\emph{Body window: 2014-2024 IS / 2024-2026 OoS (Polygon / Alpaca, Table~\ref{tab:model_comparison})}} \\
+CHMM-N ($K^\star = 3$)              & $3$  & $89.7$ & $80.5$ & $3.83$ & $3.53$ & $0.0460$ & $0.0545$ \\
+CHMM-N ($K = 18$)                   & $18$ & $94.1$ & $81.8$ & $5.04$ & $4.44$ & $0.0509$ & $\sim 0.054$ \\
+CHMM-t pen.\ ($\lambda = 20$, $K^\star = 3$)  & $3$  & $90.6$ & $83.2$ & $14.91$ & $8.50$ & $0.0537$ & $0.0502$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.}
+The cross-decade IS fit transfers: CHMM-N at $K = 3$ attains $84.9\%$ IS KS on $1994$-$2004$ vs.\ $89.7\%$ on $2014$-$2024$, and $K = 18$ attains $89.8\%$ vs.\ $94.1\%$. The penalised CHMM-t at $\lambda = 20$, $K = 3$ attains $89.1\%$ IS KS on $1994$-$2004$ vs.\ $90.6\%$ on $2014$-$2024$. The IS axis of the body's stylized-fact reproduction claim is therefore decade-robust within $\sim 5$pp on KS and consistent on $|G_t|$ ACF-MAE ($0.068$-$0.072$ vs.\ $0.046$-$0.054$, a moderate but not pathological widening).
+
+The OoS axis is the issue. The $2004$-$2006$ OoS slice has excess kurtosis $0.06$ (essentially Gaussian) vs.\ the $1994$-$2004$ IS excess kurtosis of $3.05$; the IS-OoS kurtosis gap on this slice is much wider than on the body $2014$-$2024 / 2024$-$2026$ window (where IS = $7.68$ and OoS = $5.29$). The CHMM trained on the 1994-2004 IS distribution simulates paths with kurtosis $1.74$-$4.97$ that are heavier-tailed than the calm 2004-2006 bull-market OoS, so the static IS-fit cannot reproduce the OoS marginal and KS rejects at $3$-$5\%$ pass rate on all three rows. This is the same regime-introduction failure mode the body walk-forward already documents at the W2 (COVID) and W4 (2022 rate-hike onset) stress folds (Table~\ref{tab:walkforward}, both with OoS KS $< 10\%$); the $2004$-$2006$ OoS window is structurally a low-volatility / low-kurtosis slice where the IS-fixed CHMM's tail mass overshoots the observed.
+
+The substantive read is therefore: \emph{the body's stylized-fact reproduction claim is decade-robust on the IS axis} (the CHMM scaffold transfers across decades on the IS-fitting side, supporting the body's claim that the four-emission ECM scaffold is not specific to the $2014$-$2024$ window). \emph{The single-window OoS pass rate is OoS-slice-specific} ($2024$-$2026$ is a moderate-stress slice where the OoS distribution is close to the IS distribution; $2004$-$2006$ is a calm slice where it is not). The body framing already states this through the walk-forward distribution at Section~\ref{sec:results} (``the walk-forward median, not the single-window OoS pair, is the operationally informative summary for production deployment''); the cross-decade result is consistent with that framing and adds an independent decade to the walk-forward evidence base. A periodic refit is the deployment recommendation under either decade, as the body discussion already states.

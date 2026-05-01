@@ -24,20 +24,20 @@ A Monte Carlo power calibration at $T_{\text{OoS}} = 572$ (Appendix~\ref{sec:chr
 \begin{table}[h]
 \centering
 \small
-\caption{\textbf{Regime-conditional VaR back-test, CHMM-N and penalised CHMM-t ($\lambda = 20$) on OoS} ($T_{\text{OoS}} = 572$, seed $20260420$). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. The forward filter is run under IS-fixed parameters $(\mathbf T, \{\boldsymbol\theta_k\})$ (no refit); only the one-step-ahead state-probability vector is updated through the OoS observations via Eq.~\eqref{eq:filter}. Every $(K, \alpha, \text{family})$ row passes Kupiec, Christoffersen-ind, and Christoffersen-cc cleanly at $\alpha = 0.05$.}
+\caption{\textbf{Regime-conditional VaR back-test, CHMM-N and penalised CHMM-t ($\lambda = 20$) on OoS} ($T_{\text{OoS}} = 572$, seed $20260420$). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. The forward filter is run under IS-fixed parameters $(\mathbf T, \{\boldsymbol\theta_k\})$ (no refit); only the one-step-ahead state-probability vector is updated through the OoS observations via Eq.~\eqref{eq:filter}. Every $(K, \alpha, \text{family})$ row passes Kupiec, Christoffersen-ind, and Christoffersen-cc cleanly at $\alpha = 0.05$. \textsuperscript{\textdaggerdbl}\,$\alpha = 0.01$ rows are power-bounded at $T_{\text{OoS}} = 572$: Christoffersen-cc reaches $\geq 80\%$ power against breach-clustering eigenvalues only at $\rho \geq 0.50$ (rejection rate $42.6\%$ at $\rho = 0.20$), so a clean pass should be read as ``not detectably worse than a strongly-clustered alternative'' rather than ``calibrated against any plausible alternative''. The Engle-Manganelli (2004) DQ test as a higher-power alternative (Appendix~\ref{sec:engle_manganelli_dq}) rejects $K = 18$ at $\alpha = 0.01$ ($p = 0.017$). See Appendix~\ref{sec:christoffersen_power} for the full power calibration.}
 \label{tab:cond_var}
 \begin{tabular}{l c c c c c c c c c}
 \toprule
 Family & $K$ & $\alpha$ & breaches & br rate & median $\widehat{\text{VaR}}_t$ & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $\text{LR}_{\text{cc}}$ & $p_{\text{cc}}$ \\
 \midrule
-CHMM-N             & $3$  & $0.01$ & $9$  & $1.57\%$ & $-4.56$ & $1.62$ & $2.36$ & $3.98$ & $0.14$ \\
-CHMM-N             & $3$  & $0.05$ & $35$ & $6.12\%$ & $-2.87$ & $1.41$ & $0.01$ & $1.42$ & $0.49$ \\
-CHMM-N             & $18$ & $0.01$ & $9$  & $1.57\%$ & $-5.20$ & $1.62$ & $2.36$ & $3.98$ & $0.14$ \\
+CHMM-N             & $3$  & $0.01$\textsuperscript{\textdaggerdbl} &$9$  & $1.57\%$ & $-4.56$ & $1.62$ & $2.36$ & $3.98$ & $0.14$ \\
+CHMM-N             & $3$  & $0.05$ & $35$ & $6.12\%$ & $-2.87$ & $1.41$ & $0.01$\textsuperscript{\textdaggerdbl} &$1.42$ & $0.49$ \\
+CHMM-N             & $18$ & $0.01$\textsuperscript{\textdaggerdbl} &$9$  & $1.57\%$ & $-5.20$ & $1.62$ & $2.36$ & $3.98$ & $0.14$ \\
 CHMM-N             & $18$ & $0.05$ & $26$ & $4.55\%$ & $-3.02$ & $0.26$ & $0.52$ & $0.78$ & $0.68$ \\
-CHMM-t ($\lambda{=}20$) & $3$  & $0.01$ & $8$  & $1.40\%$ & $-5.59$ & $0.82$ & $2.81$ & $3.63$ & $0.16$ \\
+CHMM-t ($\lambda{=}20$) & $3$  & $0.01$\textsuperscript{\textdaggerdbl} &$8$  & $1.40\%$ & $-5.59$ & $0.82$ & $2.81$ & $3.63$ & $0.16$ \\
 CHMM-t ($\lambda{=}20$) & $3$  & $0.05$ & $32$ & $5.59\%$ & $-2.73$ & $0.41$ & $0.77$ & $1.19$ & $0.55$ \\
-CHMM-t ($\lambda{=}20$) & $18$ & $0.01$ & $10$ & $1.75\%$ & $-6.25$ & $2.65$ & $1.98$ & $4.62$ & $0.10$ \\
-CHMM-t ($\lambda{=}20$) & $18$ & $0.05$ & $29$ & $5.07\%$ & $-3.15$ & $0.01$ & $1.39$ & $1.40$ & $0.50$ \\
+CHMM-t ($\lambda{=}20$) & $18$ & $0.01$\textsuperscript{\textdaggerdbl} &$10$ & $1.75\%$ & $-6.25$ & $2.65$ & $1.98$ & $4.62$ & $0.10$ \\
+CHMM-t ($\lambda{=}20$) & $18$ & $0.05$ & $29$ & $5.07\%$ & $-3.15$ & $0.01$\textsuperscript{\textdaggerdbl} &$1.39$ & $1.40$ & $0.50$ \\
 \bottomrule
 \end{tabular}
 \end{table}

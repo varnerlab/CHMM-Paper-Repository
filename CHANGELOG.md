@@ -245,6 +245,68 @@ Plan tracked in `REVISION_PLAN.md`.
   on this dataset, so the body's deep-generative \emph{negative-
   control} framing is robust to Lambert-W input pre-processing. New
   appendix subsection \texttt{sec:quantgan\_lambertw}.
+- **R2.Q3 (cross-asset Pipeline B at $K^\star = 6$ marginals)**
+  (2026-04-30): closed. Re-ran Pipeline B at $K = 6$ marginals via
+  \texttt{run\_cross\_asset\_sim\_copula\_k6.jl}; off-diagonal MAE
+  differences vs.\ body $K = 18$ are $\le 0.001$ on IS and OoS at
+  every dependence model (Student-$t$ copula: IS $0.027$ vs $0.027$,
+  OoS $0.209$ vs $0.209$). Dependence layer is marginal-resolution-
+  independent on this universe. New appendix subsection
+  \texttt{sec:cross\_asset\_kstar6}.
+- **R3.RE4 (multi-day cumulative-return DM)** (2026-04-30): closed.
+  Implemented \texttt{run\_crps\_dm\_multiday.jl}; aggregated existing
+  archive to non-overlapping $h$-day cumulative-return blocks; per-
+  block CRPS, two-sided NW-HAC DM. Substantive positive finding:
+  CHMM-N beats stationary block bootstrap at $h = 20$ with
+  $\Delta\text{CRPS} = -0.180$, $\text{DM} = -2.99$, $p = 0.003$;
+  CHMM-L at $p = 0.027$. R3 RE4's vacuity concern not realised; body
+  Bootstrap paragraph extended to cite the multi-day result; new
+  appendix subsection \texttt{sec:crps\_dm\_multiday}.
+- **R1.W3 ($\alpha = 0.01$ power footnote on Table 4)** (2026-04-30):
+  closed. Added $\textdaggerdbl$ marker on every $\alpha = 0.01$ row
+  of \texttt{tab:cond\_var}; caption footnote cites the power
+  calibration and the DQ-test $K = 18$ rejection.
+- **R1.Minor 3 ($\dagger\dagger$ bracket-lift footnote promoted to
+  remark)** (2026-04-30): closed. Long bracket-lift explanation moved
+  from Table 3 caption to \texttt{Remark~\ref{rem:bracket\_lift}} in
+  \texttt{sections/discussion.tex}; caption now points at the remark.
+- **R1.RE3 (Gamma-sojourn HSMM)** (2026-04-30): closed. Implemented
+  \texttt{run\_hsmm\_ml\_gamma.jl}: same Yu (2010) explicit-duration
+  EM scaffold as the body Pareto-sojourn HSMM but with discretised
+  continuous Gamma sojourn ($p(d) = F_\Gamma(d; \alpha, \beta) -
+  F_\Gamma(d - 1; \alpha, \beta)$), per-state $(\alpha, \beta)$
+  updated by method-of-moments at each M-step. Substantive positive
+  finding: (i) the Gamma-sojourn HSMM at $K = 18$ converges (IS KS
+  $86.0\%$, OoS KS $80.2\%$) where the Pareto-sojourn HSMM collapses
+  ($0.8\% / 33.4\%$); (ii) the Gamma-sojourn HSMM at $K = 18$ has
+  $|G_t|$ ACF-MAE $\mathbf{0.0462}$, the cleanest $|G_t|$ ACF match
+  in the entire HSMM panel and below the body CHMM-N $K = 18$ value
+  of $0.0509$. R1 RE3's specific hypothesis that a Gamma sojourn may
+  close the ACF-MAE gap is therefore confirmed. Trade-off at $K = 3$:
+  $\sim 20$pp KS-pass-rate loss for the ACF-MAE recovery ($0.0528$
+  Gamma vs.\ $0.0629$ Pareto). New appendix subsection
+  \texttt{sec:hsmm\_gamma\_sojourn} with
+  Table~\ref{tab:hsmm\_sojourn\_compare}; body ``ML HSMM as a
+  co-headline result'' paragraph rewritten to acknowledge the Gamma-
+  sojourn recovery and document the no-single-best-HSMM finding.
+- **R3.W6 / R3.RE3 (CRSP cross-decade validation)** (2026-04-30):
+  closed. Secured a WRDS day-pass at revision time; CRSP CIZ-format
+  daily stock file at \texttt{data/external/crsp\_1994\_2006.csv}
+  covers SPY plus 28 of 30 cross-ticker panel members (NEE, APD
+  missing) from $1994$-$01$-$03$ to $2006$-$04$-$28$. Implemented
+  \texttt{run\_cross\_decade\_validation.jl}: SPY IS $1994$-$2004$
+  ($2{,}519$ obs) / OoS $2004$-$2006$ ($583$ obs). Result: IS axis
+  transfers within $\sim 5$pp KS at $K \in \{3, 18\}$ ($84.9$/$89.8\%$
+  vs.\ body $89.7$/$94.1\%$), confirming the four-emission ECM
+  scaffold is decade-robust on the IS-fitting side. OoS pass-rate
+  collapses to $3$-$5\%$ because the $2004$-$2006$ post-dot-com
+  bull-market OoS slice has excess kurtosis $0.06$ (essentially
+  Gaussian) versus the $1994$-$2004$ IS kurtosis of $3.05$, the same
+  low-stress / low-kurtosis pattern as the W2 / W4 walk-forward
+  stress folds. Discussion-section Limitations paragraph rewritten
+  from "infeasible" to "completed via CRSP day-pass"; abstract scope
+  extended to include $1994$-$2006$. New appendix subsection
+  \texttt{sec:cross\_decade\_validation}.
 
 ---
 
