@@ -135,7 +135,7 @@ The body Section~\ref{sec:cross_asset} reports a static-IS-fit OoS off-diagonal 
 
 We refit the Pipeline-B Student-t copula on a $252$-day rolling window (one trading year) sliding by $63$ days (one trading quarter) across the OoS span, holding the per-asset CHMM-N marginals fixed at the IS fits used for Table~\ref{tab:cross_asset}. Each refit yields a Kendall's-$\tau$ correlation matrix and a profile-MLE-selected $\nu^\star$ on the discrete grid $\{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$; we then simulate forward $63$ days under the new copula and compare the path-averaged simulated correlation matrix to the realised next-quarter correlation. Table~\ref{tab:rolling_copula} reports the per-quarter detail.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Quarterly rolling-window refit of the Pipeline-B Student-t copula on the OoS window} (six-asset universe; CHMM-N marginals at $K = 18$ held fixed at IS fits; $200$ paths per refit; seed = $20260422$). Per-quarter window slice and refitted $\nu^\star$, plus the off-diagonal MAE between the path-averaged simulated correlation matrix under the refitted copula and the realised next-quarter correlation matrix. Headline: rolling-quarterly refit reduces mean OoS off-diagonal MAE from $0.207$ (static-IS-fit baseline) to $0.185$, a $\sim 10\%$ relative improvement; the gain concentrates in the later OoS quarters where the rolling window incorporates more recent OoS data and the refitted $\nu^\star$ shifts from the IS-fit value of $6$ down to $5$ or up to $10$--$15$ as the empirical tail-coupling rolls.}
@@ -203,7 +203,7 @@ JNJ-GLD   & $0.015$ & $0.117$ & $0.101$ \\
 
 
 
-\subsubsection{Half-Unit-Grid Profile-MLE and Parametric Bootstrap CI for $\nu^\star$}
+\subsubsection{\texorpdfstring{Half-Unit-Grid Profile-MLE and Parametric Bootstrap CI for $\nu^\star$}{Half-Unit-Grid Profile-MLE and Parametric Bootstrap CI for nu*}}
 \label{sec:copula_halfunit}
 
 Reviewer~2 / item~10 asks for a half-unit-grid refinement of the unit-grid profile MLE on $\nu \in [3, 12]$ plus a parametric bootstrap CI to confirm that the upper bound of the unit-grid Wilks CI is not grid-induced. We refit the Student-t copula profile log-likelihood on the same six-asset universe at half-unit spacing in $\nu \in \{3.0, 3.5, \ldots, 12.0\}$ ($19$ grid points) and run a $B = 200$ parametric bootstrap by resampling pseudo-observations $U^{(b)}$ from the Student-$t$ copula at $(\Sigma_{\text{cop}}, \nu^\star)$, refitting Kendall's-$\tau$ correlation and the profile-MLE on each replicate. Results in \texttt{results/copula\_profile\_ci/profile\_ll\_halfunit\_summary.txt}.

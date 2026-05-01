@@ -144,19 +144,20 @@ Findings from the cleanup audit, ordered by impact.
 8. Rough disk savings: ~400 MB; rough script-count reduction: 80 → ~40-45 active.
 
 ### CHMM-paper repo
-1. **Delete `figs/_attic/`** (15 superseded PDFs, ~700 KB, zero references).
-2. **Delete the working-tree `.DS_Store`** (already gitignored, but the file is on disk).
+1. [x] **Delete `figs/_attic/`** (15 superseded PDFs, ~700 KB, zero references) - completed in commit b299cab.
+2. [x] **Delete the working-tree `.DS_Store`** - already removed.
 3. **Decide policy on `results/robustness/`**: 21 of 27 CSVs have no LaTeX reference. Suggested split: keep in the public repo as a data archive, exclude from the arXiv tarball.
 4. Run `make clean` before tarballing for arXiv (drops local `.aux/.bbl/.log/.out`; they are gitignored, but if you copy the working tree, they ship).
 5. No `.tex` cleanup needed: all 17 section files are wired into the build via `\input`.
 
 ### Pre-submission punch list
 - [x] Two prose em-dash violations (sensitivity\_appendix.tex 185, 1002) replaced with semicolons.
-- [ ] Optional: tighten the four largest overfull hboxes in sensitivity\_appendix.tex (lines ~1111, 1378, 1454, 1484, 1510) by widening `\resizebox` tables or switching to `tabularx`. Cosmetic; not arXiv-blocking.
-- [ ] Optional: replace `\begin{table}[h]` with `\begin{table}[!ht]` on the 19 tables that triggered the auto-promotion warning. Cosmetic.
-- [ ] Optional: `\texorpdfstring{...}{...}` wrappers on math-heavy section titles to silence hyperref bookmark-charset warnings. Cosmetic.
-- [ ] Verify `figs/_attic/` removal (and the `_attic_v10/` removal in the model repo) does not break any `\includegraphics` paths via a final `make` build.
-- [ ] Add the two repo links and the seed-root statement to the arXiv abstract page if they are not already in the version uploaded.
+- [x] Five overfull hboxes in sensitivity\_appendix.tex (lines ~1111, 1378, 1454, 1484, 1510) fixed by wrapping each tabular in `\resizebox{\textwidth}{!}{...}`. Remaining hboxes: 3, all $\le 5.7$pt (cosmetic).
+- [x] Replaced `\begin{table}[h]` with `\begin{table}[!ht]` on every table across the section files (43 instances spanning 8 files). All `[h]→[ht]` auto-promotion warnings cleared.
+- [x] Added `\texorpdfstring{...}{...}` wrappers on the 12 math-bearing subsubsection titles (11 in sensitivity\_appendix.tex, 1 in cross\_asset\_appendix.tex). Hyperref bookmark-charset warnings reduced from many to zero.
+- [x] Verified `figs/_attic/` removal does not break the build (commit b299cab); `make` produces a clean 112-page PDF, no undefined references.
+- [ ] User-facing: add the two repo links (CHMM-paper, CHMM-Model) and the seed-root statement (`20260420`) to the arXiv \emph{submission metadata page} at upload time. Both are already in the LaTeX (conclusion §Data and code availability and model.tex respectively).
+- [ ] User-facing: model-repo cleanup (drop `Alpaca` dep, delete `_attic_v10/` subtrees, prune dead K-variant runners) — see "CHMM-Model repo" subsection above. Destructive operations on the sibling repo, deferred for the user to execute.
 
 ---
 

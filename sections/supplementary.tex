@@ -56,7 +56,7 @@ Under compactness of the parameter space ($\mu_k$, $\sigma_k$ or $\beta_k$ or $\
 \paragraph{Numerical full-rank check on $\hat{\mathbf T}$.}
 The Allman-Matias-Rhodes 2009 identifiability theorem requires $\hat{\mathbf T}$ of full rank. We compute the singular-value spectrum of $\hat{\mathbf T}$ at $K = 18$ across the four emission families on SPY IS (Table~\ref{tab:t_singular_values}). All four matrices are full-rank in the strict sense, with smallest singular value $\sigma_{\min}(\hat{\mathbf T}) \in [0.0007, 0.0170]$ and condition numbers in the range $63$--$1{,}620$. CHMM-GED is the most well-conditioned ($\sigma_{\min} = 0.017$, cond $= 63.5$); CHMM-t is the least ($\sigma_{\min} = 0.0007$, cond $= 1{,}620$), consistent with the per-state $\nu_k$ ECM lower-bracket pinning making one or two heavy-tail states near-degenerate. The deflated matrix $\hat{\mathbf T} - \mathbf 1\bar{\boldsymbol\pi}^\top$ has numerical rank exactly $K - 1 = 17$ across all four families, the rank statement underlying Section~\ref{sec:theory}.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Numerical full-rank check on $\hat{\mathbf T}$ at $K = 18$ across four CHMM emission families on SPY IS} (seed = $20260420$). $\sigma_{\min}$, $\sigma_{\max}$, and the condition number $\sigma_{\max}/\sigma_{\min}$ are reported on $\hat{\mathbf T}$ itself; $|\lambda_2|$ is the second-largest absolute eigenvalue (the dominant decay mode in the ACF identity, equation~\eqref{eq:acf_normalised}); ``rank(def)'' is the numerical rank of $\hat{\mathbf T} - \mathbf 1\bar{\boldsymbol\pi}^\top$ at tolerance $10^{-10}$, expected to equal $K - 1 = 17$.}
@@ -254,7 +254,7 @@ Aggregate (mean / s.d.\ across the four folds) of per-observation held-out log-l
 \label{sec:k_selection_hac}
 Rolling-origin folds inherit autocorrelation from the underlying series, so the independent-fold pooled SE used in the paragraph above understates the standard error of the mean held-out log-likelihood difference. Round-2 reviewers asked for a Diebold--Mariano-style HAC variance computed on the paired diff series across folds with Newey--West Bartlett kernel at truncation lag $h_{\text{NW}} = \lfloor n^{1/3}\rfloor$. Source / runner: \texttt{run\_k\_selection\_hac.jl}; output: \texttt{results/k\_selection\_hac/k\_selection\_hac.csv}.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{HAC-corrected $K$-selection inference on the paired diff series across rolling-origin folds.} Two-sided NW-HAC Diebold--Mariano on the per-fold val-log-lik differences; truncation lag $h_{\text{NW}} = \lfloor n^{1/3}\rfloor$. ``indep $|z|$'' is the pooled-independent-fold statistic of the paragraph above; ``HAC $|z|$'' is the HAC-corrected statistic.}
@@ -282,7 +282,7 @@ The bracket sensitivity is reported with its table in Section~\ref{sec:nu_diagno
 \paragraph{Walk-forward / rolling-origin OoS for CHMM-N.}
 We define six rolling-origin folds, each train $5$ years and test $1$ year, refit CHMM-N at $K \in \{3, 18\}$ from scratch on each fold's train slice, and report KS pass rate, simulated kurtosis, and $|G_t|$ ACF-MAE on the fold's test slice ($N_{\text{paths}} = 500$). Across the six folds (Table~\ref{tab:walkforward}), CHMM-N at $K = 18$ attains median (IQR) KS $67.7\%\,[8.2, 75.0]$ and $|G_t|$ ACF-MAE $0.0542\,[0.0508, 0.0571]$; CHMM-N at $K = 3$ attains $62.1\%\,[7.2, 78.4]$ and $0.0563\,[0.0552, 0.0592]$. Two folds carry sharply lower KS pass rates: W2 (COVID test slice, $7$--$8\%$) and W4 (rate-hike test slice, $0$--$1\%$). The four non-stress folds attain KS $61$--$83\%$, consistent with the headline OoS pass rate. The headline ranking (CHMM-N at $K = 18$ $\geq$ CHMM-N at $K^\star = 3$ on KS, both within $0.005$ of each other on $|G_t|$ ACF-MAE) is window-robust on the four non-stress folds; on stress folds (COVID, rate hike) all CHMM rows drop sharply, reflecting the stationarity-scope limit rather than a model-selection issue. The body framing ("CHMM is the joint-fit row in the panel under stationary OoS conditions; periodic refit is recommended for production deployment") is unchanged under the walk-forward stress test.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Walk-forward / rolling-origin OoS for CHMM-N}. Six folds, each train 5 years and test 1 year; $N_{\text{paths}} = 500$ per fold. KS pass rate at $\alpha = 0.05$. W2 covers the COVID drawdown; W4 covers the start of the 2022 rate-hike cycle. The bracketed pairs in the bottom row report $[Q_1, Q_3]$ across the six folds (the empirical first and third quartiles, not a scalar IQR width).}
@@ -309,7 +309,7 @@ IQR                    & $[7.2, 78.4]$ & $[8.2, 75.0]$ & $[2.51, 4.72]$ & $[2.50
 \paragraph{Four-family conditional VaR back-test.}
 Extending the regime-conditional VaR construction of \S\ref{sec:var_backtest} to all four emission families (CHMM-N, CHMM-t at $\lambda = 20$, CHMM-L, CHMM-GED) at $K \in \{3, 18\}$ and $\alpha \in \{0.01, 0.05\}$ yields sixteen $(K, \alpha, \text{family})$ rows on the OoS window (Table~\ref{tab:cond_var_all_families}). Every row passes Kupiec, Christoffersen-ind, and Christoffersen-cc cleanly: $p_{\text{cc}} \ge 0.089$ throughout, with all $\text{LR}_{\text{cc}}$ statistics below the $\chi^2_2(0.05) = 5.991$ critical value. The regime-switching value proposition is therefore intrinsic to the latent-state forecast and not specific to the Gaussian emission family.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Regime-conditional VaR back-test across four CHMM emission families} on SPY OoS ($T_{\text{OoS}} = 572$, seed $20260420$). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. Every $(K, \alpha, \text{family})$ row passes Kupiec, Christoffersen-ind, and Christoffersen-cc at $\alpha = 0.05$.}
@@ -346,7 +346,7 @@ The pass-rate is therefore $19/24$ aggregate at the $5\%$ level and $22/24$ if w
 The reading is that the conditional construction is window-conditional: under regime shifts of the W2 / W4 magnitude (a regime introduction the IS distribution does not span; Section~\ref{sec:discussion}, stationarity-scope paragraph), the conditional VaR inherits the same out-of-scope behaviour as the unconditional generators.
 On the four non-stress folds (W1, W3, W5, W6) plus W4 at $K = 3$ at the $5\%$ level the conditional construction is window-robust, supporting the body framing of \S\ref{sec:var_backtest} extending beyond the headline single-window result.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Walk-forward regime-conditional VaR back-test for CHMM-N} on six rolling-origin folds (train 5y / test 1y; seed $20260420$). At each test day $t$, conditional $\widehat{\text{VaR}}_t(\alpha)$ is the $\alpha$-quantile of the $K$-component Gaussian mixture predictive density under fold-IS-fixed parameters, evaluated on the full-timeline filter $\Pr(s_{t+1} \mid \mathcal F_t = \text{train} \cup \text{test}[1{:}t-1])$. Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. Bold $p_{\text{cc}}$ rows fail at the $5\%$ level.}
@@ -386,7 +386,7 @@ W6 & $18$ & $0.05$ & $\phantom{0}7$ & $2.79\%$ & $-2.98$ & $\phantom{0}3.06$ & $
 \paragraph{Per-ticker $\hat\lambda^\star$ sweep.}
 A per-ticker sweep $\lambda \in \{0, 5, 10, 20, 50, 100\}$ on each of the six body tickers under the constraint that IS KS at $\lambda$ exceeds the $\lambda = 0$ baseline by no more than $1.5$ percentage points (Table~\ref{tab:per_ticker_lambda}) shows that the body uniform $\lambda = 20$ is the right rate on the heavy-tailed defensives (NVDA, JNJ) but is over-shrunk on the moderate-tail tickers. The per-ticker optima are $\lambda^\star_{\text{SPY}} = 10$, $\lambda^\star_{\text{NVDA}} = 20$, $\lambda^\star_{\text{JNJ}} = 20$, $\lambda^\star_{\text{JPM}} = 10$, $\lambda^\star_{\text{AAPL}} = 10$, $\lambda^\star_{\text{QQQ}} = 0$. The honest operational reading is that $\lambda = 20$ is a reasonable uniform default for production deployment but per-ticker tuning is recommended whenever a ticker's residual kurtosis at $\lambda = 0$ is within $\sim 1$ unit of observed.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Per-ticker $\hat\lambda^\star$ for the penalised CHMM-t at $K = 18$} ($N_{\text{paths}} = 500$, seed $20260420$, KS-degradation tolerance $\le 1.5$pp from $\lambda = 0$). $\hat\lambda^\star$ is the value of $\lambda$ in $\{0, 5, 10, 20, 50, 100\}$ that minimises $|{\text{kurt}}_{\text{sim}} - {\text{kurt}}_{\text{obs}}|$ subject to the KS-degradation constraint.}
@@ -408,7 +408,7 @@ QQQ  & $3.40$  & $0$  & $3.35$  & $95.2\%$ \\
 \paragraph{Cross-asset summary.}
 The full per-construction Pipeline~B panel is in Section~\ref{sec:supp_cross_asset}; for reference, the headline ordering is summarised in Table~\ref{tab:cross_asset_supp_summary}.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Cross-asset dependence summary} (Pipeline~B; CHMM-N marginals at $K = 18$; $200$ paths; seed \texttt{20260422}). Median per-asset KS pass rate (\%) and off-diagonal MAE of the simulated correlation matrix vs.\ observed. Bold marks the column winner. The Student-t copula at $\nu^\star = 6$ is the strongest dependence layer on the two IS columns; on OoS the Gaussian copula attains marginally lower off-diagonal MAE ($0.202$ vs.\ $0.209$) while the truncated C-vine sits between the elliptical copulas and the SIM baseline. Full per-asset detail is in Section~\ref{sec:supp_cross_asset}; the C-vine edge summary is in Table~\ref{tab:cvine_edges}.}

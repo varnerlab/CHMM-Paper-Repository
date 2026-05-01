@@ -4,7 +4,7 @@
 Table~\ref{tab:ks_power} reports the two-sample KS test-power calibration used to anchor the OoS KS pass rates of Section~\ref{sec:model_comparison}.
 For each of $1{,}000$ Monte Carlo replications (seed = 20260420), a simulated series of length $T_{\text{OoS}} = 572$ is drawn from each of three reference generators and tested against the observed OoS series using the same $\alpha = 0.05$ threshold as the main-body pass-rate metric.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{OoS KS pass-rate calibration (1{,}000 replications, seed = 20260420).}
@@ -56,7 +56,7 @@ Two patterns emerge that the asymptotic pass-rate metric of the main panel does 
 \label{sec:ks_block_bootstrap_oos}
 The body block-bootstrap recalibration above is anchored on the IS series; we report here whether the same construction holds on the OoS window. We repeat the procedure with the stationary block bootstrap re-anchored on $R_{\text{OoS}}$ ($n_{\text{OoS}} = 572$, $B = 1{,}000$, $L \in \{5, 10, 20\}$, $N_{\text{paths}} = 500$). Block-bootstrap critical values: $0.0577$, $0.0629$, $0.0647$ at $L = 5, 10, 20$ respectively, against asymptotic $0.0804$. Table~\ref{tab:ks_block_bootstrap_oos} reports the OoS-anchored panel (source: \texttt{results/robustness/ks\_block\_bootstrap\_oos.csv}).
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{OoS-anchored block-bootstrap KS recalibration.} Same construction as Table~\ref{tab:ks_block_bootstrap} but with the stationary block bootstrap anchored on $R_{\text{OoS}}$ ($n = 572$). ``asymp pass'' is the headline OoS metric (two-sample KS p-value $\ge 0.05$); ``blkL\%'' is the OoS block-bootstrap pass rate at mean block length $L$. The CHMM-vs-GARCH cross-generator ordering is preserved under the block-aware recalibration on both windows; the CHMM family's OoS block-aware penalty ($\sim 25$pp drop from asymp to $L = 20$) is larger than the IS penalty ($\sim 5$pp), reflecting the smaller OoS window where temporal-clustering structure is harder to disentangle from finite-sample noise.}
@@ -83,7 +83,7 @@ The cross-generator ordering on the OoS window matches the IS ordering: i.i.d.\ 
 \paragraph{Multi-seed Monte Carlo on headline metrics.}
 The paper reports headline statistics under a single global seed. We re-run the CHMM-N / -t / -L / -GED pipeline at $K = 18$ across ten alternative global seeds (base $20260422$, increment $100$) with $N_{\text{paths}} = 250$ per seed and report mean $\pm$ std for the headline metrics in Table~\ref{tab:multiseed_headline}. Seed-to-seed variability is small: IS KS std is $1.2$--$1.8\%$; OoS KS std is $1.8$--$3.6\%$; simulated IS kurtosis std is $0.06$ for CHMM-N, $0.05$ for CHMM-L, $0.09$ for CHMM-GED, and $1.95$ for CHMM-t (reflecting the well-known instability of the per-state $\nu_k$ ECM at moderate $K$, already discussed in Section~\ref{sec:discussion}). Kupiec $\text{LR}_{\text{uc}}^{1\%}$ has std up to $1.25$ for CHMM-N because the breach count moves on a coarse $0$--$10$ grid at $T_{\text{OoS}} = 572$. The single-seed headline numbers in Table~\ref{tab:model_comparison} sit comfortably inside the multi-seed bands. CHMM-GED has the highest mean IS KS pass rate among the four families ($95.9\%$), consistent with its single-seed headline value.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Multi-seed Monte Carlo on headline metrics}. Ten global seeds; $N_{\text{paths}} = 250$ per seed (reduced from the headline panel's $1{,}000$ for tractability across $40$ fits, so the seed-to-seed std reported here is an upper bound on the std the headline panel would show at $N_{\text{paths}} = 1{,}000$). Both ACF-MAE columns parallel Table~\ref{tab:model_comparison}: $|G_t|$ for volatility clustering, $G_t$ for linear autocorrelation.}
@@ -107,7 +107,7 @@ CHMM-GED & $\mathbf{95.9 \pm 1.2}$ & $83.2 \pm 2.7$ & $5.15 \pm 0.09$ & $0.0513 
 
 Table~\ref{tab:block_bootstrap} reports the full seven-metric panel for the stationary block bootstrap at block length $b = 10$ trading days, the temporally-aware non-parametric baseline added to Table~\ref{tab:model_comparison}.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{Stationary block bootstrap (block length $b = 10$ trading days) on SPY (1{,}000 paths, seed = 20260420).}
@@ -251,7 +251,7 @@ Third, the QuantGAN deep-generative row (Appendix~\ref{sec:quantgan_supp}) is th
 
 Peer-review item~2 asks for the canonical state-space and jump baselines that the body Table~\ref{tab:model_comparison} does not exercise: a stochastic-volatility (SV-AR(1)) row in the Taylor 1986 / Harvey-Ruiz-Shephard 1994 lognormal log-AR(1) tradition; a Markov-switching multifractal (MSM, Calvet-Fisher 2004) row at $\bar k = 8$ multipliers; and a Merton 1976 Poisson-Gaussian jump-diffusion row. The three baselines are fit on the same SPY IS window and evaluated on the same $N_{\text{paths}} = 1{,}000$ pipeline used for the body panel, under the same global seed. Implementation lives in \texttt{src/SVMSMBaselines.jl} of the companion \texttt{CHMM-Model.jl} package; results in \texttt{results/sv\_msm\_jd/sv\_msm\_jd\_baselines.txt}.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Stochastic-volatility / multifractal / jump-diffusion baselines on SPY.} Same IS / OoS windows, $N_{\text{paths}} = 1{,}000$, seed = 20260420 as Table~\ref{tab:model_comparison}. Observed kurtosis: $7.68$ IS, $5.29$ OoS.}
@@ -279,7 +279,7 @@ The headline conclusion of Table~\ref{tab:model_comparison} survives the additio
 
 This appendix reports the Cont (2001) leverage-effect column: the lag-1 correlation $\mathrm{Corr}(G_t, |G_{t+1}|)$ between today's signed return and tomorrow's absolute return, which is negative on equity returns. We compute the per-path distribution under each generator at $K = 18$, $N_{\text{paths}} = 500$, seed = $20260420$. Source: \texttt{results/diagnostics/leverage\_effect/}; CSV at \texttt{results/robustness/leverage\_effect.csv}.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Leverage effect $\mathrm{Corr}(G_t, |G_{t+1}|)$, per-path distribution.} Observed values: SPY IS $-0.135$, OoS $-0.214$. Per-generator median plus $[Q_5, Q_{95}]$ across $N_{\text{paths}} = 500$. A generator captures the leverage effect when its $[Q_5, Q_{95}]$ envelope brackets the observed value. Bold marks generators whose $[Q_5, Q_{95}]$ envelope brackets the observed IS value; the OoS observed value of $-0.214$ is more negative than every generator's $Q_5$ in the panel, indicating the OoS regime carries leverage stronger than any generator (including asymmetric GARCH) reproduces under static IS-fitted parameters.}
@@ -310,7 +310,7 @@ Three patterns emerge. First, the CHMM family at $K = 18$ does produce a non-tri
 
 A natural concern with the body two-step copula estimator (Kendall's-$\tau$ inversion for $\hat\Sigma$, then profile MLE on $\nu$ with $\hat\Sigma$ held fixed) is that it may be biased toward the Gaussian limit when the marginal kurtosis differs across assets. We address this with a coordinate-ascent one-shot MLE that jointly maximises the Student-$t$ copula log-likelihood over $(\Sigma, \nu)$ on the same six-asset US-equity universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ; $T_{\text{IS}} = 2{,}516$, seed $20260420$). The procedure alternates: (i) bracketed golden-section maximisation of $\nu$ at the current $\Sigma$, (ii) method-of-moments refit of $\Sigma$ at the current $\nu$ on the $t$-quantile-transformed pseudo-uniform sample with PSD projection. Iteration terminates at $|\Delta \log L| < 10^{-3}$.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Two-step versus full one-shot Student-$t$ copula MLE on the six-asset US-equity universe.} The off-diagonal correlation differences are reported as the maximum absolute difference $\max_{ij} |\Delta \rho_{ij}|$ across the $\binom{6}{2} = 15$ pairs and the median absolute difference; both are sub-$0.025$, so the body $\nu^\star = 6$ choice on $\hat\Sigma$ obtained by Kendall's-$\tau$ inversion is robust to the estimator switch. Source: \texttt{results/copula\_profile\_ci/full\_tcopula\_mle.txt}.}

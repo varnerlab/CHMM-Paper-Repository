@@ -66,7 +66,7 @@ For pairwise comparison we report a Diebold-Mariano test on the per-$t$ loss dif
 
 The body Section~\ref{sec:var_backtest} reports the unconditional Kupiec $\text{LR}_{\text{uc}}$ statistic. This appendix reports the full Christoffersen \cite{christoffersen1998evaluating} panel: $\text{LR}_{\text{uc}}$ (unconditional coverage), $\text{LR}_{\text{ind}}$ (breach independence), and $\text{LR}_{\text{cc}} = \text{LR}_{\text{uc}} + \text{LR}_{\text{ind}}$ (joint conditional coverage), at $\alpha \in \{0.01, 0.05\}$ on the SPY IS and OoS windows. The breach series is constructed from the pooled-archive VaR threshold (the $\alpha$-quantile of $\mathrm{vec}(\text{sim archive})$ across paths and time), then $\text{br}_t = (R_t \le \widehat{\text{VaR}}_\alpha)$.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{\textbf{Christoffersen conditional-coverage VaR back-test} (SPY, seed = $20260420$, $K = 18$, $1{,}000$ simulated paths). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. ``br rate'' is the empirical breach rate; $\text{LR}_{\text{uc}}$ is the Kupiec statistic ($\sim\chi^2_1$ under correct unconditional coverage); $\text{LR}_{\text{ind}}$ is the Christoffersen independence statistic ($\sim\chi^2_1$ under independent breaches); $\text{LR}_{\text{cc}} = \text{LR}_{\text{uc}} + \text{LR}_{\text{ind}}$ is the joint conditional-coverage statistic ($\sim\chi^2_2$). PASS if statistic is below critical. Every unconditional generator (i.i.d.\ bootstrap, GARCH, and all four CHMM variants) rejects independence on OoS at $\alpha = 0.05$, consistent with breach clustering driven by volatility-clustering in $R_{\text{oos}}$ rather than a CHMM-specific mis-specification of conditional dynamics.}

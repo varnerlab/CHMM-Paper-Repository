@@ -314,7 +314,7 @@ Table~\ref{tab:nu_bracket} reports the seven-metric panel for CHMM-t fits whose 
 Lifting the bracket does not reduce the IS kurtosis overshoot: the simulated kurtosis moves within the $12.5$--$14.0$ band across bracket floors and only collapses to $5.05$ in the full Gaussian limit.
 The overshoot is therefore a feature of the Student-t emission family at $K = 18$ and not a lower-bracket artefact.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{CHMM-t $\nu_{\min}$ bracket sensitivity at $K = 18$ on SPY (seed = 20260420, 1{,}000 paths). AD = Anderson--Darling pass rate; $W_1$ = Wasserstein-1; $H$ = Hellinger distance (definitions in Appendix~\ref{sec:metric_details}).}
@@ -338,7 +338,7 @@ $\infty$ (Gauss) & 94.1 & 86.7 & 84.2 & 75.5 & 5.03  & 4.46 & 0.0510 & 0.110 & 0
 
 Table~\ref{tab:p_bracket} reports the analogous bracket sensitivity for CHMM-GED on $p_{\max} \in \{2.0, 2.5, 3.0, 3.5, 4.0\}$ (with $p_{\min} = 0.5$ fixed) and on $p_{\min} \in \{0.5, 0.7, 0.85\}$ (with $p_{\max} = 3.0$ fixed). The headline reads cleanly. The Gaussian-like state count is invariant at $13/18$ across every upper bracket; only the redistribution between intermediate and Laplace-like states moves slightly with $p_{\max}$, and the total heavy-shape count stays in $\{4, 5\}$. Tightening $p_{\max}$ from $4.0$ to the canonical $3.0$ costs about $4$ nats of incomplete-data log-likelihood. The $p_{\min}$ sweep is fully degenerate: every $p_{\min} \in [0.5, 0.85]$ produces an identical fit because the smallest observed $\hat p_k$ on SPY is $0.86$, so the lower bracket is non-binding.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \small
 \caption{CHMM-GED bracket sensitivity at $K = 18$ on SPY (seed = 20260420, 1{,}000 paths). $\hat p_{\min}$, $\hat p_{\text{med}}$, $\hat p_{\max}$ are the across-state minimum, median, and maximum of the fitted $\hat p_k$. nG / nI / nL / nS are the partition counts (Gaussian-like $\hat p_k \ge 1.85$, intermediate $1.30 \le \hat p_k < 1.85$, Laplace-like $0.85 \le \hat p_k < 1.30$, super-Laplace $\hat p_k < 0.85$). LL is the incomplete-data log-likelihood at convergence.}
