@@ -6,6 +6,138 @@ the matching `sections/*_vN.tex` files.
 
 ---
 
+## Round-3 Deferred-Items Closure Pass (2026-05-01)
+
+Follow-on revision pass closing two of the four deferred experiments
+identified in the 2026-04-30 peer-review punch list (`peer-review.md`),
+plus a structural layout fix for a pre-existing Table 3 truncation bug.
+Final state: 131 pages, build clean, no unresolved references.
+
+### Editorial / framing fixes (no new computation)
+- Abstract tightened from ~640 to ~430 words. Dropped K_eff aside,
+  walk-forward |z| machinery, bilinear-ACF identity wording, detailed
+  cross-ticker meta-discussion. Properly framed the alpha = 0.01 DQ
+  rejection on the *stationary* OoS slice (not just stress folds).
+  Introduced the shared-nu Student-t row as the structurally-clean
+  heavy-tail recipe. Stated headline scope ("daily US equities on
+  stationary OoS windows") with hard limits up front. HSMM line
+  acknowledges Pareto-sojourn KS dominance and Gamma-sojourn ACF-MAE
+  dominance honestly; CHMM positioning re-anchored on the structural
+  use cases.
+- Body Table 3 (model_comparison) reframed: K = 18 block re-labelled
+  "K_nominal = 18 (K_eff = 11 on SPY)" with a methods-notes paragraph
+  pointing readers to the K_eff rebuild (Appendix sec:k_eff_rebuild)
+  for IC penalty calculations.
+- Body Table 3 grew two rows: CHMM-t shared-nu at K* = 3 and at K = 18.
+  The K = 18 shared-nu row is the cleanest single-row IS / OoS
+  heavy-tail match in the panel without any penalty hyperparameter
+  (sim 6.25 / 5.00 vs observed 7.68 / 5.29).
+- Body Table cond_var grew a p_DQ column for the four CHMM-N rows;
+  alpha = 0.01, K = 18 rejection (p = 0.017) bolded.
+- Body §3.4 gained a new "Cross-decade validation" paragraph (CRSP
+  1994-2006 split) previously buried in Discussion §5 Limitations only.
+- §3.4 per-ticker lambda* recipe promoted as the body cross-ticker
+  default; uniform lambda = 20 framed as over-shrunk on 4/6 body tickers.
+- Discussion §5 deferred-follow-ups paragraph reorganised into
+  "(Closed) ... (Remaining) ..." form: E2 and E3 marked closed with
+  concrete summary of findings; E1 (faithful Wiese QuantGAN reference
+  run) and E4 (post-QuantGAN deep generators) remain explicitly
+  deferred with the reasons stated.
+
+### Phase B — new computational experiments
+
+**E2 (CLOSED): MS-GARCH regime-conditional VaR via state-filter
+pipeline.** Runner: `run_msgarch_conditional_var.jl` (model repo).
+Loads IS-fit Bayesian MSGARCH-K parameters from existing JLD2 caches
+at K in {2, 3, 4}; implements a Haas et al. (2004) path-independent
+state filter in Julia; constructs the predictive Gaussian mixture
+from per-state conditional GARCH(1,1) variances; runs Christoffersen-
+cc and Engle-Manganelli DQ. Result: MS-GARCH-4 passes both at
+alpha = 0.01 cleanly (cc p = 0.80, DQ p = 0.59); MS-GARCH-2/3
+borderline-rejected by cc and rejected by DQ at alpha = 0.01; all
+three pass cleanly at alpha = 0.05. **The conditional-coverage
+benefit is multi-state-generic, not CHMM-specific**; the body's
+regime-conditional VaR construction is reframed as a multi-state
+state-filter recipe that the CHMM scaffold instantiates cleanly.
+Output: new appendix subsection sec:msgarch_conditional_var with
+Table tab:msgarch_cond_var; new body paragraph in §3.6.
+
+**E3 (CLOSED): Online-EM (daily-refit) cond VaR on W2 / W4 stress
+folds.** Runner: `run_online_em_conditional_var.jl` (model repo).
+Daily-refit batch EM on a rolling 5y train window (the cadence-
+boundary case of the existing weekly/monthly sweep, and an upper
+bound on stochastic-recursion online-EM responsiveness). Result:
+daily refit makes W2 strictly worse than fold-IS-fixed: at alpha = 0.01,
+breach rate 4.74% (vs nominal 1%), p_cc < 1e-3, p_DQ < 1e-3; at
+alpha = 0.05, p_cc = 0.023, p_DQ = 0.001. The rolling train window
+picks up rising COVID volatility and tightens the VaR threshold,
+producing more breaches in the catastrophic days, not fewer. **The
+body's intrinsic-regime-break reading of W2 is strengthened, not
+qualified, at the cadence boundary.** Output: new appendix subsection
+sec:walkforward_online_em with Table tab:walkforward_online_em;
+body §3.6 paragraph extended to incorporate the cadence-limit result.
+
+### Phase C — Table 3 layout fix
+
+Pre-existing 167pt "Float too large for page" overflow on Table 3
+silently truncated the K = 18 sensitivity block from the rendered
+PDF. Body prose extensively referenced K = 18 rows (kurtosis 8.56 /
+7.07 etc.) that existed in the LaTeX source but never made it into
+the rendered output. The shared-nu row additions in Phase A pushed
+the overflow to 203pt, making the truncation worse.
+
+Fix:
+- Move the multi-paragraph caption metadata out of `\caption{}` into
+  a preceding "Methods notes for Table 3" prose paragraph. Closes the
+  R2 caption-length critique simultaneously.
+- Reduce table font `\small` to `\footnotesize` and tighten row
+  spacing via `\renewcommand{\arraystretch}{0.95}`.
+- Change float specifier `[t]` to `[!htbp]` for more flexible placement.
+- Remove the now-redundant post-table notes block.
+
+Result: Table 3 fits on a single page (page 12) with all 18 rows
+visible. Bold cell formatting preserved. The "Float too large for
+page" warning at Table 3 is gone (was 203pt, now 0pt). Side fix in
+the same commit: re-applied a `sloppypar` wrapper around the dense
+MS-GARCH cond-VaR intro paragraph in sensitivity_appendix.tex,
+closing a 79pt overflow.
+
+### Remaining deferred follow-ups
+- **E1 (REMAINING):** Faithful Wiese et al. (2020) QuantGAN reference
+  run. Requires published PyTorch code, Lambert-W preprocessing, and
+  GPU training compute. Noted explicitly in discussion §5 deferred-
+  follow-ups paragraph.
+- **E4 (REMAINING):** Post-QuantGAN deep-generative baselines
+  (diffusion, normalising flows). Requires PyTorch infrastructure
+  and multi-architecture training. Discussion treats the deep-
+  generative row as a placeholder pending these follow-ups.
+
+### Files touched (paper repo)
+- `paper.tex` — abstract tightened
+- `sections/results.tex` — Table 3 reframing, shared-nu rows,
+  cross-decade paragraph, per-ticker lambda* recipe, layout fix
+- `sections/var_backtest.tex` — DQ column added to Table cond_var,
+  MSGARCH cond-VaR paragraph, online-EM extension to W2 / W4 paragraph
+- `sections/sensitivity_appendix.tex` — new sec:msgarch_conditional_var,
+  new sec:walkforward_online_em, sloppypar wrapper
+- `sections/discussion.tex` — cross-decade Limitations chunk shortened
+  to body pointer, deferred-follow-ups paragraph reorganised
+- `results/robustness/msgarch_conditional_var.csv` (new)
+- `results/robustness/walkforward_online_em.csv` (new)
+
+### Files touched (model repo)
+- `run_msgarch_conditional_var.jl` (new)
+- `run_online_em_conditional_var.jl` (new)
+- `results/diagnostics/msgarch_conditional_var.txt` (new)
+- `results/walkforward_online_em/` (new directory)
+
+### Commits
+- Paper repo: `f426da1` peer-review remediation pass; `4d21f80` Table 3
+  layout fix
+- Model repo: `506c4fe` MSGARCH cond-VaR + online-EM stress-fold runners
+
+---
+
 ## Round-2 Peer-Review Remediation Pass (2026-04-30)
 
 Revision pass against the round-2 simulated peer review in `peer-review.md`
