@@ -1061,7 +1061,9 @@ At $\alpha = 0.05$ both Christoffersen-cc and the higher-power DQ test pass clea
 \subsubsection{MS-GARCH Regime-Conditional VaR via the Same State-Filter Pipeline}
 \label{sec:msgarch_conditional_var}
 
+\begin{sloppypar}
 Peer-review item E3 / R3 RE2 asks whether the body's regime-conditional VaR result (Table~\ref{tab:cond_var}) is CHMM-specific or generic to multi-state regime-switching models. We re-run the Eq.~\eqref{eq:filter} state-filter pipeline on the IS-fitted reference MS-GARCH(1,1)-Gaussian models of \citet{ardia2019msgarch} at $K \in \{2, 3, 4\}$ (the same Bayesian posterior-mean point estimates as the MS-GARCH ¶ rows of Table~\ref{tab:model_comparison}), substituting MS-GARCH state probabilities $\Pr(s_t = k \mid \mathcal F_{t-1})$ for the CHMM state probabilities and per-state conditional GARCH(1,1) Gaussian variances $\sigma^2_{t,k}$ for the CHMM Gaussian emission variances. The filter is the standard Haas et al.\ (2004) path-independent recursion (per-state $\sigma^2_{t,k} = \alpha_{0,k} + \alpha_{1,k} R^2_{t-1} + \beta_k \sigma^2_{t-1,k}$, all states see the same realised $R_{t-1}$); the predictive density at $t$ is the $K$-component zero-mean Gaussian mixture $f(R_t \mid \mathcal F_{t-1}) = \sum_k \Pr(s_t = k \mid \mathcal F_{t-1}) \cdot \mathcal N(0, \sigma^2_{t,k})$. The breach series is then run through Kupiec, Christoffersen-ind / Christoffersen-cc, and Engle-Manganelli (2004) DQ at $q = 4$ lags. Source / runner: \texttt{run\_msgarch\_conditional\_var.jl}; output: \texttt{results/diagnostics/msgarch\_conditional\_var.txt} and \texttt{results/robustness/msgarch\_conditional\_var.csv}.
+\end{sloppypar}
 
 \begin{table}[h]
 \centering
