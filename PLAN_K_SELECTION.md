@@ -18,7 +18,35 @@ Target: clean arXiv post within a week, then submission to a mid-tier journal (e
 | 5. Compile + page count check | **DONE** | Clean compile, 131 → 124 pages, no undefined refs / errors |
 | 6. arXiv prep | TODO | Source bundle, comments field, categories |
 
-**Page count history:** 131 (initial) → 124 (after Phase 0–4). The 7-page reduction is body-prose savings; appendices unchanged.
+**Page count history:** 131 (initial) → 124 (Phase 0–4 body trim) → **112 (after Tier 1 appendix cuts)**.
+
+## Tier 1 cuts (committed)
+
+Cut from paper:
+- `baselines_appendix.tex` §"Per-Ticker OoS Price-Simulation Figures and Full Path-Level Metrics" (127 lines, 6 figures, 1 table)
+- `baselines_appendix.tex` §"QuantGAN Deeper-Architecture Reference Rebuild" + §"QuantGAN with Lambert-W Input Pre-Processing" (~50 lines, 2 tables)
+- `sensitivity_appendix.tex` §"Multi-Day Cumulative-Return Diebold-Mariano on CHMM vs. Stationary Block Bootstrap" + §"Multi-Day DM Replication" (~80 lines, 2 tables)
+- `sensitivity_appendix.tex` §"Daily-Refit Online-EM at the Cadence Boundary on W2 / W4" (~25 lines, 1 table)
+- `sensitivity_appendix.tex` §"MS-GARCH Regime-Conditional VaR via the Same State-Filter Pipeline" (~29 lines, 1 table)
+- `sensitivity_appendix.tex` §"$K_{\text{eff}}$-Corrected Information-Criterion Re-Rank" + §"$K_{\text{nominal}} = 11$ rebuild against $K = 18$ nominal" (~50 lines, 2 tables)
+
+Body prose adjustments:
+- `results.tex` line 12: dropped `\ref{sec:k_eff_corrected_ic}` from the appendix-pointer list
+- `results.tex` Bootstrap-as-benchmark paragraph: dropped multi-day CRPS DM mention
+- `var_backtest.tex` walk-forward paragraph: collapsed daily-refit / online-EM / cadence-sweep specifics to one sentence
+- `var_backtest.tex` MS-GARCH state-filter paragraph: dropped specific appendix reference
+- `sensitivity_appendix.tex`: dropped trailing "daily-refit / online-EM extension below" sentence
+
+Cut from CHMM-Model:
+- 9 runner scripts: `run_equity_price_sim.jl`, `run_quantgan_tcn.jl`, `run_quantgan_tcn_lambertw.jl`, `run_crps_dm_multiday.jl`, `run_crps_dm_multiday_replication.jl`, `run_online_em_conditional_var.jl`, `run_msgarch_conditional_var.jl`, `run_k_eff_corrected_ic.jl`, `run_k_eff_rebuild.jl`
+- 8 result directories: `results/{quantgan_tcn, quantgan_tcn_lambertw, crps_dm_multiday, crps_dm_multiday_replication, equity_price_sim, k_eff_corrected_ic, k_eff_rebuild, walkforward_online_em}`
+- 1 result file: `results/diagnostics/msgarch_conditional_var.txt`
+- `run_full_rebuild.jl`: dropped `run_equity_price_sim.jl` reference
+
+Cut from `figs/`:
+- 11 orphan figures: Fig-{NVDA, JNJ, JPM, AAPL, QQQ}-PriceFan-N.pdf and Fig-{NVDA, JNJ, JPM, AAPL, QQQ, SPY}-TerminalDist-N.pdf
+
+**Final state:** clean compile, 112 pages, 0 undefined refs, 0 errors. 102 figures (was 113), ~70 tables (was 76).
 
 ---
 
