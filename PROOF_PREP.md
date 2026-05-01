@@ -2,13 +2,13 @@
 
 Last updated 2026-05-01 by automated review pass against arXiv:2603.10202 (the prior Hybrid-HMM paper by the same first author).
 
-This document is the single-page brief a non-specialist reviewer can read before opening the PDF. It records (a) what the paper claims, (b) how that compares to the precursor Hybrid-HMM paper, (c) the acronym key, (d) the test menu and what each number means, (e) the model's position in the existing literature, and (f) the pre-arXiv cleanup checklist. Section refs use the section-file basenames in `sections/`.
+This document is the single-page brief a non-specialist reviewer can read before opening the PDF. It records (a) what the paper claims, (b) how that compares to the precursor Hybrid-HMM paper, (c) the acronym key, (d) the test menu and what each number means, (e) the model's position in the existing literature, (f) the pre-arXiv cleanup checklist, and (g) the two analysis pipelines and the data timeline that feeds them. Section refs use the section-file basenames in `sections/`.
 
 ---
 
 ## 1. arXiv-Readiness Verdict
 
-**Status: ready** with a short pre-submission punch list (see Section 8).
+**Status: ready** with a short pre-submission punch list (see Section 7).
 
 Build evidence: 112-page PDF, clean compile, zero undefined references or labels, zero `[CITE]/[TBD]/TODO` placeholders, 102 figure PDFs all 1-to-1 mapped to `\includegraphics`, 64 tables, 1 theorem with full proof, 4 propositions, 2 assumptions. Reproducibility scaffold complete: deterministic seed root 20260420 with documented sub-seed rule, Julia ≥ 1.12 with pinned `Manifest.toml`, R 4.6 + `renv` lockfile for the MSGARCH reference, public companion repos linked in the conclusion.
 
@@ -160,6 +160,71 @@ Findings from the cleanup audit, ordered by impact.
 
 ---
 
-## 8. CHMM-GED variant (memory note)
+## 8. Analysis Pipelines and Data Timeline
+
+The paper does provide reproducible end-to-end pipelines. Earlier drafts of this brief understated this; correction below. The empirical study is organised along **two named pipelines**, both defined in `model.tex` line 9 and diagrammed in `algorithms_appendix.tex:366` (`\label{sec:supp_pipeline_schematic}`, Fig.~`fig:pipeline_schematic`). The single-asset CHMM scaffold is shared across both. The driver `CHMM-Model/run_full_rebuild.jl` chains them end-to-end (stages 3 and 4 of the rebuild dispatcher).
+
+### 8.1 Pipeline A, single-asset (no cross-asset coupling)
+
+**What it does.** Fit one CHMM per ticker, independently; simulate; score per-asset metrics (KS, AD, kurtosis, |G_t| ACF-MAE, raw-return ACF-MAE, Wasserstein-1, Hellinger, quantile-envelope coverage, CRPS); also drives the regime-conditional VaR back-test in `var_backtest.tex` (state filter on a single ticker).
+
+**Owning runners (CHMM-Model).**
+- `run_baselines_and_cross_asset.jl`: headline single-window panel, six-generator comparison on SPY (Table~2, `tab:model_comparison`); per-ticker emission-family panel (Table~T2).
+- `run_multi_emission_analysis.jl`: K-sweep across $\{3, 6, 9, 12, 15, 18, 21\}$ for all four emission families on SPY; produces Table~T1 and per-(K, family) figures.
+- `run_all_analysis.jl`: SPY-only K-sweep, stylized-fact figures, per-K internals.
+- `run_sector_panel.jl`, `run_sector_panel_n6.jl`, `run_sector_panel_quarterly_refit.jl`: 30- and 60-ticker sector panels with quarterly-refit recipe.
+- `run_walkforward_w7.jl`, `run_walkforward_cond_var_refit_cadence.jl`: rolling-origin walk-forward folds W1..W7, refit-cadence sweep.
+- `run_christoffersen_power.jl`, `run_conditional_var_all_families.jl`, `run_engle_manganelli_dq.jl`, `run_exact_binomial_kupiec.jl`, `run_quarterly_refit_conditional_var.jl`: VaR back-test (Christoffersen LR_uc / LR_ind / LR_cc, DQ, exact-binomial Kupiec, quarterly-refit variant).
+- `run_cross_decade_validation.jl`: 1994-2004 IS / 2004-2006 OoS CRSP cross-decade rebuild at $K^\star = 3$ and $K = 18$.
+- `run_non_equity_validation.jl`: GLD / SLV stress test on the same body windows.
+- `run_chmm_t_shared_nu.jl`: shared-$\nu$ Student-$t$ ablation row.
+- Baseline rows used in the same Table~2 panel: `run_msgarch_baselines.jl` (in-house Nelder-Mead MS-GARCH K=2/3), `run_msgarch_reference.jl` (R + RCall, CRAN MSGARCH 2.51, K=2/3/4), `run_smchmm_baseline.jl` (SM-CHMM Viterbi-AR(1) plug-in foil), `run_hsmm_ml_gamma.jl` / `run_hsmm_ml_intermediate_K.jl` (HSMM-N ML reference), `run_quantgan_baseline.jl` (in-house WGAN, deferred follow-up), `run_sv_msm_jd_baselines.jl`, `run_mssv_baseline.jl`, `run_leverage_effect.jl`.
+
+**Paper sections that depend on Pipeline~A.** `results.tex` §descriptive--§cross_asset_univariate, `var_backtest.tex`, `walkforward_body_table.tex`, plus the bulk of `sensitivity_appendix.tex`, `baselines_appendix.tex`, and `metrics_appendix.tex`.
+
+### 8.2 Pipeline B, cross-asset dependence
+
+**What it does.** Reuse the per-asset CHMM-N marginals from Pipeline~A, then inject cross-asset dependence through a rank-based copula. Sklar's-theorem rank reordering preserves each fitted CHMM marginal exactly while coupling the asset ranks to the copula sample (Iman-Conover 1982). Profile MLE selects the Student-$t$ copula degrees-of-freedom $\nu^\star = 6$ on the body universe.
+
+**Owning runners (CHMM-Model).**
+- `run_cross_asset_sim_copula.jl`: body Pipeline~B at $K = 18$, six-asset US-equity universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ), produces Table~T3 (`tab:cross_asset`) and Fig.~7.
+- `run_cross_asset_sim_copula_k6.jl`: $K^\star = 6$ marginals sensitivity rebuild.
+- `run_copula_profile_ci_halfunit.jl`: half-unit-grid refinement and parametric-bootstrap CI on $\nu^\star$.
+- `run_non_us_asset.jl`: GLD / SLV non-equity stress test under the cross-asset construction.
+
+**Comparators inside Pipeline~B.** Single Index Model with SPY as the market factor; Gaussian copula on CHMM marginals; truncated level-1 C-vine with edge-wise AIC family selection; full one-shot $(\Sigma, \nu)$ MLE used as a robustness check on the Kendall's-$\tau$ two-step estimator.
+
+**Paper sections that depend on Pipeline~B.** `results.tex` §cross_asset, `model.tex` §cross_asset_methods, `cross_asset_appendix.tex`.
+
+### 8.3 Data timeline (single source of truth)
+
+The IS / OoS split is built by `CHMM-Model/build_new_train_oos.jl`. The 10-year boundary is anchored on AAPL's first continuous trading day (2014-01-03) plus 10 years; the OoS slice is everything after that boundary through 2026-04-20. Tickers are kept only if they have a full AAPL-matched coverage. The split is reproducible from the two raw OHLC bundles in `data/`.
+
+| Slice | Window | Trading days | Universe | Source | Used by |
+|---|---|---|---|---|---|
+| **Body IS (training)** | 2014-01-03 to 2024-01-02 | 2,516 | SPY headline; 6-ticker copula universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ); 30-ticker sector panel ($10$ GICS $\times 3$); 60-ticker $n = 6$ expansion | Polygon.io / Alpaca / IEX, packed into `data/CHMM-SP500-Train-10yr.jld2` | Both pipelines, all body tables |
+| **Body OoS (held-out)** | 2024-01-04 to 2026-04-20 | 573 (572 in some panels) | Same universes as IS | `data/CHMM-SP500-OoS-Remainder.jld2` | Both pipelines, all OoS columns |
+| **K-selection pre-2020 slice** | est.\ 2014-01 to 2018-06; val.\ 2018-07 to 2019-12 | sub-slice of body IS | SPY | Carved from body IS by `run_k_selection_kfold_pre2020.jl` | Pipeline A, K-selection (pre-2020 to avoid COVID leakage) |
+| **Walk-forward folds W1..W7** | rolling 5y train + 1y test, body window | 7 folds | SPY | Carved from body IS+OoS by `run_walkforward_w7.jl` and friends | Pipeline A; W2 = COVID, W4 = 2022 rate-hike, W7 = 2017--2018 + 2019 trade-war |
+| **Quarterly refit window** | every 63 trading days, rolling | varies | SPY (univariate) and 6-asset (Pipeline B) | `run_quarterly_refit_conditional_var.jl`, `run_sector_panel_quarterly_refit.jl` | Both pipelines, deployment recipe |
+| **Cross-decade IS / OoS (CRSP)** | IS 1994-01-03 to 2004-01-02 (~2520); OoS 2004-01-05 to 2006-04-28 (~585) | ~3,100 | SPY plus 28 of the 30 sector-panel tickers (NEE and APD missing from CRSP query) | WRDS day-pass, `data/external/crsp_1994_2006.csv` | Pipeline A, cross-decade independence test (`run_cross_decade_validation.jl`) |
+| **Non-equity stress** | same as body windows | 2,516 IS / 573 OoS | GLD, SLV | Same Polygon/Alpaca bundles | Both pipelines, scope-boundary test |
+| **Independent-decade fetch (probe)** | not yet in paper | -- | -- | `data/independent_decade/fetch_log.txt` (probe artefact, slated for cleanup) | None; flagged for removal |
+
+**Returns convention.** Annualised excess log returns $G_t = (1/\Delta t) \ln(P_t / P_{t-1}) - r_f$, with $\Delta t = 1/252$ and $r_f = 0$. Prices are session VWAP (`model.tex:9`).
+
+### 8.4 End-to-end reproducer
+
+```bash
+julia --project=. -e 'using Pkg; Pkg.instantiate()'
+julia --project=. build_new_train_oos.jl    # rebuilds the IS / OoS JLD2 split
+julia --project=. run_full_rebuild.jl       # chains both pipelines + figures
+```
+
+`run_full_rebuild.jl` runs `run_all_analysis.jl` → `run_multi_emission_analysis.jl` → `run_baselines_and_cross_asset.jl` (Pipeline A core) → `run_cross_asset_sim_copula.jl` (Pipeline B core) → diagnostics, MS-GARCH baselines, SM-CHMM baseline, figures. QuantGAN is excluded by default (slowest stage, deterministic at the global seed) and is run standalone when the row needs refreshing. The MS-GARCH reference row additionally requires `R >= 4.2` and a one-time `Rscript r_msgarch/setup.R`; everything else runs with Julia alone.
+
+---
+
+## 9. CHMM-GED variant (memory note)
 
 A fourth emission family, per-state GED with state-specific shape parameter $p_k$, is implemented and validated in the model repo (multiseed and cross-ticker), but is not yet in the paper. Decision pending whether to fold it into the published manuscript or hold for a follow-up. If folded in, the natural insertion point is the multi-emission K-sweep tables in `sensitivity_appendix.tex` and a new row in the headline `tab:model_comparison`.
