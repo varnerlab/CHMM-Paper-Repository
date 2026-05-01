@@ -111,11 +111,20 @@ design IS the binding constraint on the overshoot. New appendix
 priority consumers. The body retains per-state ν_k for direct
 comparability with Peel-McLachlan / Liu-Rubin tradition.
 
-**P10 (R3#req-4) — 60-ticker sector panel expansion.** *Deferred as
-documented follow-up.* Doubling the cross-ticker panel doubles the data
-ingest and per-ticker simulation budget; flagged in
-`sections/results.tex` as the natural follow-up for a sector-effect
-test.
+**P10 (R3#req-4) — 60-ticker sector panel expansion.** *Closed.* Runner:
+`run_sector_panel_n6.jl` + `run_sector_panel_n6_postprocess.jl`. 30
+additional tickers (3 large-cap per sector, complementing the body 30)
+fit at K=18, λ=20 under identical settings to the body panel. **ANOVA
+at adequate power**: F(9, 50) = 0.366, p = 0.946, η² = 0.062 — the
+effect-size estimate halves from the body n=3 underpowered η² = 0.16,
+and the no-sector-effect null is not rejected. The 60-ticker aggregate
+distribution is statistically indistinguishable from the body 30-ticker
+version: median OoS KS 73.45% vs 73.4%, failure rate 22/60 = 36.7%
+identical to 11/30 = 36.7%. The body's earlier qualitative claim that
+"failures are ticker-specific, not sector-driven" is now supported by
+an adequately-powered test. New appendix `sec:sector_panel_n6` +
+`tab:sector_panel_n6`; body callout in `sections/results.tex`
+cross-ticker paragraph.
 
 ### Priority-3 closures
 
@@ -180,17 +189,16 @@ log clean).
 
 ### Aggregate
 
-27 of 28 actionable items closed substantively in this round (P10 sector
-expansion deferred as documented follow-up). Three of the closures (P2
-multi-day DM replication, P3 HAC K-selection, P7 refit-cadence sweep)
-shift framing toward more conservative readings of the data; one closure
-(P9 shared-ν ablation) introduces a structurally cleaner alternative to
-the body's per-state ν_k construction that the body now references
-explicitly.
+**All 28 actionable items closed substantively in this round.** Three of
+the closures (P2 multi-day DM replication, P3 HAC K-selection, P7
+refit-cadence sweep) shift framing toward more conservative readings of
+the data; two closures (P9 shared-ν ablation, P10 60-ticker sector
+ANOVA) introduce stronger evidence supporting the body's claims (the
+shared-ν alternative as a structurally cleaner option, and the
+adequately-powered ANOVA confirming "failures are ticker-specific, not
+sector-driven").
 
-The paper is now publication-ready for round-2 resubmission. Final state
-after the P7 follow-up: 127 pages, build clean, no unresolved
-references.
+The paper is now publication-ready for round-2 resubmission.
 
 ---
 

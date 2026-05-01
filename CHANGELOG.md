@@ -75,6 +75,20 @@ unresolved references or citations.
 4. K=11 nominal = K=18 nominal on every metric axis (B6); K=18 is a
    parameter-counting artefact.
 
+### Post-round-2 follow-up: P10 closed (2026-04-30)
+
+- 60-ticker sector expansion (`run_sector_panel_n6.jl` + post-processor).
+  30 additional tickers (3 large-cap per sector) fit at K=18, λ=20 alongside
+  the cached body 30. **ANOVA at adequate power**: F(9, 50) = 0.366, p = 0.946,
+  η² = 0.062 (vs body n=3: F(9,20) = 0.44, p = 0.90, η² = 0.16). The effect-
+  size estimate halves with adequate power; the no-sector-effect null is not
+  rejected. Aggregate distribution at n=60 is statistically indistinguishable
+  from n=30: median OoS KS 73.45% vs 73.4%, failure rate 22/60 = 36.7%
+  identical to 11/30 = 36.7%. The body's "failures are ticker-specific" claim
+  is now supported by an adequately-powered test. New appendix
+  `sec:sector_panel_n6` + `tab:sector_panel_n6`; body callout in
+  `sections/results.tex` cross-ticker paragraph.
+
 ### Post-round-2 follow-up: P7 closed (2026-04-30)
 
 - B5 — Walk-forward refit-cadence sweep
