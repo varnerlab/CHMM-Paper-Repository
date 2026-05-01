@@ -5,6 +5,162 @@ Symmetric Stylized-Fact Reproduction* (Alswaidan, Jin, Varner)
 
 ---
 
+## Round 3 — Deferred-Items Closure Pass (2026-05-01)
+
+Follow-on revision pass closing two of the four deferred experiments
+identified in the round-2 peer-review punch list (`peer-review.md`,
+2026-04-30), plus a structural layout fix for a pre-existing Table 3
+truncation bug. Detailed audit trail in
+[CHANGELOG.md](CHANGELOG.md#round-3-deferred-items-closure-pass-2026-05-01).
+Final state: **131 pages**, build clean, no unresolved references.
+
+### Deferred items: closures and remaining
+
+The round-2 deferred-items list identified four follow-ups (E1-E4).
+This round closes E2 and E3; E1 and E4 are explicitly deferred to
+companion work pending GPU compute infrastructure.
+
+**E2 (CLOSED): MS-GARCH regime-conditional VaR via state-filter
+pipeline.** Reviewer 3 (very-hard) asked whether the conditional-
+coverage value proposition of Table~\ref{tab:cond_var} is CHMM-
+specific or generic to multi-state regime-switching models. We
+re-run the body Eq.~\eqref{eq:filter} state-filter pipeline on the
+IS-fitted Bayesian MSGARCH-K reference models at $K \in \{2, 3, 4\}$,
+substituting MS-GARCH state probabilities for CHMM state probabilities
+and per-state conditional GARCH(1,1) variances for CHMM Gaussian
+emissions. **MS-GARCH-4 passes Christoffersen-cc and DQ at
+$\alpha = 0.01$ cleanly** ($p_{cc} = 0.80$, $p_{DQ} = 0.59$);
+MS-GARCH-2 / MS-GARCH-3 borderline-rejected by cc and rejected by
+DQ at $\alpha = 0.01$; all three pass cleanly at $\alpha = 0.05$.
+**The conditional-coverage benefit is therefore multi-state-generic,
+not CHMM-specific**: any sufficiently-resolved multi-state model with
+a state-filter pipeline produces a comparable diagnostic. The body's
+regime-conditional VaR construction is now framed as a multi-state
+state-filter recipe that the CHMM scaffold instantiates cleanly,
+rather than as a CHMM-exclusive contribution. The CHMM-vs-MS-GARCH
+choice is dominated by the marginal-distribution column of
+Table~\ref{tab:model_comparison} (CHMM-N $89.7\%$ IS KS vs MS-GARCH
+$0$-$36\%$ depending on estimator), not by the conditional-coverage
+column. Output: new appendix subsection
+\ref{sec:msgarch_conditional_var}, Table~\ref{tab:msgarch_cond_var};
+new body paragraph in §\ref{sec:var_backtest}; runner
+`run_msgarch_conditional_var.jl` (model repo, commit `506c4fe`).
+
+**E3 (CLOSED): Online-EM (daily-refit) cond VaR on W2 / W4 stress
+folds.** Reviewer 2 (hard) and Reviewer 3 (very-hard) asked whether
+a Cappé (2011, JCGS) stochastic-recursion online-EM closes the
+W2 (COVID 2020) and W4 (2022 rate-hike onset) Christoffersen-cc
+rejections that the body's fold-IS-fixed and weekly/monthly refit
+sweeps left open. We answer at the cadence boundary by running
+daily-refit batch EM on a rolling 5y train window — the practical
+limit of the cadence sweep ($63\text{d} \to 21\text{d} \to 5\text{d}
+\to 1\text{d}$) and an upper bound on stochastic-recursion online-EM
+responsiveness. **Daily refit makes W2 strictly worse** than
+fold-IS-fixed: at $\alpha = 0.01$, breach rate $4.74\%$ vs nominal
+$1\%$, $p_{cc} < 10^{-3}$, $p_{DQ} < 10^{-3}$; at $\alpha = 0.05$,
+$p_{cc} = 0.023$, $p_{DQ} = 0.001$. The rolling train window picks
+up rising COVID volatility through early March 2020 and tightens the
+VaR threshold, producing more breaches in the catastrophic days, not
+fewer. **The body's "intrinsic regime-break" reading of W2 is
+therefore strengthened, not qualified, at the cadence boundary**:
+no cadence in the explored ladder closes W2, and the daily-refit
+limit is the worst entry. Output: new appendix subsection
+\ref{sec:walkforward_online_em},
+Table~\ref{tab:walkforward_online_em}; body §\ref{sec:var_backtest}
+paragraph extended to incorporate the cadence-limit result; runner
+`run_online_em_conditional_var.jl` (model repo, commit `506c4fe`).
+
+**E1 (REMAINING): Faithful reference-implementation Wiese et al.
+(2020) QuantGAN re-run.** The body QuantGAN row remains an in-house
+WGAN re-implementation that fails at $0\%$ IS / OoS KS in both the
+3-conv and 7-block TCN variants (with and without Lambert-W input
+preprocessing). A faithful re-run requires the published PyTorch code,
+the Lambert-W preprocessing pipeline, and hours of GAN training
+compute on a GPU; not feasible in an interactive revision session.
+The discussion §5 deferred-follow-ups paragraph states this
+explicitly and identifies the in-house TCN + Lambert-W rebuild
+already in the panel as the closest available proxy.
+
+**E4 (REMAINING): Post-QuantGAN deep-generative baselines.** Time-
+series diffusion models on the Rasul et al.\ (2021) line, normalising-
+flow generators, and recent regime-switching deep models are not run
+in this revision. The deep-generative axis in the body panel is
+therefore represented by one architecture from one 2020 paper; the
+discussion treats this as a placeholder pending these follow-ups.
+
+### Editorial / framing fixes (round-2 peer-review punch list)
+
+The round-2 peer review (R1 Minor / R2 Major / R3 Major) requested
+several editorial fixes that this revision pass also closed:
+
+- **Abstract tightening (all three reviewers).** Cut from ~640 to
+  ~430 words. Dropped K_eff aside, walk-forward $|z|$ machinery,
+  bilinear-ACF identity wording, detailed cross-ticker meta-discussion.
+  Properly framed the $\alpha = 0.01$ DQ rejection on the *stationary*
+  OoS slice (not just stress folds). Stated headline scope ("daily
+  US equities on stationary OoS windows") with hard limits up front.
+  HSMM line acknowledges Pareto-sojourn KS dominance and Gamma-sojourn
+  ACF-MAE dominance honestly.
+- **K = 18 vs K_eff = 11 framing (R2, R3).** Body Table~\ref{tab:model_comparison}
+  K = 18 block re-labelled "$K_{\text{nominal}} = 18$
+  ($K_{\text{eff}} = 11$ on SPY)" with a methods-notes paragraph
+  pointing readers to the K_eff rebuild
+  (Appendix~\ref{sec:k_eff_rebuild}) for IC penalty calculations.
+- **Per-state $\nu_k$ vs shared-$\nu$ (R2, R3).** Body Table~\ref{tab:model_comparison}
+  grew two rows: CHMM-t shared-$\nu$ at $K^\star = 3$ and $K = 18$.
+  The K = 18 shared-$\nu$ row is the cleanest single-row IS / OoS
+  heavy-tail match in the panel without any penalty hyperparameter
+  ($6.25 / 5.00$ vs observed $7.68 / 5.29$), and is now framed as
+  the structurally-cleaner heavy-tail recipe.
+- **DQ result in body Table cond_var (R2, R3).** Body
+  Table~\ref{tab:cond_var} grew a $p_{\text{DQ}}$ column; the
+  $\alpha = 0.01$ K = 18 rejection ($p = 0.017$) is bolded.
+- **Cross-decade validation in body §3 (R1).** New "Cross-decade
+  validation" paragraph at end of §\ref{sec:cross_asset_univariate}
+  summarising the CRSP 1994-2006 split, previously buried in
+  Discussion §5 Limitations only.
+- **Per-ticker $\hat\lambda^\star$ as body recipe (R1, R2).** §\ref{sec:cross_asset_univariate}
+  per-ticker $\hat\lambda^\star$ tuning paragraph rewritten as the
+  body cross-ticker default; uniform $\lambda = 20$ framed as
+  over-shrunk on $4/6$ body tickers. The shared-$\nu$ row is the
+  $\lambda$-free alternative.
+- **HSMM honest framing (R1, R3).** Body abstract and §\ref{sec:model_comparison}
+  narrative now state explicitly that ML HSMM dominates CHMM on the
+  single-window distributional axis at every operating point tried,
+  with the CHMM positioning re-anchored on the structural use cases
+  (regime-conditional VaR, copula composition, parametric privacy).
+
+### Phase C — Table 3 layout fix
+
+Independent of the peer-review punch list, this revision identified
+and fixed a **pre-existing latent bug**: Table~\ref{tab:model_comparison}
+had a 167pt `Float too large for page` overflow that silently
+truncated the K = 18 sensitivity block from the rendered PDF. The body
+prose extensively referenced K = 18 rows (kurtosis $8.56 / 7.07$, etc.)
+that existed in the LaTeX source but never made it into the rendered
+output. The shared-$\nu$ row additions above pushed the overflow to
+203pt, making the truncation worse. The fix shortens the verbose
+caption (which itself was using ~30 lines of float space) by moving
+metadata to a preceding "Methods notes for Table~\ref{tab:model_comparison}"
+prose paragraph, reduces the table font from `\small` to
+`\footnotesize`, and tightens row spacing. Result: Table 3 fits on a
+single page (page 12) with all 18 rows visible. Bold cell formatting
+preserved. The R2 caption-length critique is closed in the same fix.
+
+### Aggregate
+
+Round-2 peer review punch list: **all editorial items closed, two of
+four deferred experiments closed (E2, E3), two remain (E1, E4) with
+explicit reasons stated in discussion §5**. Substantive new findings:
+the conditional-coverage benefit is multi-state-generic (E2), and the
+W2 stress-fold rejection is intrinsic regime-break at the cadence
+boundary (E3). A pre-existing Table 3 layout bug has been fixed in
+the same revision.
+
+— Alswaidan, Jin, Varner (2026-05-01)
+
+---
+
 ## Round 2 (2026-04-30)
 
 The round-2 simulated peer review (`peer-review.md`, regenerated 2026-04-30)
