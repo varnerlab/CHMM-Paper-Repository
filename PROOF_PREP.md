@@ -154,11 +154,11 @@ This is the paper's principal theoretical contribution and the single most-likel
 
 ### 6.1 The textbook identity
 For a stationary CHMM, the population-level absolute-return autocorrelation at lag $\tau$ admits the closed-form **bilinear identity**
-$$\E[|G_t|\,|G_{t+\tau}|] = \mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\, \mathbf T^\tau\, \mathbf m, \qquad m_k = \E[|G_t| \mid s_t = k]$$
+$$\mathbb{E}[|G_t|\,|G_{t+\tau}|] = \mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\, \mathbf T^\tau\, \mathbf m, \qquad m_k = \mathbb{E}[|G_t| \mid s_t = k]$$
 ([sections/theory.tex:4](sections/theory.tex#L4)). This is folklore in the regime-switching literature (Hamilton 1994 §22.2; Krolzig 1997 Ch.~3; Timmermann 2000). **The paper does not claim this identity as a contribution.**
 
 ### 6.2 The eigendecomposition
-Under irreducibility and aperiodicity of $\mathbf T$, $\mathbf T^\tau = \mathbf 1 \bar{\boldsymbol\pi}^\top + \sum_{k=2}^K \lambda_k^\tau \mathbf v_k \mathbf w_k^\top$, where $\lambda_1 = 1$ is the dominant eigenvalue (with right eigenvector $\mathbf 1$ and left eigenvector $\bar{\boldsymbol\pi}$) and $\lambda_2, \dots, \lambda_K$ are the **non-unit eigenvalues** with $|\lambda_k| < 1$. Subtracting the marginal product $\E[|G_t|]^2$ from the bilinear identity gives the **normalised ACF** as a sum of geometric decays:
+Under irreducibility and aperiodicity of $\mathbf T$, $\mathbf T^\tau = \mathbf 1 \bar{\boldsymbol\pi}^\top + \sum_{k=2}^K \lambda_k^\tau \mathbf v_k \mathbf w_k^\top$, where $\lambda_1 = 1$ is the dominant eigenvalue (with right eigenvector $\mathbf 1$ and left eigenvector $\bar{\boldsymbol\pi}$) and $\lambda_2, \dots, \lambda_K$ are the **non-unit eigenvalues** with $|\lambda_k| < 1$. Subtracting the marginal product $\mathbb{E}[|G_t|]^2$ from the bilinear identity gives the **normalised ACF** as a sum of geometric decays:
 $$\rho_{|G|}(\tau) = \sum_{k=2}^K w_k\, \lambda_k^\tau$$
 where $w_k$ is a fixed scalar weight that depends on the emission means and the eigenvectors. This is **at most $K - 1$ decay modes**: complex-conjugate $\lambda_k$ pairs combine into damped oscillatory modes; non-diagonalisable $\mathbf T$ adds polynomial-times-geometric prefactors via Jordan blocks.
 
@@ -235,7 +235,7 @@ This is the paper's headline risk-management contribution and the construction t
 
 ### 8.1 What VaR and ES are
 - **Value-at-Risk** at level $\alpha$ on day $t$: the $\alpha$-quantile of the predictive return distribution, $\widehat{\text{VaR}}_t(\alpha) = F_t^{-1}(\alpha)$. Interpretation: the threshold such that a loss exceeding it on day $t$ should occur with probability $\alpha$.
-- **Expected Shortfall** at level $\alpha$: $\E[G_t \mid G_t \le \widehat{\text{VaR}}_t(\alpha)]$. The expected loss conditional on a breach. Strictly more informative than VaR for tail risk because it integrates the tail rather than just clipping at a quantile.
+- **Expected Shortfall** at level $\alpha$: $\mathbb{E}[G_t \mid G_t \le \widehat{\text{VaR}}_t(\alpha)]$. The expected loss conditional on a breach. Strictly more informative than VaR for tail risk because it integrates the tail rather than just clipping at a quantile.
 
 ### 8.2 Three layers of the VaR diagnostic
 The paper layers the VaR diagnostic into three stacked tests, each strictly more demanding than the last ([sections/var_backtest.tex:5-6](sections/var_backtest.tex#L5-L6)):
