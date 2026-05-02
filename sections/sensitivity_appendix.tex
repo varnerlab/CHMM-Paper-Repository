@@ -1,7 +1,7 @@
 \subsubsection{Full State-Resolution Sensitivity Table (companion artefact)}
 \label{sec:sensitivity_table}
 
-The full $K$-sweep table for SPY CHMM-N referenced in Section~\ref{sec:k_selection_results} (KS, AD, kurtosis, $W_1$, Hellinger, OoS coverage at $K \in \{3, 6, 9, 12, 15, 18, 21\}$, $1{,}000$ paths, seed $20260420$) is at \texttt{CHMM-Model/results/SPY/Table-T1-State-Resolution-Sensitivity.txt}. The qualitative pattern is that distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band and ACF-MAE is essentially flat across the entire sweep, consistent with the spectral mechanism of Section~\ref{sec:theory}.
+The full $K$-sweep table for SPY CHMM-N referenced in Section~\ref{sec:k_selection_results} (KS, AD, kurtosis, $W_1$, Hellinger, OoS coverage at $K \in \{3, 6, 9, 12, 15, 18, 21\}$, $1{,}000$ paths, seed $20260420$) is provided as a companion artefact in the code repository. The qualitative pattern is that distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band and ACF-MAE is essentially flat across the entire sweep, consistent with the spectral mechanism of Section~\ref{sec:theory}.
 
 \subsubsection{Sector-Balanced 30-Ticker Panel: Full Per-Ticker Rollup}
 \label{sec:cross_ticker_sector_panel}
@@ -65,7 +65,7 @@ Materials               & APD  & $99.2$ & $90.2$ & $\phantom{0}8.40$  & $16.74$ 
 \subsubsection{\texorpdfstring{60-Ticker Sector Expansion at $n = 6$ per Sector}{60-Ticker Sector Expansion at n = 6 per Sector}}
 \label{sec:sector_panel_n6}
 
-An $n = 6$ per-sector expansion (60 tickers, 3 additional large-cap representatives per GICS sector) confirms the body $n = 3$ ANOVA reading at adequate power: $F(9, 50) = 0.37$, $p = 0.946$, $\eta^2 = 0.062$ (vs.\ underpowered $n = 3$ $\eta^2 = 0.16$); aggregate OoS KS median $73.45\%$ and failure rate $22/60 = 36.7\%$ are statistically indistinguishable from the body 30-ticker numbers ($73.4\%$, $11/30$). Cross-sector dispersion accounts for $6.2\%$ of OoS KS variance at the larger sample size; the remaining $93.8\%$ is per-ticker. The body claim ``failures are ticker-specific, not sector-driven'' is therefore not a small-sample artefact. Full panel and per-sector rollup at \texttt{CHMM-Model/results/sector\_panel\_n6/sector\_panel\_n6.csv} (runners: \texttt{run\_sector\_panel\_n6.jl}, \texttt{run\_sector\_panel\_n6\_postprocess.jl}; archived in \texttt{\_attic\_v10/} during the arXiv-prep pass).
+An $n = 6$ per-sector expansion (60 tickers, 3 additional large-cap representatives per GICS sector) confirms the body $n = 3$ ANOVA reading at adequate power: $F(9, 50) = 0.37$, $p = 0.946$, $\eta^2 = 0.062$ (vs.\ underpowered $n = 3$ $\eta^2 = 0.16$); aggregate OoS KS median $73.45\%$ and failure rate $22/60 = 36.7\%$ are statistically indistinguishable from the body 30-ticker numbers ($73.4\%$, $11/30$). Cross-sector dispersion accounts for $6.2\%$ of OoS KS variance at the larger sample size; the remaining $93.8\%$ is per-ticker. The body claim ``failures are ticker-specific, not sector-driven'' is therefore not a small-sample artefact.
 
 \subsubsection{Effective Spectral Rank of the Absolute-Return ACF}
 \label{sec:spectral_rank}
@@ -99,12 +99,12 @@ rank & $|\lambda_k|$ & $|w_k|$ & $|w_k \lambda_k|$ & $w_k \lambda_k^5$ & $w_k \l
 \end{tabular}
 \end{table}
 
-The empirical effective rank confirms the body framing of Section~\ref{sec:theory}: the ACF-MAE flatness across $K \in \{3, 6, 9, 12, 15, 18, 21\}$ documented in the companion artefact \texttt{CHMM-Model/results/SPY/Table-T1-State-Resolution-Sensitivity.txt} (Appendix~\ref{sec:sensitivity_table}) is the macroscopic signature of the temporal axis being driven by a single dominant decay mode at every operating point in the sweep. The $K$-rank statement on $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$ is correctly interpreted as a non-binding upper bound at $K \ge 3$; at $K = 2$ the bound is tight (only one non-unit eigenvalue available), but the failure mode is then the marginal mixture, which two Gaussian components cannot tile against the empirical equity-return target. The bilinear identity~\eqref{eq:acf_normalised} therefore plays a pedagogical role in this paper rather than serving as a direct $K$-selection criterion: it makes the rank constraint explicit, but the operational $K$ choice is driven by distributional fidelity (KS, AD, kurtosis), not by the count of non-unit eigenvalues in the spectral expansion.
+The empirical effective rank confirms the body framing of Section~\ref{sec:theory}: the ACF-MAE flatness across $K \in \{3, 6, 9, 12, 15, 18, 21\}$ documented in Appendix~\ref{sec:sensitivity_table} is the macroscopic signature of the temporal axis being driven by a single dominant decay mode at every operating point in the sweep. The $K$-rank statement on $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$ is correctly interpreted as a non-binding upper bound at $K \ge 3$; at $K = 2$ the bound is tight (only one non-unit eigenvalue available), but the failure mode is then the marginal mixture, which two Gaussian components cannot tile against the empirical equity-return target. The bilinear identity~\eqref{eq:acf_normalised} therefore plays a pedagogical role in this paper rather than serving as a direct $K$-selection criterion: it makes the rank constraint explicit, but the operational $K$ choice is driven by distributional fidelity (KS, AD, kurtosis), not by the count of non-unit eigenvalues in the spectral expansion.
 
 \subsubsection{Cross-Ticker Spectral Effective-Rank Diagnostic}
 \label{sec:spectral_rank_xticker}
 
-To test whether the SPY-only result of Appendix~\ref{sec:spectral_rank} (a single non-unit eigenvalue carries $93.6\%$ of the lag-$1$ absolute-return ACF at $K = 18$) generalises across tickers, Table~\ref{tab:spectral_xticker} reports the cross-ticker distribution of the dominant-mode share, computed under the same protocol on the 30-ticker sector-balanced panel plus SPY. Source: \texttt{results/diagnostics/spectral\_rank\_cross\_ticker.txt}.
+To test whether the SPY-only result of Appendix~\ref{sec:spectral_rank} (a single non-unit eigenvalue carries $93.6\%$ of the lag-$1$ absolute-return ACF at $K = 18$) generalises across tickers, Table~\ref{tab:spectral_xticker} reports the cross-ticker distribution of the dominant-mode share, computed under the same protocol on the 30-ticker sector-balanced panel plus SPY.
 
 \begin{table}[H]
 \centering
@@ -125,25 +125,25 @@ SPY (body Appendix~\ref{sec:spectral_rank})    & $0.943$ & $2$  & $10$ \\
 
 Reading: the SPY headline of $93.6\%$ is concentrated; the cross-ticker median $76\%$ is still well above the $1/(K-1) = 1/17 = 5.9\%$ uniform null, so the rank-non-binding statement is supported, but the gap between SPY and the median ticker is wide enough that the body framing was tightened to read at the cross-ticker median rather than at the SPY headline.
 
-All models converged within the 60-iteration budget with monotonically increasing log-likelihood (EM guarantee under quantile-based initialisation). Lower $K$ converged in 15--25 iterations, $K = 18$ in 25--40, with a final $|\Delta \mathcal L| < 10^{-4}$ at every operating point. Convergence-trace figures and per-iteration log-likelihood histories are at \texttt{CHMM-Model/figs/Fig-Convergence-K\{3,12,18\}.pdf}.
+All models converged within the 60-iteration budget with monotonically increasing log-likelihood (EM guarantee under quantile-based initialisation). Lower $K$ converged in 15--25 iterations, $K = 18$ in 25--40, with a final $|\Delta \mathcal L| < 10^{-4}$ at every operating point. Convergence-trace figures and per-iteration log-likelihood histories are provided in the companion code repository.
 
 \subsubsection{Ryd\'{e}n K = 2 Replication}
 \label{sec:ryden_replication}
 
-Direct replication of Ryd\'{e}n et al.'s $K = 2$ setting on SPY IS under quantile and random-seed initialization gives ACF-MAE essentially constant at $\approx 0.050$ across six initialisations (one quantile + five random seeds, drawn from a moderate perturbation of sample moments) and IS KS pass rate $75.3$--$79.0\%$. The constant ACF-MAE confirms the body reading (Section~\ref{sec:discussion}): the binding low-$K$ constraint is distributional rather than temporal. Full per-seed table at \texttt{CHMM-Model/results/SPY/diagnostics/ryden\_init.txt} (archived in \texttt{\_attic\_v10/} during the arXiv-prep pass).
+Direct replication of Ryd\'{e}n et al.'s $K = 2$ setting on SPY IS under quantile and random-seed initialization gives ACF-MAE essentially constant at $\approx 0.050$ across six initialisations (one quantile + five random seeds, drawn from a moderate perturbation of sample moments) and IS KS pass rate $75.3$--$79.0\%$. The constant ACF-MAE confirms the body reading (Section~\ref{sec:discussion}): the binding low-$K$ constraint is distributional rather than temporal.
 
 
 \subsubsection{\texorpdfstring{Cross-Ticker Per-State-Resolution Sensitivity ($K^\star = 3$ vs $K^\star = 6$ vs $K = 18$)}{Cross-Ticker Per-State-Resolution Sensitivity (K* = 3 vs K* = 6 vs K = 18)}}
 \label{sec:cross_ticker_k6_panel}
 
-Body Table~\ref{tab:cross_ticker} reports the cross-ticker aggregate distribution at all three operating points used in this paper: the body headline $K^\star = 3$ (state-resolution-robust default per the $k$-fold CV in Appendix~\ref{sec:k_selection_kfold_pre2020}), the sensitivity reference $K^\star = 6$, and the extended-state-resolution sensitivity reference $K = 18$. Per-ticker files: \texttt{sector\_panel/sector\_panel\_summary\_k3.txt}, \texttt{\_k6.txt}, and \texttt{sector\_panel\_summary.txt} respectively.
+Body Table~\ref{tab:cross_ticker} reports the cross-ticker aggregate distribution at all three operating points used in this paper: the body headline $K^\star = 3$ (state-resolution-robust default per the $k$-fold CV in Appendix~\ref{sec:k_selection_kfold_pre2020}), the sensitivity reference $K^\star = 6$, and the extended-state-resolution sensitivity reference $K = 18$.
 
 The substantive read across the three operating points: (i) The KS distributions are within $\sim 6$pp of each other on OoS median ($69.1\%$ at $K^\star = 3$, $75.1\%$ at $K^\star = 6$, $73.4\%$ at $K = 18$) and at identical $11/30$ failure count, with the same regime-introduction tickers driving the failures at each state resolution (LLY, UNH, NEM, NFLX, NEE, WMT, BAC, HD, JPM at OoS KS $< 60\%$; the specific list overlaps $> 80\%$ across $K^\star = 3, 6, 18$). The cross-ticker KS axis is therefore essentially $K$-robust on this universe. (ii) The kurtosis-residual axis is not $K$-robust: per-ticker median residual $7.18$ at $K^\star = 3$, $10.34$ at $K^\star = 6$, $0.61$ at $K = 18$. At lower state-resolution the per-state $\nu_k$ shrinkage at uniform $\lambda$ cannot be smoothed across as many regimes, so the residual heavy tails leak into the simulated kurtosis. (iii) The $|G_t|$ ACF-MAE is essentially $K$-robust ($0.0395$, $0.0403$, $0.0416$ across the three operating points). Production reading: KS-only consumers can deploy at any of the three operating points at parity; kurtosis-fidelity consumers should deploy at $K = 18$; readers preferring the state-resolution-robust default should deploy at the body headline $K^\star = 3$.
 
 \subsubsection{Block-Bootstrap CIs on Observed Kurtosis (IS vs OoS)}
 \label{sec:kurtosis_bootstrap_ci}
 
-A natural question on the IS / OoS kurtosis disagreement (observed $7.68$ IS, $5.29$ OoS, a $31\%$ drop) is whether it is itself statistically distinguishable. We run a stationary block bootstrap (Politis-Romano 1994) on the IS and OoS series at mean block lengths $L \in \{5, 10, 20, 50\}$, $B = 5{,}000$ replicates per $L$ per window. Results in \texttt{results/diagnostics/kurtosis\_bootstrap.txt}.
+A natural question on the IS / OoS kurtosis disagreement (observed $7.68$ IS, $5.29$ OoS, a $31\%$ drop) is whether it is itself statistically distinguishable. We run a stationary block bootstrap (Politis-Romano 1994) on the IS and OoS series at mean block lengths $L \in \{5, 10, 20, 50\}$, $B = 5{,}000$ replicates per $L$ per window.
 
 \begin{table}[!ht]
 \centering
@@ -166,7 +166,7 @@ The IS lower bound $1.92$--$2.99$ and the OoS upper bound $7.70$--$8.97$ overlap
 
 \paragraph{Bootstrap-CI placement of the penalised CHMM-t IS kurtosis.}
 \label{sec:kurtosis_ci_placement}
-A natural follow-up on the body's penalised CHMM-t at $\lambda = 20$ is whether its simulated IS kurtosis distribution sits inside the bootstrap CI on observed: the aggregate-mean simulated IS kurtosis ($14.91$ at $K^\star = 3$, above the $L = 20$ CI upper bound $12.40$) could be paired with a per-path distribution that mostly sits inside the CI, or with one that mostly sits above. Source / runner: \texttt{run\_kurtosis\_ci\_placement.jl}; output: \texttt{results/kurtosis\_ci\_placement/kurtosis\_ci\_placement.csv}.
+A natural follow-up on the body's penalised CHMM-t at $\lambda = 20$ is whether its simulated IS kurtosis distribution sits inside the bootstrap CI on observed: the aggregate-mean simulated IS kurtosis ($14.91$ at $K^\star = 3$, above the $L = 20$ CI upper bound $12.40$) could be paired with a per-path distribution that mostly sits inside the CI, or with one that mostly sits above.
 
 \begin{table}[!ht]
 \centering
@@ -189,7 +189,7 @@ The per-path \emph{median} simulated IS excess kurtosis is essentially observed 
 \subsubsection{\texorpdfstring{Shared-$\nu$ Student-t HMM Ablation}{Shared-nu Student-t HMM Ablation}}
 \label{sec:chmm_t_shared_nu}
 
-A natural diagnostic for the per-state $\nu_k$ aggregate-mean overshoot is the shared-$\nu$ ablation: refit CHMM-t with a single $\nu$ shared across all $K$ states, fit by ECM with golden-section search on the aggregate $Q$-function over $\nu_{\text{bounds}} = (2.1, 50)$. This is the standard one-parameter Student-$t$ HMM in the time-series literature, not a per-state $\nu_k$ mixture. Source / runner: \texttt{run\_chmm\_t\_shared\_nu.jl}; output: \texttt{results/chmm\_t\_shared\_nu/chmm\_t\_shared\_nu.csv}.
+A natural diagnostic for the per-state $\nu_k$ aggregate-mean overshoot is the shared-$\nu$ ablation: refit CHMM-t with a single $\nu$ shared across all $K$ states, fit by ECM with golden-section search on the aggregate $Q$-function over $\nu_{\text{bounds}} = (2.1, 50)$. This is the standard one-parameter Student-$t$ HMM in the time-series literature, not a per-state $\nu_k$ mixture.
 
 \begin{table}[!ht]
 \centering
@@ -215,7 +215,7 @@ The aggregate-mean IS overshoot disappears under shared-$\nu$ at every $K$: the 
 \subsubsection{\texorpdfstring{Christoffersen-cc Monte Carlo Power Calibration at $T_{\text{OoS}} = 572$}{Christoffersen-cc Monte Carlo Power Calibration at T\_OoS = 572}}
 \label{sec:christoffersen_power}
 
-A Monte Carlo power calibration of the Christoffersen-cc joint conditional-coverage test at the $T_{\text{OoS}} = 572$ length used in the body Table~\ref{tab:cond_var} simulates breach indicator sequences from a two-state Markov chain on $\{0, 1\}$ with marginal probability $\alpha$ and second eigenvalue $\rho$, where $\rho = 0$ is the i.i.d.\ null and $\rho > 0$ measures the level of breach clustering; $B = 5{,}000$ replicates per cell. Results in \texttt{results/diagnostics/christoffersen\_power/christoffersen\_power.txt}.
+A Monte Carlo power calibration of the Christoffersen-cc joint conditional-coverage test at the $T_{\text{OoS}} = 572$ length used in the body Table~\ref{tab:cond_var} simulates breach indicator sequences from a two-state Markov chain on $\{0, 1\}$ with marginal probability $\alpha$ and second eigenvalue $\rho$, where $\rho = 0$ is the i.i.d.\ null and $\rho > 0$ measures the level of breach clustering; $B = 5{,}000$ replicates per cell.
 
 \begin{table}[!ht]
 \centering
@@ -260,7 +260,7 @@ As a higher-power conditional-coverage alternative to Christoffersen-cc on the s
     = \beta_0 + \sum_{i = 1}^{4} \beta_i\,(\text{Hit}_{t-i} - \alpha) + \beta_{5}\,\widehat{\text{VaR}}_t + u_t,
     \label{eq:dq_regression}
 \end{equation}
-on the IS-fixed regime-conditional VaR series of Section~\ref{sec:var_backtest}, with $\text{Hit}_t = \mathbf 1\{R_{\text{OoS},t} < \widehat{\text{VaR}}_t(\alpha)\}$. The DQ test statistic is $\widehat{\boldsymbol\beta}^\top \mathbf X^\top \mathbf X\,\widehat{\boldsymbol\beta} / [\alpha(1-\alpha)]$, distributed $\chi^2(6)$ under the null of correct conditional coverage; the $5\%$ critical value is $\chi^2_6(0.95) = 12.59$. Source: \texttt{results/diagnostics/engle\_manganelli\_dq.txt}; runner: \texttt{run\_engle\_manganelli\_dq.jl}.
+on the IS-fixed regime-conditional VaR series of Section~\ref{sec:var_backtest}, with $\text{Hit}_t = \mathbf 1\{R_{\text{OoS},t} < \widehat{\text{VaR}}_t(\alpha)\}$. The DQ test statistic is $\widehat{\boldsymbol\beta}^\top \mathbf X^\top \mathbf X\,\widehat{\boldsymbol\beta} / [\alpha(1-\alpha)]$, distributed $\chi^2(6)$ under the null of correct conditional coverage; the $5\%$ critical value is $\chi^2_6(0.95) = 12.59$.
 
 \begin{table}[!ht]
 \centering
@@ -284,12 +284,12 @@ At $\alpha = 0.05$ both Christoffersen-cc and the higher-power DQ test pass clea
 
 % Per-state OoS regime-trajectory band aggregates are reported as part of the body
 % per-state interpretability paragraph (Section~\ref{sec:model_comparison}); the
-% companion artefact is at CHMM-Model/results/diagnostics/oos_regime_trajectory.txt.
+% companion artefact is in the code repository.
 
 \subsubsection{Quarterly-Refit Regime-Conditional VaR Back-Test}
 \label{sec:quarterly_refit_cond_var}
 
-Re-fitting CHMM-N at $K \in \{3, 18\}$ every $63$ trading days on a rolling $5$y window and running the forward-filter through the OoS window under each refit's parameters tests whether periodic refit improves the Christoffersen-cc statistic on the headline OoS window. Source: \texttt{CHMM-Model/results/diagnostics/quarterly\_refit\_conditional\_var.txt} (runner: \texttt{run\_quarterly\_refit\_conditional\_var.jl}).
+Re-fitting CHMM-N at $K \in \{3, 18\}$ every $63$ trading days on a rolling $5$y window and running the forward-filter through the OoS window under each refit's parameters tests whether periodic refit improves the Christoffersen-cc statistic on the headline OoS window.
 
 \begin{table}[!ht]
 \centering
@@ -313,7 +313,7 @@ The quarterly-refit construction passes Christoffersen-cc at $\alpha = 0.05$ on 
 \subsubsection{Walk-Forward Refit-Cadence Sweep (Monthly / Weekly)}
 \label{sec:walkforward_refit_cadence}
 
-A within-fold refit-cadence sweep at monthly ($21$ trading days) and weekly ($5$ trading days) cadence on each of the six walk-forward folds, scoped at $K^\star = 3$ and $\alpha = 0.05$, tests whether faster refits close the body W2 (COVID) and W4 (2022 rate-hike) Christoffersen-cc rejections. Source: \texttt{CHMM-Model/results/walkforward\_refit\_cadence/walkforward\_refit\_cadence.csv} (runner: \texttt{run\_walkforward\_cond\_var\_refit\_cadence.jl}, archived in \texttt{\_attic\_v10/} during the arXiv-prep pass).
+A within-fold refit-cadence sweep at monthly ($21$ trading days) and weekly ($5$ trading days) cadence on each of the six walk-forward folds, scoped at $K^\star = 3$ and $\alpha = 0.05$, tests whether faster refits close the body W2 (COVID) and W4 (2022 rate-hike) Christoffersen-cc rejections.
 
 \begin{table}[!ht]
 \centering
@@ -356,7 +356,7 @@ Faster refit does not close the W2 Christoffersen-cc rejection at any cadence (f
 \subsubsection{Quarterly-Refit 30-Ticker Cross-Ticker Panel}
 \label{sec:cross_ticker_quarterly_refit}
 
-For a quarterly-refit version of the 30-ticker cross-ticker panel (Table~\ref{tab:cross_ticker}), we re-fit the penalised CHMM-t at $\lambda = 20$ on a rolling $5$-year window every $63$ trading days through the OoS span (10 refits per ticker, 300 fits total per state-resolution), simulate the next quarter under each refit, and concatenate the per-quarter simulations into a single OoS path matrix per ticker, at both $K = 18$ (extended-state-resolution sensitivity) and $K^\star = 6$ (sensitivity reference). Same $N_{\text{paths}} = 1{,}000$, seed = 20260420 as the body Table~\ref{tab:cross_ticker}. Results in \texttt{results/sector\_panel/sector\_panel\_quarterly\_refit.txt} ($K = 18$) and \texttt{results/sector\_panel/sector\_panel\_quarterly\_refit\_k6.txt} ($K^\star = 6$).
+For a quarterly-refit version of the 30-ticker cross-ticker panel (Table~\ref{tab:cross_ticker}), we re-fit the penalised CHMM-t at $\lambda = 20$ on a rolling $5$-year window every $63$ trading days through the OoS span (10 refits per ticker, 300 fits total per state-resolution), simulate the next quarter under each refit, and concatenate the per-quarter simulations into a single OoS path matrix per ticker, at both $K = 18$ (extended-state-resolution sensitivity) and $K^\star = 6$ (sensitivity reference). Same $N_{\text{paths}} = 1{,}000$, seed = 20260420 as the body Table~\ref{tab:cross_ticker}.
 
 \begin{table}[!ht]
 \centering
@@ -436,7 +436,7 @@ The off-diagonal jump matrix of the fitted ML HSMM at $K = 3$ has non-trivial de
 \subsubsection{Gamma-Sojourn HSMM as an Alternative Sojourn Family}
 \label{sec:hsmm_gamma_sojourn}
 
-Replacing the truncated discrete Pareto sojourn pmf with a discretised continuous Gamma fit by method-of-moments at every M-step gives a Gamma-sojourn HSMM that converges at $K = 18$ where Pareto collapses (IS KS $86.0\%$, OoS KS $80.2\%$, simulated kurtosis $4.28 / 4.06$, $|G_t|$ ACF-MAE $\mathbf{0.0462}$, lower than CHMM-N $K = 18$ at $0.0509$) and trades $\sim 20$pp IS KS at $K = 3$ for an ACF-MAE recovery from $0.0629$ to $0.0528$. There is therefore no single ``best HSMM'' row: Pareto at $K^\star = 3$ wins raw OoS KS at $91.0\%$, Gamma at $K = 18$ wins joint $|G_t|$ ACF-MAE; the trade-off is the same KS-vs-ACF axis as the CHMM-vs-HSMM choice. Full sojourn-family comparison at \texttt{CHMM-Model/results/hsmm\_ml\_gamma/hsmm\_ml\_gamma\_metrics.csv} (runner: \texttt{run\_hsmm\_ml\_gamma.jl}; archived in \texttt{\_attic\_v10/} during the arXiv-prep pass).
+Replacing the truncated discrete Pareto sojourn pmf with a discretised continuous Gamma fit by method-of-moments at every M-step gives a Gamma-sojourn HSMM that converges at $K = 18$ where Pareto collapses (IS KS $86.0\%$, OoS KS $80.2\%$, simulated kurtosis $4.28 / 4.06$, $|G_t|$ ACF-MAE $\mathbf{0.0462}$, lower than CHMM-N $K = 18$ at $0.0509$) and trades $\sim 20$pp IS KS at $K = 3$ for an ACF-MAE recovery from $0.0629$ to $0.0528$. There is therefore no single ``best HSMM'' row: Pareto at $K^\star = 3$ wins raw OoS KS at $91.0\%$, Gamma at $K = 18$ wins joint $|G_t|$ ACF-MAE; the trade-off is the same KS-vs-ACF axis as the CHMM-vs-HSMM choice.
 
 \subsubsection{Unconditional VaR / ES Envelope Panel}
 \label{sec:supp_var_envelope}
@@ -477,7 +477,7 @@ CHMM-GED  & $-6.60\ [-8.30, -4.82]$      & $-8.51\ [-10.68,\ -6.47]$    & $-3.32
 \subsubsection{\texorpdfstring{Held-Out Cross-Validation of the $1/\nu_k$ Penalty $\lambda$}{Held-Out Cross-Validation of the 1/nu\_k Penalty lambda}}
 \label{sec:lambda_cv_pre2020}
 
-To verify that the body operating-point penalty rate $\lambda = 20$ is not selected on data that overlaps the OoS evaluation window, we refit penalised CHMM-t on a strictly pre-2020 estimation slice (2014-01-03 to 2018-06-29, $n = 1{,}130$) and score each $\lambda$ on the validation slice (2018-07-02 to 2019-12-31, $n = 378$, both fully pre-COVID and pre-2022-rate-hike). Source: \texttt{results/nu\_shrinkage\_sweep/lambda\_cv\_pre2020.txt}.
+To verify that the body operating-point penalty rate $\lambda = 20$ is not selected on data that overlaps the OoS evaluation window, we refit penalised CHMM-t on a strictly pre-2020 estimation slice (2014-01-03 to 2018-06-29, $n = 1{,}130$) and score each $\lambda$ on the validation slice (2018-07-02 to 2019-12-31, $n = 378$, both fully pre-COVID and pre-2022-rate-hike).
 
 \begin{table}[H]
 \centering
@@ -504,22 +504,22 @@ Reading: the held-out validation log-likelihood is maximised at $\lambda^\star =
 \subsubsection{\texorpdfstring{Effective State Distinctness at $K = 18$}{Effective State Distinctness at K = 18}}
 \label{sec:state_distinctness}
 
-Single-linkage clustering on standardized parameter triples at threshold $\tau = 0.20$ gives effective state counts $11/18$ for CHMM-N (2D feature $(\mu_k, \sigma_k)$) and $12/18$ for CHMM-t (3D feature $(\mu_k, \sigma_k, 1/\nu_k)$, with $13/18$ states pinned at $\nu_{\max} = 50$ and $2/18$ at $\nu_{\min} = 2.1$). The effective-state count is below $K$ but well above the $K^\star = 6$ sensitivity reference; the $K = 18$ extension is a representational-economy choice rather than a free-rider on identifiability. Full clustering output at \texttt{CHMM-Model/results/diagnostics/state\_distinctness.txt} (runner: \texttt{run\_state\_distinctness.jl}).
+Single-linkage clustering on standardized parameter triples at threshold $\tau = 0.20$ gives effective state counts $11/18$ for CHMM-N (2D feature $(\mu_k, \sigma_k)$) and $12/18$ for CHMM-t (3D feature $(\mu_k, \sigma_k, 1/\nu_k)$, with $13/18$ states pinned at $\nu_{\max} = 50$ and $2/18$ at $\nu_{\min} = 2.1$). The effective-state count is below $K$ but well above the $K^\star = 6$ sensitivity reference; the $K = 18$ extension is a representational-economy choice rather than a free-rider on identifiability.
 
 \subsubsection{Diebold--Mariano Bandwidth Sensitivity}
 \label{sec:dm_bandwidth}
 
-Sweeping the Newey--West HAC bandwidth $h \in \{4, 8, 16, 32\}$ around the default $h = \lfloor T^{1/3} \rfloor = 8$, all within-CHMM CRPS DM pairs retain $p > 0.38$ at every bandwidth (CHMM-N vs.\ CHMM-t: $p \in [0.47, 0.51]$; CHMM-N vs.\ CHMM-L: $p \in [0.38, 0.48]$; CHMM-t vs.\ CHMM-L: $p \approx 0.97$ at every bandwidth); the CHMM-N vs.\ GARCH pair moves $p \in [0.087, 0.175]$ in a stable direction. The within-CHMM family equivalence used in Section~\ref{sec:results} is therefore not bandwidth-fragile. Full bandwidth sweep at \texttt{CHMM-Model/results/crps\_dm/CRPS\_DM\_bandwidth\_sweep.txt} (runner: \texttt{run\_crps\_dm\_bandwidth.jl}).
+Sweeping the Newey--West HAC bandwidth $h \in \{4, 8, 16, 32\}$ around the default $h = \lfloor T^{1/3} \rfloor = 8$, all within-CHMM CRPS DM pairs retain $p > 0.38$ at every bandwidth (CHMM-N vs.\ CHMM-t: $p \in [0.47, 0.51]$; CHMM-N vs.\ CHMM-L: $p \in [0.38, 0.48]$; CHMM-t vs.\ CHMM-L: $p \approx 0.97$ at every bandwidth); the CHMM-N vs.\ GARCH pair moves $p \in [0.087, 0.175]$ in a stable direction. The within-CHMM family equivalence used in Section~\ref{sec:results} is therefore not bandwidth-fragile.
 
 \subsubsection{Monthly-Refit Cross-Ticker Panel}
 \label{sec:cross_ticker_monthly_refit}
 
-Refining the cross-ticker quarterly-refit construction (Appendix~\ref{sec:cross_ticker_quarterly_refit}) to a monthly cadence ($21$ trading days, same 5-year rolling estimation window, $N_{\text{paths}} = 1{,}000$) shifts the OoS KS distribution to median $86.7\%$ and $5/30$ failures, vs.\ quarterly $83.0\%$ / $7/30$ and IS-fixed $73.4\%$ / $11/30$. Marginal lift from quarterly to monthly: $+3.7$pp median, $-2$ failures, at $3\times$ the compute cost ($28$ vs.\ $9$ refits per ticker). The trade-off is approximately linear in $\log(\text{cadence}^{-1})$, so further reductions below monthly yield diminishing returns; quarterly remains the recommended default. Full panel at \texttt{CHMM-Model/results/sector\_panel/sector\_panel\_monthly\_refit.csv} (archived in \texttt{\_attic\_v10/} during the arXiv-prep pass).
+Refining the cross-ticker quarterly-refit construction (Appendix~\ref{sec:cross_ticker_quarterly_refit}) to a monthly cadence ($21$ trading days, same 5-year rolling estimation window, $N_{\text{paths}} = 1{,}000$) shifts the OoS KS distribution to median $86.7\%$ and $5/30$ failures, vs.\ quarterly $83.0\%$ / $7/30$ and IS-fixed $73.4\%$ / $11/30$. Marginal lift from quarterly to monthly: $+3.7$pp median, $-2$ failures, at $3\times$ the compute cost ($28$ vs.\ $9$ refits per ticker). The trade-off is approximately linear in $\log(\text{cadence}^{-1})$, so further reductions below monthly yield diminishing returns; quarterly remains the recommended default.
 
 \subsubsection{Cross-Decade Validation: 1994-2004 IS / 2004-2006 OoS via CRSP}
 \label{sec:cross_decade_validation}
 
-To test whether the headline stylized-fact reproduction is decade-specific, we run a 1994--2004 vs.\ 2014--2024 SPY split via a CRSP day-pass: \texttt{data/external/crsp\_1994\_2006.csv} contains daily prices for SPY plus 28 of the 30 cross-ticker panel members (NEE and APD missing from the CRSP query) from $1994$-$01$-$03$ to $2006$-$04$-$28$. Adjusted close $= \mathtt{DlyPrc} / \mathtt{DlyFacPrc}$ from the CRSP CIZ-format daily stock file. Source / runner: \texttt{run\_cross\_decade\_validation.jl}; output: \texttt{results/cross\_decade\_validation/{summary.txt, metrics.csv}}; paper-side mirror: \texttt{results/robustness/cross\_decade\_validation.csv}.
+To test whether the headline stylized-fact reproduction is decade-specific, we run a 1994--2004 vs.\ 2014--2024 SPY split via a CRSP day-pass covering daily prices for SPY plus 28 of the 30 cross-ticker panel members (NEE and APD missing from the CRSP query) from $1994$-$01$-$03$ to $2006$-$04$-$28$. Adjusted close $= \mathtt{DlyPrc} / \mathtt{DlyFacPrc}$ from the CRSP CIZ-format daily stock file.
 
 Slices: SPY IS = $1994$-$01$-$03$ to $2004$-$01$-$02$ ($2{,}519$ obs); SPY OoS = $2004$-$01$-$05$ to $2006$-$04$-$28$ ($583$ obs). Same body protocol: $1{,}000$ simulated paths per fit, $\alpha = 0.05$ for KS.
 
