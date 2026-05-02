@@ -1,6 +1,6 @@
 # CHMM Paper, Proof-Prep Summary
 
-Last updated 2026-05-01 by automated review pass against arXiv:2603.10202 (the prior Hybrid-HMM paper by the same first author). Updated to add detailed method explanations and per-method "how it differs" notes.
+Last updated 2026-05-02 after the arXiv-prep trim pass: contribution recasting, related-work expansion (signature/diffusion + Fearnhead-Liu), three appendix trims, 12-site reviewer-language strip, three orphan-stub deletions (`sec:k_sweep_panels`, `sec:supp_validation_figures`, `sec:mssv_baseline`), pipeline-schematic body/appendix re-alignment, intro `5pp` and QuantGAN-footnote tightening, and five model-repo runner archivals into `_attic_v10/runners/`.
 
 This document is the single brief a non-specialist reviewer can read before opening the PDF. It records (a) what the paper claims and how to read it cold, (b) how the paper compares to the precursor Hybrid-HMM paper, (c) the acronym key, (d) **the model and each emission family explained from scratch, with the way each differs from the others called out explicitly**, (e) **the estimation machinery (EM, Baum-Welch, ECM, quantile init) explained**, (f) **the spectral mechanism in plain language**, (g) **each benchmark generator and how it differs from the CHMM**, (h) **the regime-conditional VaR construction explained step by step**, (i) the test menu with what each number means and how the tests differ from one another, (j) the model's position in the literature, (k) the pre-arXiv cleanup checklist, (l) the two analysis pipelines and the data timeline that feeds them. Section refs use the section-file basenames in `sections/`.
 
@@ -14,11 +14,21 @@ The paper trains a continuous Hidden Markov Model (CHMM) by Baum-Welch as a **sy
 
 ## 1. arXiv-Readiness Verdict
 
-**Status: ready** with a short pre-submission punch list (see Section 11).
+**Status: ready** after the arXiv-prep trim pass; cleanup punch list in Section 12.
 
-Build evidence: 112-page PDF, clean compile, zero undefined references or labels, zero `[CITE]/[TBD]/TODO` placeholders, 102 figure PDFs all 1-to-1 mapped to `\includegraphics`, 64 tables, 1 theorem with full proof, 4 propositions, 2 assumptions. Reproducibility scaffold complete: deterministic seed root 20260420 with documented sub-seed rule, Julia ≥ 1.12 with pinned `Manifest.toml`, R 4.6 + `renv` lockfile for the MSGARCH reference, public companion repos linked in the conclusion.
+Build evidence: **76-page PDF** (down from 112 over two reductions: a first arXiv-prep pass to 84, then this pass to 76), clean compile, zero undefined references or labels, zero `[CITE]/[TBD]/TODO` placeholders, all `\includegraphics` 1-to-1 mapped, headline tables intact, 1 theorem with full proof, 4 propositions, 2 assumptions. Reproducibility scaffold complete: deterministic seed root 20260420 with documented sub-seed rule, Julia ≥ 1.12 with pinned `Manifest.toml`, R 4.6 + `renv` lockfile for the MSGARCH reference, public companion repos linked in the conclusion.
 
-Two prose em-dash violations were patched during this review (sensitivity\_appendix.tex lines 185, 1002). Remaining LaTeX warnings (8 overfull hboxes, 19 `[h]→[ht]` automatic float promotions, hyperref bookmark-charset notes) are cosmetic and not arXiv-blocking.
+The arXiv-prep trim pass did the following, all on the in-memory MEMORY.md "no em dashes" rule and on the figure-style memory:
+- Three appendix trims: `sensitivity_appendix.tex` 791→567 lines, `algorithms_appendix.tex` 354→256, `baselines_appendix.tex` 259→236. Each kept every body-referenced label.
+- Stripped 12 sites of "Reviewer~X / Round-2 / peer-review item PX.Y" language, including a table caption (`tab:engle_manganelli_dq`).
+- Deleted three orphan stubs that had no body refs after trimming: `sec:k_sweep_panels`, `sec:supp_validation_figures`, `sec:mssv_baseline`.
+- Re-aligned `model.tex` ↔ `algorithms_appendix.tex` pipeline-schematic wording: body now says "step-by-step summary" (matches the prose-only appendix; the TikZ figure was removed in §6 of arxiv_prep).
+- Recast the intro contribution (i) and the spectral-identity sentence (dropped preemptive defensiveness).
+- Added Fearnhead-Liu 2007 to the change-point paragraph and a new "signature- and diffusion-based market generators" sub-paragraph in `related_work.tex`; added 6 bib entries (`fearnhead2007online`, `boursin2022deep`, `ni2021sig`, `buehler2020data`, `liao2024diffusion`, `tashiro2021csdi`).
+- Tightened the intro `~5pp IS / ~5pp OoS` claim to the actual CHMM-N delta plus the family-wide range (`94.1/81.8\%` and `93.6$-$95.6\%/80.8$-$85.7\%`); rewrote the QuantGAN footnote to describe the in-house 3-layer WGAN spec accurately.
+- Archived five runners in the model repo into `_attic_v10/runners/`: `run_sector_panel_n6.jl`, `run_sector_panel_n6_postprocess.jl`, `run_walkforward_cond_var_refit_cadence.jl`, `run_sector_panel_quarterly_refit_k6.jl`, `run_figures_ksweep.jl`. Updated `_attic_v10/runners/README.md` and `RUNNERS.md` accordingly.
+
+Remaining LaTeX warnings (a few overfull hboxes, hyperref bookmark-charset notes) are cosmetic and not arXiv-blocking.
 
 ---
 
@@ -224,8 +234,8 @@ The paper benchmarks the four CHMM variants against eight reference generators. 
 - **How it differs from CHMM**: deep generative; no parametric structure; no interpretable latent state; no analytic form for the marginal CDF (so cannot serve quantile-based constructions like the regime-conditional VaR).
 - **Role**: the deep-generative reference row. The in-house WGAN re-implementation fails KS (0.0% on both windows); a faithful reference-implementation re-run with Lambert-W input pre-processing is a deferred follow-up.
 
-### 7.10 Other rows (SV, MSM, JD, EGARCH, GJR-GARCH, HAR-RV, MSSV)
-The extended GARCH-family panel and stochastic-volatility / multifractal / jump-diffusion baselines are reported in the appendix for completeness. None changes the headline cross-generator ranking. EGARCH, GJR-GARCH would address the leverage-effect axis (which the symmetric CHMM does not), but leverage is explicitly out of scope in the body.
+### 7.10 Other rows (SV, MSM, JD, EGARCH, GJR-GARCH, HAR-RV)
+The extended GARCH-family panel (`sec:extended_baselines`) and the stochastic-volatility / multifractal / jump-diffusion baselines (`sec:sv_msm_jd_baselines`) are reported in the appendix for completeness. None changes the headline cross-generator ranking. EGARCH, GJR-GARCH would address the leverage-effect axis (which the symmetric CHMM does not), but leverage is explicitly out of scope in the body. The MSSV (Markov-switching stochastic volatility) row was a one-paragraph appendix stub that was deleted as orphan in the arXiv-prep trim pass; the runner `run_mssv_baseline.jl` and the 2-state Hamilton-Kim-Nelson degeneracy result still live in `CHMM-Model/results/mssv_baseline/`, but the body MS-GARCH $K \in \{2, 3, 6\}$ rows already cover the regime-switching-volatility comparison axis.
 
 ---
 
@@ -352,7 +362,7 @@ Findings from the cleanup audit, ordered by impact.
 ### CHMM-Model repo
 1. **Drop the `Alpaca` dependency from `Project.toml`** after deleting the two probe scripts (`run_probe_alpaca_history.jl`, `run_fetch_spy_independent_decade.jl`). `Alpaca` is a non-registered git-URL dep and the most likely cause of `Pkg.instantiate()` failures for outside readers. Single highest-leverage change.
 2. **Delete `_attic_v10/data/`** (~298 MB of pre-final-split snapshots; superseded by `data/CHMM-SP500-Train-10yr.jld2` and `data/CHMM-SP500-OoS-Remainder.jld2`).
-3. **Delete `_attic_v10/runners/`** (9 archived `track_*.jl` scripts; zero references from active code).
+3. **Decide policy on `_attic_v10/runners/`**: the directory now holds the original archived `track_*.jl` set plus the eight pre-arXiv-prep additions and the five runners archived in the 2026-05-02 pass (`run_sector_panel_n6.jl`, `run_sector_panel_n6_postprocess.jl`, `run_walkforward_cond_var_refit_cadence.jl`, `run_sector_panel_quarterly_refit_k6.jl`, `run_figures_ksweep.jl`). Companion `_attic_v10/runners/README.md` documents each one's archival rationale. Either keep the directory as a reproducibility audit trail or delete it before the public tarball.
 4. **Delete `_attic_v10/docs/`** (planning notes, downloaded references; not part of public release).
 5. **Gitignore raw OHLC bundles** (`data/SP500-Daily-OHLC-*.jld2`, ~99 MB) plus `data/external/` (regenerated by `build_new_train_oos.jl`).
 6. **Prune dead K-variant runners** identified in the audit:
@@ -364,8 +374,9 @@ Findings from the cleanup audit, ordered by impact.
    - KS bootstrap: `run_ks_block_bootstrap.jl`, `run_ks_block_body_kstar.jl` (only `_oos` cited).
    - MS-GARCH: `run_msgarch_higher_k.jl` (uncited).
    - Misc: `run_chmm_t_penalised_headline.jl`, `run_t_singular_values.jl`, `run_per_ticker_lambda_sweep.jl`, `run_kstar3_headline.jl`, `run_garch_suite.jl`, `run_nu_shrinkage_sweep.jl`.
-7. **Archive (move to `_attic_v10/runners/`)**: `regen_var_es_fig.jl`, `run_copula_profile_ci.jl`, `run_crps_dm.jl`, `run_crps_extra_rows.jl`, `run_ged_bracket_sensitivity.jl`, `run_ged_robustness.jl`, `run_hsmm_ml.jl`, `run_multiseed_headline.jl`.
-8. Rough disk savings: ~400 MB; rough script-count reduction: 80 → ~40-45 active.
+7. **Archive list pre-arXiv-prep** (already moved): `regen_var_es_fig.jl`, `run_copula_profile_ci.jl`, `run_crps_dm.jl`, `run_crps_extra_rows.jl`, `run_ged_bracket_sensitivity.jl`, `run_ged_robustness.jl`, `run_hsmm_ml.jl`, `run_multiseed_headline.jl`, `run_cross_ticker_anova.jl`, `run_walkforward_w7.jl`, `run_exact_binomial_kupiec.jl`, `run_hsmm_ml_intermediate_K.jl`, `run_emission_family_frobenius.jl`, `run_oos_regime_trajectory.jl`, `run_non_equity_validation.jl`, `run_subdecade_validation.jl`.
+8. **Archive list 2026-05-02 pass** (this update; already moved via `git mv`): `run_sector_panel_n6.jl`, `run_sector_panel_n6_postprocess.jl`, `run_walkforward_cond_var_refit_cadence.jl`, `run_sector_panel_quarterly_refit_k6.jl`, `run_figures_ksweep.jl`. Each carries a one-line rationale row in `_attic_v10/runners/README.md`.
+9. Rough disk savings: ~400 MB; rough script-count reduction: 80 → ~40-45 active.
 
 ### CHMM-paper repo
 1. [x] **Delete `figs/_attic/`** (15 superseded PDFs, ~700 KB, zero references) - completed in commit b299cab.
@@ -376,34 +387,34 @@ Findings from the cleanup audit, ordered by impact.
 
 ### Pre-submission punch list
 - [x] Two prose em-dash violations (sensitivity\_appendix.tex 185, 1002) replaced with semicolons.
-- [x] Five overfull hboxes in sensitivity\_appendix.tex (lines ~1111, 1378, 1454, 1484, 1510) fixed by wrapping each tabular in `\resizebox{\textwidth}{!}{...}`. Remaining hboxes: 3, all $\le 5.7$pt (cosmetic).
+- [x] Five overfull hboxes in sensitivity\_appendix.tex fixed by wrapping each tabular in `\resizebox{\textwidth}{!}{...}`. Remaining hboxes: a few, all $\le 5.7$pt (cosmetic).
 - [x] Replaced `\begin{table}[h]` with `\begin{table}[!ht]` on every table across the section files (43 instances spanning 8 files). All `[h]→[ht]` auto-promotion warnings cleared.
-- [x] Added `\texorpdfstring{...}{...}` wrappers on the 12 math-bearing subsubsection titles (11 in sensitivity\_appendix.tex, 1 in cross\_asset\_appendix.tex). Hyperref bookmark-charset warnings reduced from many to zero.
-- [x] Verified `figs/_attic/` removal does not break the build (commit b299cab); `make` produces a clean 112-page PDF, no undefined references.
+- [x] Added `\texorpdfstring{...}{...}` wrappers on the math-bearing subsubsection titles. Hyperref bookmark-charset warnings reduced from many to zero.
+- [x] Verified `figs/_attic/` removal does not break the build (commit b299cab); `make` produces a clean PDF, no undefined references.
+- [x] **arXiv-prep trim pass** (2026-05-02): three appendix trims, 12-site reviewer-language strip, three orphan-stub deletions, pipeline-schematic re-alignment, intro 5pp / QuantGAN footnote tightening, related-work expansion + 6 new bib entries, body contribution recasting, five model-repo runner archivals. PDF lands at 76 pages, clean compile, no undefined refs.
 - [ ] User-facing: add the two repo links (CHMM-paper, CHMM-Model) and the seed-root statement (`20260420`) to the arXiv \emph{submission metadata page} at upload time. Both are already in the LaTeX (conclusion §Data and code availability and model.tex respectively).
-- [ ] User-facing: model-repo cleanup (drop `Alpaca` dep, delete `_attic_v10/` subtrees, prune dead K-variant runners) — see "CHMM-Model repo" subsection above. Destructive operations on the sibling repo, deferred for the user to execute.
+- [ ] User-facing: model-repo cleanup (drop `Alpaca` dep, delete `_attic_v10/data/` and `_attic_v10/docs/`, prune dead K-variant runners listed under "CHMM-Model repo" item 6). Destructive operations on the sibling repo, deferred for the user to execute.
 
 ---
 
 ## 13. Analysis Pipelines and Data Timeline
 
-The empirical study is organised along **two named pipelines**, both defined in `model.tex` line 9 and diagrammed in `algorithms_appendix.tex:366` (`\label{sec:supp_pipeline_schematic}`, Fig.~`fig:pipeline_schematic`). The single-asset CHMM scaffold is shared across both. The driver `CHMM-Model/run_full_rebuild.jl` chains them end-to-end (stages 3 and 4 of the rebuild dispatcher).
+The empirical study is organised along **two named pipelines**, both defined in `model.tex` and re-stated as a step-by-step prose summary in `algorithms_appendix.tex` (`\label{sec:supp_pipeline_schematic}`). The TikZ pipeline figure was removed in the arXiv-prep §6 trim; the body sentence at `model.tex:9` now says "step-by-step summary in Appendix..." instead of "full schematic". The single-asset CHMM scaffold is shared across both. The driver `CHMM-Model/run_full_rebuild.jl` chains them end-to-end (stages 3 and 4 of the rebuild dispatcher).
 
 ### 13.1 Pipeline A, single-asset (no cross-asset coupling)
 
 **What it does.** Fit one CHMM per ticker, independently; simulate; score per-asset metrics (KS, AD, kurtosis, $|G_t|$ ACF-MAE, raw-return ACF-MAE, Wasserstein-1, Hellinger, quantile-envelope coverage, CRPS); also drives the regime-conditional VaR back-test in `var_backtest.tex` (state filter on a single ticker).
 
-**Owning runners (CHMM-Model).**
+**Owning runners (CHMM-Model).** Active set (after the 2026-05-02 archivals):
 - `run_baselines_and_cross_asset.jl`: headline single-window panel, six-generator comparison on SPY (Table~2, `tab:model_comparison`); per-ticker emission-family panel (Table~T2).
 - `run_multi_emission_analysis.jl`: K-sweep across $\{3, 6, 9, 12, 15, 18, 21\}$ for all four emission families on SPY; produces Table~T1 and per-(K, family) figures.
 - `run_all_analysis.jl`: SPY-only K-sweep, stylized-fact figures, per-K internals.
-- `run_sector_panel.jl`, `run_sector_panel_n6.jl`, `run_sector_panel_quarterly_refit.jl`: 30- and 60-ticker sector panels with quarterly-refit recipe.
-- `run_walkforward_w7.jl`, `run_walkforward_cond_var_refit_cadence.jl`: rolling-origin walk-forward folds W1..W7, refit-cadence sweep.
-- `run_christoffersen_power.jl`, `run_conditional_var_all_families.jl`, `run_engle_manganelli_dq.jl`, `run_exact_binomial_kupiec.jl`, `run_quarterly_refit_conditional_var.jl`: VaR back-test (Christoffersen LR_uc / LR_ind / LR_cc, DQ, exact-binomial Kupiec, quarterly-refit variant).
+- `run_sector_panel.jl`, `run_sector_panel_quarterly_refit.jl`: 30-ticker sector panel and the body quarterly-refit ($K = 18$) recipe. (`run_sector_panel_n6.jl`, `run_sector_panel_n6_postprocess.jl`, `run_sector_panel_quarterly_refit_k6.jl` archived in `_attic_v10/runners/`; the surviving body uses the trimmed-stub `sec:sector_panel_n6` and the $K^\star = 6$ row is no longer reported.)
+- `run_christoffersen_power.jl`, `run_conditional_var_all_families.jl`, `run_engle_manganelli_dq.jl`, `run_quarterly_refit_conditional_var.jl`: VaR back-test (Christoffersen LR_uc / LR_ind / LR_cc, DQ, quarterly-refit variant). (`run_walkforward_cond_var_refit_cadence.jl` archived in `_attic_v10/runners/`; the trimmed-stub `sec:walkforward_refit_cadence` retains a one-paragraph rejection-count summary. `run_walkforward_w7.jl` and `run_exact_binomial_kupiec.jl` archived earlier.)
 - `run_cross_decade_validation.jl`: 1994-2004 IS / 2004-2006 OoS CRSP cross-decade rebuild at $K^\star = 3$ and $K = 18$.
-- `run_non_equity_validation.jl`: GLD / SLV stress test on the same body windows.
 - `run_chmm_t_shared_nu.jl`: shared-$\nu$ Student-$t$ ablation row.
-- Baseline rows used in the same Table~2 panel: `run_msgarch_baselines.jl` (in-house Nelder-Mead MS-GARCH K=2/3), `run_msgarch_reference.jl` (R + RCall, CRAN MSGARCH 2.51, K=2/3/4), `run_smchmm_baseline.jl` (SM-CHMM Viterbi-AR(1) plug-in foil), `run_hsmm_ml_gamma.jl` / `run_hsmm_ml_intermediate_K.jl` (HSMM-N ML reference), `run_quantgan_baseline.jl` (in-house WGAN, deferred follow-up), `run_sv_msm_jd_baselines.jl`, `run_mssv_baseline.jl`, `run_leverage_effect.jl`.
+- `run_figures.jl`: body figure regeneration. (`run_figures_ksweep.jl` archived in `_attic_v10/runners/`.)
+- Baseline rows used in the same Table~2 panel: `run_msgarch_baselines.jl` (in-house Nelder-Mead MS-GARCH K=2/3), `run_msgarch_reference.jl` (R + RCall, CRAN MSGARCH 2.51, K=2/3/4), `run_smchmm_baseline.jl` (SM-CHMM Viterbi-AR(1) plug-in foil), `run_hsmm_ml_gamma.jl` (HSMM-N ML reference, Gamma-sojourn variant), `run_quantgan_baseline.jl` (in-house WGAN, deferred follow-up), `run_sv_msm_jd_baselines.jl`, `run_mssv_baseline.jl` (the appendix prose for MSSV was deleted in the orphan-stub trim; runner kept for reproducibility), `run_leverage_effect.jl`. The non-equity stress test now lives in `run_non_us_asset.jl` (cross-asset appendix `sec:non_us_asset_supp`); the older `run_non_equity_validation.jl` was archived earlier.
 
 **Paper sections that depend on Pipeline A.** `results.tex` §descriptive--§cross_asset_univariate, `var_backtest.tex`, `walkforward_body_table.tex`, plus the bulk of `sensitivity_appendix.tex`, `baselines_appendix.tex`, and `metrics_appendix.tex`.
 
@@ -443,7 +454,7 @@ The IS / OoS split is built by `CHMM-Model/build_new_train_oos.jl`. The 10-year 
 | **Body IS (training)** | 2014-01-03 to 2024-01-02 | 2,516 | SPY headline; 6-ticker copula universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ); 30-ticker sector panel ($10$ GICS $\times 3$); 60-ticker $n = 6$ expansion | Polygon.io / Alpaca / IEX, packed into `data/CHMM-SP500-Train-10yr.jld2` | Both pipelines, all body tables |
 | **Body OoS (held-out)** | 2024-01-04 to 2026-04-20 | 573 (572 in some panels) | Same universes as IS | `data/CHMM-SP500-OoS-Remainder.jld2` | Both pipelines, all OoS columns |
 | **K-selection pre-2020 slice** | est.\ 2014-01 to 2018-06; val.\ 2018-07 to 2019-12 | sub-slice of body IS | SPY | Carved from body IS by `run_k_selection_kfold_pre2020.jl` | Pipeline A, K-selection (pre-2020 to avoid COVID leakage) |
-| **Walk-forward folds W1..W7** | rolling 5y train + 1y test, body window | 7 folds | SPY | Carved from body IS+OoS by `run_walkforward_w7.jl` and friends | Pipeline A; W2 = COVID, W4 = 2022 rate-hike, W7 = 2017--2018 + 2019 trade-war |
+| **Walk-forward folds W1..W6** | rolling 5y train + 1y test, body window | 6 folds | SPY | Carved from body IS+OoS by the conditional-VaR walk-forward driver inside `run_conditional_var_all_families.jl` | Pipeline A; W2 = COVID, W4 = 2022 rate-hike. The earlier seventh fold (`run_walkforward_w7.jl`) was archived to `_attic_v10/runners/`; the body uses the six-fold rolling-origin design |
 | **Quarterly refit window** | every 63 trading days, rolling | varies | SPY (univariate) and 6-asset (Pipeline B) | `run_quarterly_refit_conditional_var.jl`, `run_sector_panel_quarterly_refit.jl` | Both pipelines, deployment recipe |
 | **Cross-decade IS / OoS (CRSP)** | IS 1994-01-03 to 2004-01-02 (~2520); OoS 2004-01-05 to 2006-04-28 (~585) | ~3,100 | SPY plus 28 of the 30 sector-panel tickers (NEE and APD missing from CRSP query) | WRDS day-pass, `data/external/crsp_1994_2006.csv` | Pipeline A, cross-decade independence test (`run_cross_decade_validation.jl`) |
 | **Non-equity stress** | same as body windows | 2,516 IS / 573 OoS | GLD, SLV | Same Polygon/Alpaca bundles | Both pipelines, scope-boundary test |
