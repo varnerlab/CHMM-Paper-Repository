@@ -18,7 +18,64 @@ We model $G_t$ as a continuous HMM $\mathcal{M} = (\mathcal{S}, \mathbf{T}, \mat
 \end{equation}
 with $\bar{\boldsymbol\pi}$ the stationary distribution. Existence and uniqueness require irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred} in \S\ref{sec:theory}). We learn $\mathbf{T}$, $\boldsymbol\theta_{1:K}$, and $\boldsymbol{\pi}$ jointly by EM (\S\ref{sec:estimation}).
 
-The four emission families share a single forward-backward scaffold and quantile-based initialization; the M-step is the only architectural difference. \emph{CHMM-N}: $f_k = \mathcal{N}(\mu_k, \sigma_k^2)$. \emph{CHMM-t}: $f_k = t_{\nu_k}(\mu_k, \sigma_k)$ with per-state degrees of freedom $\nu_k \in [\nu_{\min}, \nu_{\max}]$. \emph{CHMM-L}: $f_k = \mathrm{Laplace}(\mu_k, \beta_k)$ with per-state Laplace scale denoted $\beta_k$ to avoid collision with the canonical Laplace-scale symbol $b$. \emph{CHMM-GED}: $f_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$ with per-state shape $p_k \in [p_{\min}, p_{\max}]$ that nests Gaussian ($p_k = 2$) and Laplace ($p_k = 1$). The architectural diagram is in Appendix~\ref{sec:supp_architecture}.
+The four emission families share a single forward-backward scaffold and quantile-based initialization; the M-step is the only architectural difference (Figure~\ref{fig:chmm_architecture}). \emph{CHMM-N}: $f_k = \mathcal{N}(\mu_k, \sigma_k^2)$. \emph{CHMM-t}: $f_k = t_{\nu_k}(\mu_k, \sigma_k)$ with per-state degrees of freedom $\nu_k \in [\nu_{\min}, \nu_{\max}]$. \emph{CHMM-L}: $f_k = \mathrm{Laplace}(\mu_k, \beta_k)$ with per-state Laplace scale denoted $\beta_k$ to avoid collision with the canonical Laplace-scale symbol $b$. \emph{CHMM-GED}: $f_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$ with per-state shape $p_k \in [p_{\min}, p_{\max}]$ that nests Gaussian ($p_k = 2$) and Laplace ($p_k = 1$).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    font=\small,
+    >={Stealth[length=2mm, width=1.6mm]},
+    state/.style={draw, circle, minimum size=9mm, inner sep=0pt,
+                  fill=black!4, thick},
+    obs/.style={draw, rectangle, rounded corners=1pt, minimum size=9mm,
+                inner sep=1pt, fill=black!10, thick},
+    emit/.style={draw, rectangle, rounded corners=1.5pt, align=center,
+                 minimum height=10mm, minimum width=34mm, inner sep=1.5mm,
+                 fill=black!3},
+    block/.style={draw, rectangle, rounded corners=1.5pt, align=center,
+                  minimum height=11mm, minimum width=34mm, inner sep=1.5mm,
+                  fill=black!6, thick},
+    flow/.style={-Stealth, thick, black!75},
+    lbl/.style={font=\footnotesize\itshape, black!65, inner sep=1pt},
+    eq/.style={font=\footnotesize, inner sep=1pt},
+]
+\node[state] (s1) at (0, 0) {$s_{t-1}$};
+\node[state, right=14mm of s1] (s2) {$s_t$};
+\node[state, right=14mm of s2] (s3) {$s_{t+1}$};
+\node[left=6mm of s1] (sdots) {$\cdots$};
+\node[right=6mm of s3] (edots) {$\cdots$};
+\draw[flow] (sdots) -- (s1);
+\draw[flow] (s1) -- (s2) node[midway, above, eq] {$T_{ij}$};
+\draw[flow] (s2) -- (s3) node[midway, above, eq] {$T_{ij}$};
+\draw[flow] (s3) -- (edots);
+\node[lbl, above=2mm of s2] {latent regime chain $s_t \in \{1,\ldots,K\}$};
+\node[obs, below=12mm of s1] (o1) {$G_{t-1}$};
+\node[obs, below=12mm of s2] (o2) {$G_t$};
+\node[obs, below=12mm of s3] (o3) {$G_{t+1}$};
+\draw[flow] (s1) -- (o1) node[midway, right, eq] {$b_{s_{t-1}}$};
+\draw[flow] (s2) -- (o2) node[midway, right, eq] {$b_{s_t}$};
+\draw[flow] (s3) -- (o3) node[midway, right, eq] {$b_{s_{t+1}}$};
+\node[lbl, below=2mm of o2] {observed excess growth rate $G_t \in \mathbb{R}$};
+\node[emit, minimum width=28mm, below=20mm of o1.south west, anchor=north west] (eN)
+    {\textbf{CHMM-N} \\ $b_k = \mathcal{N}(\mu_k, \sigma_k^2)$};
+\node[emit, minimum width=28mm, right=2mm of eN] (eT)
+    {\textbf{CHMM-t} \\ $b_k = t_{\nu_k}(\mu_k, \sigma_k)$};
+\node[emit, minimum width=28mm, right=2mm of eT] (eL)
+    {\textbf{CHMM-L} \\ $b_k = \mathrm{Laplace}(\mu_k, \beta_k)$};
+\node[emit, minimum width=28mm, right=2mm of eL] (eG)
+    {\textbf{CHMM-GED} \\ $b_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$};
+\node[lbl, above=1mm of eT, anchor=south] {per-state emission family (one per CHMM variant)};
+\node[block, right=18mm of edots] (mstep)
+    {M-step\\ update $\mathbf{T}$, $\{\boldsymbol\theta_k\}$\\ (family-specific)};
+\node[block, below=6mm of mstep] (estep)
+    {E-step\\ forward--backward\\ $\gamma_t(k),\ \xi_t(i,j)$};
+\draw[flow, black!75] ([xshift=-3mm]mstep.south) -- ([xshift=-3mm]estep.north);
+\draw[flow, black!75] ([xshift=3mm]estep.north) -- ([xshift=3mm]mstep.south);
+\node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
+\end{tikzpicture}
+\caption{\textbf{CHMM architecture and training loop.} A $K$-state latent Markov chain with transition matrix $\mathbf{T}$ generates the regime sequence $s_t$; each $s_t$ emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}$. The four CHMM variants share everything except the emission family. EM alternates an E-step (log-space forward--backward) and a family-specific M-step until $|\Delta \mathcal L| < 10^{-4}$.}
+\label{fig:chmm_architecture}
+\end{figure}
 
 \subsection{Benchmark Generators}
 \label{sec:benchmarks}

@@ -79,14 +79,7 @@ again by a $40$-iteration golden-section search over $[p_{\min}, p_{\max}] = [0.
 \subsubsection{Algorithm Descriptions}
 \label{sec:algorithms}
 
-This section provides detailed pseudocode for the main algorithms used in this study.
-Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all four emission families.
-It makes explicit the \emph{shared scaffold} (quantile-based initialization, log-space forward-backward, transition update) and the four \emph{family-specific branches} (Gaussian M-step for CHMM-N, ECM with one-dimensional golden-section $\nu$-search for CHMM-t, closed-form weighted-median + weighted-MAD for CHMM-L, three-stage CM with bracketed $p_k$ for CHMM-GED); the branch points are lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep}.
-Visualizing the four variants as a single algorithm with four M-step branches makes the architectural contribution of the paper (one EM engine, four interchangeable emission families) immediate from the pseudocode.
-Algorithm~\ref{alg:viterbi} presents the Viterbi algorithm for decoding the most likely hidden state sequence.
-Algorithm~\ref{alg:chmm_simulate} describes the CHMM simulation procedure for generating synthetic return paths.
-Algorithm~\ref{alg:copula_sim} describes the cross-asset rank-reordering simulator for copula-based multi-asset synthesis.
-Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline.
+Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all four emission families: a shared scaffold (quantile-based initialisation, log-space forward-backward, transition update) plus four family-specific branches at lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep}. Algorithm~\ref{alg:chmm_simulate} is the simulator. Algorithm~\ref{alg:copula_sim} is the cross-asset rank-reordering simulator (Pipeline~B). Viterbi and SIM-resampling pseudocode is in \texttt{CHMM-Model/src/Compute.jl} and \texttt{src/CrossAsset.jl} respectively; both are textbook constructions and we omit them from the appendix.
 
 % ========================================================================================= %
 % Algorithm 1: Baum-Welch (EM) for Continuous Gaussian HMM
@@ -168,37 +161,7 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \newcommand{\algecmstudentt}{\ref{alg:chmm_em}}
 \newcommand{\algemlaplace}{\ref{alg:chmm_em}}
 
-% ========================================================================================= %
-% Algorithm 2: Viterbi Decoding
-% ========================================================================================= %
-\begin{algorithm}[tp]
-\caption{Viterbi decoding for the most likely hidden state sequence}
-\label{alg:viterbi}
-\small
-\begin{algorithmic}[1]
-\REQUIRE Observations $O_{1:T}$, Trained CHMM $\mathcal{M} = (\mathbf{T}, \{\mu_k, \sigma_k\}, \boldsymbol{\pi})$
-\ENSURE Most probable state sequence $S_{1:T}^*$
-
-\FOR{$k = 1$ to $K$}
-    \STATE $\log \delta_1(k) \leftarrow \log(1/K) + \log \mathcal{N}(O_1 \mid \mu_k, \sigma_k^2)$.
-\ENDFOR
-
-\FOR{$t = 2$ to $T$}
-    \FOR{$j = 1$ to $K$}
-        \STATE $\text{vals}(i) \leftarrow \log \delta_{t-1}(i) + \log T_{ij}$ for all $i$.
-        \STATE $\log \delta_t(j) \leftarrow \max_i \text{vals}(i) + \log \mathcal{N}(O_t \mid \mu_j, \sigma_j^2)$.
-        \STATE $\psi_t(j) \leftarrow \arg\max_i \text{vals}(i)$.
-    \ENDFOR
-\ENDFOR
-
-\STATE $S_T^* \leftarrow \arg\max_k \log \delta_T(k)$.
-\FOR{$t = T-1$ down to $1$}
-    \STATE $S_t^* \leftarrow \psi_{t+1}(S_{t+1}^*)$.
-\ENDFOR
-
-\RETURN $S_{1:T}^*$
-\end{algorithmic}
-\end{algorithm}
+% Viterbi pseudocode omitted (textbook construction; reference implementation in CHMM-Model/src/Compute.jl).
 
 % ========================================================================================= %
 % Algorithm 3: CHMM Simulation
@@ -260,34 +223,8 @@ Algorithm~\ref{alg:sim_build} details the SIM regression-and-resampling pipeline
 \end{algorithmic}
 \end{algorithm}
 
-% ========================================================================================= %
-% Algorithm 5: SIM fit and simulate
-% ========================================================================================= %
-\begin{algorithm}[tp]
-\caption{Single Index Model (SIM) construction and simulation}
-\label{alg:sim_build}
-\small
-\begin{algorithmic}[1]
-\REQUIRE IS return matrix $\mathbf{R} \in \mathbb{R}^{T \times d}$, market-column index $m$, market CHMM $\mathcal{M}_m$, path length $T$, number of paths $P$
-\ENSURE Cross-asset path tensor $\{\hat{G}^{(p)}_{j,t}\}$ of shape $T \times d \times P$
-
-\STATE \textbf{Ordinary least squares (OLS) fit.} For $j \neq m$:
-\STATE \quad $\hat{\beta}_j \leftarrow \text{Cov}(\mathbf{R}_{:,j}, \mathbf{R}_{:,m}) / \text{Var}(\mathbf{R}_{:,m})$
-\STATE \quad $\hat{\alpha}_j \leftarrow \overline{\mathbf{R}_{:,j}} - \hat{\beta}_j \overline{\mathbf{R}_{:,m}}$
-\STATE \quad $\hat{\eta}_{j,t} \leftarrow R_{t,j} - \hat{\alpha}_j - \hat{\beta}_j R_{t,m}$, \; $R^2_j \leftarrow 1 - \sum_t \hat{\eta}_{j,t}^2 / \sum_t (R_{t,j} - \overline{\mathbf{R}_{:,j}})^2$
-
-\FOR{$p = 1$ to $P$}
-    \STATE Simulate market path $G_{m,1:T}^{(p)}$ from $\mathcal{M}_m$ via Algorithm~\ref{alg:chmm_simulate}.
-    \STATE $\hat{G}_{m,t}^{(p)} \leftarrow G_{m,t}^{(p)}$.
-    \FOR{$j \neq m$}
-        \STATE Draw residual indices $\{\iota_t\}_{t=1}^T \sim \text{Uniform}(\{1, \dots, T\})$.
-        \STATE $\hat{G}_{j,t}^{(p)} \leftarrow \hat{\alpha}_j + \hat{\beta}_j G_{m,t}^{(p)} + \hat{\eta}_{j,\iota_t}$.
-    \ENDFOR
-\ENDFOR
-
-\RETURN $\{\hat{G}^{(p)}_{j,t}\}$
-\end{algorithmic}
-\end{algorithm}
+% SIM pseudocode omitted (standard rank-one factor regression with bootstrap residual resampling;
+% reference implementation in CHMM-Model/src/CrossAsset.jl).
 
 
 \subsubsection{Per-State Shape Diagnostics: CHMM-t and CHMM-GED}
@@ -413,62 +350,5 @@ Sweep & $p_{\min}$ & $p_{\max}$ & LL & $\hat p_{\min}$ & nG & nI & nL & nS & KS 
 \label{fig:pipeline_schematic}
 \end{figure}
 
-\subsubsection{CHMM Architecture and Training Loop}
-\label{sec:supp_architecture}
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-    font=\small,
-    >={Stealth[length=2mm, width=1.6mm]},
-    state/.style={draw, circle, minimum size=9mm, inner sep=0pt,
-                  fill=black!4, thick},
-    obs/.style={draw, rectangle, rounded corners=1pt, minimum size=9mm,
-                inner sep=1pt, fill=black!10, thick},
-    emit/.style={draw, rectangle, rounded corners=1.5pt, align=center,
-                 minimum height=10mm, minimum width=34mm, inner sep=1.5mm,
-                 fill=black!3},
-    block/.style={draw, rectangle, rounded corners=1.5pt, align=center,
-                  minimum height=11mm, minimum width=34mm, inner sep=1.5mm,
-                  fill=black!6, thick},
-    flow/.style={-Stealth, thick, black!75},
-    lbl/.style={font=\footnotesize\itshape, black!65, inner sep=1pt},
-    eq/.style={font=\footnotesize, inner sep=1pt},
-]
-\node[state] (s1) at (0, 0) {$s_{t-1}$};
-\node[state, right=14mm of s1] (s2) {$s_t$};
-\node[state, right=14mm of s2] (s3) {$s_{t+1}$};
-\node[left=6mm of s1] (sdots) {$\cdots$};
-\node[right=6mm of s3] (edots) {$\cdots$};
-\draw[flow] (sdots) -- (s1);
-\draw[flow] (s1) -- (s2) node[midway, above, eq] {$T_{ij}$};
-\draw[flow] (s2) -- (s3) node[midway, above, eq] {$T_{ij}$};
-\draw[flow] (s3) -- (edots);
-\node[lbl, above=2mm of s2] {latent regime chain $s_t \in \{1,\ldots,K\}$};
-\node[obs, below=12mm of s1] (o1) {$G_{t-1}$};
-\node[obs, below=12mm of s2] (o2) {$G_t$};
-\node[obs, below=12mm of s3] (o3) {$G_{t+1}$};
-\draw[flow] (s1) -- (o1) node[midway, right, eq] {$b_{s_{t-1}}$};
-\draw[flow] (s2) -- (o2) node[midway, right, eq] {$b_{s_t}$};
-\draw[flow] (s3) -- (o3) node[midway, right, eq] {$b_{s_{t+1}}$};
-\node[lbl, below=2mm of o2] {observed excess growth rate $G_t \in \mathbb{R}$};
-\node[emit, minimum width=28mm, below=20mm of o1.south west, anchor=north west] (eN)
-    {\textbf{CHMM-N} \\ $b_k = \mathcal{N}(\mu_k, \sigma_k^2)$};
-\node[emit, minimum width=28mm, right=2mm of eN] (eT)
-    {\textbf{CHMM-t} \\ $b_k = t_{\nu_k}(\mu_k, \sigma_k)$};
-\node[emit, minimum width=28mm, right=2mm of eT] (eL)
-    {\textbf{CHMM-L} \\ $b_k = \mathrm{Laplace}(\mu_k, \beta_k)$};
-\node[emit, minimum width=28mm, right=2mm of eL] (eG)
-    {\textbf{CHMM-GED} \\ $b_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$};
-\node[lbl, above=1mm of eT, anchor=south] {per-state emission family (one per CHMM variant)};
-\node[block, right=18mm of edots] (mstep)
-    {M-step\\ update $\mathbf{T}$, $\{\boldsymbol\theta_k\}$\\ (family-specific)};
-\node[block, below=6mm of mstep] (estep)
-    {E-step\\ forward--backward\\ $\gamma_t(k),\ \xi_t(i,j)$};
-\draw[flow, black!75] ([xshift=-3mm]mstep.south) -- ([xshift=-3mm]estep.north);
-\draw[flow, black!75] ([xshift=3mm]estep.north) -- ([xshift=3mm]mstep.south);
-\node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
-\end{tikzpicture}
-\caption{\textbf{CHMM architecture and training loop.} A $K$-state latent Markov chain with transition matrix $\mathbf{T}$ generates the regime sequence $s_t$; each $s_t$ emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}$. The four CHMM variants share everything except the emission family. EM alternates an E-step (log-space forward--backward) and a family-specific M-step until $|\Delta \mathcal L| < 10^{-4}$.}
-\label{fig:chmm_architecture}
-\end{figure}
+% CHMM architecture diagram has been promoted to body Figure~\ref{fig:chmm_architecture}
+% in sections/model.tex (arXiv-prep pass).

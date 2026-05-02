@@ -77,50 +77,10 @@ CHMM-GED          & $81.0$ & $0.327$ & $0.010$ & $0.837$ & $44.4$ & $53.6$ \\
 
 The cross-generator ordering on the OoS window matches the IS ordering: i.i.d.\ bootstrap $>$ CHMM-t $>$ CHMM-N / CHMM-GED $>$ CHMM-L $\gg$ GARCH(1,1). The asymp-vs-block gap is larger on OoS ($\sim 25$pp drop for the CHMM family at $L = 20$) than on IS ($\sim 5$pp), but the qualitative ordering and the CHMM-over-GARCH advantage are preserved across calibrations: under the block-aware OoS test, CHMM-t ($61.6\%$ at $L = 20$) sits roughly $30$pp above GARCH(1,1) ($31.4\%$). The CHMM-t entry is the strongest CHMM family on the OoS block-aware metric, marginally above CHMM-GED and CHMM-N. The block-bootstrap concern raised in the body text is therefore answered: the CHMM-vs-GARCH cross-generator ordering is window-robust under block-aware recalibration.
 
-\subsubsection{Bandwidth, Bin-Count, and Multi-Seed Robustness}
-\label{sec:tier3_robustness}
-
-\paragraph{Multi-seed Monte Carlo on headline metrics.}
-The paper reports headline statistics under a single global seed. We re-run the CHMM-N / -t / -L / -GED pipeline at $K = 18$ across ten alternative global seeds (base $20260422$, increment $100$) with $N_{\text{paths}} = 250$ per seed and report mean $\pm$ std for the headline metrics in Table~\ref{tab:multiseed_headline}. Seed-to-seed variability is small: IS KS std is $1.2$--$1.8\%$; OoS KS std is $1.8$--$3.6\%$; simulated IS kurtosis std is $0.06$ for CHMM-N, $0.05$ for CHMM-L, $0.09$ for CHMM-GED, and $1.95$ for CHMM-t (reflecting the well-known instability of the per-state $\nu_k$ ECM at moderate $K$, already discussed in Section~\ref{sec:discussion}). Kupiec $\text{LR}_{\text{uc}}^{1\%}$ has std up to $1.25$ for CHMM-N because the breach count moves on a coarse $0$--$10$ grid at $T_{\text{OoS}} = 572$. The single-seed headline numbers in Table~\ref{tab:model_comparison} sit comfortably inside the multi-seed bands. CHMM-GED has the highest mean IS KS pass rate among the four families ($95.9\%$), consistent with its single-seed headline value.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{Multi-seed Monte Carlo on headline metrics}. Ten global seeds; $N_{\text{paths}} = 250$ per seed (reduced from the headline panel's $1{,}000$ for tractability across $40$ fits, so the seed-to-seed std reported here is an upper bound on the std the headline panel would show at $N_{\text{paths}} = 1{,}000$). Both ACF-MAE columns parallel Table~\ref{tab:model_comparison}: $|G_t|$ for volatility clustering, $G_t$ for linear autocorrelation.}
-\label{tab:multiseed_headline}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{l c c c c c c c}
-\toprule
-Model & IS KS \% & OoS KS \% & sim Kurt & ACF-MAE $|G_t|$ & ACF-MAE $G_t$ & $\text{LR}_{\text{uc}}^{1\%}$ & $\text{LR}_{\text{uc}}^{5\%}$ \\
-\midrule
-CHMM-N & $94.7 \pm 1.2$ & $82.6 \pm 1.8$ & $5.03 \pm 0.06$ & $0.0467 \pm 0.0006$ & $0.0173 \pm 0.0001$ & $2.12 \pm 1.25$ & $3.83 \pm 0.00$ \\
-CHMM-t & $94.6 \pm 1.2$ & $\mathbf{85.6 \pm 1.9}$ & $13.95 \pm 1.95$ & $0.0518 \pm 0.0003$ & $0.0170 \pm 0.0001$ & $0.54 \pm 0.15$ & $3.19 \pm 0.34$ \\
-CHMM-L & $94.4 \pm 1.8$ & $80.8 \pm 3.6$ & $6.71 \pm 0.05$ & $0.0537 \pm 0.0003$ & $0.0171 \pm 0.0001$ & $3.26 \pm 0.00$ & $2.71 \pm 0.59$ \\
-CHMM-GED & $\mathbf{95.9 \pm 1.2}$ & $83.2 \pm 2.7$ & $5.15 \pm 0.09$ & $0.0513 \pm 0.0003$ & $0.0171 \pm 0.0001$ & $2.93 \pm 0.71$ & $3.75 \pm 0.25$ \\
-\bottomrule
-\end{tabular}%
-}
-\end{table}
-
-\subsubsection{Block-Bootstrap Baseline}
-\label{sec:block_bootstrap_supp}
-
-Table~\ref{tab:block_bootstrap} reports the full seven-metric panel for the stationary block bootstrap at block length $b = 10$ trading days, the temporally-aware non-parametric baseline added to Table~\ref{tab:model_comparison}.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{Stationary block bootstrap (block length $b = 10$ trading days) on SPY (1{,}000 paths, seed = 20260420).}
-\label{tab:block_bootstrap}
-\begin{tabular}{l cc cc c c c c}
-\toprule
-Window & KS & AD & Kurt & ACF-MAE & $W_1$ & $H$ & Cov \\
-\midrule
-IS  & 99.2 & 96.4 & 7.07 & 0.0568 & 0.092 & 0.0534 & 100.0 \\
-OoS & 87.5 & 86.4 & 5.34 & 0.0512 & 0.225 & 0.1570 & 86.9  \\
-\bottomrule
-\end{tabular}
-\end{table}
+% Multi-seed Monte Carlo on headline metrics: seed-to-seed std is small (IS KS std 1.2-1.8\%, OoS KS std 1.8-3.6\%);
+% companion CSV at CHMM-Model/results/multiseed_headline/.
+% Stationary block bootstrap baseline (block length b = 10) is summarised in body Table~\ref{tab:model_comparison}
+% and detailed in CHMM-Model/results/block_bootstrap/.
 
 \subsubsection{QuantGAN Deep-Generative Baseline}
 \label{sec:quantgan_supp}
@@ -150,43 +110,8 @@ The trained model is callable through the same \texttt{simulate} interface as th
 
 We add five conditional-volatility baselines, the three semi-Markov CHMM variants, and the QuantGAN deep-generative baseline (Appendix~\ref{sec:quantgan_supp}) to the single GARCH(1,1) Gaussian row of Table~\ref{tab:model_comparison}. The conditional-volatility models are fit by grid-initialised Nelder-Mead maximum likelihood on the SPY IS window ($T_{\text{IS}} = 2{,}516$); simulation follows the same recursion used in estimation. Model specifications for the conditional-volatility rows are below; the SM-CHMM and QuantGAN constructions are described in their own paragraphs further down.
 
-\paragraph{EGARCH(1,1) Gaussian.}
-The exponential GARCH of \citet{nelson1991conditional} evolves $\log \sigma_t^2$ in levels:
-\begin{equation}
-    \log \sigma_t^2 = \omega + \beta \log \sigma_{t-1}^2 + \alpha \left(|z_{t-1}| - \sqrt{2/\pi}\right) + \gamma z_{t-1},
-    \qquad z_t = (r_t - \mu) / \sigma_t,\ \ z_t \sim \mathcal{N}(0,1).
-\end{equation}
-The log-variance formulation removes the GARCH positivity constraints, and the leverage term $\gamma z_{t-1}$ captures the asymmetric response to negative returns.
-
-\paragraph{GJR-GARCH(1,1) Gaussian.}
-The threshold GARCH of \citet{glosten1993relation} / \citet{zakoian1994threshold} augments GARCH(1,1) with an indicator on negative innovations:
-\begin{equation}
-    \sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \gamma \varepsilon_{t-1}^2 \mathbf{1}\{\varepsilon_{t-1} < 0\} + \beta \sigma_{t-1}^2,
-\end{equation}
-with $\varepsilon_t = r_t - \mu$. Stationarity requires $\alpha + \beta + \gamma/2 < 1$; positive $\gamma$ indicates leverage.
-
-\paragraph{GARCH(1,1) Student-t innovations.}
-A direct tail-aware competitor to CHMM-t: the GARCH(1,1) variance recursion is unchanged, but innovations follow a standardised Student-t with $\nu > 2$ degrees of freedom rescaled to unit variance. The log-likelihood uses the Student-t density:
-\begin{equation}
-    r_t - \mu = \sigma_t \cdot z_t, \qquad z_t = \eta_t \sqrt{(\nu - 2)/\nu}, \qquad \eta_t \sim t_\nu.
-\end{equation}
-The fitted $\hat\nu = 6.89$ on SPY IS sits inside the moderate-tail regime the equity-risk literature typically reports.
-
-\paragraph{HAR-RV on daily squared returns.}
-The heterogeneous-autoregressive model of \citet{corsi2009simple} models realised variance as a mixture of daily, weekly, and monthly components:
-\begin{equation}
-    \log \text{RV}_t = \beta_0 + \beta_d \log \text{RV}_{t-1} + \beta_w \log \overline{\text{RV}}_{t-5:t-1} + \beta_m \log \overline{\text{RV}}_{t-22:t-1} + \eta_t.
-\end{equation}
-In the absence of intraday bars we use daily squared demeaned returns as the RV proxy; simulation samples $\eta_t \sim \mathcal{N}(0, \hat\sigma_\eta^2)$ and rolls forward the recursion, then draws $r_t - \mu = \sqrt{\text{RV}_t}\, z_t$ with $z_t \sim \mathcal{N}(0, 1)$.
-
-\paragraph{MS-GARCH $K = 3$.}
-A three-regime extension of the Markov-switching GARCH(1,1) ($G_t = \mu + \sigma_t z_t$ with regime-specific recursion $\sigma_t^2(k) = \omega_k + \alpha_k(G_{t-1} - \mu)^2 + \beta_k \sigma_{t-1}^2(k)$). Parameter layout is three regime triples $(\omega_k, \alpha_k, \beta_k)$ plus six transition-matrix logits (softmax-normalised per row, enforcing a non-trivial diagonal); fit by grid-initialised Nelder-Mead. States are canonicalised by ascending unconditional variance, producing the calm / medium / stress decomposition $\sigma = [0.10, 1.77, 10.04]$ on SPY IS.
-
-\paragraph{MS-GARCH $K = 2$ (Haas-Mittnik-Paolella 2004).}
-The path-independent two-regime variant of \citet{haas2004new}. Regime stickiness is high: $p_{11} = 0.915$ (calm) and $p_{22} = 0.547$ (stress), with unconditional standard deviations $0.97$ (calm) and $12.67$ (stress); the calm regime is near-GARCH behaviour and the stress regime is a rare, transient high-variance mode. Common $\mu = 0.094$, log-likelihood $-4{,}965$.
-
-\paragraph{MS-GARCH $K = 4$ and $K = 6$.}
-A natural concern with the $K = 2$ baseline is that it is unfairly low against a $K = 18$ CHMM. We refit the same Haas-Mittnik-Paolella specification at $K = 4$ ($24$ parameters: $3K = 12$ GARCH triples plus $K(K - 1) = 12$ transition logits) and $K = 6$ ($48$ parameters), via Nelder-Mead with diagonal-dominant $\mathbf T$ initialisation, geometric variance-ratio spread across regimes, and ascending-variance regime canonicalisation. Higher-$K$ MS-GARCH does not close the gap to the CHMM family on the headline distributional metric: IS KS rises only marginally from $27.7\%$ at $K = 2$ to $37.6\%$ at $K = 4$ and falls back to $34.5\%$ at $K = 6$, against $94.1\%$ for CHMM-N at $K = 18$ (a 56-percentage-point gap). The OoS KS exhibits the same plateau pattern ($38.7\%$ at $K = 2$, $38.2\%$ at $K = 4$, $33.4\%$ at $K = 6$). Log-likelihoods on the $T_{\text{IS}} = 2{,}516$ window saturate at the same value within Monte Carlo noise ($-4{,}965, -4{,}965, -4{,}952, -4{,}956$ for $K = 2, 3, 4, 6$). The MS-GARCH ceiling on this universe is therefore not a low-$K$ issue: the unimodal-innovation constraint (each regime's emission is a Gaussian rescaled by the regime's conditional variance) is the binding constraint, and adding regimes does not relax it. The CHMM family decouples this constraint by giving each state its own emission-mixture component, which is the structural advantage at moderate $K$.
+\paragraph{Baselines fitted in this panel.}
+The conditional-volatility rows comprise EGARCH(1,1) Gaussian \citep{nelson1991conditional}, GJR-GARCH(1,1) \citep{glosten1993relation, zakoian1994threshold}, GARCH(1,1) with Student-$t$ innovations \citep{bollerslev1987conditionally} ($\hat\nu = 6.89$), HAR-RV \citep{corsi2009simple} on daily squared demeaned returns as the RV proxy, and Markov-switching GARCH(1,1) \citep{haas2004new} at $K \in \{2, 3, 4, 6\}$ with regime triples $(\omega_k, \alpha_k, \beta_k)$ plus softmax-normalised transition logits, fitted by grid-initialised Nelder-Mead and canonicalised by ascending unconditional variance. Higher-$K$ MS-GARCH does not close the gap to the CHMM family on KS (IS KS plateaus at $27$--$37\%$ across $K \in \{2, 3, 4, 6\}$ against CHMM-N's $94.1\%$ at $K = 18$); the binding constraint is the unimodal-innovation per-regime structure (each regime's emission is Gaussian rescaled by the regime's conditional variance), which adding regimes does not relax. The CHMM decouples this constraint by giving each state its own emission-mixture component. Implementation details for every conditional-volatility row are in \texttt{CHMM-Model/run\_msgarch\_baselines.jl} and the supporting source files in \texttt{src/Compute.jl}.
 
 \paragraph{MS-GARCH reference Bayesian re-run via \texttt{MSGARCH}.}
 Following pre-submission peer-review request, we re-run the same Markov-switching GARCH(1,1) specification through the reference \texttt{MSGARCH} R package of \citet{ardia2019msgarch} (version $2.51$) at $K \in \{2, 3, 4\}$, driven from the Julia harness via \texttt{RCall.jl}. The fit is fully Bayesian (DEMC sampler with the package's default proper priors, $12{,}500$ MCMC draws, $2{,}500$ burn-in, thin $10$, single chain); all $1{,}000$ simulated paths are posterior-predictive (one path per retained posterior draw), so the simulated marginal integrates parameter uncertainty path-by-path. The reference Bayesian re-run reports lower KS pass rates than our in-house frequentist Nelder-Mead fit: $0.0\%$ ($K = 2$), $0.1\%$ ($K = 3$), $0.0\%$ ($K = 4$) IS, and $5.8\%$ ($K = 2$), $5.1\%$ ($K = 3$), $5.3\%$ ($K = 4$) OoS, against the in-house plateau of $27$--$37\%$ IS / $33$--$39\%$ OoS. The gap is methodological rather than estimator-quality: the in-house implementation generates all $1{,}000$ paths from one MLE point estimate, so the simulated marginal is tighter; the reference Bayesian implementation samples one set of parameters per path from the posterior, so the simulated marginal is wider and accordingly fewer paths fall within the asymptotic two-sample KS critical band. Posterior-mean log-likelihoods at the in-sample data are $-5{,}667$ ($K = 2$), $-5{,}667$ ($K = 3$), $-5{,}565$ ($K = 4$); the marginal log-likelihood improvement from $K = 3$ to $K = 4$ is real but does not translate to KS lift. Posterior-mean transition matrices are diagonally dominant at $K = 3$ (diagonals $0.97, 0.93, 0.90$) and less so at $K = 4$ (diagonals $0.66, 0.39, 0.32, 0.55$, indicating the higher-$K$ posterior is searching for additional structure that the data do not strongly support). The reference Bayesian re-run is therefore consistent with the in-house frequentist plateau at the same conclusion under either estimator: vanilla Gaussian-innovation MS-GARCH at $K \le 4$ does not match the CHMM family on the headline KS metric for this universe. Reproducibility: R $4.6.0$, MSGARCH $2.51$, all transitive R dependencies pinned via \texttt{renv} (\texttt{r\_msgarch/renv.lock} of the companion code repository), all seeds explicit; full per-$K$ parameter posteriors and fit logs are written to \texttt{results/msgarch\_reference/} of the companion code repository.

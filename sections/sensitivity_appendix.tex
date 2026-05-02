@@ -1,117 +1,7 @@
-\subsubsection{Full State-Resolution Sensitivity Table}
+\subsubsection{Full State-Resolution Sensitivity Table (companion artefact)}
 \label{sec:sensitivity_table}
 
-Table~\ref{tab:sensitivity} reports the full $K$-sweep referenced in Section~\ref{sec:k_selection_results} of the main text.
-Observed excess kurtosis is $7.68$ IS and $5.29$ OoS at all $K$.
-
-\begin{table}[H]
-\centering
-\caption{State resolution sensitivity for SPY CHMM-N (1{,}000 paths, $\alpha = 0.05$). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison} in the main text. IS coverage was 100\% at every $K$; OoS coverage is reported separately. ACF-MAE columns: $|G_t|$ measures the volatility-clustering reproduction; $G_t$ measures linear-autocorrelation reproduction (parallel to $|G_t|$, both averaged over lags 1--252).}
-\label{tab:sensitivity}
-\small
-\begin{tabular}{c cc cc cc cc c c c}
-\toprule
-& \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & \multicolumn{2}{c}{Kurtosis} & \multicolumn{2}{c}{ACF-MAE} & & & \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
-$K$ & IS & OoS & IS & OoS & Obs & Sim & $|G_t|$ & $G_t$ & $W_1$ & $H$ & Cov OoS (\%) \\
-\midrule
-3  & 89.0 & 77.2 & 78.9 & 68.6 & 7.68 & 3.82 & 0.0463 & 0.0240 & 0.131 & 0.0839 & 94.9 \\
-6  & 92.9 & 78.7 & 84.3 & 74.3 & 7.68 & 5.38 & 0.0496 & 0.0238 & 0.116 & 0.0829 & 90.9 \\
-9  & 93.0 & 81.4 & 84.4 & 74.4 & 7.68 & 4.63 & 0.0492 & 0.0238 & 0.118 & 0.0810 & 91.9 \\
-12 & 94.9 & 81.6 & 85.8 & 75.0 & 7.68 & 4.57 & 0.0500 & 0.0238 & 0.113 & 0.0801 & 91.9 \\
-15 & 93.9 & 81.0 & 84.8 & 73.5 & 7.68 & 4.89 & 0.0508 & 0.0238 & 0.114 & 0.0804 & 88.9 \\
-\textbf{18} & 94.8 & 85.5 & 88.2 & 79.7 & 7.68 & 5.04 & 0.0515 & 0.0237 & 0.110 & 0.0807 & 91.9 \\
-21 & \textbf{95.6} & \textbf{88.0} & \textbf{89.1} & \textbf{78.8} & 7.68 & 3.78 & 0.0534 & \textbf{0.0236} & 0.112 & 0.0801 & \textbf{99.0} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsubsection{Multi-Emission State-Resolution Sensitivity}
-\label{sec:multi_emission_sensitivity}
-
-Table~\ref{tab:sensitivity_multi} extends Table~\ref{tab:sensitivity} across the four emission families, confirming that the qualitative operating point $K = 18$ is stable when the Gaussian component is replaced with Student-t, Laplace, or GED emissions.
-For CHMM-t the per-state degrees of freedom $\nu_k$ are refit by ECM-plus-golden-section at every $K$; for CHMM-L the weighted-median location and weighted MAD scale are closed form and impose no additional cost; for CHMM-GED the three-stage CM update of Section~\ref{sec:mstep} refits $(\mu_k, \alpha_k, p_k)$ at every $K$ with $p_k$ bracketed in $[0.5, 3.0]$.
-Three patterns extend from Table~\ref{tab:sensitivity} to the new families.
-First, the distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band for all four families: CHMM-t reaches its highest IS KS at $K = 18$ ($94.6\%$), CHMM-L reaches its highest IS KS at $K = 18$ ($94.2\%$) and its highest IS AD at $K = 18$ ($91.4\%$), and CHMM-GED reaches its highest IS KS at $K = 12$ ($97.6\%$) and the highest entry across the entire panel.
-Once a family enters the plateau the operating point is flat with respect to $K$, so we report the main-text results at the same $K = 18$ used for CHMM-N.
-Second, the absolute-return ACF-MAE remains within the narrow $0.046$--$0.058$ band across the four families, and the raw-return ACF-MAE remains essentially constant at $\approx 0.024$ across all $28$ (family, $K$) combinations. Both temporal axes are properties of the regime structure rather than the emission family: $|G_t|$ ACF reproduction is governed by the eigenvalue spectrum of $\mathbf T$ (Section~\ref{sec:theory}), and raw-$G_t$ ACF is null in expectation under any HMM with i.i.d.\ within-state emissions.
-Third, simulated kurtosis behaves as expected from the component families: the Gaussian sweep peaks around $5.0$ at the high-$K$ end, the Laplace sweep lands squarely in the $5.2$--$6.7$ range (closest to the observed $7.68$), the Student-t sweep climbs sharply above $13$ across the entire sweep because the ECM search assigns small $\nu_k$ to a subset of tail states, and the GED sweep mirrors the Gaussian curve at $4.7$--$5.5$ because the bulk of $\hat p_k$ values pin near the upper bracket and the Laplace-like tail states contribute too little stationary mass to lift the aggregate moment.
-
-\begin{table}[H]
-\centering
-\caption{Multi-emission state resolution sensitivity for SPY (1{,}000 paths, $\alpha = 0.05$). CHMM-N: Gaussian; CHMM-t: Student-t with per-state $\nu_k$ refit by ECM-plus-golden-section; CHMM-L: Laplace with weighted-median location and weighted-MAD scale; CHMM-GED: Generalized Error Distribution with per-state shape $p_k \in [0.5, 3.0]$ via three-stage ECM (Section~\ref{sec:mstep}). Every metric is computed on the identical simulation pipeline used for Table~\ref{tab:model_comparison}. Observed excess kurtosis is $7.68$ IS and $5.29$ OoS. ACF-MAE columns parallel the main-text Table~\ref{tab:model_comparison}: $|G_t|$ for volatility clustering, $G_t$ (raw) for linear autocorrelation. \textbf{Sub-seed convention:} this multi-emission sweep uses a different sub-seed offset from the body-table headline run, so per-row metrics may drift by $\le 1$ percentage point from the corresponding entries in Table~\ref{tab:model_comparison} (e.g.\ CHMM-GED at $K = 18$: this table $96.3\%$ / $5.05$ / $0.0546$ versus body $95.2\%$ / $5.15$ / $0.0548$).}
-\label{tab:sensitivity_multi}
-\small
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{l c cc cc c cc c c}
-\toprule
-& & \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{AD (\%)} & & \multicolumn{2}{c}{ACF-MAE} & & \\
-\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){8-9}
-Family & $K$ & IS & OoS & IS & OoS & Kurt (IS sim) & $|G_t|$ & $G_t$ & $W_1$ IS & $H$ IS \\
-\midrule
-CHMM-N & 3  & 89.7 & 80.1 & 79.2 & 70.7 & 3.86  & 0.0467 & 0.0240 & 0.128 & 0.0833 \\
-       & 6  & 93.8 & 79.1 & 87.2 & 72.8 & 5.29  & 0.0504 & 0.0238 & 0.114 & 0.0825 \\
-       & 9  & 94.9 & 83.0 & 84.3 & 74.8 & 4.58  & 0.0490 & 0.0238 & 0.115 & 0.0806 \\
-       & 12 & 93.7 & 82.7 & 85.5 & 75.0 & 4.56  & 0.0501 & 0.0237 & 0.115 & 0.0804 \\
-       & 15 & 93.6 & 83.0 & 87.0 & 75.1 & 4.89  & 0.0509 & 0.0238 & 0.114 & 0.0803 \\
-       & \textbf{18} & 94.7 & 83.4 & 88.5 & 76.6 & 4.97  & 0.0511 & 0.0237 & 0.108 & 0.0805 \\
-       & 21 & \textbf{95.1} & \textbf{88.0} & \textbf{88.2} & \textbf{79.7} & 3.80  & 0.0532 & 0.0236 & 0.110 & 0.0796 \\
-\midrule
-CHMM-t & 3  & 92.2 & 82.9 & 88.0 & 79.1 & 33.68 & 0.0538 & 0.0235 & 0.108 & 0.0759 \\
-       & 6  & 91.8 & 80.4 & 86.7 & 74.8 & 22.74 & 0.0527 & 0.0235 & 0.108 & 0.0772 \\
-       & 9  & 95.4 & 84.0 & 89.9 & 78.0 & 16.60 & 0.0535 & 0.0234 & 0.102 & 0.0752 \\
-       & 12 & 95.2 & 85.0 & 89.8 & 78.4 & 14.98 & 0.0543 & 0.0234 & 0.100 & 0.0757 \\
-       & 15 & 94.7 & 83.7 & 88.8 & 79.5 & 16.36 & 0.0539 & 0.0234 & 0.101 & 0.0758 \\
-       & \textbf{18} & \textbf{96.0} & \textbf{84.5} & \textbf{91.7} & \textbf{80.8} & 13.19 & 0.0551 & \textbf{0.0234} & \textbf{0.099} & \textbf{0.0759} \\
-       & 21 & 94.5 & 83.3 & 88.5 & 78.1 & 14.66 & 0.0539 & 0.0234 & 0.102 & 0.0758 \\
-\midrule
-CHMM-L & 3  & 80.5 & 62.7 & 81.2 & 66.5 & 5.24  & 0.0531 & 0.0235 & 0.113 & 0.0855 \\
-       & 6  & 88.3 & 76.3 & 83.1 & 71.8 & 5.86  & 0.0510 & 0.0235 & 0.112 & 0.0821 \\
-       & 9  & 90.7 & 77.2 & 84.2 & 72.2 & 5.92  & 0.0519 & 0.0235 & 0.112 & 0.0823 \\
-       & 12 & 93.8 & 79.3 & 88.7 & 76.7 & 6.17  & 0.0541 & 0.0234 & 0.105 & 0.0793 \\
-       & 15 & 92.5 & 78.3 & 88.2 & 75.5 & 5.98  & 0.0539 & 0.0234 & 0.107 & 0.0794 \\
-       & \textbf{18} & \textbf{94.2} & \textbf{80.5} & \textbf{91.4} & \textbf{80.6} & \textbf{6.74}  & 0.0566 & 0.0234 & 0.104 & 0.0795 \\
-       & 21 & 91.5 & 79.6 & 87.5 & 77.7 & 5.95  & 0.0539 & 0.0234 & 0.107 & 0.0807 \\
-\midrule
-CHMM-GED & 3  & 90.3 & 78.4 & 85.5 & 73.6 & 5.45  & 0.0531 & 0.0236 & 0.109 & 0.0818 \\
-         & 6  & 91.8 & 79.0 & 84.9 & 73.5 & 5.22  & 0.0518 & 0.0235 & 0.108 & 0.0805 \\
-         & 9  & 94.6 & 81.6 & 89.1 & 75.9 & 5.03  & 0.0535 & 0.0234 & 0.101 & 0.0787 \\
-         & 12 & \textbf{97.6} & \textbf{84.2} & \textbf{94.0} & \textbf{81.2} & 4.67  & 0.0563 & 0.0234 & \textbf{0.094} & \textbf{0.0775} \\
-         & 15 & 94.2 & 82.0 & 87.4 & 76.5 & 5.14  & 0.0535 & 0.0235 & 0.104 & 0.0784 \\
-         & \textbf{18} & 96.3 & 83.8 & 92.7 & 81.3 & 5.05  & 0.0546 & 0.0235 & 0.098 & 0.0779 \\
-         & 21 & 94.1 & 85.3 & 88.7 & 81.2 & 4.82  & 0.0542 & 0.0235 & 0.102 & 0.0781 \\
-\bottomrule
-\end{tabular}%
-}
-\end{table}
-
-\subsubsection{Cross-Ticker Per-Family Kurtosis Pattern}
-\label{sec:cross_ticker_per_family_kurt}
-
-The body Table~\ref{tab:cross_ticker} reports the penalised CHMM-t cross-ticker performance ($1/\nu_k$ shrinkage at $\lambda = 20$). This appendix documents the unpenalised cross-ticker behaviour that motivates the penalty.
-The CHMM-t simulated kurtosis blow-ups under the unpenalised ECM (NVDA $40.8$, JNJ $104.1$, JPM $17.6$ at $K = 18$) are specific to the Student-t emission family, and Table~\ref{tab:cross_ticker_kurt_per_family} extends the kurtosis column across all four CHMM emission variants on the same six-ticker universe to make this explicit.
-The pattern is consistent: unpenalised CHMM-t produces single-ticker overshoots of an order of magnitude on the heavy-tailed defensives (JNJ, NVDA), CHMM-L sits closest to observed across every ticker (median absolute residual $1.4$ kurtosis units), CHMM-N undershoots uniformly, and CHMM-GED interpolates between them.
-The CHMM-t blow-up mechanism is the same per-state $\nu_k$ ECM lower-bracket pinning documented for SPY in Section~\ref{sec:nu_diagnostics}: on tickers whose tail regime is concentrated in a small subset of states (NVDA's pre-AI-rally drawdowns, JNJ's outlier-driven defensive-stock dynamics), one or two states pin at $\nu_k \approx 2.1$ and dominate the simulated-kurtosis sample moment.
-Under the $1/\nu_k$ penalty at $\lambda = 20$ (the body operating point in Table~\ref{tab:cross_ticker}; full rate sweep in Section~\ref{sec:discussion}, Appendix~\ref{sec:supp_misc}) the simulated kurtosis on every ticker drops into the same band as CHMM-L: SPY $14.7 \to 8.0$, NVDA $40.8 \to 5.2$, JNJ $104.1 \to 12.3$, JPM $17.6 \to 7.7$, AAPL $6.3 \to 2.8$, QQQ $3.3 \to 2.9$, while IS / OoS KS pass rates and $|G_t|$ ACF-MAE move by less than $1.5$ percentage points and $0.001$ respectively.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{Per-ticker simulated excess kurtosis across the four CHMM emission families} ($K = 18$, $1{,}000$ paths, seed = $20260420$). Columns report mean simulated IS excess kurtosis under each variant; the ``Obs'' column is the IS sample value. CHMM-t is the only family that produces order-of-magnitude blow-ups (NVDA, JNJ, JPM); the remaining three sit within $4$ kurtosis units of observed across every ticker. Numbers are sourced from the canonical multi-emission cross-ticker run used for Table~\ref{tab:sensitivity_multi}; minor drift from the body Table~\ref{tab:cross_ticker} CHMM-t column reflects a single re-run with a refreshed sub-seed.}
-\label{tab:cross_ticker_kurt_per_family}
-\begin{tabular}{l c c c c c}
-\toprule
-Ticker & Obs & CHMM-N & CHMM-t & CHMM-L & CHMM-GED \\
-\midrule
-SPY  & $7.7$ & $5.0$  & $15.0$  & $6.8$ & $5.1$ \\
-NVDA & $5.5$ & $3.7$  & $40.8$  & $3.2$ & $5.0$ \\
-JNJ  & $9.0$ & $5.5$  & $104.1$ & $6.1$ & $9.3$ \\
-JPM  & $7.6$ & $7.2$  & $17.6$  & $6.0$ & $14.8$ \\
-AAPL & $3.2$ & $2.3$  & $6.3$   & $3.9$ & $3.2$ \\
-QQQ  & $3.4$ & $2.0$  & $3.3$   & $4.1$ & $2.7$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+The full $K$-sweep table for SPY CHMM-N referenced in Section~\ref{sec:k_selection_results} (KS, AD, kurtosis, $W_1$, Hellinger, OoS coverage at $K \in \{3, 6, 9, 12, 15, 18, 21\}$, $1{,}000$ paths, seed $20260420$) is at \texttt{CHMM-Model/results/SPY/Table-T1-State-Resolution-Sensitivity.txt}. The qualitative pattern is that distributional pass rates plateau in the $K \in \{12, 15, 18, 21\}$ band and ACF-MAE is essentially flat across the entire sweep, consistent with the spectral mechanism of Section~\ref{sec:theory}.
 
 \subsubsection{Sector-Balanced 30-Ticker Panel: Full Per-Ticker Rollup}
 \label{sec:cross_ticker_sector_panel}
@@ -207,32 +97,6 @@ Aggregate ($n = 60$)     & $60$ & $73.45$ & $66.99$ & $29.13$ & $\phantom{0}0.00
 \paragraph{Reading.}
 The 60-ticker aggregate distribution is statistically indistinguishable from the body 30-ticker version: median OoS KS $73.45\%$ vs.\ $73.4\%$ (body Table~\ref{tab:cross_ticker}), mean $66.99\%$ vs.\ $66.8\%$, failure rate $22/60 = 36.7\%$ vs.\ $11/30 = 36.7\%$ (identical). \textbf{The ANOVA at adequate power confirms the no-sector-effect null cannot be rejected at $\alpha = 0.05$}: $F(9, 50) = 0.37$, $p = 0.946$, $\eta^2 = 0.062$, with the effect-size estimate dropping from the underpowered $\eta^2 = 0.16$ ($n = 3$) to $\eta^2 = 0.062$ ($n = 6$). Cross-sector dispersion accounts for $6.2\%$ of OoS KS variance at the larger sample size; the remaining $93.8\%$ is per-ticker variation. Per-sector medians span $47\%$ (Communication Services) to $96\%$ (Utilities), but the within-sector spread (median range $14\%$ at Utilities to $79\%$ at IT) dominates the between-sector spread (median range $49$pp). The body's qualitative claim that ``failures are ticker-specific, not sector-driven'' is now supported by an adequately-powered test on a panel that doubles the body's sample size; the $11 / 30$ failure rate at $n = 3$ was not a small-sample artefact but a stable feature of the cross-ticker generalisation under static IS-fit.
 
-\subsubsection{Five-Named-Ticker Spot-Check (Original Six-Ticker Panel)}
-\label{sec:cross_ticker_named_spot_check}
-
-The original peer-review-cycle six-ticker spot-check (SPY, NVDA, JNJ, JPM, AAPL, QQQ; broad-equity ETF and five named single-name representatives) is retained in Table~\ref{tab:cross_ticker_spotcheck} as a hand-curated reference for downstream consumers who need to compare against the cross-asset Pipeline-B copula construction in Section~\ref{sec:cross_asset} (whose six-asset universe is the same five named tickers plus QQQ). The aggregate-distribution, sector-rollup, and universe-scale failure-rate framing is moved to the body Table~\ref{tab:cross_ticker} on the 30-ticker panel.
-
-\begin{table}[!ht]
-\centering
-\caption{\textbf{Original five-named-ticker spot-check} (penalised CHMM-t at $K = 18$, $\lambda = 20$). Hand-curated panel covering broad-equity (SPY, QQQ), AI / semiconductors (NVDA), healthcare (JNJ), financials (JPM), and consumer-tech (AAPL); reproduced from \texttt{results/chmm\_t\_penalised/Cross\_Ticker\_CHMM\_t\_Pen.txt}. The expanded sector-balanced 30-ticker panel is in Table~\ref{tab:sector_panel}.}
-\label{tab:cross_ticker_spotcheck}
-\small
-\begin{tabular}{l cc c c c}
-\toprule
-& \multicolumn{2}{c}{KS (\%) $\uparrow$} & \multicolumn{2}{c}{Kurtosis} & ACF-MAE \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-Ticker & IS & OoS & Obs & Sim & $\downarrow$ \\
-\midrule
-SPY  & $95.8$ & $85.0$ & $7.7$ & $8.01$  & $0.0541$ \\
-NVDA & $99.5$ & $53.8$ & $5.5$ & $5.23$  & $0.0473$ \\
-JNJ  & $99.8$ & $92.3$ & $9.0$ & $12.28$ & $0.0334$ \\
-JPM  & $97.8$ & $53.8$ & $7.6$ & $7.70$  & $0.0457$ \\
-AAPL & $99.1$ & $95.1$ & $3.2$ & $2.84$  & $0.0418$ \\
-QQQ  & $96.1$ & $91.8$ & $3.4$ & $2.88$  & $0.0569$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \subsubsection{Effective Spectral Rank of the Absolute-Return ACF}
 \label{sec:spectral_rank}
 
@@ -265,7 +129,7 @@ rank & $|\lambda_k|$ & $|w_k|$ & $|w_k \lambda_k|$ & $w_k \lambda_k^5$ & $w_k \l
 \end{tabular}
 \end{table}
 
-The empirical effective rank confirms the body framing of Section~\ref{sec:theory}: the ACF-MAE flatness across $K \in \{3, 6, 9, 12, 15, 18, 21\}$ documented in Appendix~\ref{sec:sensitivity_table}, Table~\ref{tab:sensitivity}, is the macroscopic signature of the temporal axis being driven by a single dominant decay mode at every operating point in the sweep. The $K$-rank statement on $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$ is correctly interpreted as a non-binding upper bound at $K \ge 3$; at $K = 2$ the bound is tight (only one non-unit eigenvalue available), but the failure mode is then the marginal mixture, which two Gaussian components cannot tile against the empirical equity-return target. The bilinear identity~\eqref{eq:acf_normalised} therefore plays a pedagogical role in this paper rather than serving as a direct $K$-selection criterion: it makes the rank constraint explicit, but the operational $K$ choice is driven by distributional fidelity (KS, AD, kurtosis), not by the count of non-unit eigenvalues in the spectral expansion.
+The empirical effective rank confirms the body framing of Section~\ref{sec:theory}: the ACF-MAE flatness across $K \in \{3, 6, 9, 12, 15, 18, 21\}$ documented in the companion artefact \texttt{CHMM-Model/results/SPY/Table-T1-State-Resolution-Sensitivity.txt} (Appendix~\ref{sec:sensitivity_table}) is the macroscopic signature of the temporal axis being driven by a single dominant decay mode at every operating point in the sweep. The $K$-rank statement on $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$ is correctly interpreted as a non-binding upper bound at $K \ge 3$; at $K = 2$ the bound is tight (only one non-unit eigenvalue available), but the failure mode is then the marginal mixture, which two Gaussian components cannot tile against the empirical equity-return target. The bilinear identity~\eqref{eq:acf_normalised} therefore plays a pedagogical role in this paper rather than serving as a direct $K$-selection criterion: it makes the rank constraint explicit, but the operational $K$ choice is driven by distributional fidelity (KS, AD, kurtosis), not by the count of non-unit eigenvalues in the spectral expansion.
 
 \subsubsection{Cross-Ticker Spectral Effective-Rank Diagnostic}
 \label{sec:spectral_rank_xticker}
@@ -291,462 +155,12 @@ SPY (body Appendix~\ref{sec:spectral_rank})    & $0.943$ & $2$  & $10$ \\
 
 Reading: the SPY headline of $93.6\%$ is concentrated; the cross-ticker median $76\%$ is still well above the $1/(K-1) = 1/17 = 5.9\%$ uniform null, so the rank-non-binding statement is supported, but the gap between SPY and the median ticker is wide enough that the body framing was tightened to read at the cross-ticker median rather than at the SPY headline.
 
-\subsubsection{\texorpdfstring{Cross-Asset Pipeline B at $K^\star = 6$ Marginals}{Cross-Asset Pipeline B at K* = 6 Marginals}}
-\label{sec:cross_asset_kstar6}
+All models converged within the 60-iteration budget with monotonically increasing log-likelihood (EM guarantee under quantile-based initialisation). Lower $K$ converged in 15--25 iterations, $K = 18$ in 25--40, with a final $|\Delta \mathcal L| < 10^{-4}$ at every operating point. Convergence-trace figures and per-iteration log-likelihood histories are at \texttt{CHMM-Model/figs/Fig-Convergence-K\{3,12,18\}.pdf}.
 
-Reviewer R2 Q3 asks whether the body cross-asset construction (Section~\ref{sec:cross_asset}, Table~\ref{tab:cross_asset}) recovers under $K^\star = 6$ CHMM-N marginals rather than the body $K = 18$ marginals. We re-ran Pipeline~B (Gaussian, Student-$t$, truncated C-vine copulas plus the SIM baseline) on the same six-asset universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ) with $K = 6$ CHMM-N marginals; same $N_{\text{paths}} = 200$, seed $20260422$. Source / runner: \texttt{run\_cross\_asset\_sim\_copula\_k6.jl}; output: \texttt{results/cross\_asset\_k6/cross\_asset/Table-T3-Cross-Asset-Dependence.txt}.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{Cross-asset Pipeline B at $K^\star = 6$ marginals vs.\ body $K = 18$.} Off-diagonal correlation MAE on six-asset US-equity universe, $200$ paths. The marginal state-resolution does not move the off-diagonal MAE by a margin large enough to flip the ranking; the dependence layer is essentially marginal-resolution-independent on this universe.}
-\label{tab:cross_asset_kstar6}
-\begin{tabular}{l c c c c}
-\toprule
-& \multicolumn{2}{c}{Off-diag MAE IS} & \multicolumn{2}{c}{Off-diag MAE OoS} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-Dependence model        & $K = 18$ (body) & $K^\star = 6$ & $K = 18$ (body) & $K^\star = 6$ \\
-\midrule
-SIM                     & $0.076$ & $0.077$ & $0.251$ & $0.251$ \\
-Gaussian copula         & $0.030$ & $0.030$ & $0.202$ & $0.203$ \\
-Student-$t$ copula      & $0.027$ & $0.027$ & $0.209$ & $0.209$ \\
-Truncated C-vine        & $0.068$ & $0.068$ & $0.236$ & $0.236$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Reading.}
-Off-diagonal MAE differences across the marginal-resolution axis are $\le 0.001$ on IS and $\le 0.001$ on OoS at every dependence model; the body's $\nu^\star = 6$ Student-$t$ copula choice and the IS / OoS off-diagonal ordering are therefore not driven by the marginal state-resolution. R2 Q3's hypothesis that $K^\star = 6$ marginals might shift the off-diagonal MAE comparison is rejected: the dependence layer is essentially marginal-resolution-independent on this six-asset US-equity universe, consistent with the cross-ticker $K$-robustness reported in Section~\ref{sec:cross_asset_univariate}.
-
-\subsubsection{Per-State Frobenius Distances Between the Four Emission Families}
-\label{sec:emission_family_frobenius}
-
-Reviewer~2 W4 / RE3 asks whether the four CHMM emission variants land on materially different per-state $(\boldsymbol\mu, \boldsymbol\sigma, \mathbf T)$ tuples or whether the four-family narrative collapses to a one-parameter shape axis. We fit each family independently per ticker at the body headline $K^\star = 3$, canonicalise states by ascending $\sigma_k$, and compute pairwise Frobenius distances on the location, scale, and transition-matrix parameter blocks. Source: \texttt{results/emission\_family\_frobenius/spy.txt}, \texttt{panel.txt}, and \texttt{summary.csv}; runner: \texttt{run\_emission\_family\_frobenius.jl}.
-
-\begin{table}[H]
-\centering
-\small
-\caption{\textbf{Per-state Frobenius distances across emission families on SPY headline (top) and on the 30-ticker panel (bottom medians).} K = 3, $\lambda = 20$ for the penalised CHMM-t. Quantile-based EM initialisation is deterministic per family on a fixed ticker, so the per-family Monte Carlo SE under multi-seed refit is exactly $0$ on this protocol; the reported distances are the genuine cross-family differences. ``N'' = CHMM-N, ``t'' = penalised CHMM-t at $\lambda = 20$, ``L'' = CHMM-L, ``GED'' = CHMM-GED. The SPY structure is two-cluster: CHMM-N stands clearly apart from the heavy-tail trio $\{$t, L, GED$\}$ on all three axes, while $\{$t, L, GED$\}$ are within $\sim 0.2$ on $\boldsymbol\mu$ and within $\sim 0.04$ on $\mathbf T$ of each other.}
-\label{tab:emission_family_frobenius}
-\begin{tabular}{l c c c}
-\toprule
-Pair                         & $\|\Delta\boldsymbol\mu\|_F$ & $\|\Delta\boldsymbol\sigma\|_F$ & $\|\Delta\mathbf T\|_F$ \\
-\midrule
-\multicolumn{4}{l}{\emph{SPY ($K^\star = 3$):}} \\
-N vs t   & $2.090$ & $0.960$ & $0.530$ \\
-N vs L   & $1.943$ & $1.894$ & $0.508$ \\
-N vs GED & $2.025$ & $0.945$ & $0.520$ \\
-t vs L   & $0.161$ & $0.987$ & $0.031$ \\
-t vs GED & $0.214$ & $0.026$ & $0.042$ \\
-L vs GED & $0.165$ & $1.009$ & $0.023$ \\
-\midrule
-\multicolumn{4}{l}{\emph{30-ticker panel medians ($K^\star = 3$, $[Q_1, Q_3]$ in parentheses):}} \\
-N vs t   & $2.22\,[1.95, 3.49]$ & $3.89\,[2.37, 5.32]$ & $0.46\,[0.40, 0.53]$ \\
-N vs L   & $2.21\,[1.57, 2.93]$ & $4.93\,[3.71, 7.53]$ & $0.44\,[0.36, 0.64]$ \\
-N vs GED & $2.35\,[1.70, 3.32]$ & $3.63\,[2.53, 5.19]$ & $0.45\,[0.34, 0.55]$ \\
-t vs L   & $1.35\,[0.90, 2.48]$ & $2.12\,[1.62, 2.61]$ & $0.26\,[0.16, 0.66]$ \\
-t vs GED & $0.70\,[0.40, 1.22]$ & $0.39\,[0.22, 0.71]$ & $0.23\,[0.13, 0.30]$ \\
-L vs GED & $1.93\,[0.85, 3.46]$ & $2.06\,[0.66, 3.53]$ & $0.32\,[0.20, 0.61]$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Reading. The four-family narrative does \emph{not} collapse to a one-parameter shape axis: CHMM-N is distinct from the heavy-tail trio $\{$CHMM-t, CHMM-L, CHMM-GED$\}$ at $\|\Delta\boldsymbol\mu\|_F \sim 2$, $\|\Delta\mathbf T\|_F \sim 0.45$ on both SPY and the 30-ticker panel. The four-family scaffold therefore separates Gaussian-emission from heavy-tail-emission CHMMs cleanly, consistent with the $\sim 1.5$-unit kurtosis gap between CHMM-N (sim kurt $3.83$) and the heavy-tail rows (CHMM-L $5.30$, CHMM-GED $5.48$, CHMM-t pen.\ $14.91$) at $K^\star = 3$ in Table~\ref{tab:model_comparison}. The substantive sub-finding is that within the heavy-tail trio the families cluster more tightly, most notably t vs.\ GED on SPY ($\|\Delta\boldsymbol\mu\|_F = 0.21$, $\|\Delta\mathbf T\|_F = 0.04$); on the panel medians the t-GED pair remains the tightest. The per-state structure of the body four-emission scaffold is therefore best read as a two-cluster decomposition (Gaussian vs.\ heavy-tail) with within-cluster variation along the kurtosis axis, rather than as four independent families with comparable separations.
-
-\subsubsection{Baum-Welch Convergence}
-\label{sec:convergence}
-
-Figure~\ref{fig:convergence_all} shows the Baum-Welch convergence curves for representative state resolutions.
-All models converged within the 60-iteration budget, with the log-likelihood monotonically increasing (as guaranteed by the EM algorithm).
-Lower $K$ values typically converged faster (15--25 iterations), while higher $K$ values required 25--40 iterations to reach the convergence tolerance of $|\Delta\mathcal{L}| < 10^{-4}$.
-The monotonic increase confirms that the quantile-based initialization provided a valid starting point from which the EM algorithm could improve without encountering degenerate solutions.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K3.pdf}
-    \caption{$K = 3$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K12.pdf}
-    \caption{$K = 12$}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18.pdf}
-    \caption{$K = 18$ (selected)}
-\end{subfigure}
-\caption{Baum-Welch convergence for the SPY CHMM-N fit (Pipeline~A, IS) at selected state resolutions. Log-likelihood is monotonically increasing (EM guarantee) and plateaus well before $\texttt{max\_iter} = 60$.}
-\label{fig:convergence_all}
-\end{figure}
-
-\subsubsection{IS Comparison at Non-Selected State Resolutions}
+\subsubsection{Per-K and Multi-Emission Figure Companions}
 \label{sec:k_sweep_panels}
 
-Figures~\ref{fig:k_sweep_panels_is}--\ref{fig:k_sweep_is_k21} show the IS model comparison panels for $K \in \{3, 6, 12, 21\}$, complementing the $K = 18$ comparison in Figure~\ref{fig:is_comparison} of the main text.
-Across all resolutions, the CHMM's simulated density closely overlays the observed density, and the ACF of absolute returns tracks the slow decay pattern.
-The visible improvement from $K = 3$ to $K = 18$ is concentrated in the tails of the Q-Q panel and the steady-state level of the ACF panel.
-$K = 9$ and $K = 15$ panels are omitted because they interpolate smoothly between the shown resolutions; their numerical metrics are in Table~\ref{tab:sensitivity}.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K3-a.pdf}\caption{Marginal density.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K3-b.pdf}\caption{Tail Q-Q plot.}\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K3-c.pdf}\caption{ACF of raw $G_t$.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K3-d.pdf}\caption{ACF of $|G_t|$.}\end{subfigure}
-\caption{IS SPY CHMM-N comparison at $K = 3$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}). The $K = 18$ counterpart is Figure~\ref{fig:is_comparison} of the main text.}
-\label{fig:k_sweep_panels_is}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K6-a.pdf}\caption{Marginal density.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K6-b.pdf}\caption{Tail Q-Q plot.}\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K6-c.pdf}\caption{ACF of raw $G_t$.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K6-d.pdf}\caption{ACF of $|G_t|$.}\end{subfigure}
-\caption{IS SPY CHMM-N comparison at $K = 6$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}).}
-\label{fig:k_sweep_is_k6}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K12-a.pdf}\caption{Marginal density.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K12-b.pdf}\caption{Tail Q-Q plot.}\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K12-c.pdf}\caption{ACF of raw $G_t$.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K12-d.pdf}\caption{ACF of $|G_t|$.}\end{subfigure}
-\caption{IS SPY CHMM-N comparison at $K = 12$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}).}
-\label{fig:k_sweep_is_k12}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K21-a.pdf}\caption{Marginal density.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K21-b.pdf}\caption{Tail Q-Q plot.}\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K21-c.pdf}\caption{ACF of raw $G_t$.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K21-d.pdf}\caption{ACF of $|G_t|$.}\end{subfigure}
-\caption{IS SPY CHMM-N comparison at $K = 21$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:is_comparison}).}
-\label{fig:k_sweep_is_k21}
-\end{figure}
-
-\subsubsection{OoS Validation at Non-Selected State Resolutions}
-
-Figures~\ref{fig:k_sweep_panels_oos}--\ref{fig:k_sweep_oos_k21} show the OoS validation panels for $K \in \{3, 6, 12, 21\}$.
-KS pass rates remain above 91\% at all resolutions; the $K = 18$ panel is reproduced in Figure~\ref{fig:oos_validation} of the main text.
-As with the IS panels, $K = 9$ and $K = 15$ are omitted; numerical OoS KS pass rates are in Table~\ref{tab:sensitivity}.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K3-a.pdf}\caption{OoS density fan.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K3-b.pdf}\caption{KS $p$-value histogram.}\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K3-c.pdf}\caption{OoS ACF of raw $G_t$.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K3-d.pdf}\caption{OoS ACF of $|G_t|$.}\end{subfigure}
-\caption{OoS SPY CHMM-N validation at $K = 3$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}). The $K = 18$ counterpart is Figure~\ref{fig:oos_validation} of the main text.}
-\label{fig:k_sweep_panels_oos}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K6-a.pdf}\caption{OoS density fan.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K6-b.pdf}\caption{KS $p$-value histogram.}\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K6-c.pdf}\caption{OoS ACF of raw $G_t$.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K6-d.pdf}\caption{OoS ACF of $|G_t|$.}\end{subfigure}
-\caption{OoS SPY CHMM-N validation at $K = 6$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}).}
-\label{fig:k_sweep_oos_k6}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K12-a.pdf}\caption{OoS density fan.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K12-b.pdf}\caption{KS $p$-value histogram.}\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K12-c.pdf}\caption{OoS ACF of raw $G_t$.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K12-d.pdf}\caption{OoS ACF of $|G_t|$.}\end{subfigure}
-\caption{OoS SPY CHMM-N validation at $K = 12$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}).}
-\label{fig:k_sweep_oos_k12}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K21-a.pdf}\caption{OoS density fan.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K21-b.pdf}\caption{KS $p$-value histogram.}\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K21-c.pdf}\caption{OoS ACF of raw $G_t$.}\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K21-d.pdf}\caption{OoS ACF of $|G_t|$.}\end{subfigure}
-\caption{OoS SPY CHMM-N validation at $K = 21$ (Pipeline~A, 1{,}000 simulated paths; panels as in Figure~\ref{fig:oos_validation}).}
-\label{fig:k_sweep_oos_k21}
-\end{figure}
-
-\subsubsection{\texorpdfstring{Multi-Emission Figures at $K = 18$}{Multi-Emission Figures at K = 18}}
-\label{sec:multi_emission_figs}
-
-This appendix reproduces the standard diagnostic suite (emission PDFs, residence times, IS comparison, OoS validation, and convergence) for the two heavy-tailed emission families (CHMM-t and CHMM-L) at the selected state resolution $K = 18$; transition matrices and stationary distributions are discussed in prose only below, since they are visually indistinguishable across families at $K = 18$.
-The Gaussian counterparts are already shown as Figures~\ref{fig:is_comparison} and~\ref{fig:oos_validation} in the main text and as Figure~\ref{fig:convergence_all} above in this appendix.
-The figures confirm that the shared forward--backward scaffold produces internally-similar regime structure across the four families: the near-uniform interior of the transition matrix, the $K$-component dense emission cover, the longer central-state residence times, and the monotone log-likelihood convergence are features of the CHMM framework and not of the Gaussian component specifically.
-
-\paragraph{Emission PDFs.}
-Figure~\ref{fig:emissions_families} compares the learned $K = 18$ emissions for the four families.
-The CHMM-t panel's per-state $\nu_k$ allocation is visible in the narrower modes of certain tail states; the CHMM-L panel's Laplace components have sharper peaks and slower exponential tail decay than the Gaussians; the CHMM-GED panel mixes both, with bulk states near the Gaussian shape ($\hat p_k$ near the upper bracket) and a small set of tail states near the Laplace shape ($\hat p_k$ near $1$).
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-N.pdf}
-    \caption{CHMM-N (Gaussian)}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-t.pdf}
-    \caption{CHMM-t (Student-t)}
-\end{subfigure}
-
-\vspace{1ex}
-
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-L.pdf}
-    \caption{CHMM-L (Laplace)}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Emission-PDFs-K18-GED.pdf}
-    \caption{CHMM-GED (per-state $p_k$)}
-\end{subfigure}
-\caption{Learned emission distributions at $K = 18$ across the four emission families (CHMM-N Gaussian, CHMM-t Student-t with per-state $\nu_k$, CHMM-L Laplace, CHMM-GED with per-state $p_k$), overlaid on the observed SPY IS return histogram (Pipeline~A). Heavier-tailed emission families (t, L) give individual components more tail mass, which is what closes the kurtosis gap of the Gaussian CHMM; CHMM-GED interpolates between Gaussian and Laplace per state.}
-\label{fig:emissions_families}
-\end{figure}
-
-\paragraph{Transition matrices and stationary distributions.}
-Figure~\ref{fig:transition_families} shows the $\log_{10}$ transition-matrix heatmaps at $K = 18$ across the four emission families. The four panels are visually indistinguishable: the same near-uniform interior, the same characteristic boundary states (rows $1$ and $K$) with a small handful of low-mass entries, and self-transition probabilities of comparable magnitude. The eigenvalue spectrum of $\mathbf T$ that drives the absolute-return ACF identity~\eqref{eq:acf_normalised} is therefore set by the $K$-rank regime structure rather than by the emission family. This is consistent with the ACF-MAE being stable across the family axis (Table~\ref{tab:sensitivity_multi}). The per-family residence times $\tau_k = 1/(1 - T_{kk})$, which magnify small differences in the self-transition probabilities each family recovers, are compared in Figure~\ref{fig:residence_families}.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-N.pdf}
-    \caption{CHMM-N (Gaussian).}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-t.pdf}
-    \caption{CHMM-t (Student-t).}
-\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-L.pdf}
-    \caption{CHMM-L (Laplace).}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Transition-Matrix-K18-GED.pdf}
-    \caption{CHMM-GED (per-state $p_k$).}
-\end{subfigure}
-\caption{$\log_{10}$ transition-matrix heatmaps at $K = 18$ across the four emission families on SPY IS (Pipeline~A). Color scale is $\log_{10} T_{ij}$ with a $10^{-10}$ floor for the near-zero entries. The cross-family similarity supports the rank/spectral interpretation of Section~\ref{sec:theory}: the regime structure (and thus the eigenvalue spectrum that drives the absolute-return ACF) is largely a property of $K$ and the data, not of the emission family.}
-\label{fig:transition_families}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-N.pdf}
-    \caption{CHMM-N}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-t.pdf}
-    \caption{CHMM-t}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-L.pdf}
-    \caption{CHMM-L}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Residence-Times-K18-GED.pdf}
-    \caption{CHMM-GED}
-\end{subfigure}
-\caption{Natural residence times $\tau_k = 1/(1 - T_{kk})$ at $K = 18$ for the SPY IS fit (Pipeline~A) across the four emission families (CHMM-N Gaussian, CHMM-t Student-t, CHMM-L Laplace, CHMM-GED).}
-\label{fig:residence_families}
-\end{figure}
-
-\paragraph{Sample simulated trajectories.}
-Figure~\ref{fig:trajectory_is_oos} overlays one simulated SPY return path against the observed series under CHMM-N at $K = 18$, separately for the IS and OoS windows. Both panels show the simulated path tracking the volatility-clustering envelope of the observed series at the same overall amplitude. CHMM-N is shown as the headline reference; per-family marginal differences are governed by the emission family rather than by the trajectory representation, and are visualised more directly in Figure~\ref{fig:emissions_families}.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.98\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-Trajectory-IS-K18.pdf}
-\caption{In-sample window, full $T_{\text{IS}} = 2{,}516$ trading days.}
-\end{subfigure}\\[0.6em]
-\begin{subfigure}[b]{0.98\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-Trajectory-OoS-K18.pdf}
-\caption{Out-of-sample window, full $T_{\text{OoS}} = 572$ trading days.}
-\end{subfigure}
-\caption{Sample simulated return trajectory at $K = 18$ for CHMM-N on SPY (Pipeline~A). Orange is the observed series; blue is one simulated path drawn from the fit. Panel~(a): full in-sample window. Panel~(b): full out-of-sample window. Both panels share the same y-axis convention (annualized excess log return $G_t$).}
-\label{fig:trajectory_is_oos}
-\end{figure}
-
-\paragraph{IS comparison.}
-Figures~\ref{fig:is_families}--\ref{fig:is_families_GED} reproduce the four-panel IS comparison (marginal density, tail Q-Q, raw-return ACF, $|G_t|$ ACF) at $K = 18$ for the three non-Gaussian emission families; the CHMM-N panel is Figure~\ref{fig:is_comparison} in the main text.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t-a.pdf}
-\caption{Marginal density.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t-b.pdf}
-\caption{Tail Q-Q plot.}
-\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t-c.pdf}
-\caption{ACF of raw $G_t$.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-t-d.pdf}
-\caption{ACF of $|G_t|$.}
-\end{subfigure}
-\caption{IS SPY model comparison at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) marginal density with KS pass rate, (b) tail Q-Q plot, (c) ACF of raw $G_t$ (linear autocorrelation, with the $99\%$ Bartlett band), and (d) ACF of $|G_t|$ (volatility clustering). The CHMM-N counterpart is Figure~\ref{fig:is_comparison}; the CHMM-L and CHMM-GED counterparts are Figures~\ref{fig:is_families_L} and~\ref{fig:is_families_GED}.}
-\label{fig:is_families}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L-a.pdf}
-\caption{Marginal density.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L-b.pdf}
-\caption{Tail Q-Q plot.}
-\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L-c.pdf}
-\caption{ACF of raw $G_t$.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-L-d.pdf}
-\caption{ACF of $|G_t|$.}
-\end{subfigure}
-\caption{IS SPY model comparison at $K = 18$ for CHMM-L Laplace emissions (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:is_families}.}
-\label{fig:is_families_L}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-GED-a.pdf}
-\caption{Marginal density.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-GED-b.pdf}
-\caption{Tail Q-Q plot.}
-\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-GED-c.pdf}
-\caption{ACF of raw $G_t$.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-3-IS-Comparison-K18-GED-d.pdf}
-\caption{ACF of $|G_t|$.}
-\end{subfigure}
-\caption{IS SPY model comparison at $K = 18$ for CHMM-GED emissions with per-state shape $p_k \in [0.5, 3.0]$ (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:is_families}. The fitted $\hat p_k$ partition is reported in Figure~\ref{fig:p_hist} and Appendix~\ref{sec:nu_diagnostics}.}
-\label{fig:is_families_GED}
-\end{figure}
-
-\paragraph{OoS validation.}
-Figures~\ref{fig:oos_families}--\ref{fig:oos_families_GED} show the OoS validation panels for CHMM-t, CHMM-L, and CHMM-GED at $K = 18$.
-The CHMM-t panel demonstrates the OoS kurtosis alignment noted in the main text, the CHMM-L panel shows the tighter density fan produced by the heavier Laplace tails relative to the Gaussian, and the CHMM-GED panel shows the density fan tightening that follows from the data-chosen $p_k$ partition.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t-a.pdf}
-\caption{OoS density fan.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t-b.pdf}
-\caption{KS $p$-value histogram.}
-\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t-c.pdf}
-\caption{OoS ACF of raw $G_t$.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-t-d.pdf}
-\caption{OoS ACF of $|G_t|$.}
-\end{subfigure}
-\caption{OoS SPY validation at $K = 18$ for CHMM-t Student-t emissions (Pipeline~A, 1{,}000 simulated paths). Panels show (a) OoS density fan, (b) KS $p$-value histogram with the $\alpha = 0.05$ threshold, (c) OoS ACF of raw $G_t$ (linear autocorrelation, with the $99\%$ Bartlett band), and (d) OoS ACF of $|G_t|$ (volatility clustering). The CHMM-N counterpart is Figure~\ref{fig:oos_validation}; the CHMM-L and CHMM-GED counterparts are Figures~\ref{fig:oos_families_L} and~\ref{fig:oos_families_GED}.}
-\label{fig:oos_families}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L-a.pdf}
-\caption{OoS density fan.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L-b.pdf}
-\caption{KS $p$-value histogram.}
-\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L-c.pdf}
-\caption{OoS ACF of raw $G_t$.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-L-d.pdf}
-\caption{OoS ACF of $|G_t|$.}
-\end{subfigure}
-\caption{OoS SPY validation at $K = 18$ for CHMM-L Laplace emissions (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:oos_families}.}
-\label{fig:oos_families_L}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-GED-a.pdf}
-\caption{OoS density fan.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-GED-b.pdf}
-\caption{KS $p$-value histogram.}
-\end{subfigure}\\[0.5em]
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-GED-c.pdf}
-\caption{OoS ACF of raw $G_t$.}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\includegraphics[width=\textwidth]{figs/Fig-4-OoS-Validation-K18-GED-d.pdf}
-\caption{OoS ACF of $|G_t|$.}
-\end{subfigure}
-\caption{OoS SPY validation at $K = 18$ for CHMM-GED emissions with per-state shape $p_k \in [0.5, 3.0]$ (Pipeline~A, 1{,}000 simulated paths). Panels as in Figure~\ref{fig:oos_families}.}
-\label{fig:oos_families_GED}
-\end{figure}
-
-\paragraph{Convergence.}
-Figure~\ref{fig:convergence_families} shows the Baum-Welch / ECM / weighted-EM log-likelihood histories at $K = 18$ for all four families.
-The CHMM-t, CHMM-L, and CHMM-GED curves inherit the monotone increase of the classical EM guarantee; the CHMM-t and CHMM-GED curves have slightly longer pre-plateau phases because each ECM sub-iteration refines a shape parameter (per-state $\nu_k$ for CHMM-t, per-state $p_k$ for CHMM-GED) with a golden-section search.
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-N.pdf}
-    \caption{CHMM-N}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-t.pdf}
-    \caption{CHMM-t}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-L.pdf}
-    \caption{CHMM-L}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.24\textwidth}
-    \includegraphics[width=\textwidth]{figs/Fig-Convergence-K18-GED.pdf}
-    \caption{CHMM-GED}
-\end{subfigure}
-\caption{Log-likelihood histories for the SPY IS fit (Pipeline~A) at $K = 18$ across the four emission families (CHMM-N Gaussian classical EM; CHMM-t Student-t ECM with per-state $\nu_k$ golden-section sub-step; CHMM-L Laplace weighted-EM; CHMM-GED with per-state $p_k$ three-stage ECM). All four curves are monotonically non-decreasing and plateau well before the $\texttt{max\_iter} = 60$ budget.}
-\label{fig:convergence_families}
-\end{figure}
+IS / OoS validation panels at non-selected state resolutions $K \in \{3, 6, 12, 21\}$, multi-emission diagnostic suite at $K = 18$ (emission PDFs, transition-matrix heatmaps, residence times, sample trajectories, four-panel IS / OoS comparisons, convergence histories) for CHMM-t, CHMM-L, CHMM-GED are deferred to the companion-code archive: figure files at \texttt{CHMM-Model/figs/Fig-3-IS-Comparison-K\{3,6,12,21\}-*.pdf}, \texttt{Fig-4-OoS-Validation-K\{3,6,12,21\}-*.pdf}, \texttt{Fig-Emission-PDFs-K18-\{N,t,L,GED\}.pdf}, \texttt{Fig-Transition-Matrix-K18-*.pdf}, \texttt{Fig-Residence-Times-K18-*.pdf}, \texttt{Fig-Trajectory-\{IS,OoS\}-K18.pdf}, \texttt{Fig-3-IS-Comparison-K18-\{t,L,GED\}-*.pdf}, \texttt{Fig-4-OoS-Validation-K18-\{t,L,GED\}-*.pdf}, \texttt{Fig-Convergence-K18-*.pdf}. Cross-family transition matrices are visually indistinguishable at $K = 18$, consistent with the spectral mechanism of Section~\ref{sec:theory} (the regime structure is set by the rank of $\mathbf T$, not the emission family); per-family residence times and convergence histories track CHMM-N up to ECM sub-step overhead for the heavy-tail families.
 
 \subsubsection{Ryd\'{e}n K = 2 Replication}
 \label{sec:ryden_replication}
@@ -778,32 +192,6 @@ The key observation is that ACF-MAE is essentially constant at $\approx 0.050$ a
 IS KS pass rate remains below the $K = 18$ operating point ($75.3$--$79.0\%$) because two Gaussian components cannot tile the full multi-regime return distribution.
 The combination is consistent with the reading that the binding low-$K$ constraint in the \citet{ryden1998stylized} setup is distributional rather than temporal: the ACF is already well reproduced at $K = 2$, and it is distributional fidelity that drives the preference for $K = 18$.
 
-
-\subsubsection{Cross-Ticker OoS-KS ANOVA: Sector vs Ticker Decomposition}
-\label{sec:cross_ticker_anova}
-
-A one-way ANOVA on the 30-ticker OoS KS distribution (Table~\ref{tab:cross_ticker}) by GICS sector tests the per-sector rollup framing against the alternative null that within-sector ticker variance dominates between-sector variance. With $n = 30$ tickers across $K_{\text{sec}} = 10$ sectors at three reps each, $F(9, 20) = 0.436$ at $p = 0.899$ under the parametric F-distribution; a $5{,}000$-replicate permutation test on the same statistic gives $p = 0.903$, well above the $0.05$ rejection threshold. The eta-squared is $0.164$, so sector membership explains only $\approx 16\%$ of the OoS-KS variance and the bulk ($83.6\%$) is within-sector heterogeneity (results file \texttt{sector\_panel/anova\_oos\_ks.txt}).
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{ANOVA on the 30-ticker OoS KS distribution by GICS sector.} 30 tickers across 10 sectors at three large-cap representatives each; one-way F-test plus 5{,}000-replicate permutation test (seed = 20260420). Sector membership fails to explain OoS-KS variance at conventional levels.}
-\label{tab:cross_ticker_anova}
-\begin{tabular}{l c}
-\toprule
-Statistic & Value \\
-\midrule
-$F(9, 20)$ & $0.436$ \\
-$p$ (F-distribution) & $0.899$ \\
-$p$ (permutation, $B = 5{,}000$) & $0.903$ \\
-$\eta^2$ & $0.164$ \\
-SS-between & $4{,}141.16$ \\
-SS-within  & $21{,}096.77$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The reading reframes the body's per-sector roll-up: the ``Health Care collapse'' framing (sector median $14.5\%$) is a within-sector dispersion result driven by two ticker-specific regime introductions in LLY and UNH while JNJ in the same sector lands at $93.2\%$. Operationally, refit triggers should be calibrated on per-ticker diagnostics (Page-Hinkley on $|G_t|$ inside the IS window, etc.) rather than per-sector averages.
 
 \subsubsection{\texorpdfstring{Cross-Ticker Per-State-Resolution Sensitivity ($K^\star = 3$ vs $K^\star = 6$ vs $K = 18$)}{Cross-Ticker Per-State-Resolution Sensitivity (K* = 3 vs K* = 6 vs K = 18)}}
 \label{sec:cross_ticker_k6_panel}
@@ -884,30 +272,6 @@ $18$ & $5.80$ & $\mathbf{95.8}$ & $\mathbf{6.25}$ & $0.0542$ & $0.0234$ & $\math
 \paragraph{Reading.}
 The aggregate-mean IS overshoot disappears under shared-$\nu$ at every $K$: the largest IS sim kurt is $9.38$ at $K^\star = 6$ (vs.\ observed $7.68$, well inside the bootstrap CI), versus $14.4$ for the per-state $\nu_k$ unpenalised row in the body. The $K = 18$ shared-$\nu$ row is the cleanest single-row IS / OoS heavy-tail match in the entire panel: $6.25$ IS / $5.00$ OoS, against observed $7.68$ / $5.29$ and against $8.56$ / $7.07$ for the body penalised CHMM-t at $\lambda = 20$. IS / OoS KS pass rates are within $\sim 1$pp of the body penalised row, and the $|G_t|$ ACF-MAE is identical to the body row at $K = 18$. The per-state $\nu_k$ design is therefore the binding constraint on the aggregate-mean overshoot the body $\lambda$-shrinkage and bracket-lift discussion is downstream of: a single shared $\nu$ at $K = 18$ produces the best joint KS / kurtosis row in the panel without any penalty. The body retains the per-state $\nu_k$ + $\lambda = 20$ construction for direct comparability with the \citet{peel2000robust, liu1995ml} tradition; consumers prioritising heavy-tail fidelity without a penalty hyperparameter should adopt the shared-$\nu$ row at $K = 18$.
 
-\subsubsection{Seventh Walk-Forward Fold (2018 / 2019 Test Slices)}
-\label{sec:walkforward_w7}
-
-Reviewer~2 / item~15 asks for a seventh walk-forward fold covering 2017--2018 (Q4 2018 drawdown) and 2019 (trade-war volatility), neither of which lies cleanly inside the existing W1--W6 layout. We run two new folds W7a (test 2018, train 2013-01--2017-12) and W7b (test 2019, train 2014-01--2018-12), the latter overlapping the existing W1 fold by construction. Same protocol as Table~\ref{tab:walkforward}: $5$y train / $1$y test, CHMM-N at $K \in \{3, 18\}$, $N_{\text{paths}} = 500$. Results in \texttt{results/walkforward/walkforward\_w7.txt}.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{Seventh walk-forward fold for CHMM-N.} W7a covers the 2018 calendar year including the Q4 2018 drawdown; W7b covers the 2019 calendar year (trade-war volatility) and overlaps the existing W1 fold by construction. Same protocol as Table~\ref{tab:walkforward}.}
-\label{tab:walkforward_w7}
-\begin{tabular}{l c c c c c c}
-\toprule
-& \multicolumn{2}{c}{KS (\%)} & \multicolumn{2}{c}{Kurt sim} & \multicolumn{2}{c}{ACF-MAE $|G_t|$} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
-Fold (test window) & $K = 3$ & $K = 18$ & $K = 3$ & $K = 18$ & $K = 3$ & $K = 18$ \\
-\midrule
-W7a (2018, Q4 drawdown) & $57.4$ & $57.8$ & $2.76$ & $3.26$ & $0.0645$ & $0.0663$ \\
-W7b (2019, trade war) & $63.2$ & $82.6$ & $2.51$ & $2.66$ & $0.0572$ & $0.0525$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-W7a sits at the lower end of the non-stress fold band (W1, W3, W5, W6 in Table~\ref{tab:walkforward} attain $61$--$83\%$ KS): the Q4 2018 drawdown is a moderate-stress event that the IS-fixed CHMM only partially recovers, but the fold does not collapse to single-digit KS as W2 / W4 do. W7b matches the existing W1 fold closely (both use 2019 as the test slice), validating fold-construction reproducibility. The seven-fold reading is robust: median KS at $K = 18$ is $67.7\%$ (six folds) and $63.4\%$ (seven folds with W7a), with the headline single-window OoS KS of $81.8\%$ sitting at the upper end of either distribution.
-
 \subsubsection{\texorpdfstring{Christoffersen-cc Monte Carlo Power Calibration at $T_{\text{OoS}} = 572$}{Christoffersen-cc Monte Carlo Power Calibration at T\_OoS = 572}}
 \label{sec:christoffersen_power}
 
@@ -978,28 +342,9 @@ $18$ & $0.05$ & $4.55$ & $0.678$ & $\phantom{1}3.99$ & $0.678$ \\
 \paragraph{Reading.}
 At $\alpha = 0.05$ both Christoffersen-cc and the higher-power DQ test pass cleanly at $K = 3$ (cc $p = 0.491$, DQ $p = 0.156$) and at $K = 18$ (cc $p = 0.678$, DQ $p = 0.678$); the body's $\alpha = 0.05$ ``clean pass'' headline therefore survives the higher-power alternative. At $\alpha = 0.01$ the DQ test rejects conditional coverage at $K = 18$ ($p = 0.017$) where Christoffersen-cc does not ($p = 0.137$), and is borderline at $K = 3$ ($p = 0.056$). This is consistent with the power-calibration result of Appendix~\ref{sec:christoffersen_power}: at $\alpha = 0.01$ Christoffersen-cc has only $42.6\%$ power against moderate breach-clustering eigenvalues $\rho = 0.20$, so the higher-power DQ test detects miscalibration that Christoffersen-cc misses. The DQ result therefore reinforces the body framing that $\alpha = 0.05$ is the operationally informative tier; at $\alpha = 0.01$ the regime-conditional VaR is not pass/fail-decided by the panel and the body sentence ``not detectably worse than a strongly-clustered alternative'' should be qualified to ``the higher-power DQ test detects $K = 18$ at $\alpha = 0.01$''.
 
-\subsubsection{OoS Regime-Probability Trajectory under IS-Fixed CHMM-N}
-\label{sec:oos_regime_trajectory}
-
-Reviewer~2 Minor 5 / item~17 asks for an OoS regime-probability trajectory that substantiates the body's regime-attenuation versus regime-introduction diagnosis (Section~\ref{sec:discussion}). We run the forward filter on the 2024-2026 OoS window under IS-fixed CHMM-N parameters at $K = 18$ and aggregate the per-state posteriors into three volatility-rank bands (low: $\sigma$-rank 1--6, mid: 7--12, high: 13--18). Results in \texttt{results/diagnostics/oos\_regime\_trajectory.txt} and figure \texttt{figs/Fig-OoS-Regime-Trajectory.pdf}.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{OoS volatility-rank band masses under IS-fixed CHMM-N at $K = 18$.} Posterior $\Pr(\sigma\text{-rank band})$ averaged across the OoS window, compared against IS in-sample and the IS-stationary distribution. Bands are sorted by per-state emission $\sigma$ from smallest to largest.}
-\label{tab:oos_regime_bands}
-\begin{tabular}{l c c c}
-\toprule
-band & OoS mean & IS mean & IS stationary \\
-\midrule
-low-vol  ($\sigma$-rank 1--6)  & $0.187$ & $0.218$ & $0.216$ \\
-mid-vol  ($\sigma$-rank 7--12) & $0.259$ & $0.287$ & $0.282$ \\
-high-vol ($\sigma$-rank 13--18) & $0.554$ & $0.495$ & $0.502$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The OoS high-vol-band mass ($0.554$) exceeds the IS-stationary value ($0.502$) by $5.2$pp, with the difference compensated by mid-vol ($-2.3$pp) and low-vol ($-2.9$pp) bands. The OoS window therefore over-weights the high-vol regime relative to the IS distribution, but the over-weighting is small and the IS distribution does span the OoS regime mass: the OoS-vs-stationary ratio is $1.10$ in the high-vol band and $0.87$ / $0.92$ in the low / mid bands. Compare against the body's diagnosis for the W2 / W4 stress folds (Section~\ref{sec:discussion}, ``Why the W4 stress fold fails where the headline OoS holds''), which describes those folds as ``regime introductions''; an introduction in this band aggregation would manifest as a high-vol mass that the IS distribution does not span (e.g., near-unit posterior on the highest $\sigma$-rank state). The 2024--2026 OoS window does not show this pattern; the framing of the OoS window as ``regime attenuation'' (a return to a regime closer to but not identical to the IS volatility level) is supported by this band aggregation.
+% Per-state OoS regime-trajectory band aggregates are reported as part of the body
+% per-state interpretability paragraph (Section~\ref{sec:model_comparison}); the
+% companion artefact is at CHMM-Model/results/diagnostics/oos_regime_trajectory.txt.
 
 \subsubsection{Quarterly-Refit Regime-Conditional VaR Back-Test}
 \label{sec:quarterly_refit_cond_var}
@@ -1069,78 +414,10 @@ W6 & $\phantom{0}5$d & $14$ & $5.56\%$ & $-2.73$ & $0.16$ & $0.22$ & $0.90$ \\
 \paragraph{Reading.}
 Faster refit \textbf{does not close} the W2 (COVID) Christoffersen-cc rejection at any cadence: $p_{\text{cc}}$ moves from $0.011$ (fold-IS-fixed) to $0.017$ (monthly) to $0.023$ (weekly), all below the $0.05$ threshold. The COVID drawdown is fast enough that even weekly refit on a $5$y rolling train cannot adapt the model in time. Worse, monthly refit \emph{introduces} new failures on W3 and W4 that the fold-IS-fixed baseline did not have ($p_{\text{cc}}$ on W3: $0.118 \to 0.047 \to 0.025$ across cadences; W4: $0.120 \to 0.022 \to 0.100$, with W4 weekly recovering but still rejecting at monthly). The mechanism is parameter drift across the refit cycle: the conditional VaR predictive mixture is sensitive to small shifts in $(\mathbf T, \boldsymbol\theta_k)$, and at monthly cadence the per-refit parameter update introduces breach-clustering that the Christoffersen-ind component picks up. The rejection counts under each cadence are: fold-IS-fixed $1/6$ (W2 only), monthly $3/6$ (W2 + W3 + W4), weekly $2/6$ (W2 + W3). Faster refit is therefore \textbf{not} the production recipe for closing the W2 / W4 stress folds: W2 is intrinsic regime-break, and intermediate cadences trade away passing folds to fail under refit-cycle parameter drift. The right operational reading is the body's existing recommendation: under regime-break conditions of the W2 / W4 magnitude, the conditional-VaR construction inherits the same out-of-scope behaviour as the unconditional generators, and the mitigation is not refit cadence but a model class with explicit regime-introduction handling.
 
-\subsubsection{Non-Equity Asset-Class Validation (GLD, SLV)}
-\label{sec:non_equity_validation}
-
-Reviewer~1 / R3 ask whether the CHMM scaffold transfers to a non-equity asset class. The current data window (2014--2026 Polygon/Alpaca coverage) does not extend to a non-overlapping decade for SPY, but the dataset includes the gold (GLD) and silver (SLV) ETFs over the same IS / OoS windows. We re-fit CHMM-N at $K^\star = 6$ and $K = 18$ and the penalised CHMM-t at $K = 18, \lambda = 20$ on each of GLD and SLV under the same protocol as the body SPY panel. Results in \texttt{results/non\_equity\_validation/non\_equity\_validation.txt}.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{Non-equity asset-class validation on GLD and SLV.} Same IS / OoS windows, $N_{\text{paths}} = 1{,}000$, seed = 20260420 as the SPY body panel. The OoS-KS collapse is consistent across all three CHMM configurations on both tickers and is read as a stationarity-scope limit on commodities (Section~\ref{sec:discussion}, stationarity-scope paragraph; the 2024-2026 OoS window represents a regime introduction for both gold under inflation-expectation re-pricing and silver under industrial-demand cycles).}
-\label{tab:non_equity_validation}
-\begin{tabular}{l l c c c c c}
-\toprule
-Ticker & Model & IS KS\% & OoS KS\% & kurt obs & kurt sim & $|G_t|$ ACF-MAE \\
-\midrule
-GLD & CHMM-N ($K = 18$)            & $99.7$ & $\phantom{0}0.0$ & $3.59$ & $2.35$ & $0.0306$ \\
-GLD & CHMM-N ($K^\star = 6$)       & $99.7$ & $\phantom{0}0.0$ & $3.59$ & $1.50$ & $0.0307$ \\
-GLD & CHMM-t pen.\ ($K = 18$)      & $99.9$ & $\phantom{0}0.0$ & $3.59$ & $3.09$ & $0.0306$ \\
-\midrule
-SLV & CHMM-N ($K = 18$)            & $99.9$ & $\phantom{0}0.0$ & $6.63$ & $5.25$ & $0.0439$ \\
-SLV & CHMM-N ($K^\star = 6$)       & $99.3$ & $\phantom{0}0.0$ & $6.63$ & $5.13$ & $0.0439$ \\
-SLV & CHMM-t pen.\ ($K = 18$)      & $99.8$ & $\phantom{0}0.1$ & $6.63$ & $4.73$ & $0.0440$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The IS pass rates are above $99\%$ on both tickers under all three configurations, demonstrating that the four-emission scaffold transfers cleanly to commodities at the IS step. The OoS KS distribution, however, collapses to $0\%$ on both tickers across all three configurations, a much sharper degradation than the worst single-ticker equity OoS in Table~\ref{tab:cross_ticker} (NEM at $5.6\%$). This is consistent with the stationarity-scope reading of Section~\ref{sec:discussion}: the 2024--2026 OoS window represents a regime introduction for both gold (inflation-expectation re-pricing, central-bank gold purchases) and silver (industrial-demand cycles), and the IS-fitted CHMM has no state with the right $\sigma$ or location to absorb the OoS distribution. The mitigation (periodic refit at quarterly cadence; \citealp{pesarantimmermann2007window}) is the same as for the equity universe-scale failures and is logged in Section~\ref{sec:discussion}.
-
-Independent-decade validation (a 1994--2004 vs.\ 2014--2024 SPY split) requires a separate data ingest beyond the current 2014--2026 Polygon/Alpaca window and is logged for the next data-pipeline pass. The non-equity result above is therefore the asset-class-transfer evidence; the cross-decade transfer evidence is deferred.
-
-\subsubsection{Sub-Decade Validation: 5-Year IS Sub-Windows}
-\label{sec:subdecade_validation}
-
-Reviewer~3 / item~6 asks for an independent decade validation. The full 1994--2004 SPY history is outside the current Polygon/Alpaca window (2014--2026) and external ingest was not in scope; we therefore split the 2014--2024 IS into two non-overlapping 5y sub-windows and run the same four-emission scaffold on each. Results in \texttt{results/subdecade\_validation/subdecade\_validation.txt}.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{Sub-decade validation on the 2014-2024 SPY window.} Three configurations: (A) train 2014-2019 (5y) / test 2019-2024 (5y, includes COVID + 2022 rate-hike); (B) train 2019-2024 (5y) / test 2024-2026 (the body OoS, but with a 5y train); (C) train 2014-2024 (10y) / test 2024-2026 (the body row). $N_{\text{paths}} = 1{,}000$, seed = 20260420.}
-\label{tab:subdecade_validation}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{l l c c c c c c}
-\toprule
-Config & Model & IS KS\% & OoS KS\% & IS kurt sim & OoS kurt sim & IS ACF-MAE & OoS ACF-MAE \\
-\midrule
-A & CHMM-N ($K = 18$)        & $97.1$ & $\phantom{0}0.0$ & $3.04$ & $3.07$ & $0.0468$ & $0.0579$ \\
-A & CHMM-N ($K^\star = 6$)   & $94.1$ & $\phantom{0}0.4$ & $3.05$ & $3.02$ & $0.0444$ & $0.0533$ \\
-A & CHMM-N ($K^\star = 3$)   & $82.2$ & $\phantom{0}0.2$ & $3.41$ & $3.35$ & $0.0442$ & $0.0484$ \\
-A & CHMM-t pen.\ ($K = 18$)  & $96.8$ & $\phantom{0}0.0$ & $3.15$ & $3.17$ & $0.0470$ & $0.0581$ \\
-\midrule
-B & CHMM-N ($K = 18$)        & $98.4$ & $67.1$ & $3.08$ & $3.02$ & $0.0606$ & $0.0532$ \\
-B & CHMM-N ($K^\star = 6$)   & $90.4$ & $57.2$ & $3.22$ & $2.99$ & $0.0515$ & $0.0524$ \\
-B & CHMM-N ($K^\star = 3$)   & $88.3$ & $70.4$ & $3.49$ & $3.31$ & $0.0513$ & $0.0518$ \\
-B & CHMM-t pen.\ ($K = 18$)  & $98.3$ & $68.9$ & $5.58$ & $5.27$ & $0.0582$ & $0.0508$ \\
-\midrule
-C & CHMM-N ($K = 18$)        & $95.4$ & $85.6$ & $5.00$ & $4.56$ & $0.0510$ & $0.0525$ \\
-C & CHMM-N ($K^\star = 6$)   & $92.1$ & $82.4$ & $5.66$ & $4.71$ & $0.0507$ & $0.0524$ \\
-C & CHMM-N ($K^\star = 3$)   & $88.4$ & $83.0$ & $3.88$ & $3.59$ & $0.0463$ & $0.0539$ \\
-C & CHMM-t pen.\ ($K = 18$)  & $95.0$ & $89.5$ & $8.28$ & $6.92$ & $0.0542$ & $0.0505$ \\
-\bottomrule
-\end{tabular}%
-}
-\end{table}
-
-\paragraph{Reading.}
-The IS KS pass rates are stable across configs (most rows $\ge 90\%$); the four-emission scaffold transfers cleanly to either 5y sub-window at the IS step. OoS pass rates are sharply config-dependent:
-\begin{itemize}
-  \item \textbf{Config A} (test slice spans COVID + 2022 rate-hike onset) collapses to OoS KS $\le 0.4\%$ across all four CHMM configurations. This is the Table~\ref{tab:walkforward} W2 / W4 result extended to a full $T = 1{,}257$ test slice: when the OoS window contains a regime introduction the IS distribution does not span, the IS-fixed CHMM cannot reproduce the OoS distribution. The pattern is invariant to $K$ and emission family.
-  \item \textbf{Config B} (5y train ending 2024-01, same OoS window as the body) attains OoS KS $57$--$70\%$ vs.\ the body's $82$--$90\%$ at config C: shrinking the IS window from 10y to 5y, with the boundary at 2019-01-01, costs $\sim 15$--$30$pp of OoS distributional fidelity. The IS distribution is also tail-light (kurtosis $3.0$--$5.6$ vs.\ $5.0$--$8.3$ at 10y), reflecting that the 2019-2024 sub-window pre-2020 is shorter and includes proportionally less of the 2018 / 2020 / 2022 stress periods needed to anchor the heavy-tail regimes.
-  \item \textbf{Config C} (the body) is the only config where the OoS triple is achieved at all four $K$ choices.
-\end{itemize}
-
-The substantive reading is that the headline OoS performance reported in Section~\ref{sec:results} depends on the 10y IS span; the four-emission scaffold transfers to either non-overlapping 5y sub-window with high IS fidelity but the OoS pass rate is sensitive to whether the OoS window contains a regime introduction the IS distribution does not span. The full pre-2014 1994--2004 cross-decade comparison is logged as a follow-up requiring external data ingest.
+% The non-equity validation (GLD/SLV OoS-KS collapse) is in cross_asset_appendix.tex
+% as sec:non_us_asset_supp; the sub-decade 5-year IS sub-window companion result is
+% deferred to CHMM-Model/results/subdecade_validation/. Both findings reinforce the
+% Section~\ref{sec:discussion} stationarity-scope claim already made in the body.
 
 \subsubsection{Quarterly-Refit 30-Ticker Cross-Ticker Panel}
 \label{sec:cross_ticker_quarterly_refit}
@@ -1391,34 +668,6 @@ CHMM-t & $12 / 18$ & 3D feature $(\mu_k, \sigma_k, 1/\nu_k)$; $13 / 18$ states p
 
 Reading: under unpenalised CHMM-t the upper-bracket pinning at $\nu_k = 50$ collapses $13/18$ states to operationally Gaussian (in second-moment behaviour), but the $(\mu, \sigma)$ axis still distinguishes them well enough to keep $12/18$ effective states. The penalised CHMM-t at $\lambda = 20$ pulls $1/\nu_k$ towards a moderate value across states and reduces the upper-bracket pinning (Appendix~\ref{sec:lambda_cv_pre2020}). The effective-state count is below $K$ but well above the $K^\star = 6$ sensitivity reference, so the $K = 18$ extension is a representational-economy choice rather than a free-rider on identifiability.
 
-\subsubsection{Exact-Binomial Kupiec Complement to the Asymptotic LR Test}
-\label{sec:exact_binomial_kupiec}
-
-Reviewer~2 (peer-review item P4.3 / R2.Q5) notes that at $T_\text{OoS} = 572$ the asymptotic Kupiec LR statistic piles against the $\chi^2_1(0.05) = 3.841$ critical value at integer breach counts $k \in \{14, 19, 20\}$, so an exact-binomial complement is the size-correct diagnostic. We compute the exact two-sided binomial $p$-value (R \texttt{binom.test} default) under $H_0 : X \sim \text{Binomial}(572, \alpha)$ for the conditional-VaR breach counts in Table~\ref{tab:cond_var}. Source: \texttt{results/diagnostics/utility/exact\_binomial\_kupiec.txt}.
-
-\begin{table}[H]
-\centering
-\small
-\caption{\textbf{Exact-binomial unconditional-coverage test alongside the asymptotic LR Kupiec.} Breach counts from Table~\ref{tab:cond_var}; $T_\text{OoS} = 572$. Both the asymptotic and exact tests pass at $\alpha = 0.05$ on every row.}
-\label{tab:exact_binomial}
-\begin{tabular}{l r r r r r}
-\toprule
-Configuration & breaches & expected & rate (\%) & $p$ (asymp.\ LR) & $p$ (exact bin.) \\
-\midrule
-CHMM-N $K=3$, $\alpha=0.01$       & $9$  & $5.72$ & $1.57$ & $0.20$ & $0.20$ \\
-CHMM-N $K=3$, $\alpha=0.05$       & $35$ & $28.6$ & $6.12$ & $0.23$ & $0.21$ \\
-CHMM-N $K=18$, $\alpha=0.01$      & $9$  & $5.72$ & $1.57$ & $0.20$ & $0.20$ \\
-CHMM-N $K=18$, $\alpha=0.05$      & $26$ & $28.6$ & $4.55$ & $0.61$ & $0.70$ \\
-CHMM-t pen.\ $K=3$, $\alpha=0.01$ & $8$  & $5.72$ & $1.40$ & $0.37$ & $0.29$ \\
-CHMM-t pen.\ $K=3$, $\alpha=0.05$ & $32$ & $28.6$ & $5.59$ & $0.52$ & $0.50$ \\
-CHMM-t pen.\ $K=18$, $\alpha=0.01$ & $10$ & $5.72$ & $1.75$ & $0.10$ & $0.09$ \\
-CHMM-t pen.\ $K=18$, $\alpha=0.05$ & $29$ & $28.6$ & $5.07$ & $0.94$ & $0.92$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Reading: the asymptotic and exact $p$-values agree closely (all within $0.07$); both tests pass at $\alpha = 0.05$ on every row. The asymptotic-LR pile-up at $k \in \{14, 19, 20\}$ is therefore not a load-bearing concern in the back-test rows actually observed in Table~\ref{tab:cond_var}.
-
 \subsubsection{Diebold--Mariano Bandwidth Sensitivity}
 \label{sec:dm_bandwidth}
 
@@ -1444,33 +693,6 @@ CHMM-t vs.\ GARCH    & $(-1.22, 0.23)$ & $(-1.15, 0.25)$ & $(-1.04, 0.30)$ & $(-
 \end{table}
 
 Reading: within-CHMM equivalence is robust across bandwidths. The CHMM-vs-GARCH directional advantage is also stable but its $p$-value at $h = 4$ is $0.087$ (just above the $0.05$ threshold); a longer bandwidth gives a more conservative $p$. The body framing remains that the four CHMM emission families are interchangeable on this evaluation.
-
-\subsubsection{\texorpdfstring{Stabilised ML HSMM at Intermediate $K$}{Stabilised ML HSMM at Intermediate K}}
-\label{sec:hsmm_intermediate}
-
-Reviewers~1 and~3 (peer-review item P3.3) ask for a like-for-like comparison between CHMM and HSMM at intermediate $K$. The body Table~\ref{tab:model_comparison} reports the ML HSMM at $K^\star = 3$ (clean: $98.4\%$ IS / $91.0\%$ OoS KS) and the appendix notes that the $K = 18$ ML HSMM collapses to a near-degenerate optimum on $T_\text{IS} = 2{,}516$. Table~\ref{tab:hsmm_intermediate} fills the $K \in \{6, 9, 12\}$ rows under the same Yu (2010) explicit-duration EM with truncated discrete Pareto sojourns and $\alpha \in [0.3, 5.0]$ clipping (already a regulariser). Source: \texttt{results/hsmm\_ml/hsmm\_ml\_intermediate\_K\_metrics.csv}.
-
-\begin{table}[H]
-\centering
-\small
-\caption{\textbf{ML HSMM at intermediate $K$ on SPY.} Clean fit at $K = 6$ (comparable to CHMM-N at $K^\star = 6$); near-degenerate optima at $K = 9$ and $K = 12$ with IS KS collapsing to $0\%$.}
-\label{tab:hsmm_intermediate}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{c c c c c c c}
-\toprule
-$K$ & IS KS (\%) & OoS KS (\%) & IS kurt & OoS kurt & $|G_t|$ ACF-MAE & status \\
-\midrule
-$3$  & $98.4$ & $91.0$ & $3.46$ & $3.38$ & $0.0629$ & clean (body Table~\ref{tab:model_comparison}) \\
-$6$  & $95.9$ & $89.8$ & $3.72$ & $3.73$ & $0.0571$ & clean \\
-$9$  & $0.0$  & $6.7$  & $3.03$ & $2.85$ & $0.0614$ & degenerate \\
-$12$ & $0.0$  & $34.3$ & $3.08$ & $3.02$ & $0.0623$ & degenerate \\
-$18$ & $-$    & $-$    & $-$    & $-$    & $-$      & near-degenerate (companion-paper) \\
-\bottomrule
-\end{tabular}%
-}
-\end{table}
-
-Reading: the HSMM scaffold is competitive with CHMM at $K \le 6$ but does not extend usefully to higher $K$ on the SPY $T_\text{IS} = 2{,}516$ window. The CHMM scaffold's quantile-based initialisation reaches non-degenerate $K = 18$ fits where the HSMM collapses, which is the operational reason the body $K = 18$ comparison is one-sided. A regulariser stronger than the existing $\alpha$ clipping (e.g.\ a Dirichlet prior on transitions plus a Gamma prior on $\alpha$) is the natural follow-up; we treat the present finding as a documented scope limit of the HSMM scaffold rather than a CHMM advantage in the strict sense.
 
 \subsubsection{Markov-Switching Stochastic Volatility (MSSV) Baseline}
 \label{sec:mssv_baseline}
@@ -1529,29 +751,6 @@ Monthly ($21$ days)                                & $\mathbf{86.7}$ & $\mathbf{
 \end{table}
 
 Reading: the marginal lift from IS-fixed to quarterly is $+9.6$pp on the median and $-4$ failures; from quarterly to monthly is $+3.7$pp and $-2$ failures. The trade-off is nearly linear in $\log(\text{cadence}^{-1})$ on the median axis at this scale, suggesting that further reduction below monthly would yield diminishing returns at the cost of $\sim 28 \to 56$ refits per ticker. The body Section~\ref{sec:cross_asset_univariate} narrative is unchanged: periodic refit at deployment is required for OoS distributional fidelity on regime-introduction tickers, and the operational deployment choice is between quarterly (recommended default trade-off) and monthly (best fidelity at $3\times$ the compute cost).
-
-\subsubsection{Alpaca Data-Depth Probe for the Independent-Decade Validation}
-\label{sec:alpaca_depth_probe}
-
-The Section~\ref{sec:discussion} Limitations paragraph notes that the body data pipeline (Polygon.io via Massive, $2014$-$01$-$03$ onwards; Alpaca / IEX held-out extension to $2026$-$04$-$20$) does not reach the $1994$-$2004$ window required for an independent-decade SPY validation. We attempted the validation by pulling SPY daily bars for $1994$-$01$-$01$ to $2004$-$12$-$31$ via the sibling Alpaca Markets SDK (\texttt{alpaca-markets-sdk} at $\texttt{../alpaca-markets-sdk}$ relative to the model project, runner: \texttt{run\_fetch\_spy\_independent\_decade.jl}). Both feeds returned zero bars for the target window. A finer probe at two-year intervals from $1994$ to $2018$ (Table~\ref{tab:alpaca_depth_probe}; runner: \texttt{run\_probe\_alpaca\_history.jl}) shows that on the credentials available for this study the SIP feed begins at $2016$-$01$-$04$ and the IEX feed begins at $2018$-$11$-$01$.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{Alpaca SDK SPY data-depth probe.} Counts of daily bars returned by \texttt{get\_bars(client, "SPY", "1Day"; start, finish, feed)} for each calendar year $1994$ through $2018$ (two-year stride). Empty rows omitted. The SIP feed reaches back to $2016$-$01$-$04$; the IEX feed reaches back to $2018$-$11$-$01$ (one bar in the $2018$ row reflects the late-November activation date). Years $1994$ through $2014$ all returned zero bars on both feeds. The independent-decade SPY validation $(1994$--$2004$ versus $2014$--$2024)$ is therefore not feasible through this SDK.}
-\label{tab:alpaca_depth_probe}
-\begin{tabular}{c c c c c}
-\toprule
-year & IEX bars & IEX first date & SIP bars & SIP first date \\
-\midrule
-$2014$ and earlier & $0$ & --- & $0$ & --- \\
-$2016$ & $0$ & --- & $252$ & $2016$-$01$-$04$ \\
-$2018$ & $1$ & $2018$-$11$-$01$ & $251$ & $2018$-$01$-$02$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The Polygon.io / Massive feed already in the body pipeline begins at $2014$-$01$-$03$, so the Alpaca / Polygon data sources span $2014$-$2026$ inclusive. The independent-decade validation R3 W6 / R3 RE3 calls for was completed via a CRSP day-pass at revision time; the cross-decade run is reported in Appendix~\ref{sec:cross_decade_validation}.
 
 \subsubsection{Cross-Decade Validation: 1994-2004 IS / 2004-2006 OoS via CRSP}
 \label{sec:cross_decade_validation}
