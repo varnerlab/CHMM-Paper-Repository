@@ -104,7 +104,7 @@ The empirical effective rank confirms the body framing of Section~\ref{sec:theor
 \subsubsection{Cross-Ticker Spectral Effective-Rank Diagnostic}
 \label{sec:spectral_rank_xticker}
 
-Reviewers~2 and~3 ask whether the SPY-only result of Appendix~\ref{sec:spectral_rank} (a single non-unit eigenvalue carries $93.6\%$ of the lag-$1$ absolute-return ACF at $K = 18$) generalises across tickers. Table~\ref{tab:spectral_xticker} reports the cross-ticker distribution of the dominant-mode share, computed under the same protocol on the 30-ticker sector-balanced panel plus SPY. Source: \texttt{results/diagnostics/spectral\_rank\_cross\_ticker.txt}.
+To test whether the SPY-only result of Appendix~\ref{sec:spectral_rank} (a single non-unit eigenvalue carries $93.6\%$ of the lag-$1$ absolute-return ACF at $K = 18$) generalises across tickers, Table~\ref{tab:spectral_xticker} reports the cross-ticker distribution of the dominant-mode share, computed under the same protocol on the 30-ticker sector-balanced panel plus SPY. Source: \texttt{results/diagnostics/spectral\_rank\_cross\_ticker.txt}.
 
 \begin{table}[H]
 \centering
@@ -127,11 +127,6 @@ Reading: the SPY headline of $93.6\%$ is concentrated; the cross-ticker median $
 
 All models converged within the 60-iteration budget with monotonically increasing log-likelihood (EM guarantee under quantile-based initialisation). Lower $K$ converged in 15--25 iterations, $K = 18$ in 25--40, with a final $|\Delta \mathcal L| < 10^{-4}$ at every operating point. Convergence-trace figures and per-iteration log-likelihood histories are at \texttt{CHMM-Model/figs/Fig-Convergence-K\{3,12,18\}.pdf}.
 
-\subsubsection{Per-K and Multi-Emission Figure Companions}
-\label{sec:k_sweep_panels}
-
-IS / OoS validation panels at non-selected state resolutions $K \in \{3, 6, 12, 21\}$ and the multi-emission diagnostic suite at $K = 18$ (emission PDFs, transition-matrix heatmaps, residence times, sample trajectories, four-panel IS / OoS comparisons, convergence histories) for CHMM-t, CHMM-L, CHMM-GED are deferred to the companion-code archive at \texttt{CHMM-Model/figs/}. Cross-family transition matrices are visually indistinguishable at $K = 18$ (the regime structure is set by the rank of $\mathbf T$, not the emission family); per-family residence times and convergence histories track CHMM-N up to ECM sub-step overhead.
-
 \subsubsection{Ryd\'{e}n K = 2 Replication}
 \label{sec:ryden_replication}
 
@@ -148,7 +143,7 @@ The substantive read across the three operating points: (i) The KS distributions
 \subsubsection{Block-Bootstrap CIs on Observed Kurtosis (IS vs OoS)}
 \label{sec:kurtosis_bootstrap_ci}
 
-Reviewer~3 / item~9 asks whether the IS / OoS kurtosis disagreement (observed $7.68$ IS, $5.29$ OoS, a $31\%$ drop) is itself statistically distinguishable. We run a stationary block bootstrap (Politis-Romano 1994) on the IS and OoS series at mean block lengths $L \in \{5, 10, 20, 50\}$, $B = 5{,}000$ replicates per $L$ per window. Results in \texttt{results/diagnostics/kurtosis\_bootstrap.txt}.
+A natural question on the IS / OoS kurtosis disagreement (observed $7.68$ IS, $5.29$ OoS, a $31\%$ drop) is whether it is itself statistically distinguishable. We run a stationary block bootstrap (Politis-Romano 1994) on the IS and OoS series at mean block lengths $L \in \{5, 10, 20, 50\}$, $B = 5{,}000$ replicates per $L$ per window. Results in \texttt{results/diagnostics/kurtosis\_bootstrap.txt}.
 
 \begin{table}[!ht]
 \centering
@@ -171,7 +166,7 @@ The IS lower bound $1.92$--$2.99$ and the OoS upper bound $7.70$--$8.97$ overlap
 
 \paragraph{Bootstrap-CI placement of the penalised CHMM-t IS kurtosis.}
 \label{sec:kurtosis_ci_placement}
-A natural follow-up question on the body's penalised CHMM-t at $\lambda = 20$ is whether its simulated IS kurtosis distribution sits inside the bootstrap CI on observed. Round-2 reviewers asked whether the aggregate-mean simulated IS kurtosis (e.g.\ $14.91$ at $K^\star = 3$, above the $L = 20$ CI upper bound $12.40$) is paired with a per-path distribution that mostly sits inside the CI, or whether it is paired with a per-path distribution that mostly sits above. Source / runner: \texttt{run\_kurtosis\_ci\_placement.jl}; output: \texttt{results/kurtosis\_ci\_placement/kurtosis\_ci\_placement.csv}.
+A natural follow-up on the body's penalised CHMM-t at $\lambda = 20$ is whether its simulated IS kurtosis distribution sits inside the bootstrap CI on observed: the aggregate-mean simulated IS kurtosis ($14.91$ at $K^\star = 3$, above the $L = 20$ CI upper bound $12.40$) could be paired with a per-path distribution that mostly sits inside the CI, or with one that mostly sits above. Source / runner: \texttt{run\_kurtosis\_ci\_placement.jl}; output: \texttt{results/kurtosis\_ci\_placement/kurtosis\_ci\_placement.csv}.
 
 \begin{table}[!ht]
 \centering
@@ -220,7 +215,7 @@ The aggregate-mean IS overshoot disappears under shared-$\nu$ at every $K$: the 
 \subsubsection{\texorpdfstring{Christoffersen-cc Monte Carlo Power Calibration at $T_{\text{OoS}} = 572$}{Christoffersen-cc Monte Carlo Power Calibration at T\_OoS = 572}}
 \label{sec:christoffersen_power}
 
-Reviewer~1 Q4 / Reviewer~2 W2-RE1 / Reviewer~3 Q5 ask for a Monte Carlo power calibration of the Christoffersen-cc joint conditional-coverage test at the $T_{\text{OoS}} = 572$ length used in the body Table~\ref{tab:cond_var}. We simulate breach indicator sequences from a two-state Markov chain on $\{0, 1\}$ with marginal probability $\alpha$ and second eigenvalue $\rho$, where $\rho = 0$ is the i.i.d.\ null and $\rho > 0$ measures the level of breach clustering; $B = 5{,}000$ replicates per cell. Results in \texttt{results/diagnostics/christoffersen\_power/christoffersen\_power.txt}.
+A Monte Carlo power calibration of the Christoffersen-cc joint conditional-coverage test at the $T_{\text{OoS}} = 572$ length used in the body Table~\ref{tab:cond_var} simulates breach indicator sequences from a two-state Markov chain on $\{0, 1\}$ with marginal probability $\alpha$ and second eigenvalue $\rho$, where $\rho = 0$ is the i.i.d.\ null and $\rho > 0$ measures the level of breach clustering; $B = 5{,}000$ replicates per cell. Results in \texttt{results/diagnostics/christoffersen\_power/christoffersen\_power.txt}.
 
 \begin{table}[!ht]
 \centering
@@ -259,7 +254,7 @@ The reading for the body Table~\ref{tab:cond_var} is therefore tier-dependent. T
 \subsubsection{Engle-Manganelli (2004) Dynamic Quantile Test}
 \label{sec:engle_manganelli_dq}
 
-Peer-review item P2.10 / R3 RE2 asks for the Engle-Manganelli (2004, JBES) Dynamic Quantile (DQ) test as a higher-power conditional-coverage alternative to Christoffersen-cc on the same OoS window. We run the standard four-lag specification (\citealp{engle2004caviar}, equation 16),
+As a higher-power conditional-coverage alternative to Christoffersen-cc on the same OoS window, we run the Engle-Manganelli (2004, JBES) Dynamic Quantile (DQ) test in the standard four-lag specification (\citealp{engle2004caviar}, equation 16),
 \begin{equation}
     \text{Hit}_t - \alpha
     = \beta_0 + \sum_{i = 1}^{4} \beta_i\,(\text{Hit}_{t-i} - \alpha) + \beta_{5}\,\widehat{\text{VaR}}_t + u_t,
@@ -270,7 +265,7 @@ on the IS-fixed regime-conditional VaR series of Section~\ref{sec:var_backtest},
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Engle-Manganelli DQ test on the regime-conditional VaR (P2.10 / R3 RE2)}, alongside Christoffersen-cc on the same breach series. CHMM-N at $K \in \{3, 18\}$, $\alpha \in \{0.01, 0.05\}$; $T_{\text{OoS}} = 572$, $q = 4$ lagged Hit indicators, $\chi^2_6$ critical at $5\%$ is $12.59$.}
+\caption{\textbf{Engle-Manganelli DQ test on the regime-conditional VaR}, alongside Christoffersen-cc on the same breach series. CHMM-N at $K \in \{3, 18\}$, $\alpha \in \{0.01, 0.05\}$; $T_{\text{OoS}} = 572$, $q = 4$ lagged Hit indicators, $\chi^2_6$ critical at $5\%$ is $12.59$.}
 \label{tab:engle_manganelli_dq}
 \begin{tabular}{c c c c c c}
 \toprule
@@ -361,7 +356,7 @@ Faster refit does not close the W2 Christoffersen-cc rejection at any cadence (f
 \subsubsection{Quarterly-Refit 30-Ticker Cross-Ticker Panel}
 \label{sec:cross_ticker_quarterly_refit}
 
-Reviewer~1 W4 / RE4 and Reviewer~3 W2 / RE3 ask for a quarterly-refit version of the 30-ticker cross-ticker panel (Table~\ref{tab:cross_ticker}); R3 W3 specifically asks for the quarterly-refit row at the $K^\star = 6$ sensitivity reference. We re-fit the penalised CHMM-t at $\lambda = 20$ on a rolling $5$-year window every $63$ trading days through the OoS span (10 refits per ticker, 300 fits total per state-resolution), simulate the next quarter under each refit, and concatenate the per-quarter simulations into a single OoS path matrix per ticker, at both $K = 18$ (extended-state-resolution sensitivity) and $K^\star = 6$ (sensitivity reference). Same $N_{\text{paths}} = 1{,}000$, seed = 20260420 as the body Table~\ref{tab:cross_ticker}. Results in \texttt{results/sector\_panel/sector\_panel\_quarterly\_refit.txt} ($K = 18$) and \texttt{results/sector\_panel/sector\_panel\_quarterly\_refit\_k6.txt} ($K^\star = 6$).
+For a quarterly-refit version of the 30-ticker cross-ticker panel (Table~\ref{tab:cross_ticker}), we re-fit the penalised CHMM-t at $\lambda = 20$ on a rolling $5$-year window every $63$ trading days through the OoS span (10 refits per ticker, 300 fits total per state-resolution), simulate the next quarter under each refit, and concatenate the per-quarter simulations into a single OoS path matrix per ticker, at both $K = 18$ (extended-state-resolution sensitivity) and $K^\star = 6$ (sensitivity reference). Same $N_{\text{paths}} = 1{,}000$, seed = 20260420 as the body Table~\ref{tab:cross_ticker}. Results in \texttt{results/sector\_panel/sector\_panel\_quarterly\_refit.txt} ($K = 18$) and \texttt{results/sector\_panel/sector\_panel\_quarterly\_refit\_k6.txt} ($K^\star = 6$).
 
 \begin{table}[!ht]
 \centering
@@ -413,11 +408,6 @@ The substantive reading for the body Section~\ref{sec:cross_asset_univariate} is
 \caption{\textbf{The three Cont stylized facts on SPY IS}. (a)~marginal density with maximum-likelihood Gaussian and Laplace overlays; (b)~normal Q-Q plot; (c)~empirical ACF of raw $G_t$ at lags 1--252 with $99\%$ Bartlett band; (d)~empirical ACF of $|G_t|$ on the same window.}
 \label{fig:stylized_facts}
 \end{figure}
-
-\subsubsection{\texorpdfstring{IS / OoS CHMM-N Validation Figures at $K = 18$}{IS / OoS CHMM-N Validation Figures at K = 18}}
-\label{sec:supp_validation_figures}
-
-The four-panel IS validation grid (marginal density, tail Q-Q, raw and absolute ACF) and the matching OoS validation grid (density fan, KS $p$-value histogram, raw and absolute ACF) for CHMM-N at $K = 18$ on SPY are at \texttt{CHMM-Model/figs/Fig-3-IS-Comparison-K18-\{a,b,c,d\}.pdf} and \texttt{Fig-4-OoS-Validation-K18-\{a,b,c,d\}.pdf} respectively (archived in \texttt{\_attic\_v10/} during the arXiv-prep pass; the body Table~\ref{tab:model_comparison} numerical summary supersedes the visual checks).
 
 \subsubsection{\texorpdfstring{CHMM-GED $\hat p_k$ Partition (Gaussian-bulk / Laplace-tail)}{CHMM-GED p\_k Partition (Gaussian-bulk / Laplace-tail)}}
 \label{sec:supp_p_partition}
@@ -487,7 +477,7 @@ CHMM-GED  & $-6.60\ [-8.30, -4.82]$      & $-8.51\ [-10.68,\ -6.47]$    & $-3.32
 \subsubsection{\texorpdfstring{Held-Out Cross-Validation of the $1/\nu_k$ Penalty $\lambda$}{Held-Out Cross-Validation of the 1/nu\_k Penalty lambda}}
 \label{sec:lambda_cv_pre2020}
 
-Reviewer~2 (peer-review item P1.3 / R2.W6) asks whether the body operating-point penalty rate $\lambda = 20$ is selected on data that overlaps the OoS evaluation window. To remove that concern we refit penalised CHMM-t on a strictly pre-2020 estimation slice (2014-01-03 to 2018-06-29, $n = 1{,}130$) and score each $\lambda$ on the validation slice (2018-07-02 to 2019-12-31, $n = 378$, both fully pre-COVID and pre-2022-rate-hike). Source: \texttt{results/nu\_shrinkage\_sweep/lambda\_cv\_pre2020.txt}.
+To verify that the body operating-point penalty rate $\lambda = 20$ is not selected on data that overlaps the OoS evaluation window, we refit penalised CHMM-t on a strictly pre-2020 estimation slice (2014-01-03 to 2018-06-29, $n = 1{,}130$) and score each $\lambda$ on the validation slice (2018-07-02 to 2019-12-31, $n = 378$, both fully pre-COVID and pre-2022-rate-hike). Source: \texttt{results/nu\_shrinkage\_sweep/lambda\_cv\_pre2020.txt}.
 
 \begin{table}[H]
 \centering
@@ -521,11 +511,6 @@ Single-linkage clustering on standardized parameter triples at threshold $\tau =
 
 Sweeping the Newey--West HAC bandwidth $h \in \{4, 8, 16, 32\}$ around the default $h = \lfloor T^{1/3} \rfloor = 8$, all within-CHMM CRPS DM pairs retain $p > 0.38$ at every bandwidth (CHMM-N vs.\ CHMM-t: $p \in [0.47, 0.51]$; CHMM-N vs.\ CHMM-L: $p \in [0.38, 0.48]$; CHMM-t vs.\ CHMM-L: $p \approx 0.97$ at every bandwidth); the CHMM-N vs.\ GARCH pair moves $p \in [0.087, 0.175]$ in a stable direction. The within-CHMM family equivalence used in Section~\ref{sec:results} is therefore not bandwidth-fragile. Full bandwidth sweep at \texttt{CHMM-Model/results/crps\_dm/CRPS\_DM\_bandwidth\_sweep.txt} (runner: \texttt{run\_crps\_dm\_bandwidth.jl}).
 
-\subsubsection{Markov-Switching Stochastic Volatility (MSSV) Baseline}
-\label{sec:mssv_baseline}
-
-A 2-state MSSV of \citet{so1998stochastic} fit by the Hamilton-Kim-Nelson quasi-MLE shortcut on the log-squared linearisation gives IS KS $0\%$, OoS KS $0.1\%$, simulated kurtosis $14.6$ (overshoot vs.\ observed $7.68$), and a near-absorbing fitted transition matrix $T \approx [[0.998, 0.002], [0.000, 1.000]]$. This is the documented degeneracy of 2-state MSSV under quasi-MLE on heavy-tailed returns and is why \citet{carvalho2007simulation} use particle MCMC; the body MS-GARCH $K \in \{2, 3, 6\}$ rows already cover the regime-switching-volatility comparison axis. Full output at \texttt{CHMM-Model/results/mssv\_baseline/mssv\_baseline.txt} (runner: \texttt{run\_mssv\_baseline.jl}).
-
 \subsubsection{Monthly-Refit Cross-Ticker Panel}
 \label{sec:cross_ticker_monthly_refit}
 
@@ -534,7 +519,7 @@ Refining the cross-ticker quarterly-refit construction (Appendix~\ref{sec:cross_
 \subsubsection{Cross-Decade Validation: 1994-2004 IS / 2004-2006 OoS via CRSP}
 \label{sec:cross_decade_validation}
 
-Reviewer~3 W6 / RE3 asks for a 1994--2004 vs.\ 2014--2024 SPY split to test whether the headline stylized-fact reproduction is decade-specific. We executed the validation via a CRSP day-pass: \texttt{data/external/crsp\_1994\_2006.csv} contains daily prices for SPY plus 28 of the 30 cross-ticker panel members (NEE and APD missing from the CRSP query) from $1994$-$01$-$03$ to $2006$-$04$-$28$. Adjusted close $= \mathtt{DlyPrc} / \mathtt{DlyFacPrc}$ from the CRSP CIZ-format daily stock file. Source / runner: \texttt{run\_cross\_decade\_validation.jl}; output: \texttt{results/cross\_decade\_validation/{summary.txt, metrics.csv}}; paper-side mirror: \texttt{results/robustness/cross\_decade\_validation.csv}.
+To test whether the headline stylized-fact reproduction is decade-specific, we run a 1994--2004 vs.\ 2014--2024 SPY split via a CRSP day-pass: \texttt{data/external/crsp\_1994\_2006.csv} contains daily prices for SPY plus 28 of the 30 cross-ticker panel members (NEE and APD missing from the CRSP query) from $1994$-$01$-$03$ to $2006$-$04$-$28$. Adjusted close $= \mathtt{DlyPrc} / \mathtt{DlyFacPrc}$ from the CRSP CIZ-format daily stock file. Source / runner: \texttt{run\_cross\_decade\_validation.jl}; output: \texttt{results/cross\_decade\_validation/{summary.txt, metrics.csv}}; paper-side mirror: \texttt{results/robustness/cross\_decade\_validation.csv}.
 
 Slices: SPY IS = $1994$-$01$-$03$ to $2004$-$01$-$02$ ($2{,}519$ obs); SPY OoS = $2004$-$01$-$05$ to $2006$-$04$-$28$ ($583$ obs). Same body protocol: $1{,}000$ simulated paths per fit, $\alpha = 0.05$ for KS.
 

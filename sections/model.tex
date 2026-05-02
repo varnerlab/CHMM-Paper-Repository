@@ -6,7 +6,7 @@ The single-asset analysis uses daily SPDR S\&P~500 ETF (SPY) prices from January
     G_{i,j} \equiv \frac{1}{\Delta t} \ln\!\left(\frac{P_{i,j}}{P_{i,j-1}}\right) - r_f, \qquad \Delta t = 1/252, \quad r_f = 0,
     \label{eq:growth_rate}
 \end{equation}
-with $P_{i,j}$ the session volume-weighted average price (VWAP). The factor $1/\Delta t$ is a constant rescaling; all simulations and metrics are evaluated on the daily-scale series. The empirical study is organised along two pipelines (full schematic in Appendix~\ref{sec:supp_pipeline_schematic}). \emph{Pipeline~A} fits a CHMM to each ticker independently and evaluates single-asset metrics; \emph{Pipeline~B} reuses the per-asset Pipeline-A fits as marginals and injects cross-asset dependence through a rank-based Student-$t$ copula (\S\ref{sec:cross_asset_methods}).
+with $P_{i,j}$ the session volume-weighted average price (VWAP). The factor $1/\Delta t$ is a constant rescaling; all simulations and metrics are evaluated on the daily-scale series. The empirical study is organised along two pipelines (step-by-step summary in Appendix~\ref{sec:supp_pipeline_schematic}). \emph{Pipeline~A} fits a CHMM to each ticker independently and evaluates single-asset metrics; \emph{Pipeline~B} reuses the per-asset Pipeline-A fits as marginals and injects cross-asset dependence through a rank-based Student-$t$ copula (\S\ref{sec:cross_asset_methods}).
 
 \subsection{Continuous Hidden Markov Model}
 \label{sec:chmm_def}
