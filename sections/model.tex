@@ -29,9 +29,6 @@ The four emission families share a single forward-backward scaffold and quantile
                   fill=black!4, thick},
     obs/.style={draw, rectangle, rounded corners=1pt, minimum size=9mm,
                 inner sep=1pt, fill=black!10, thick},
-    emit/.style={draw, rectangle, rounded corners=1.5pt, align=center,
-                 minimum height=10mm, minimum width=34mm, inner sep=1.5mm,
-                 fill=black!3},
     block/.style={draw, rectangle, rounded corners=1.5pt, align=center,
                   minimum height=11mm, minimum width=34mm, inner sep=1.5mm,
                   fill=black!6, thick},
@@ -56,15 +53,6 @@ The four emission families share a single forward-backward scaffold and quantile
 \draw[flow] (s2) -- (o2) node[midway, right, eq] {$b_{s_t}$};
 \draw[flow] (s3) -- (o3) node[midway, right, eq] {$b_{s_{t+1}}$};
 \node[lbl, below=2mm of o2] {observed excess growth rate $G_t \in \mathbb{R}$};
-\node[emit, minimum width=28mm, below=20mm of o1.south west, anchor=north west] (eN)
-    {\textbf{CHMM-N} \\ $b_k = \mathcal{N}(\mu_k, \sigma_k^2)$};
-\node[emit, minimum width=28mm, right=2mm of eN] (eT)
-    {\textbf{CHMM-t} \\ $b_k = t_{\nu_k}(\mu_k, \sigma_k)$};
-\node[emit, minimum width=28mm, right=2mm of eT] (eL)
-    {\textbf{CHMM-L} \\ $b_k = \mathrm{Laplace}(\mu_k, \beta_k)$};
-\node[emit, minimum width=28mm, right=2mm of eL] (eG)
-    {\textbf{CHMM-GED} \\ $b_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$};
-\node[lbl, above=1mm of eT, anchor=south] {per-state emission family (one per CHMM variant)};
 \node[block, right=18mm of edots] (mstep)
     {M-step\\ update $\mathbf{T}$, $\{\boldsymbol\theta_k\}$\\ (family-specific)};
 \node[block, below=6mm of mstep] (estep)
@@ -73,19 +61,19 @@ The four emission families share a single forward-backward scaffold and quantile
 \draw[flow, black!75] ([xshift=3mm]estep.north) -- ([xshift=3mm]mstep.south);
 \node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
 \end{tikzpicture}
-\caption{\textbf{CHMM architecture and training loop.} A $K$-state latent Markov chain with transition matrix $\mathbf{T}$ generates the regime sequence $s_t$; each $s_t$ emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}$. The four CHMM variants share everything except the emission family. EM alternates an E-step (log-space forward--backward) and a family-specific M-step until $|\Delta \mathcal L| < 10^{-4}$.}
+\caption{\textbf{CHMM architecture and training loop.} A $K$-state latent Markov chain with transition matrix $\mathbf{T}$ generates the regime sequence $s_t$; each $s_t$ emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}$. The four CHMM variants share everything except the per-state emission family (Gaussian, Student-$t$, Laplace, GED; preceding paragraph). EM alternates an E-step (log-space forward--backward) and a family-specific M-step until $|\Delta \mathcal L| < 10^{-4}$.}
 \label{fig:chmm_architecture}
 \end{figure}
 
 \subsection{Benchmark Generators}
 \label{sec:benchmarks}
 
-We benchmark against representatives from each generator tier, all fit on the same IS window: i.i.d.\ bootstrap \cite{politis1994stationary} (non-parametric distributional ceiling), Gaussian and Laplace i.i.d., GARCH(1,1) Gaussian \cite{bollerslev1986generalized} and Student-$t$ \cite{bollerslev1987conditionally}, and Markov-switching GARCH (MS-GARCH; \citealp{haas2004new}). The extended GARCH-family panel (EGARCH, GJR-GARCH, HAR-RV, MS-GARCH at $K \in \{3, 4, 6\}$), an explicit-duration semi-Markov foil, a deep-generative QuantGAN \cite{wiese2020quantgan} row, plus stochastic-volatility (Taylor-Harvey-Ruiz-Shephard), Markov-switching multifractal \cite{calvet2004regime}, and Merton-jump-diffusion \cite{merton1976option} baselines are reported in Appendix~\ref{sec:extended_baselines} and \ref{sec:sv_msm_jd_baselines}.
+We benchmark against representatives from each generator tier, all fit on the same IS window: i.i.d.\ bootstrap \cite{politis1994stationary} (non-parametric distributional ceiling), Gaussian and Laplace i.i.d., GARCH(1,1) Gaussian \cite{bollerslev1986generalized} and Student-$t$ \cite{bollerslev1987conditionally}, and Markov-switching GARCH \cite{haas2004new}. Extended GARCH-family, semi-Markov, deep-generative QuantGAN \cite{wiese2020quantgan}, stochastic-volatility, multifractal, and jump-diffusion baselines are in Appendix~\ref{sec:extended_baselines} and \ref{sec:sv_msm_jd_baselines}.
 
 \subsection{Cross-Asset Dependence (Pipeline~B)}
 \label{sec:cross_asset_methods}
 
-Pipeline~B reuses each per-asset CHMM marginal and injects cross-asset dependence through a rank-based Student-$t$ copula \cite{demarta2005tcopula, mcneil2015quantitative}. Pseudo-uniform observations $u_{j,t} = \mathrm{rank}(g_{j,t}) / (T+1)$ feed an analytic Kendall's-$\tau$ correlation estimate $\rho_{ij} = \sin(\pi \tau_{ij}/2)$ \cite{embrechts2002correlation}; profile MLE selects $\nu^\star$. Sklar's theorem \cite{sklar1959fonctions} guarantees that the rank-reordering simulator of \citet{iman1982distribution} preserves each fitted CHMM marginal exactly while coupling the asset ranks to the copula sample. SIM, Gaussian-copula, and truncated C-vine comparators are in Appendix~\ref{sec:cross_asset_supp}.
+Pipeline~B reuses each per-asset CHMM marginal and injects cross-asset dependence through a rank-based Student-$t$ copula \cite{demarta2005tcopula, mcneil2015quantitative}; profile MLE selects $\nu^\star$, and the rank-reordering simulator of \citet{iman1982distribution} preserves each fitted CHMM marginal under Sklar's theorem \cite{sklar1959fonctions}. SIM, Gaussian-copula, and truncated C-vine comparators are in Appendix~\ref{sec:cross_asset_supp}.
 
 \subsection{Evaluation Protocol}
 \label{sec:metrics}

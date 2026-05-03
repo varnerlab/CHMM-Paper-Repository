@@ -77,6 +77,28 @@ CHMM-GED          & $81.0$ & $0.327$ & $0.010$ & $0.837$ & $44.4$ & $53.6$ \\
 
 The cross-generator OoS ordering matches the IS ordering (bootstrap $>$ CHMM-t $>$ CHMM-N/GED $>$ CHMM-L $\gg$ GARCH); the asymp-vs-block gap is larger on OoS ($\sim 25$pp for the CHMM family at $L = 20$) than on IS ($\sim 5$pp), but the CHMM-over-GARCH advantage is preserved.
 
+\paragraph{Body operating-point summary at $L = 20$.}
+Table~\ref{tab:ks_block_body} reports the OoS asymptotic pass rate alongside the OoS block-bootstrap pass rate at $L = 20$ (block-bootstrap $95\%$ critical value $0.0647$ vs.\ asymptotic $0.0804$) at the body operating point $K^\star = 3$. Read together with Table~\ref{tab:model_comparison}, the OoS panel under a temporally-aware null moves CHMM-N from a ``passes most of the time'' generator to a ``passes about half the time'' generator at $L = 20$. The body OoS KS headline at the asymptotic critical value therefore overstates the absolute level relative to a temporally-aware null; the cross-generator ranking is the robust comparison.
+
+\begin{table}[t]
+\centering
+\small
+\caption{\textbf{Block-aware OoS KS recalibration at $L = 20$} (stationary block bootstrap of \citealp{politis1994stationary}, $B = 1{,}000$, $500$ OoS-length simulated paths per generator, seed $20260422$). Side-by-side with the asymptotic OoS pass rate of Table~\ref{tab:model_comparison}; the block-bootstrap $95\%$ null KS critical value at $L = 20$ is $0.0647$ vs the asymptotic $0.0804$. Body operating point $K^\star = 3$.}
+\label{tab:ks_block_body}
+\begin{tabular}{l c c}
+\toprule
+Model & OoS KS asymp.\ (\%) & OoS KS block $L = 20$ (\%) \\
+\midrule
+Bootstrap                                & $90.4$ & $73.2$ \\
+GARCH(1,1)                               & $59.2$ & $31.4$ \\
+CHMM-N                                   & $79.8$ & $58.6$ \\
+CHMM-t pen.\ ($\lambda = 20$)            & $\mathbf{79.8}$ & $\mathbf{54.2}$ \\
+CHMM-L                                   & $65.0$ & $33.4$ \\
+CHMM-GED                                 & $79.2$ & $51.6$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 % Multi-seed Monte Carlo on headline metrics: seed-to-seed std is small (IS KS std 1.2-1.8\%, OoS KS std 1.8-3.6\%).
 % Stationary block bootstrap baseline (block length b = 10) is summarised in body Table~\ref{tab:model_comparison}.
 

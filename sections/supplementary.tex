@@ -1,25 +1,5 @@
 This appendix collects supplementary material referenced in the main body: the public API of the companion package, the EM forward-backward recursions and algorithm pseudocode, the validation metric definitions, formal propositions, the full state-resolution and multi-emission sensitivity panels, robustness and KS-power calibration, the extended GARCH and SM-CHMM baselines, the full cross-asset panel, and the $K$-selection and $\nu_k$ diagnostics referenced from the discussion.
 
-\subsection{CHMM-Model.jl Public API and Reproducer}
-\label{sec:supp_chmm_api}
-
-The companion Julia package \texttt{CHMM-Model.jl} (\url{https://github.com/altashly1/CHMM-Model}) is the entry point used to regenerate every table and figure in this paper from a single seed root under Julia $\geq 1.12$. The public surface is a single \texttt{CHMM} type, three emission constructors, a unified \texttt{fit!} method (log-space Baum-Welch / ECM), and a unified \texttt{simulate} method.
-
-\begin{verbatim}
-using CHMM
-chmm_n   = make_chmm_n(returns;   K = 18)    # Gaussian emissions
-chmm_t   = make_chmm_t(returns;   K = 18)    # Student-t emissions
-chmm_l   = make_chmm_l(returns;   K = 18)    # Laplace emissions
-chmm_ged = make_chmm_ged(returns; K = 18)    # GED (per-state shape p_k)
-fit!(chmm_n; max_iter = 60, tol = 1e-4)      # log-space Baum-Welch
-paths = simulate(chmm_n; T = 2516, n = 1000) # 1000 paths of length T
-\end{verbatim}
-
-The same \texttt{simulate} interface is used for every benchmark generator (Bootstrap, Gaussian i.i.d., Laplace i.i.d., GARCH(1,1)) so that the seven-metric panel evaluates each row on byte-identical windows. The Pipeline~B Student-t copula sampler is exposed as \texttt{simulate\_copula(\dots; nu = 6)} on the per-asset CHMM marginals; the rank-reordering construction is one function call. Running \texttt{julia --project=. run\_full\_rebuild.jl} from the paper repository (\url{https://github.com/altashly1/CHMM-paper}) reproduces every numerical artifact under the global seed policy of Section~\ref{sec:metrics}; \texttt{Manifest.toml} pins the dependency graph.
-
-\paragraph{Sub-seed derivation rule.}
-The deterministic global seed root is \texttt{20260420}; per-experiment sub-seeds follow the additive rule \texttt{sub\_seed = SEED + offset(experiment) + offset(replicate)}, with experiment offsets in $\{0, 1{,}000, 100, 10{,}000, \ldots\}$ chosen to avoid collisions across the runners in the public Julia package. For example, the headline simulation in \texttt{run\_diagnostics.jl} uses \texttt{SEED + (path index)} for each per-path random draw, the multi-seed Monte Carlo in \texttt{run\_multiseed\_headline.jl} uses base \texttt{20260422 + 100$\cdot$(seed index)} for ten independent replicates, and the bracket / shrinkage sweeps add a further per-rate offset. The full sub-seed map is enumerated at the top of each runner script; downstream \texttt{Random.seed!()} calls are deterministic and order-independent within each runner.
-
 \subsection{CHMM Algorithms and Derivations}
 \label{sec:supp_algorithms}
 
@@ -54,24 +34,7 @@ Under compactness of the parameter space ($\mu_k$, $\sigma_k$ or $\beta_k$ or $\
 \noindent\emph{Proof sketch.} Each CM step does not decrease $Q$ by definition (closed-form steps are exact maximisers, golden-section steps are bracketed maxima within the prescribed interval); the standard EM inequality $\mathcal L(\theta^{(n+1)}) - \mathcal L(\theta^{(n)}) \ge Q(\theta^{(n+1)} \mid \theta^{(n)}) - Q(\theta^{(n)} \mid \theta^{(n)})$ \cite{wu1983convergence, mengrubin1993ecm} converts $Q$-monotonicity into log-likelihood monotonicity. Compactness gives boundedness above, hence convergence.
 
 \paragraph{Numerical full-rank check on $\hat{\mathbf T}$.}
-The Allman-Matias-Rhodes 2009 identifiability theorem requires $\hat{\mathbf T}$ of full rank. We compute the singular-value spectrum of $\hat{\mathbf T}$ at $K = 18$ across the four emission families on SPY IS (Table~\ref{tab:t_singular_values}). All four matrices are full-rank in the strict sense, with smallest singular value $\sigma_{\min}(\hat{\mathbf T}) \in [0.0007, 0.0170]$ and condition numbers in the range $63$--$1{,}620$. CHMM-GED is the most well-conditioned ($\sigma_{\min} = 0.017$, cond $= 63.5$); CHMM-t is the least ($\sigma_{\min} = 0.0007$, cond $= 1{,}620$), consistent with the per-state $\nu_k$ ECM lower-bracket pinning making one or two heavy-tail states near-degenerate. The deflated matrix $\hat{\mathbf T} - \mathbf 1\bar{\boldsymbol\pi}^\top$ has numerical rank exactly $K - 1 = 17$ across all four families, the rank statement underlying Section~\ref{sec:theory}.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{Numerical full-rank check on $\hat{\mathbf T}$ at $K = 18$ across four CHMM emission families on SPY IS} (seed = $20260420$). $\sigma_{\min}$, $\sigma_{\max}$, and the condition number $\sigma_{\max}/\sigma_{\min}$ are reported on $\hat{\mathbf T}$ itself; $|\lambda_2|$ is the second-largest absolute eigenvalue (the dominant decay mode in the ACF identity, equation~\eqref{eq:acf_normalised}); ``rank(def)'' is the numerical rank of $\hat{\mathbf T} - \mathbf 1\bar{\boldsymbol\pi}^\top$ at tolerance $10^{-10}$, expected to equal $K - 1 = 17$.}
-\label{tab:t_singular_values}
-\begin{tabular}{l c c c c c}
-\toprule
-Family & $\sigma_{\min}(\hat{\mathbf T})$ & $\sigma_{\max}(\hat{\mathbf T})$ & cond $\hat{\mathbf T}$ & $|\lambda_2|$ & rank$(\hat{\mathbf T} - \mathbf 1\bar{\boldsymbol\pi}^\top)$ \\
-\midrule
-CHMM-N   & $0.00532$ & $1.0866$ & $204$   & $0.929$ & $17 / 17$ \\
-CHMM-t   & $0.00067$ & $1.0796$ & $1{,}620$ & $0.914$ & $17 / 17$ \\
-CHMM-L   & $0.00398$ & $1.0928$ & $275$   & $0.896$ & $17 / 17$ \\
-CHMM-GED & $0.01702$ & $1.0806$ & $63.5$  & $0.911$ & $17 / 17$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+The Allman-Matias-Rhodes 2009 identifiability theorem requires $\hat{\mathbf T}$ of full rank. The fitted $\hat{\mathbf T}$ at $K = 18$ across the four emission families on SPY IS is full rank in the strict sense (smallest singular value $\sigma_{\min} \in [0.0007, 0.0170]$, condition numbers $63$--$1{,}620$), and the deflated matrix $\hat{\mathbf T} - \mathbf 1\bar{\boldsymbol\pi}^\top$ has numerical rank exactly $K - 1 = 17$ across all four families.
 
 \begin{proposition}[Identifiability up to label permutation]
 Under irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred}), the emission contrast condition (Assumption~\ref{ass:moments}), and pairwise distinctness of the per-state parameter tuples $\boldsymbol\theta_k$ across $k = 1, \ldots, K$, the CHMM parameter is identifiable up to label permutation for CHMM-N (Gaussian) and CHMM-L (Laplace).
@@ -107,108 +70,19 @@ Let $\{(s_t, G_t)\}_{t \in \mathbb{Z}}$ be a stationary CHMM on $\{1, \ldots, K\
 \end{theorem}
 
 \begin{proof}
-The proof is organised in six steps.
-
-\paragraph{Step 1 (Definitions).}
-The autocorrelation of $|G_t|$ at lag $\tau \ge 0$ is, by stationarity,
-\[
-    \rho_{|G|}(\tau)
-    \;=\; \frac{\mathrm{Cov}\!\left(|G_t|,\, |G_{t+\tau}|\right)}{\sigma_{|G|}^2}
-    \;=\; \frac{\E[|G_t|\,|G_{t+\tau}|] - \mu^2}{\sigma_{|G|}^2}.
-\]
-The task reduces to evaluating $\E[|G_t|\,|G_{t+\tau}|]$ in closed form for $\tau \ge 1$.
-
-\paragraph{Step 2 (Conditioning on the latent state pair).}
-For $\tau \ge 1$, by the law of total expectation conditional on $(s_t, s_{t+\tau})$,
-\[
-    \E[|G_t|\,|G_{t+\tau}|]
-    \;=\; \sum_{i,j=1}^K \Prob(s_t = i, s_{t+\tau} = j)\,
-        \E\!\left[|G_t|\,|G_{t+\tau}| \,\big|\, s_t = i, s_{t+\tau} = j\right].
-\]
-The HMM emission structure gives the conditional independence $G_t \perp G_{t+\tau} \mid (s_t, s_{t+\tau})$ for $\tau \ge 1$: each emission depends only on its current state, and integrating the intermediate states $s_{t+1:t+\tau-1}$ out of the full-sequence factorisation $\big(\prod_{u} b_{s_u}(G_u)\big)\, p(s_{t+1:t+\tau-1} \mid s_t, s_{t+\tau})$ leaves the endpoint emissions decoupled. Hence
-\[
-    \E\!\left[|G_t|\,|G_{t+\tau}| \,\big|\, s_t = i, s_{t+\tau} = j\right]
-    \;=\; \E[|G_t| \mid s_t = i]\,\E[|G_{t+\tau}| \mid s_{t+\tau} = j]
-    \;=\; m_i\, m_j.
-\]
-The joint state probability factors by stationarity and the Markov property, $\Prob(s_t = i, s_{t+\tau} = j) = \bar\pi_i\, (\mathbf T^\tau)_{ij}$. Substituting and noting $[\mathbf D \mathbf T^\tau]_{ij} = \bar\pi_i (\mathbf T^\tau)_{ij}$,
+By stationarity, $\rho_{|G|}(\tau) = (\E[|G_t|\,|G_{t+\tau}|] - \mu^2) / \sigma_{|G|}^2$, so it suffices to evaluate the cross-moment for $\tau \ge 1$. Conditioning on the latent state pair $(s_t, s_{t+\tau})$ and using HMM conditional independence ($G_t \perp G_{t+\tau} \mid (s_t, s_{t+\tau})$ for $\tau \ge 1$) plus the Markov factorisation $\Prob(s_t = i, s_{t+\tau} = j) = \bar\pi_i (\mathbf T^\tau)_{ij}$ gives the bilinear form
 \begin{equation}
-    \E[|G_t|\,|G_{t+\tau}|] \;=\; \mathbf m^\top \mathbf D\, \mathbf T^\tau\, \mathbf m,
-    \qquad \tau \ge 1.
+    \E[|G_t|\,|G_{t+\tau}|] \;=\; \mathbf m^\top \mathbf D\, \mathbf T^\tau\, \mathbf m, \qquad \tau \ge 1.
     \label{eq:supp_bilinear}
 \end{equation}
-
-\paragraph{Step 3 (Spectral preliminaries).}
-For irreducible aperiodic $\mathbf T$, Perron--Frobenius applied to row-stochastic matrices gives $\lambda_1 = 1$ as a simple eigenvalue with all other eigenvalues strictly inside the unit disk \citep{levinperes2017markov}. The right eigenvector for $\lambda_1$ is $\mathbf v_1 = \mathbf 1$, since $\mathbf T \mathbf 1 = \mathbf 1$ from the row-sum constraint, and the left eigenvector is $\mathbf w_1 = \bar{\boldsymbol\pi}$, since $\bar{\boldsymbol\pi}^\top \mathbf T = \bar{\boldsymbol\pi}^\top$ by definition of the stationary distribution. Biorthonormality $\mathbf w_1^\top \mathbf v_1 = \bar{\boldsymbol\pi}^\top \mathbf 1 = 1$ is automatic since $\bar{\boldsymbol\pi}$ is a probability vector.
-
-\paragraph{Step 4 (Spectral decomposition of $\mathbf T^\tau$).}
-Diagonalisability with biorthonormality gives the dyadic expansion
-\[
-    \mathbf T^\tau
-    \;=\; \sum_{k=1}^K \lambda_k^\tau\, \mathbf v_k \mathbf w_k^\top
-    \;=\; \mathbf 1\, \bar{\boldsymbol\pi}^\top \;+\; \sum_{k=2}^K \lambda_k^\tau\, \mathbf v_k \mathbf w_k^\top,
-\]
-isolating the dominant ($k = 1$) projection from the contractive spectrum. The dominant projector $\mathbf P_1 = \mathbf 1\bar{\boldsymbol\pi}^\top$ is the rank-one stationary projection: $\mathbf P_1 \mathbf x = (\bar{\boldsymbol\pi}^\top \mathbf x)\,\mathbf 1$.
-
-\paragraph{Step 5 (Evaluation of the bilinear form).}
-Substituting the spectral decomposition into~\eqref{eq:supp_bilinear},
-\[
-    \E[|G_t|\,|G_{t+\tau}|]
-    \;=\; \mathbf m^\top \mathbf D\, \mathbf 1\, \bar{\boldsymbol\pi}^\top \mathbf m
-    \;+\; \sum_{k=2}^K \lambda_k^\tau\, (\mathbf m^\top \mathbf D\, \mathbf v_k)\,(\mathbf w_k^\top \mathbf m).
-\]
-The $k = 1$ term simplifies to $\mu^2$: $\mathbf D \mathbf 1$ is the column vector $\bar{\boldsymbol\pi}$, so $\mathbf m^\top \mathbf D \mathbf 1 = \bar{\boldsymbol\pi}^\top \mathbf m = \mu$, and likewise $\bar{\boldsymbol\pi}^\top \mathbf m = \mu$, giving the product $\mu \cdot \mu = \mu^2$. Denoting the $k \ge 2$ scalar coefficients
-\[
-    c_k \;=\; (\mathbf m^\top \mathbf D\, \mathbf v_k)\,(\mathbf w_k^\top \mathbf m),
-\]
-we obtain
-\[
-    \E[|G_t|\,|G_{t+\tau}|] \;=\; \mu^2 \;+\; \sum_{k=2}^K c_k\, \lambda_k^\tau,
-    \qquad \tau \ge 1.
-\]
-
-\paragraph{Step 6 (Autocovariance and autocorrelation).}
-Subtracting $\mu^2$ from Step 1 cancels the dominant term, leaving
-\[
-    \mathrm{Cov}\!\left(|G_t|,\, |G_{t+\tau}|\right)
-    \;=\; \sum_{k=2}^K c_k\, \lambda_k^\tau,
-    \qquad \tau \ge 1,
-    \qquad
-    c_k = \big(\mathbf m^\top \mathrm{diag}(\bar{\boldsymbol\pi})\, \mathbf v_k\big)\big(\mathbf w_k^\top \mathbf m\big).
-\]
-Dividing by $\sigma_{|G|}^2 = \gamma(0)$ gives $\rho_{|G|}(\tau) = \sum_{k \ge 2} w_k\, \lambda_k^\tau$ with $w_k = c_k / \sigma_{|G|}^2$, equation~\eqref{eq:acf_normalised}.
+Perron--Frobenius gives $\lambda_1 = 1$ simple with $\mathbf v_1 = \mathbf 1$, $\mathbf w_1 = \bar{\boldsymbol\pi}$ \citep{levinperes2017markov}; the dyadic expansion $\mathbf T^\tau = \mathbf 1\bar{\boldsymbol\pi}^\top + \sum_{k \ge 2} \lambda_k^\tau \mathbf v_k \mathbf w_k^\top$ separates the dominant projector. The $k = 1$ term contributes $\mu^2$ and cancels in the autocovariance, leaving $\mathrm{Cov}(|G_t|, |G_{t+\tau}|) = \sum_{k \ge 2} c_k \lambda_k^\tau$ with $c_k = (\mathbf m^\top \mathbf D \mathbf v_k)(\mathbf w_k^\top \mathbf m)$; dividing by $\sigma_{|G|}^2$ gives Equation~\eqref{eq:acf_normalised}.
 \end{proof}
 
-\paragraph{Lag zero, the sum of weights, and the within-state white-noise contribution.}
-The bilinear identity~\eqref{eq:supp_bilinear} fails at $\tau = 0$, where $G_t = G_{t+\tau}$ and the conditional product is the per-state second moment $M_i = \E[G_t^2 \mid s_t = i]$ rather than $m_i^2$. The eigenvalue completeness $\sum_{k=1}^K \mathbf v_k \mathbf w_k^\top = I$ instead gives the identity
-\[
-    \sum_{k=2}^K c_k
-    \;=\; \mathbf m^\top \mathbf D\, \mathbf m \;-\; \mu^2
-    \;=\; \sum_{i=1}^K \bar\pi_i\, m_i^2 \;-\; \mu^2
-    \;=\; \mathrm{Var}\!\big(m_{s_t}\big),
-\]
-the between-state variance of $|G_t|$, equal to the variance of the conditional-mean random variable $m_{s_t}$ under $\bar{\boldsymbol\pi}$. By the law of total variance, $\sigma_{|G|}^2 = \mathrm{Var}(m_{s_t}) + \E[\mathrm{Var}(|G_t| \mid s_t)]$, so
-\[
-    \sum_{k=2}^K w_k
-    \;=\; \frac{\mathrm{Var}(m_{s_t})}{\sigma_{|G|}^2}
-    \;\in\; [0, 1],
-\]
-with equality to $1$ if and only if every per-state distribution is degenerate at $m_i$. The residual $1 - \sum_{k \ge 2} w_k = \E[\mathrm{Var}(|G_t| \mid s_t)]\, /\, \sigma_{|G|}^2$ is the within-state variance ratio: it contributes to $\sigma_{|G|}^2$ but not to $\mathrm{Cov}(|G_t|, |G_{t+\tau}|)$ at any positive lag, and is the source of the discontinuity from $\rho_{|G|}(0) = 1$ to $\rho_{|G|}(1) = \sum_{k \ge 2} w_k\, \lambda_k$ at the first lag. The substantive consequence for moderate-$K$ CHMM is unchanged: at every $\tau \ge 1$ the autocorrelation lies in the span of the geometric decays $\{\lambda_k^\tau\}_{k \ge 2}$, and the slow-decay envelope is governed by the largest non-unit eigenvalue.
+\paragraph{Lag zero and within-state variance.}
+The identity~\eqref{eq:supp_bilinear} fails at $\tau = 0$ since $\E[G_t^2 \mid s_t = i] \ne m_i^2$. Eigenvalue completeness gives $\sum_{k \ge 2} c_k = \mathrm{Var}(m_{s_t})$, the between-state variance, so $\sum_{k \ge 2} w_k = \mathrm{Var}(m_{s_t}) / \sigma_{|G|}^2 \in [0, 1]$ and the residual $\E[\mathrm{Var}(|G_t| \mid s_t)] / \sigma_{|G|}^2$ accounts for the discontinuity from $\rho_{|G|}(0) = 1$ to $\rho_{|G|}(1) = \sum_{k \ge 2} w_k \lambda_k$.
 
-\paragraph{Squared-return analogue.}
-Replacing $|G_t|$ with $G_t^2$ and $\mathbf m$ with $\mathbf M = (M_1, \ldots, M_K)^\top$ in Steps~1--6 above is termwise valid for $\tau \ge 1$ (the conditional independence and stationarity arguments are unaffected), giving the squared-return analogue
-\[
-    \rho_{G^2}(\tau) \;=\; \sum_{k=2}^K \tilde w_k\, \lambda_k^\tau,
-    \qquad
-    \tilde w_k \;=\; \frac{(\mathbf M^\top \mathbf D\, \mathbf v_k)\,(\mathbf w_k^\top \mathbf M)}{\sigma_{G^2}^2}.
-\]
-The non-unit spectrum of $\mathbf T$ that determines $\rho_{|G|}(\tau)$ also determines $\rho_{G^2}(\tau)$; only the linear projection of the per-state moment vector onto the eigenmodes changes.
-
-\paragraph{Remark (complex eigenvalues).}
-For real $\mathbf T$ without self-adjoint structure, eigenvalues outside $\R$ occur in complex conjugate pairs with conjugate eigenvectors. A pair $(\lambda_k, \bar\lambda_k)$ at $\lambda_k = r e^{i\theta}$ contributes a real damped-oscillation term of the form $A\, r^\tau \cos(\theta\tau) + B\, r^\tau \sin(\theta\tau)$ to $\gamma(\tau)$, with $(A, B)$ determined from $(\mathrm{Re}\, c_k, \mathrm{Im}\, c_k)$. Theorem~\ref{thm:supp_spectral_acf} as stated remains valid; only the interpretation of the individual modes shifts from monotone geometric to damped sinusoidal. For $\mathbf T$ estimated on equity returns at the operating point of Section~\ref{sec:results}, the slow-decay mode at $\lambda_2 \approx \exp(-1/\tau^*)$ is real and positive, and the mono-exponential interpretation of the dominant timescale used in Section~\ref{sec:theory} carries through.
-
-\paragraph{Remark (non-diagonalisable $\mathbf T$).}
-Diagonalisability is generic: for $\mathbf T$ estimated by Baum--Welch in the interior of a non-degenerate parameter region, the eigenvalues are almost surely distinct, and the sample paths used in this paper realise this generic case at every $K$ in the sweep. Should $\mathbf T$ admit a non-trivial Jordan block of size $J$, the dyadic expansion of Step~4 acquires polynomial-in-$\tau$ prefactors $\binom{\tau}{j}\, \lambda_k^{\tau - j}$ for $j = 0, \ldots, J - 1$ on the off-diagonal blocks, and $\rho_{|G|}(\tau)$ becomes a finite sum of polynomial-times-geometric terms with the same exponential rate $\max_{k \ge 2} |\lambda_k|$. The substantive content of Theorem~\ref{thm:supp_spectral_acf}, that the absolute-return ACF is determined entirely by the non-unit spectrum of $\mathbf T$, is unchanged.
+\paragraph{Squared-return, complex-eigenvalue, and Jordan-block extensions.}
+Replacing $|G_t|$ with $G_t^2$ and $\mathbf m$ with $\mathbf M = (\E[G_t^2 \mid s_t = i])_i$ leaves the proof termwise valid, giving $\rho_{G^2}(\tau) = \sum_{k \ge 2} \tilde w_k \lambda_k^\tau$ on the same non-unit spectrum. Complex-conjugate eigenvalue pairs $(re^{\pm i\theta}, \cdot)$ contribute real damped oscillations $A r^\tau \cos\theta\tau + B r^\tau \sin\theta\tau$; non-diagonalisable $\mathbf T$ adds polynomial-times-geometric prefactors via Jordan blocks, with the same exponential rate $\max_{k \ge 2} |\lambda_k|$. Theorem~\ref{thm:supp_spectral_acf} as stated remains valid; the dominant timescale used in Section~\ref{sec:theory} corresponds to a real positive $\lambda_2$ on the fits of this paper.
 
 \subsection{State-Resolution and Multi-Emission Sensitivity}
 \label{sec:supp_sensitivity}
@@ -252,29 +126,7 @@ Aggregate (mean / s.d.\ across the four folds) of per-observation held-out log-l
 
 \paragraph{HAC-corrected sampling-error reads on the paired diff series.}
 \label{sec:k_selection_hac}
-Rolling-origin folds inherit autocorrelation from the underlying series, so the independent-fold pooled SE used in the paragraph above understates the standard error of the mean held-out log-likelihood difference. We therefore report a Diebold--Mariano-style HAC variance computed on the paired diff series across folds with Newey--West Bartlett kernel at truncation lag $h_{\text{NW}} = \lfloor n^{1/3}\rfloor$.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{HAC-corrected $K$-selection inference on the paired diff series across rolling-origin folds.} Two-sided NW-HAC Diebold--Mariano on the per-fold val-log-lik differences; truncation lag $h_{\text{NW}} = \lfloor n^{1/3}\rfloor$. ``indep $|z|$'' is the pooled-independent-fold statistic of the paragraph above; ``HAC $|z|$'' is the HAC-corrected statistic.}
-\label{tab:k_selection_hac}
-\begin{tabular}{l l c c c c c}
-\toprule
-Cadence & Comparison & $\bar d$ & $n$ & indep $|z|$ & HAC SE & HAC $|z|$ \\
-\midrule
-4-fold full-year & $K = 6$ vs $K = 3$  & $-0.010$ & $4$ & $0.07$ & $0.011$ & $0.90$ \\
-4-fold full-year & $K = 18$ vs $K = 6$ & $-0.298$ & $4$ & $1.92$ & $0.084$ & $\mathbf{3.56}$ \\
-4-fold full-year & $K = 18$ vs $K = 3$ & $-0.308$ & $4$ & --     & $0.093$ & $\mathbf{3.31}$ \\
-\midrule
-6-fold half-year & $K = 6$ vs $K = 3$  & $+0.006$ & $6$ & $0.04$ & $0.011$ & $0.57$ \\
-6-fold half-year & $K = 18$ vs $K = 6$ & $-0.212$ & $6$ & $1.70$ & $0.042$ & $\mathbf{5.00}$ \\
-6-fold half-year & $K = 18$ vs $K = 3$ & $-0.206$ & $6$ & --     & $0.040$ & $\mathbf{5.10}$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The substantive read on $K = 6$ vs $K = 3$ is unchanged: HAC $|z| = 0.90$ (4-fold) and $0.57$ (6-fold) are both well below conventional levels, consistent with the paragraph above. \textbf{The $K = 18$ vs $K = 6$ statistic, however, jumps from a borderline independent-fold $|z| = 1.92$ / $1.70$ to a decisive HAC $|z| = 3.56$ / $5.00$}: the HAC-corrected inference rejects ``$K = 18$ no worse than $K = 6$ on held-out per-observation log-likelihood'' at conventional levels under both fold designs. The body's framing of $K = 18$ as a multi-objective-rule sensitivity reference is therefore corroborated by the HAC inference; the $K = 18$ block is decisively worse than $K = 6$ on held-out log-likelihood and is retained only because of its kurtosis-fidelity advantage on the OoS window (Table~\ref{tab:model_comparison}).
+A Newey--West Bartlett HAC variance ($h_{\text{NW}} = \lfloor n^{1/3} \rfloor$) on the per-fold val-log-lik diff series leaves $K = 6$ vs $K = 3$ insignificant at both cadences ($|z|_{\text{HAC}} = 0.90$ four-fold full-year, $0.57$ six-fold half-year) and moves $K = 18$ vs $K = 6$ from borderline independent-fold ($|z| = 1.92, 1.70$) to decisive ($|z|_{\text{HAC}} = 3.56, 5.00$). The HAC-corrected inference therefore corroborates the body framing: $K = 18$ is decisively worse than $K = 6$ on held-out log-likelihood and is retained only for its kurtosis-fidelity advantage on the OoS window.
 
 \paragraph{Penalised-ECM rate sweep.}
 The bracket sensitivity is reported with its table in Section~\ref{sec:nu_diagnostics}; here we report the complementary $1/\nu_k$ shrinkage rate sweep referenced in Section~\ref{sec:discussion}. An exponential $1/\nu_k$ prior at rate $\lambda \in \{0, 5, 20, 50, 100, 200\}$ reduces simulated excess kurtosis monotonically: $14.30, 11.19, 8.43, 5.41, 3.96, 3.67$. The recommended rate $\lambda = 20$ brings simulated kurtosis to $\approx 8$ (close to the observed $7.69$) at a $1$pp IS KS cost. Only the $\nu_{\min}$ state parameter actually moves ($2.1 \to 4.89$); upper bracket and median remain at $50$. The overshoot is therefore a single-state artefact of the two tail regimes hitting the lower bracket under unpenalised ECM.
@@ -384,26 +236,7 @@ W6 & $18$ & $0.05$ & $\phantom{0}7$ & $2.79\%$ & $-2.98$ & $\phantom{0}3.06$ & $
 \end{table}
 
 \paragraph{Per-ticker $\hat\lambda^\star$ sweep.}
-A per-ticker sweep $\lambda \in \{0, 5, 10, 20, 50, 100\}$ on each of the six body tickers under the constraint that IS KS at $\lambda$ exceeds the $\lambda = 0$ baseline by no more than $1.5$ percentage points (Table~\ref{tab:per_ticker_lambda}) shows that the body uniform $\lambda = 20$ is the right rate on the heavy-tailed defensives (NVDA, JNJ) but is over-shrunk on the moderate-tail tickers. The per-ticker optima are $\lambda^\star_{\text{SPY}} = 10$, $\lambda^\star_{\text{NVDA}} = 20$, $\lambda^\star_{\text{JNJ}} = 20$, $\lambda^\star_{\text{JPM}} = 10$, $\lambda^\star_{\text{AAPL}} = 10$, $\lambda^\star_{\text{QQQ}} = 0$. The honest operational reading is that $\lambda = 20$ is a reasonable uniform default for production deployment but per-ticker tuning is recommended whenever a ticker's residual kurtosis at $\lambda = 0$ is within $\sim 1$ unit of observed.
-
-\begin{table}[!ht]
-\centering
-\small
-\caption{\textbf{Per-ticker $\hat\lambda^\star$ for the penalised CHMM-t at $K = 18$} ($N_{\text{paths}} = 500$, seed $20260420$, KS-degradation tolerance $\le 1.5$pp from $\lambda = 0$). $\hat\lambda^\star$ is the value of $\lambda$ in $\{0, 5, 10, 20, 50, 100\}$ that minimises $|{\text{kurt}}_{\text{sim}} - {\text{kurt}}_{\text{obs}}|$ subject to the KS-degradation constraint.}
-\label{tab:per_ticker_lambda}
-\begin{tabular}{l c c c c}
-\toprule
-Ticker & $\text{kurt}_{\text{obs}}$ & $\hat\lambda^\star$ & $\text{kurt}_{\text{sim}}(\lambda^\star)$ & IS KS$(\lambda^\star)$ \\
-\midrule
-SPY  & $7.69$  & $10$ & $11.82$ & $96.4\%$ \\
-NVDA & $5.54$  & $20$ & $5.68$  & $99.4\%$ \\
-JNJ  & $8.98$  & $20$ & $10.74$ & $99.8\%$ \\
-JPM  & $7.63$  & $10$ & $8.62$  & $98.6\%$ \\
-AAPL & $3.20$  & $10$ & $3.24$  & $99.2\%$ \\
-QQQ  & $3.40$  & $0$  & $3.35$  & $95.2\%$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+A per-ticker sweep $\lambda \in \{0, 5, 10, 20, 50, 100\}$ on each of the six body tickers (KS-degradation tolerance $\le 1.5$pp from $\lambda = 0$) gives per-ticker optima $\lambda^\star_{\text{SPY}} = 10$, $\lambda^\star_{\text{NVDA}} = 20$, $\lambda^\star_{\text{JNJ}} = 20$, $\lambda^\star_{\text{JPM}} = 10$, $\lambda^\star_{\text{AAPL}} = 10$, $\lambda^\star_{\text{QQQ}} = 0$: $\lambda = 20$ is a reasonable uniform default but per-ticker tuning is recommended whenever a ticker's residual kurtosis at $\lambda = 0$ is within $\sim 1$ unit of observed.
 
 \paragraph{Cross-asset summary.}
 The full per-construction Pipeline~B panel is in Section~\ref{sec:supp_cross_asset}; for reference, the headline ordering is summarised in Table~\ref{tab:cross_asset_supp_summary}.
@@ -411,7 +244,7 @@ The full per-construction Pipeline~B panel is in Section~\ref{sec:supp_cross_ass
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Cross-asset dependence summary} (Pipeline~B; CHMM-N marginals at $K = 18$; $200$ paths; seed \texttt{20260422}). Median per-asset KS pass rate (\%) and off-diagonal MAE of the simulated correlation matrix vs.\ observed. Bold marks the column winner. The Student-t copula at $\nu^\star = 6$ is the strongest dependence layer on the two IS columns; on OoS the Gaussian copula attains marginally lower off-diagonal MAE ($0.202$ vs.\ $0.209$) while the truncated C-vine sits between the elliptical copulas and the SIM baseline. Full per-asset detail is in Section~\ref{sec:supp_cross_asset}; the C-vine edge summary is in Table~\ref{tab:cvine_edges}.}
+\caption{\textbf{Cross-asset dependence summary} (Pipeline~B; CHMM-N marginals at $K = 18$; $200$ paths; seed \texttt{20260422}). Median per-asset KS pass rate (\%) and off-diagonal MAE of the simulated correlation matrix vs.\ observed. Bold marks the column winner. The Student-t copula at $\nu^\star = 6$ is the strongest dependence layer on the two IS columns; on OoS the Gaussian copula attains marginally lower off-diagonal MAE ($0.202$ vs.\ $0.209$) while the truncated C-vine sits between the elliptical copulas and the SIM baseline. Full per-asset detail is in Section~\ref{sec:supp_cross_asset}.}
 \label{tab:cross_asset_supp_summary}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{l c c c c}

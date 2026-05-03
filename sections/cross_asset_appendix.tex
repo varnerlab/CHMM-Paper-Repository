@@ -108,25 +108,7 @@ All five panels share the six-asset SPY cross-section and the same CHMM-N margin
 \subsubsection{Truncated C-vine Copula on CHMM Marginals (Pipeline~B)}
 \label{sec:cvine_supp}
 
-The truncated C-vine variant in panel~(e) of Figure~\ref{fig:cross_asset_corr} uses SPY as the root and selects each pair-copula family edge-wise from \{Gaussian, Student-t, Clayton, Gumbel\} by Akaike Information Criterion (AIC); on the six-asset universe every selected pair is Student-t, with $\hat\rho$ and $\hat\nu$ as in Table~\ref{tab:cvine_edges}. On the same CHMM-N marginals at $K = 18$ and $200$ paths under seed \texttt{20260422}, the truncated C-vine attains an off-diagonal MAE of $0.068$ on IS and $0.235$ on OoS (Table~\ref{tab:cross_asset_supp_summary}), strictly above both elliptical copulas on the IS column and on OoS off-diag MAE, and only modestly below the SIM baseline. The reason is the level-1 truncation: a root-centred C-vine models only the SPY-vs-asset bivariate copulas and treats the remaining pairs as conditionally independent given SPY, which is a stronger restriction than either elliptical copula and only a small relaxation of the SIM factor structure. Untruncated regular vines or factor copulas are the natural way to recover non-root cross-pair structure at larger $d$, but at $d = 6$ with $T_{\text{IS}} = 2{,}516$ the additional flexibility does not justify the extra estimation cost.
-
-\begin{table}[H]
-\centering
-\caption{\textbf{Truncated C-vine edge summary}, Pipeline~B with SPY as root on the six-asset universe. Pair family selected edge-wise by AIC over \{Gaussian, Student-t, Clayton, Gumbel\}; on this universe every selected pair is Student-t. $\hat\rho$ is the Kendall's-$\tau$-inverted correlation parameter and $\hat\nu$ is the per-edge degrees-of-freedom estimate.}
-\label{tab:cvine_edges}
-\small
-\begin{tabular}{l l c c}
-\toprule
-Child & Family & $\hat\rho$ & $\hat\nu$ \\
-\midrule
-NVDA & Student-t & $0.637$ & $5$ \\
-JNJ  & Student-t & $0.483$ & $4$ \\
-JPM  & Student-t & $0.686$ & $4$ \\
-AAPL & Student-t & $0.698$ & $4$ \\
-QQQ  & Student-t & $0.911$ & $3$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+The truncated C-vine variant in panel~(e) of Figure~\ref{fig:cross_asset_corr} uses SPY as the root and selects each pair-copula family edge-wise from \{Gaussian, Student-t, Clayton, Gumbel\} by AIC; on this universe every selected pair is Student-t. On the same CHMM-N marginals at $K = 18$ and $200$ paths the truncated C-vine attains an off-diagonal MAE of $0.068$ on IS and $0.235$ on OoS (Table~\ref{tab:cross_asset_supp_summary}), strictly above both elliptical copulas. The reason is the level-1 truncation: a root-centred C-vine models only the SPY-vs-asset bivariate copulas and treats the remaining pairs as conditionally independent given SPY, a stronger restriction than either elliptical copula. Untruncated regular vines or factor copulas are the natural way to recover non-root cross-pair structure at larger $d$.
 
 \subsubsection{Quarterly Rolling-Window Copula Refit on the OoS Window}
 \label{sec:rolling_copula_supp}
