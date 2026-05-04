@@ -3,6 +3,26 @@
 **Date:** 2026-05-04
 **Scope:** Two sibling preprints by the same authors, both arXiv-bound, with overlapping algorithmic content. Decide whether/how the two papers should cite each other and in what order to post.
 
+**Decision:** Plan B (asymmetric: drop CHMM → SM, keep SM → CHMM). See §4.
+
+---
+
+## 0. Implementation status (last updated 2026-05-04)
+
+Decision adopted: **Plan B**. Work done so far:
+
+| Item | Repo | File | Status |
+|---|---|---|---|
+| Drop CHMM → SM cite (`baselines_appendix.tex:122`); replace with `\citet{yu2010hidden}` | CHMM-paper | `sections/baselines_appendix.tex` | **Done** (2026-05-04) |
+| Remove orphan `@article{alswaidan2026smchmm,...}` from CHMM bib | CHMM-paper | `references.bib` | **Done** (2026-05-04) |
+| Fix SM-side bib title to match actual CHMM-paper title (§1a bug) | SM-CHMM-AR-Paper | `references.bib:5` | **Done** (2026-05-04) |
+| Fill live CHMM arXiv ID into SM bib; delete `note={arXiv ID to be filled in...}` | SM-CHMM-AR-Paper | `references.bib:7-8` | Pending arXiv post of CHMM-paper |
+| Submit CHMM-paper to arXiv | CHMM-paper | n/a | Pending |
+| Submit SM-paper to arXiv (after CHMM ID is in SM bib) | SM-CHMM-AR-Paper | n/a | Pending |
+| Update `SM-CHMM-AR-Paper/plan-cross-paper-citations.md` to note step 3 (CHMM v2) no longer required under Plan B | SM-CHMM-AR-Paper | `plan-cross-paper-citations.md` | Pending |
+
+CHMM-paper is now self-contained (no `\cite{alswaidan2026smchmm}` remains in prose) and can be posted to arXiv at any time. No CHMM v2 upload is required.
+
 ---
 
 ## 1. Inventory of the current cross-reference state
@@ -128,18 +148,18 @@ Plan A is also defensible if you specifically want CHMM-paper readers to discove
 
 ## 5. Concrete edit checklist
 
-### If Plan B (recommended)
+### If Plan B (recommended) — **adopted 2026-05-04**
 
 In `CHMM-paper`:
-- [ ] `sections/baselines_appendix.tex:122`: replace the cited phrase per §3 Plan B step 1.
-- [ ] (Optional) `references.bib:19-24`: remove the `@article{alswaidan2026smchmm, ...}` entry.
+- [x] `sections/baselines_appendix.tex:122`: replace the cited phrase per §3 Plan B step 1. *(Done 2026-05-04: the phrase now reads "drawing on an explicit-duration HSMM extension of the CHMM in the spirit of \citet{yu2010hidden}".)*
+- [x] (Optional) `references.bib`: remove the `@article{alswaidan2026smchmm, ...}` entry. *(Done 2026-05-04.)*
 - [ ] Submit CHMM-paper to arXiv. Record the ID.
 
 In `SM-CHMM-AR-Paper`:
-- [ ] `references.bib:4-10` (`@article{alswaidan2026chmm, ...}`):
-  - Replace `journal={arXiv preprint arXiv:XXXX.XXXXX}` with the live CHMM arXiv ID.
-  - Delete the `note={arXiv ID to be filled in after CHMM-paper is posted}` line.
-  - **Fix the `title` field** to: `{Continuous Hidden Markov Models for Equity Returns: Spectral Rank, Heavy-Tail Emission Families, and Regime-Conditional Value-at-Risk}`.
+- Partial: see sub-items.
+  - [x] **Fix the `title` field** to: `{Continuous Hidden Markov Models for Equity Returns: Spectral Rank, Heavy-Tail Emission Families, and Regime-Conditional Value-at-Risk}`. *(Done 2026-05-04 at `references.bib:5`.)*
+  - [ ] Replace `journal={arXiv preprint arXiv:XXXX.XXXXX}` with the live CHMM arXiv ID *(pending CHMM arXiv post)*.
+  - [ ] Delete the `note={arXiv ID to be filled in after CHMM-paper is posted}` line *(pending CHMM arXiv post)*.
 - [ ] Submit SM-CHMM-AR-Paper to arXiv.
 - [ ] Update `SM-CHMM-AR-Paper/plan-cross-paper-citations.md` to note that step 3 (CHMM v2) is no longer required under Plan B.
 
