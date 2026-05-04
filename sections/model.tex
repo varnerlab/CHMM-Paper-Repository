@@ -16,7 +16,7 @@ We model $G_t$ as a continuous HMM $\mathcal{M} = (\mathcal{S}, \mathbf{T}, \mat
     f(x) = \sum_{k=1}^{K} \bar{\pi}_k\, f_k(x; \boldsymbol\theta_k), \qquad \bar{\boldsymbol{\pi}} = \bar{\boldsymbol{\pi}} \mathbf{T},
     \label{eq:mixture}
 \end{equation}
-with $\bar{\boldsymbol\pi}$ the stationary distribution. Existence and uniqueness require irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred} in \S\ref{sec:theory}). We learn $\mathbf{T}$, $\boldsymbol\theta_{1:K}$, and $\boldsymbol{\pi}$ jointly by EM (\S\ref{sec:estimation}).
+with $\bar{\boldsymbol\pi}$ the stationary distribution. Existence and uniqueness require irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred} in \S\ref{sec:theory}). We learn $\mathbf{T}$, $\boldsymbol\theta_{1:K}$, and $\boldsymbol{\pi}$ jointly by EM (\S\ref{sec:em_scaffold}).
 
 The four emission families share a single forward-backward scaffold and quantile-based initialization; the M-step is the only architectural difference (Figure~\ref{fig:chmm_architecture}). \emph{CHMM-N}: $f_k = \mathcal{N}(\mu_k, \sigma_k^2)$. \emph{CHMM-t}: $f_k = t_{\nu_k}(\mu_k, \sigma_k)$ with per-state degrees of freedom $\nu_k \in [\nu_{\min}, \nu_{\max}]$. \emph{CHMM-L}: $f_k = \mathrm{Laplace}(\mu_k, \beta_k)$ with per-state Laplace scale denoted $\beta_k$ to avoid collision with the canonical Laplace-scale symbol $b$. \emph{CHMM-GED}: $f_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$ with per-state shape $p_k \in [p_{\min}, p_{\max}]$ that nests Gaussian ($p_k = 2$) and Laplace ($p_k = 1$).
 

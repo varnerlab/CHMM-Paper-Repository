@@ -116,7 +116,7 @@
 \begin{abstract}
 The classical verdict that hidden Markov models with $K = 2$--$3$ Gaussian states cannot reproduce the slow autocorrelation of absolute equity returns has shaped two decades of regime-switching work toward semi-Markov sojourn extensions. We provide empirical evidence that this verdict is a marginal-mixture limit, not a temporal one: applying the textbook bilinear identity for the absolute-return ACF over the non-unit eigenvalues of the transition matrix and recasting the failure as a rank statement on $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$, an effective-rank diagnostic on the fitted $\hat{\mathbf T}$ shows the implied $K - 1$ rank bound is non-binding at $K \ge 3$ at the cross-ticker median.
 
-A unified ECM scaffold supports four emission families (Gaussian, Student-$t$, Laplace, Generalised Error Distribution) that share identical forward-backward recursions and quantile-based initialisation; the M-step is the only architectural difference. The empirical study covers SPY 2014--2026, a sector-balanced 30-ticker panel, a CRSP cross-decade slice (1994--2006), and a six-asset US-equity copula extension. Headline operating result: a regime-conditional Value-at-Risk that propagates the one-step-ahead state forecast through the predictive mixture passes the Christoffersen joint conditional-coverage test cleanly across emission families on the headline OoS window, and on $19/24$ rows of a six-fold rolling-origin walk-forward, with rejections concentrated on out-of-distribution stress folds.
+A unified ECM scaffold supports four emission families (Gaussian, Student-$t$, Laplace, Generalised Error Distribution) that share identical forward-backward recursions and quantile-based initialisation; the M-step is the only architectural difference. The empirical study covers SPY 2014--2026, a sector-balanced 30-ticker panel, a CRSP cross-decade transfer (1994--2004 IS / 2004--2006 OoS), and a six-asset US-equity copula extension. Headline operating result: a regime-conditional Value-at-Risk that propagates the one-step-ahead state forecast through the predictive mixture passes the Christoffersen joint conditional-coverage test cleanly across emission families on the headline OoS window, and on $19/24$ rows of a six-fold rolling-origin walk-forward, with rejections concentrated on out-of-distribution stress folds.
 
 Positioning is honest: the i.i.d.\ bootstrap and an ML hidden semi-Markov model both exceed the CHMM on raw single-window OoS Kolmogorov--Smirnov; the CHMM's value-add is the structural use cases that those alternatives cannot serve (regime-conditional VaR, multi-asset copula composition, parametric synthetic-data privacy), and a unified emission-family ablation that the literature lacks. The empirical scope is the three symmetric Cont (2001) stylized facts on daily US-equity returns under stationary OoS; a non-equity stress test (GLD, SLV) collapses under static fitting, and periodic refit is the deployment recipe.
 \end{abstract}
@@ -134,8 +134,6 @@ Positioning is honest: the i.i.d.\ bootstrap and an ML hidden semi-Markov model 
 
 \section{Methods}
 \label{sec:methods}
-\label{sec:model}
-\label{sec:estimation}
 \input{sections/model}
 \input{sections/estimation}
 \input{sections/theory}
