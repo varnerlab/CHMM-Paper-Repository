@@ -1,6 +1,6 @@
 # CHMM Paper, Proof-Prep Summary
 
-Last updated 2026-05-02 after the arXiv-prep trim pass: contribution recasting, related-work expansion (signature/diffusion + Fearnhead-Liu), three appendix trims, 12-site reviewer-language strip, three orphan-stub deletions (`sec:k_sweep_panels`, `sec:supp_validation_figures`, `sec:mssv_baseline`), pipeline-schematic body/appendix re-alignment, intro `5pp` and QuantGAN-footnote tightening, and five model-repo runner archivals into `_attic_v10/runners/`.
+Last updated 2026-05-04 after a follow-on trim sweep on top of the 2026-05-02 arXiv-prep baseline. The 2026-05-02 pass already covered: contribution recasting, related-work expansion (signature/diffusion + Fearnhead-Liu), three appendix trims, 12-site reviewer-language strip, three orphan-stub deletions (`sec:k_sweep_panels`, `sec:supp_validation_figures`, `sec:mssv_baseline`), pipeline-schematic body/appendix re-alignment, intro `5pp` and QuantGAN-footnote tightening, and five model-repo runner archivals. The follow-on sweep (commits `493fcd7`, `89d9c52`, `675247f`, `f88551f`, `e1aa093`) further trimmed the supplementary block (`supplementary.tex` shed ~189 lines, plus targeted line-edits across `sensitivity_appendix.tex`, `algorithms_appendix.tex`, `baselines_appendix.tex`, `cross_asset_appendix.tex`, `var_backtest.tex`, and `theory.tex`) and renamed the appendix block "Pipeline Schematic" → "Pipeline Summary" (label `sec:supp_pipeline_schematic` → `sec:supp_pipeline_summary`). The PDF lands at **63 pages**, clean compile, no undefined references.
 
 This document is the single brief a non-specialist reviewer can read before opening the PDF. It records (a) what the paper claims and how to read it cold, (b) how the paper compares to the precursor Hybrid-HMM paper, (c) the acronym key, (d) **the model and each emission family explained from scratch, with the way each differs from the others called out explicitly**, (e) **the estimation machinery (EM, Baum-Welch, ECM, quantile init) explained**, (f) **the spectral mechanism in plain language**, (g) **each benchmark generator and how it differs from the CHMM**, (h) **the regime-conditional VaR construction explained step by step**, (i) the test menu with what each number means and how the tests differ from one another, (j) the model's position in the literature, (k) the pre-arXiv cleanup checklist, (l) the two analysis pipelines and the data timeline that feeds them. Section refs use the section-file basenames in `sections/`.
 
@@ -14,19 +14,27 @@ The paper trains a continuous Hidden Markov Model (CHMM) by Baum-Welch as a **sy
 
 ## 1. arXiv-Readiness Verdict
 
-**Status: ready** after the arXiv-prep trim pass; cleanup punch list in Section 12.
+**Status: ready** after the 2026-05-02 arXiv-prep trim pass and the 2026-05-03/04 follow-on sweep; cleanup punch list in Section 12.
 
-Build evidence: **76-page PDF** (down from 112 over two reductions: a first arXiv-prep pass to 84, then this pass to 76), clean compile, zero undefined references or labels, zero `[CITE]/[TBD]/TODO` placeholders, all `\includegraphics` 1-to-1 mapped, headline tables intact, 1 theorem with full proof, 4 propositions, 2 assumptions. Reproducibility scaffold complete: deterministic seed root 20260420 with documented sub-seed rule, Julia ≥ 1.12 with pinned `Manifest.toml`, R 4.6 + `renv` lockfile for the MSGARCH reference, public companion repos linked in the conclusion.
+Build evidence: **63-page PDF** (down from 112 over three reductions: 112 → 84 → 76 → 63; the last leg is the 2026-05-03/04 follow-on sweep documented at the top of this file). Clean compile, zero undefined references or labels, zero `[CITE]/[TBD]/TODO` placeholders, all `\includegraphics` 1-to-1 mapped, headline tables intact, 1 theorem with full proof, 4 propositions, 2 assumptions. Reproducibility scaffold complete: deterministic seed root 20260420 with documented sub-seed rule, Julia ≥ 1.12 with pinned `Manifest.toml`, R 4.6 + `renv` lockfile for the MSGARCH reference, public companion repos linked in the conclusion (`https://github.com/altashly1/CHMM-paper`, `https://github.com/altashly1/CHMM-Model`).
 
-The arXiv-prep trim pass did the following, all on the in-memory MEMORY.md "no em dashes" rule and on the figure-style memory:
-- Three appendix trims: `sensitivity_appendix.tex` 791→567 lines, `algorithms_appendix.tex` 354→256, `baselines_appendix.tex` 259→236. Each kept every body-referenced label.
-- Stripped 12 sites of "Reviewer~X / Round-2 / peer-review item PX.Y" language, including a table caption (`tab:engle_manganelli_dq`).
-- Deleted three orphan stubs that had no body refs after trimming: `sec:k_sweep_panels`, `sec:supp_validation_figures`, `sec:mssv_baseline`.
-- Re-aligned `model.tex` ↔ `algorithms_appendix.tex` pipeline-schematic wording: body now says "step-by-step summary" (matches the prose-only appendix; the TikZ figure was removed in §6 of arxiv_prep).
-- Recast the intro contribution (i) and the spectral-identity sentence (dropped preemptive defensiveness).
-- Added Fearnhead-Liu 2007 to the change-point paragraph and a new "signature- and diffusion-based market generators" sub-paragraph in `related_work.tex`; added 6 bib entries (`fearnhead2007online`, `boursin2022deep`, `ni2021sig`, `buehler2020data`, `liao2024diffusion`, `tashiro2021csdi`).
-- Tightened the intro `~5pp IS / ~5pp OoS` claim to the actual CHMM-N delta plus the family-wide range (`94.1/81.8\%` and `93.6$-$95.6\%/80.8$-$85.7\%`); rewrote the QuantGAN footnote to describe the in-house 3-layer WGAN spec accurately.
-- Archived five runners in the model repo into `_attic_v10/runners/`: `run_sector_panel_n6.jl`, `run_sector_panel_n6_postprocess.jl`, `run_walkforward_cond_var_refit_cadence.jl`, `run_sector_panel_quarterly_refit_k6.jl`, `run_figures_ksweep.jl`. Updated `_attic_v10/runners/README.md` and `RUNNERS.md` accordingly.
+Section-file LOC at 2026-05-04 (`wc -l sections/*.tex`): `sensitivity_appendix.tex` 502, `supplementary.tex` 261, `baselines_appendix.tex` 256, `algorithms_appendix.tex` 256, `cross_asset_appendix.tex` 193, `metrics_appendix.tex` 141, `results.tex` 133, `model.tex` 86, `estimation.tex` 51, `var_backtest.tex` 42, `discussion.tex` 33, `related_work.tex` 17, `theory.tex` 14, `walkforward_body_table.tex` 14, `introduction.tex` 13, `conclusion.tex` 6. Total LaTeX 2,018 lines.
+
+What the 2026-05-02 pass did (already in prior version of this file, kept here for the audit trail):
+- Three appendix trims: `sensitivity_appendix.tex` 791→567, `algorithms_appendix.tex` 354→256, `baselines_appendix.tex` 259→236.
+- Stripped 12 sites of "Reviewer~X / Round-2 / peer-review item PX.Y" language, including the `tab:engle_manganelli_dq` caption.
+- Deleted three orphan stubs (`sec:k_sweep_panels`, `sec:supp_validation_figures`, `sec:mssv_baseline`).
+- Re-aligned `model.tex` ↔ `algorithms_appendix.tex` pipeline wording.
+- Recast intro contribution (i) and the spectral-identity sentence.
+- Added Fearnhead-Liu 2007 + signature/diffusion sub-paragraph to `related_work.tex`; 6 new bib entries.
+- Tightened the intro `~5pp IS / ~5pp OoS` claim and rewrote the QuantGAN footnote.
+- Archived five runners into `_attic_v10/runners/`.
+
+What the 2026-05-03/04 follow-on sweep added (deltas vs the 2026-05-02 baseline):
+- `supplementary.tex` lost ~189 lines (commit `f88551f`), bringing it to 261; the Pipeline-B copula appendix block, the per-ticker $\hat\lambda^\star$ sweep prose, and several auxiliary tables were tightened or moved into the existing `cross_asset_appendix.tex` / `sensitivity_appendix.tex` blocks rather than duplicated in `supplementary.tex`.
+- Further line-level trims across `sensitivity_appendix.tex`, `cross_asset_appendix.tex`, `theory.tex`, `var_backtest.tex`, and `discussion.tex` (commits `f88551f`, `675247f`, `89d9c52`).
+- Renamed `\subsubsection{Pipeline Schematic}` to `\subsubsection{Pipeline Summary}` in `algorithms_appendix.tex` (commit `e1aa093`); the body-side reference in `model.tex:9` already reads "step-by-step summary in Appendix~\ref{sec:supp_pipeline_summary}".
+- All body-referenced labels survive; PDF compile clean.
 
 Remaining LaTeX warnings (a few overfull hboxes, hyperref bookmark-charset notes) are cosmetic and not arXiv-blocking.
 
@@ -178,7 +186,7 @@ At $K = 2$ the formula reduces to $\rho_{|G|}(\tau) = \lambda_2^\tau$ with $\lam
 At $K \ge 3$ the matrix admits multiple non-unit eigenvalues, **but the algebraic upper bound of $K - 1$ modes is just an upper bound**. Whether the bound is binding depends on the **effective rank** of the deflated transition matrix $\mathbf T - \mathbf 1 \bar{\boldsymbol\pi}^\top$: if a single mode carries almost all the lag-1 ACF mass, the rest of the spectrum is unused.
 
 ### 6.4 The paper's empirical contribution
-On SPY at $K = 18$, the dominant non-unit mode at $|\lambda_2| = 0.929$ carries **93.6%** of the lag-1 absolute-return ACF; three modes carry $\ge 95\%$, twelve modes carry $\ge 99\%$ ([sections/theory.tex Table tab:spectral_modes](sections/theory.tex#L16-L34)). On the 30-ticker cross-section the dominant-mode share has **median 0.756 with IQR [0.66, 0.86] and minimum 0.33 (NEM)**. So the SPY value sits in the right tail of the cross-ticker distribution; the paper's framing is **rank-non-binding at the cross-ticker median**, not as a universal property. The framing decision is important: it prevents reviewers from over-reading the SPY headline as a generic claim about HMMs on equity data.
+On SPY at $K = 18$, the dominant non-unit mode at $|\lambda_2| = 0.929$ carries **93.6%** of the lag-1 absolute-return ACF (`introduction.tex:5`, `theory.tex:14`); at the body operating point $K^\star = 3$ the dominant mode carries **96.8%** of the lag-1 ACF (`discussion.tex:2`), so the rank-1 dominance is even sharper at $K^\star$. On the 30-ticker cross-section the dominant-mode share has **median 0.76 with IQR [0.66, 0.86] and minimum 0.33 (NEM)**. So the SPY value sits in the right tail of the cross-ticker distribution; the paper's framing is **rank-non-binding at the cross-ticker median**, not as a universal property. The framing decision is important: it prevents reviewers from over-reading the SPY headline as a generic claim about HMMs on equity data. The numerical-rank check on $\hat{\mathbf T}$ at $K = 18$ across the four emission families on SPY IS confirms full rank in the strict sense (smallest singular value $\sigma_{\min} \in [0.0007, 0.0170]$, condition numbers $63$--$1{,}620$); the deflated matrix has numerical rank exactly $K - 1 = 17$ across all four families (`supplementary.tex` Numerical full-rank check paragraph).
 
 ### 6.5 What this is not
 The paper does not claim the bilinear identity itself, the eigendecomposition, or the K-1 rank bound as theoretical contributions; all are textbook. The **substantive contribution** is the empirical effective-rank application that recasts the Rydén low-K failure as a rank diagnostic ([sections/introduction.tex:13](sections/introduction.tex#L13)).
@@ -328,9 +336,9 @@ The headline numerical claims and what they encode for a reviewer skimming the a
 
 - **Three symmetric Cont (2001) stylized facts reproduced.** (a) Heavy-tailed marginal: kurtosis CIs cover or exceed observed SPY value; the simulator is not Gaussian. (b) Negligible linear ACF: the lag-1 autocorrelation of returns is near zero, matching efficient-market behavior. (c) Slow $|G_t|$ ACF decay: the autocorrelation of absolute returns decays slowly (volatility clustering). The paper says CHMM matches GARCH(1,1) on (c), the historical bar that simple HMMs fail.
 
-- **Spectral effective-rank claim.** At $K = 18$ on SPY the dominant transition-matrix mode carries 93.6% of the deflated trace; cross-ticker median is 0.756. This is the falsifiable, mathematical version of the Rydén low-K failure: a $K$-state HMM cannot reproduce slow ACF decay if the effective rank of its deflated transition matrix is 1; CHMM at $K \ge 3$ has effective rank $> 1$ on the cross-ticker median.
+- **Spectral effective-rank claim.** At $K = 18$ on SPY the dominant transition-matrix mode carries **93.6%** of the lag-1 absolute-return ACF; at $K^\star = 3$ it carries **96.8%**; cross-ticker median (30-ticker panel) is **0.76** with IQR [0.66, 0.86] and minimum 0.33 (NEM). This is the falsifiable, mathematical version of the Rydén low-K failure: a $K$-state HMM cannot reproduce slow ACF decay if the effective rank of its deflated transition matrix is 1; CHMM at $K \ge 3$ has effective rank $> 1$ on the cross-ticker median.
 
-- **Christoffersen-cc passes on the headline window** at the conventional $\alpha = 0.05$ (regime-conditional VaR, propagating one-step-ahead state forecasts through the predictive mixture). Six-fold rolling-origin walk-forward: pass on the bulk, rejections concentrated on out-of-distribution stress folds (W2, W4 mid-COVID and 2022 inflation regime introductions). Periodic refit (quarterly cadence) is the deployment recipe.
+- **Christoffersen-cc passes on the headline window** at the conventional $\alpha = 0.05$ (regime-conditional VaR, propagating one-step-ahead state forecasts through the predictive mixture). Six-fold rolling-origin walk-forward (5y train / 1y test): the conditional Christoffersen-cc passes on **19/24 rows**; the body OoS-KS distribution has median 62.1% (K=3) / 67.7% (K=18), with W2 (COVID) and W4 (2022 rate-hike onset) folds below 10% for every generator. Periodic refit (quarterly cadence) is the deployment recipe.
 
 - **Non-equity stress test (GLD, SLV) collapses under static fitting.** Reported as a negative result; it is the boundary of the headline claim. Periodic refit is again the proposed remedy.
 
@@ -391,15 +399,16 @@ Findings from the cleanup audit, ordered by impact.
 - [x] Replaced `\begin{table}[h]` with `\begin{table}[!ht]` on every table across the section files (43 instances spanning 8 files). All `[h]→[ht]` auto-promotion warnings cleared.
 - [x] Added `\texorpdfstring{...}{...}` wrappers on the math-bearing subsubsection titles. Hyperref bookmark-charset warnings reduced from many to zero.
 - [x] Verified `figs/_attic/` removal does not break the build (commit b299cab); `make` produces a clean PDF, no undefined references.
-- [x] **arXiv-prep trim pass** (2026-05-02): three appendix trims, 12-site reviewer-language strip, three orphan-stub deletions, pipeline-schematic re-alignment, intro 5pp / QuantGAN footnote tightening, related-work expansion + 6 new bib entries, body contribution recasting, five model-repo runner archivals. PDF lands at 76 pages, clean compile, no undefined refs.
-- [ ] User-facing: add the two repo links (CHMM-paper, CHMM-Model) and the seed-root statement (`20260420`) to the arXiv \emph{submission metadata page} at upload time. Both are already in the LaTeX (conclusion §Data and code availability and model.tex respectively).
+- [x] **arXiv-prep trim pass** (2026-05-02): three appendix trims, 12-site reviewer-language strip, three orphan-stub deletions, pipeline-schematic re-alignment, intro 5pp / QuantGAN footnote tightening, related-work expansion + 6 new bib entries, body contribution recasting, five model-repo runner archivals. PDF landed at 76 pages.
+- [x] **Follow-on trim sweep** (2026-05-03/04, commits `493fcd7`, `89d9c52`, `675247f`, `f88551f`, `e1aa093`): supplementary block shed ~189 lines, line-level trims across `sensitivity_appendix.tex` / `cross_asset_appendix.tex` / `theory.tex` / `var_backtest.tex` / `discussion.tex`, and renamed `\subsubsection{Pipeline Schematic}` → `\subsubsection{Pipeline Summary}` (label `sec:supp_pipeline_schematic` → `sec:supp_pipeline_summary`). PDF lands at **63 pages**, clean compile, no undefined refs.
+- [ ] User-facing: add the two repo links (CHMM-paper, CHMM-Model) and the seed-root statement (`20260420`) to the arXiv \emph{submission metadata page} at upload time. Both are already in the LaTeX (`conclusion.tex:6` and `model.tex` respectively).
 - [ ] User-facing: model-repo cleanup (drop `Alpaca` dep, delete `_attic_v10/data/` and `_attic_v10/docs/`, prune dead K-variant runners listed under "CHMM-Model repo" item 6). Destructive operations on the sibling repo, deferred for the user to execute.
 
 ---
 
 ## 13. Analysis Pipelines and Data Timeline
 
-The empirical study is organised along **two named pipelines**, both defined in `model.tex` and re-stated as a step-by-step prose summary in `algorithms_appendix.tex` (`\label{sec:supp_pipeline_schematic}`). The TikZ pipeline figure was removed in the arXiv-prep §6 trim; the body sentence at `model.tex:9` now says "step-by-step summary in Appendix..." instead of "full schematic". The single-asset CHMM scaffold is shared across both. The driver `CHMM-Model/run_full_rebuild.jl` chains them end-to-end (stages 3 and 4 of the rebuild dispatcher).
+The empirical study is organised along **two named pipelines**, both defined in `model.tex` and re-stated as a step-by-step prose summary in `algorithms_appendix.tex` under the heading "Pipeline Summary" (`\label{sec:supp_pipeline_summary}`; renamed from "Pipeline Schematic" / `sec:supp_pipeline_schematic` in commit `e1aa093`). The TikZ pipeline figure was removed in the arXiv-prep §6 trim; the body sentence at `model.tex:9` reads "step-by-step summary in Appendix~\ref{sec:supp_pipeline_summary}". The single-asset CHMM scaffold is shared across both. The driver `CHMM-Model/run_full_rebuild.jl` chains them end-to-end (stages 3 and 4 of the rebuild dispatcher).
 
 ### 13.1 Pipeline A, single-asset (no cross-asset coupling)
 
@@ -452,7 +461,7 @@ The IS / OoS split is built by `CHMM-Model/build_new_train_oos.jl`. The 10-year 
 | Slice | Window | Trading days | Universe | Source | Used by |
 |---|---|---|---|---|---|
 | **Body IS (training)** | 2014-01-03 to 2024-01-02 | 2,516 | SPY headline; 6-ticker copula universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ); 30-ticker sector panel ($10$ GICS $\times 3$); 60-ticker $n = 6$ expansion | Polygon.io / Alpaca / IEX, packed into `data/CHMM-SP500-Train-10yr.jld2` | Both pipelines, all body tables |
-| **Body OoS (held-out)** | 2024-01-04 to 2026-04-20 | 573 (572 in some panels) | Same universes as IS | `data/CHMM-SP500-OoS-Remainder.jld2` | Both pipelines, all OoS columns |
+| **Body OoS (held-out)** | 2024-01-04 to 2026-04-20 | 572 | Same universes as IS | `data/CHMM-SP500-OoS-Remainder.jld2` | Both pipelines, all OoS columns |
 | **K-selection pre-2020 slice** | est.\ 2014-01 to 2018-06; val.\ 2018-07 to 2019-12 | sub-slice of body IS | SPY | Carved from body IS by `run_k_selection_kfold_pre2020.jl` | Pipeline A, K-selection (pre-2020 to avoid COVID leakage) |
 | **Walk-forward folds W1..W6** | rolling 5y train + 1y test, body window | 6 folds | SPY | Carved from body IS+OoS by the conditional-VaR walk-forward driver inside `run_conditional_var_all_families.jl` | Pipeline A; W2 = COVID, W4 = 2022 rate-hike. The earlier seventh fold (`run_walkforward_w7.jl`) was archived to `_attic_v10/runners/`; the body uses the six-fold rolling-origin design |
 | **Quarterly refit window** | every 63 trading days, rolling | varies | SPY (univariate) and 6-asset (Pipeline B) | `run_quarterly_refit_conditional_var.jl`, `run_sector_panel_quarterly_refit.jl` | Both pipelines, deployment recipe |
