@@ -167,17 +167,17 @@ Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all four e
 % Algorithm 3: CHMM Simulation
 % ========================================================================================= %
 \begin{algorithm}[tp]
-\caption{CHMM simulation of synthetic excess growth rate paths}
+\caption{CHMM simulation of synthetic excess growth rate paths (unified four-family scaffold). The emission draw at line~\ref{line:simemit} branches on the family $F \in \{\mathcal{N}, t, L, \text{GED}\}$ exactly as in Algorithm~\ref{alg:chmm_em}: $\mathcal{N}(\mu_k, \sigma_k^2)$ for CHMM-N, $t_{\nu_k}(\mu_k, \sigma_k)$ for CHMM-t, $\mathrm{Laplace}(\mu_k, \beta_k)$ for CHMM-L, $\mathrm{GED}(\mu_k, \alpha_k, p_k)$ for CHMM-GED; the latent chain and transition step are shared.}
 \label{alg:chmm_simulate}
 \small
 \begin{algorithmic}[1]
-\REQUIRE Trained CHMM $\mathcal{M} = (\mathbf{T}, \{\mu_k, \sigma_k\}, \boldsymbol{\pi})$, Number of steps $M$, Number of paths $P$
+\REQUIRE Trained CHMM $\mathcal{M} = (\mathbf{T}, \{\boldsymbol\theta_k\}, \boldsymbol{\pi}, F)$ with $\boldsymbol\theta_k = (\mu_k, \sigma_k)$ for $F = \mathcal{N}$; $(\mu_k, \sigma_k, \nu_k)$ for $F = t$; $(\mu_k, \beta_k)$ for $F = L$; $(\mu_k, \alpha_k, p_k)$ for $F = \mathrm{GED}$. Number of steps $M$, Number of paths $P$
 \ENSURE Simulated return paths $\{\hat{G}^{(p)}_{1:M}\}_{p=1}^{P}$
 
 \FOR{$p = 1$ to $P$}
     \STATE Sample initial state $S_1 \sim \text{Categorical}(\boldsymbol{\pi})$.
     \FOR{$t = 1$ to $M$}
-        \STATE Emit observation $\hat{G}_t^{(p)} \sim \mathcal{N}(\mu_{S_t}, \sigma_{S_t}^2)$.
+        \STATE Emit observation $\hat{G}_t^{(p)} \sim f_{S_t}(\,\cdot\,;\, \boldsymbol\theta_{S_t})$ with $f_k$ the $F$-family per-state density. \label{line:simemit}
         \IF{$t < M$}
             \STATE Transition to next state $S_{t+1} \sim \text{Categorical}(\mathbf{T}_{S_t, \cdot})$.
         \ENDIF
@@ -253,4 +253,4 @@ A CHMM-t bracket sweep on $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0, \infty\}$ at $K 
 \subsubsection{Pipeline Summary}
 \label{sec:supp_pipeline_summary}
 
-Pipeline~A: observed returns $G_t \to$ fit CHMM (Baum-Welch, $K = 18$) $\to$ simulate $1{,}000$ paths $\to$ per-asset metrics (Table~\ref{tab:model_comparison}). Pipeline~B reuses the Pipeline-A per-asset fits as marginals, draws a copula sample $\mathbf U \sim \mathcal C(\Sigma)$ from the fitted Student-$t$ copula on ranks, rank-reorders the per-asset Pipeline-A paths to match $\mathbf U$, and reports cross-asset metrics (Table~\ref{tab:cross_asset}). The single-asset scaffold is shared across both pipelines; the CHMM training and simulation steps are Algorithms~\ref{alg:chmm_em} and~\ref{alg:chmm_simulate}, the cross-asset rank-reordering step is Algorithm~\ref{alg:copula_sim}, and the architecture diagram for the single-asset scaffold is body Figure~\ref{fig:chmm_architecture}.
+Pipeline~A: observed returns $G_t \to$ fit CHMM (Baum-Welch, body operating point $K^\star = 3$ with $K = 18$ as the kurtosis-fidelity sensitivity reference; the appendix per-ticker rollup of Table~\ref{tab:sector_panel} and the Pipeline-B marginals of Table~\ref{tab:cross_asset} use $K = 18$) $\to$ simulate $1{,}000$ paths $\to$ per-asset metrics (Table~\ref{tab:model_comparison}). Pipeline~B reuses the Pipeline-A $K = 18$ per-asset fits as marginals, draws a copula sample $\mathbf U \sim \mathcal C(\Sigma)$ from the fitted Student-$t$ copula on ranks, rank-reorders the per-asset Pipeline-A paths to match $\mathbf U$, and reports cross-asset metrics (Table~\ref{tab:cross_asset}). The single-asset scaffold is shared across both pipelines; the CHMM training and simulation steps are Algorithms~\ref{alg:chmm_em} and~\ref{alg:chmm_simulate}, the cross-asset rank-reordering step is Algorithm~\ref{alg:copula_sim}, and the architecture diagram for the single-asset scaffold is body Figure~\ref{fig:chmm_architecture}.

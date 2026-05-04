@@ -78,7 +78,7 @@ Pipeline~B reuses each per-asset CHMM marginal and injects cross-asset dependenc
 \subsection{Evaluation Protocol}
 \label{sec:metrics}
 
-For each model we simulate $P = 1{,}000$ independent paths of length $T$ following \cite{stenger2024thinking}, under a deterministic global seed root $20260420$. Headline metrics are the two-sample Kolmogorov--Smirnov \cite{kolmogorov1933, smirnov1948} pass rate at $\alpha = 0.05$, mean simulated excess kurtosis, and the absolute-return ACF mean absolute error (MAE) over $L = 252$ lags,
+For each model we simulate $P = 1{,}000$ independent paths of length $T$ following \cite{stenger2024thinking}, under a deterministic global seed root $20260420$ (a secondary seed $20260422$ is used for the cross-asset Pipeline-B panels and the block-bootstrap recalibration of Appendix~\ref{sec:supp_robustness}; the seed is fixed per panel and stated in every relevant table caption). Headline metrics are the two-sample Kolmogorov--Smirnov \cite{kolmogorov1933, smirnov1948} pass rate at $\alpha = 0.05$, mean simulated excess kurtosis, and the absolute-return ACF mean absolute error (MAE) over $L = 252$ lags,
 \begin{equation}
     \text{ACF-MAE} = \frac{1}{L}\sum_{\tau=1}^{L} \left| \hat\rho^{\text{obs}}_{|G|}(\tau) - \bar{\hat\rho}^{\,\text{sim}}_{|G|}(\tau) \right|.
     \label{eq:acf_mae}
