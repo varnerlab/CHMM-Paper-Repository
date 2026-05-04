@@ -122,16 +122,19 @@ CSVs from `CHMM-Model/results/` into `CHMM-paper/figs/` and
 
 ## Status
 
-- **2026-05-04** -- arXiv-submission-ready. Compiles to 65 pages with
-  `paper.bbl` built and ready to bundle into the submission tarball.
-  Three small typographic warnings remain (two sub-6pt overfull hboxes
-  and one float-too-large notice); none block compilation or affect
-  layout, but they are tracked for the next polish pass.
+- **2026-05-04** -- arXiv-submission-ready. Compiles cleanly to 65 pages
+  with no LaTeX warnings (no overfull / underfull boxes, no
+  float-too-large notices); `paper.bbl` is built and ready to bundle
+  into the submission tarball.
 - The paper is the headline equity-returns CHMM contribution; the
   companion VIX / semi-Markov extension lives in
   [`SM-CHMM-AR-Paper`](https://github.com/altashly1/SM-CHMM-AR-Paper)
   with its code in
   [`SM-CHMM-AR-Model`](https://github.com/altashly1/SM-CHMM-AR-Model).
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
 
 ## Related repositories
 

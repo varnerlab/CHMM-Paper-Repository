@@ -20,8 +20,11 @@ Algorithmic details and the forward-backward recursion are in Appendix~\ref{sec:
 
 \paragraph{CHMM-N (Gaussian).}
 The classical Baum-Welch M-step \cite{baum1970maximization} is closed form:
-$\mu_k \leftarrow \sum_t \gamma_t(k) O_t / \sum_t \gamma_t(k)$ and
-$\sigma_k^2 \leftarrow \sum_t \gamma_t(k) (O_t - \mu_k)^2 / \sum_t \gamma_t(k)$.
+\[
+\mu_k \leftarrow \frac{\sum_t \gamma_t(k)\, O_t}{\sum_t \gamma_t(k)},
+\qquad
+\sigma_k^2 \leftarrow \frac{\sum_t \gamma_t(k)\, (O_t - \mu_k)^2}{\sum_t \gamma_t(k)}.
+\]
 
 \paragraph{CHMM-t (Student-t via ECM).}
 We adopt the ECM formulation of \citet{peel2000robust} and \citet{liu1995ml}, the same heavy-tailed innovation choice studied by \citet{abantovalle2017svm} for stochastic-volatility-in-mean models.

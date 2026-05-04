@@ -65,7 +65,7 @@ QQQ  & $0.047$   & $1.122$ & $0.840$ \\
 Figure~\ref{fig:copula_profile} plots the profile log-likelihood of the Student-t copula used inside Pipeline~B, computed on the six-asset SPY cross-section over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ used in Section~\ref{sec:cross_asset}.
 The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum profile log-likelihood ($6157.47$), and the neighbouring grid points $\nu = 5$ ($6143.37$) and $\nu = 8$ ($6148.37$) each within $15$ profile-log-likelihood units of the peak, indicating a shallow-but-clean optimum that agrees with the $4$--$10$ range typically reported for equity-portfolio Student-t copulas in the risk-management literature. The AIC penalty for the additional $\nu$ parameter is $2$ (one degree of freedom relative to the Gaussian copula limit $\nu \to \infty$), and the AIC differential between the Student-t at $\nu^\star = 6$ and the Gaussian copula limit on these data is $-2 \cdot (6157.47 - 6143.37) - 2 = -30.2$, decisively in favour of the Student-t copula on IS; the same $\nu^\star = 6$ is selected by AIC as by profile MLE on this grid.
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=0.70\textwidth]{figs/Fig-Copula-Profile.pdf}
 \caption{\textbf{Profile log-likelihood of the Student-t copula} used inside Pipeline~B on the six-asset SPY cross-section (SPY, NVDA, JNJ, JPM, AAPL, QQQ; IS window 2014-01-03 through 2024-01-03). The vertical axis is the profile log-likelihood evaluated at each degrees-of-freedom value $\nu$ on the grid $\{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$; the dashed red line marks the profile MLE $\nu^{*} = 6$ (peak value 6157.47). The CHMM-N marginals are held fixed at the Pipeline~A per-asset fits while $\nu$ is varied.}
@@ -120,6 +120,7 @@ We refit the Pipeline-B Student-t copula on a $252$-day rolling window (one trad
 \begin{table}[!ht]
 \centering
 \small
+\setlength{\tabcolsep}{4pt}
 \caption{\textbf{Quarterly rolling-window refit of the Pipeline-B Student-t copula on the OoS window} (six-asset universe; CHMM-N marginals at $K = 18$ held fixed at IS fits; $200$ paths per refit; seed = $20260422$). Per-quarter window slice and refitted $\nu^\star$, plus the off-diagonal MAE between the path-averaged simulated correlation matrix under the refitted copula and the realised next-quarter correlation matrix. Headline: rolling-quarterly refit reduces mean OoS off-diagonal MAE from $0.207$ (static-IS-fit baseline) to $0.185$, a $\sim 10\%$ relative improvement; the gain concentrates in the later OoS quarters where the rolling window incorporates more recent OoS data and the refitted $\nu^\star$ shifts from the IS-fit value of $6$ down to $5$ or up to $10$--$15$ as the empirical tail-coupling rolls.}
 \label{tab:rolling_copula}
 \begin{tabular}{c c c c c}
@@ -154,8 +155,8 @@ The body universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ) is six US-listed equity ticke
 \paragraph{GLD Pipeline-A univariate fidelity.}
 Fitting CHMM-N, CHMM-t, and CHMM-L on the GLD return series at $K = 18$ produces $100\%$ IS KS pass rate for all three families and observed IS excess kurtosis $3.6$ matched closely by CHMM-L ($2.2$); on OoS, however, the KS pass rate collapses to $0\%$ for all three families against an observed OoS excess kurtosis of $6.5$. Inspection of the GLD price path on the $2024$--$2026$ OoS window shows the asset re-priced from $\sim 200$ to $\sim 300$ on a persistent demand shock not represented in the $2014$--$2024$ IS regime library. This is the same stationarity-scope artefact as the NVDA / JPM single-name OoS cliffs reported in Section~\ref{sec:cross_asset_univariate}, on a non-equity asset; the limitation is not equity-specific.
 
-\paragraph{Pipeline-B: 7-ticker Student-t copula off-diagonal MAE.}
-Refitting the Student-t copula on the augmented seven-ticker universe at $\nu^\star = 6$ gives IS off-diagonal MAE of $0.029$ (six-ticker baseline: $0.027$) and OoS off-diagonal MAE of $0.179$ (six-ticker baseline: $0.209$). Adding the low-equity-correlation gold ETF \emph{reduces} the OoS off-diagonal MAE, because the equity-cluster correlation degradation is the dominant component; pairs involving GLD have moderate IS-to-OoS shifts ($|\Delta| \in [0.04, 0.19]$) while the largest equity-cluster pairs (JNJ-QQQ, SPY-JNJ, NVDA-JNJ) have $|\Delta| > 0.48$ on OoS.
+\paragraph{Pipeline-B: 7-ticker copula MAE.}
+Refitting the Student-t copula on the augmented seven-ticker universe at $\nu^\star = 6$ gives IS off-diagonal MAE of $0.029$ (six-ticker baseline: $0.027$) and OoS off-diagonal MAE of $0.179$ (six-ticker baseline: $0.209$). Adding the low-equity-correlation gold ETF \emph{reduces} the OoS off-diagonal MAE, because the equity-cluster correlation degradation is the dominant component; pairs involving GLD have moderate IS-to-OoS shifts ($|\Delta| \in [0.04, 0.19]$) while the largest equity-cluster pairs (JNJ--QQQ, SPY--JNJ, NVDA--JNJ) have $|\Delta| > 0.48$ on OoS.
 
 \paragraph{Per-pair OoS gap localisation.}
 Table~\ref{tab:per_pair_offdiag_mae} reports the per-pair off-diagonal absolute deviation between observed and path-averaged simulated correlation matrices on IS and OoS, sorted by OoS $|\Delta|$. The OoS gap concentrates in pairs involving JNJ (the defensive single-name proxy): JNJ's IS correlation with the broad equity factor (QQQ, SPY) collapses on OoS, in some pairs flipping sign, and the IS-fixed copula has no mechanism for tracking that shift. The gold-ETF pairs (SPY-GLD, JPM-GLD, JNJ-GLD, QQQ-GLD) sit in the middle of the ranking with $|\Delta|$ between $0.10$ and $0.19$ on OoS. The dominant cause of the OoS off-diagonal gap is therefore neither equity-cluster size nor copula-degree mis-specification but a single-name regime shift in the JNJ-equity-factor relationship that the IS-fitted dependence layer cannot anticipate.
@@ -163,7 +164,7 @@ Table~\ref{tab:per_pair_offdiag_mae} reports the per-pair off-diagonal absolute 
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Per-pair off-diagonal correlation MAE on the seven-ticker universe} (Pipeline B, Student-t copula on CHMM-N marginals at $K = 18$, $200$ paths, $\nu^\star = 6$). For each ticker pair $(i, j)$ the table reports $|\Sigma_{\text{sim,avg}}[i,j] - \Sigma_{\text{obs}}[i,j]|$ on IS and OoS, ranked by OoS $|\Delta|$. Only the ten largest-OoS-gap pairs are shown for compactness.}
+\caption{\textbf{Per-pair off-diagonal correlation MAE on the seven-ticker universe} (Pipeline B, Student-t copula on CHMM-N marginals at $K = 18$, $200$ paths, $\nu^\star = 6$). For each ticker pair $(i, j)$ the table reports the absolute deviation $|\Sigma_{\text{sim,avg}} - \Sigma_{\text{obs}}|$ on IS and OoS, ranked by OoS $|\Delta|$. Only the ten largest-OoS-gap pairs are shown for compactness.}
 \label{tab:per_pair_offdiag_mae}
 \begin{tabular}{l c c c}
 \toprule
