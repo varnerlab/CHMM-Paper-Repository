@@ -318,29 +318,29 @@ A within-fold refit-cadence sweep at monthly ($21$ trading days) and weekly ($5$
 \subsubsection{Quarterly-Refit 30-Ticker Cross-Ticker Panel}
 \label{sec:cross_ticker_quarterly_refit}
 
-For a quarterly-refit version of the 30-ticker cross-ticker panel (Table~\ref{tab:cross_ticker}), we re-fit the penalised CHMM-t at $\lambda = 20$ on a rolling $5$-year window every $63$ trading days through the OoS span (10 refits per ticker, 300 fits total per state-resolution), simulate the next quarter under each refit, and concatenate the per-quarter simulations into a single OoS path matrix per ticker, at both $K = 18$ (extended-state-resolution sensitivity) and $K^\star = 6$ (sensitivity reference). Same $N_{\text{paths}} = 1{,}000$, seed = 20260420 as the body Table~\ref{tab:cross_ticker}.
+For a quarterly-refit version of the 30-ticker cross-ticker panel (Table~\ref{tab:cross_ticker}), we re-fit the penalised CHMM-t at $\lambda = 20$ on a rolling $5$-year window every $63$ trading days through the OoS span (10 refits per ticker, 300 fits total per state-resolution), simulate the next quarter under each refit, and concatenate the per-quarter simulations into a single OoS path matrix per ticker, at the body operating point $K^\star = 3$ and at the kurtosis-fidelity sensitivity references $K^\star = 6$ and $K = 18$. Same $N_{\text{paths}} = 1{,}000$, seed = 20260420 as the body Table~\ref{tab:cross_ticker}.
 
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Quarterly-refit cross-ticker panel at $K^\star = 6$ and $K = 18$.} Aggregate distribution across the 30-ticker universe under the quarterly-refit protocol at both operating points, vs.\ the IS-fixed $K = 18$ protocol of Table~\ref{tab:cross_ticker}. Refit cadence $= 63$ OoS trading days; train window $= 1{,}260$ obs ($\sim 5$y rolling). Per-ticker detail in the results files.}
+\caption{\textbf{Quarterly-refit cross-ticker panel at $K^\star = 3$, $K^\star = 6$, and $K = 18$.} Aggregate distribution across the 30-ticker universe under the quarterly-refit protocol at all three operating points, vs.\ the IS-fixed $K = 18$ protocol of Table~\ref{tab:cross_ticker}. Refit cadence $= 63$ OoS trading days; train window $= 1{,}260$ obs ($\sim 5$y rolling). Per-ticker detail in the results files.}
 \label{tab:cross_ticker_quarterly_refit}
-\begin{tabular}{l c c c}
+\begin{tabular}{l c c c c}
 \toprule
-Metric & IS-fixed ($K = 18$) & Refit ($K^\star = 6$) & Refit ($K = 18$) \\
+Metric & IS-fixed ($K = 18$) & Refit ($K^\star = 3$) & Refit ($K^\star = 6$) & Refit ($K = 18$) \\
 \midrule
-IS KS\% median        & $99.5\%$ & $98.8\%$ & $99.4\%$ \\
-IS KS\% mean $\pm$ sd & $99.3 \pm 0.6\%$ & $97.4 \pm 4.4\%$ & $99.2 \pm 0.6\%$ \\
-OoS KS\% median       & $73.4\%$ & $\mathbf{85.8\%}$ & $83.0\%$ \\
-OoS KS\% mean $\pm$ sd & $66.8 \pm 29.5\%$ & $\mathbf{76.0 \pm 21.7\%}$ & $77.2 \pm 21.2\%$ \\
-OoS KS\% $[Q_1, Q_3]$ & $[49.1, 94.3]\%$ & $[57.6, 94.3]\%$ & $[62.0, 95.4]\%$ \\
-Tickers OoS KS $< 60\%$ & $11 / 30 = 36.7\%$ & $9 / 30 = 30.0\%$ & $\mathbf{7 / 30 = 23.3\%}$ \\
+IS KS\% median        & $99.5\%$ & $96.4\%$ & $98.8\%$ & $99.4\%$ \\
+IS KS\% mean $\pm$ sd & $99.3 \pm 0.6\%$ & $95.1 \pm 4.5\%$ & $97.4 \pm 4.4\%$ & $99.2 \pm 0.6\%$ \\
+OoS KS\% median       & $73.4\%$ & $84.7\%$ & $\mathbf{85.8\%}$ & $83.0\%$ \\
+OoS KS\% mean $\pm$ sd & $66.8 \pm 29.5\%$ & $75.0 \pm 23.1\%$ & $\mathbf{76.0 \pm 21.7\%}$ & $77.2 \pm 21.2\%$ \\
+OoS KS\% $[Q_1, Q_3]$ & $[49.1, 94.3]\%$ & $[56.3, 94.5]\%$ & $[57.6, 94.3]\%$ & $[62.0, 95.4]\%$ \\
+Tickers OoS KS $< 60\%$ & $11 / 30 = 36.7\%$ & $8 / 30 = 26.7\%$ & $9 / 30 = 30.0\%$ & $\mathbf{7 / 30 = 23.3\%}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Reading.}
-Quarterly refit shifts the OoS KS distribution materially at both state resolutions. At $K = 18$: median $+9.6$pp ($73.4 \to 83.0\%$), mean $+10.4$pp, IQR tighter ($45.2$pp $\to 33.4$pp), failure count down by $36\%$ ($11 \to 7$). At $K^\star = 6$: median $+10.7$pp ($75.1 \to 85.8\%$), mean $+9.5$pp, failure count down by $18\%$ ($11 \to 9$). The two state resolutions are within $\sim 3$pp of each other on the refit median (the $K^\star = 6$ refit median of $85.8\%$ is in fact $2.8$pp \emph{above} the $K = 18$ refit median of $83.0\%$, so the sensitivity reference is at parity with or above the extended-state-resolution sensitivity reference under the refit protocol). The largest individual improvements concentrate on the regime-introduction tickers that the IS-fixed Table~\ref{tab:cross_ticker} flagged: at $K = 18$, LLY $7.6\% \to 83.7\%$, UNH $14.5\% \to 47.3\%$, NEM $5.6\% \to 15.4\%$, HD $41.4\% \to 82.2\%$, NFLX $45.1\% \to 61.5\%$. The mechanism is the obvious one: as the regime introduces new $\sigma$ levels in the OoS window, each quarterly refit picks up the most recent $5$y including the new regime and the simulator can match the OoS distribution.
+Quarterly refit shifts the OoS KS distribution materially at all three state resolutions. At $K^\star = 3$: median $+15.6$pp ($69.1 \to 84.7\%$ vs the $K^\star = 3$ static-fit baseline reported in the body Table~\ref{tab:cross_ticker}), mean $+8.8$pp ($66.2 \to 75.0\%$), failure count down by $27\%$ ($11 \to 8$). At $K = 18$: median $+9.6$pp ($73.4 \to 83.0\%$), mean $+10.4$pp, IQR tighter ($45.2$pp $\to 33.4$pp), failure count down by $36\%$ ($11 \to 7$). At $K^\star = 6$: median $+10.7$pp ($75.1 \to 85.8\%$), mean $+9.5$pp, failure count down by $18\%$ ($11 \to 9$). The three state resolutions are within $\sim 3$pp of each other on the refit median ($84.7$ to $85.8\%$); the body operating point $K^\star = 3$ is at parity with the kurtosis-fidelity sensitivity references under the refit protocol. The largest individual improvements concentrate on the regime-introduction tickers that the IS-fixed Table~\ref{tab:cross_ticker} flagged: at $K = 18$, LLY $7.6\% \to 83.7\%$, UNH $14.5\% \to 47.3\%$, NEM $5.6\% \to 15.4\%$, HD $41.4\% \to 82.2\%$, NFLX $45.1\% \to 61.5\%$. The mechanism is the obvious one: as the regime introduces new $\sigma$ levels in the OoS window, each quarterly refit picks up the most recent $5$y including the new regime and the simulator can match the OoS distribution.
 
 A small number of tickers regress: DIS $96.4\% \to 48.4\%$, BAC $84.8\% \to 55.8\%$, AAPL $95.1\% \to 66.5\%$. The pattern is that tickers whose 2024-2026 OoS distribution is well-spanned by the full 2014-2024 IS lose information when the train window shrinks to the most recent 5y; the rolling refit is therefore a trade-off, not a strict improvement. Operationally, a refit-trigger rule (refit only when the rolling KS or a Page-Hinkley statistic on $|G_t|$ crosses a threshold) would capture the regime-introduction wins without paying the cost on the well-spanned tickers; the rule is logged as a follow-up companion experiment.
 
@@ -463,7 +463,7 @@ $200$  & $-2.076$ & $91.2$ & $3.09$ & $2.73$ \\
 
 Reading: the held-out validation log-likelihood is maximised at $\lambda^\star = 20$ at $K = 18$, matching the body operating point of Table~\ref{tab:model_comparison}. Validation KS picks $\lambda^\star = 0$ but the band $[0, 200]$ spans only $2.2$pp ($89.8$ to $92.0\%$), within the simulation-noise envelope at $N_\text{paths} = 500$. The body $\lambda = 20$ at $K = 18$ is therefore held-out-validated and not driven by the OoS window.
 
-\paragraph{Re-tuning at $K^\star = 3$ (Item 3 of REVIEW\_RESPONSE\_PLAN.md).}
+\paragraph{Re-tuning at $K^\star = 3$.}
 Repeating the same held-out CV at the body operating point $K^\star = 3$ on the same pre-2020 slices gives a distinct optimum: per-observation validation log-likelihood is monotone in $\lambda$ on the same grid, with $\lambda^\star = 50$ minimising the negative log-likelihood ($-1.9192$ at $\lambda = 50$ versus $-1.9217$ at $\lambda = 20$ and $-1.9268$ at $\lambda = 0$); validation KS also picks $\lambda^\star = 50$ at $95.0\%$ pass rate. The simulated kurtosis at $\lambda = 50$ is $2.77$, well below the body's observed $7.68$ IS / $5.29$ OoS targets, confirming that the penalty over-shrinks at $K^\star = 3$. The body retains $\lambda = 20$ at $K^\star = 3$ as a sensitivity reference (the headline heavy-tail recipe is the shared-$\nu$ ablation of Appendix~\ref{sec:chmm_t_shared_nu}).
 
 \subsubsection{Cross-Decade Validation: 1994-2004 IS / 2004-2006 OoS via CRSP}
