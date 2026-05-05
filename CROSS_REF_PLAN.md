@@ -1,6 +1,6 @@
 # Cross-Reference Plan: CHMM-paper and SM-CHMM-AR-Paper
 
-**Date:** 2026-05-04
+**Date:** 2026-05-05 (refreshed after the review-response sweep; the original cross-reference resolution from 2026-05-04 still stands, with one mechanical follow-up: the CHMM-paper title was trimmed on 2026-05-05 from "Continuous Hidden Markov Models for Equity Returns: Spectral Rank, Heavy-Tail Emission Families, and Regime-Conditional Value-at-Risk" to "Continuous Hidden Markov Models for Equity Returns: Heavy-Tail Emission Families and Regime-Conditional Value-at-Risk", so the SM-paper bib's `title` field needs a one-line resync at the same time as the arXiv-ID backfill in Step 2 below.)
 **Audience:** Co-authors preparing both preprints for arXiv.
 
 ---
@@ -21,7 +21,7 @@ We decided to use a **one-way citation** approach (called "Plan B" below):
 
 The benefit: the two papers can be submitted to arXiv independently. The CHMM-paper does NOT need a follow-up "v2" upload after the SM-paper goes live. The SM-paper still needs the live CHMM arXiv ID before its own submission, so the submission order is fixed: **CHMM-paper first, then SM-paper**.
 
-All paper-side edits are already complete. CHMM-paper is fully self-contained and rebuilt cleanly on 2026-05-04 (63 pages, no undefined-citation warnings, no orphan bib entries).
+All paper-side edits on the CHMM side are complete. CHMM-paper is fully self-contained and rebuilt cleanly on 2026-05-05 (66 pages after the review-response sweep, no undefined-citation warnings, no orphan bib entries). The remaining SM-paper bib edit is two lines (title resync + arXiv-ID backfill); both happen in Step 2.
 
 ---
 
@@ -35,9 +35,9 @@ There are three steps. Steps 1 and 3 are arXiv uploads. Step 2 is a small bib ed
 - No edits are needed in the CHMM-paper repo before submission.
 - After arXiv accepts the submission, **record the arXiv ID**. It will look like `arXiv:2605.NNNNN` (the exact prefix depends on the announcement month).
 
-### Step 2: Update the SM-paper bib with the CHMM arXiv ID
+### Step 2: Update the SM-paper bib with the new CHMM title and the CHMM arXiv ID
 
-This is a small, mechanical edit. It backfills the live CHMM arXiv ID into the SM-paper's bibliography so the three SM-to-CHMM citations resolve correctly.
+Two small, mechanical edits. The first resyncs the title field after the 2026-05-05 CHMM title trim; the second backfills the live CHMM arXiv ID. Both happen in the same edit so the SM-paper's three SM-to-CHMM citations resolve correctly.
 
 - Open `SM-CHMM-AR-Paper/references.bib`.
 - Find the first entry, `@article{alswaidan2026chmm, ...}`, at lines 4 to 10. It currently looks like:
@@ -52,6 +52,12 @@ This is a small, mechanical edit. It backfills the live CHMM arXiv ID into the S
   }
   ```
 
+- Replace the `title` value with the trimmed-on-2026-05-05 CHMM title:
+
+  ```
+    title={Continuous Hidden Markov Models for Equity Returns: Heavy-Tail Emission Families and Regime-Conditional Value-at-Risk},
+  ```
+
 - Replace `arXiv:XXXX.XXXXX` with the real CHMM arXiv ID from Step 1. For example, if the ID is `2605.12345`, the line becomes:
 
   ```
@@ -60,7 +66,7 @@ This is a small, mechanical edit. It backfills the live CHMM arXiv ID into the S
 
 - Delete the line `note={arXiv ID to be filled in after CHMM-paper is posted},` entirely.
 - Rebuild the SM-paper: `cd ~/Desktop/Project-Repos/SM-CHMM-AR-Paper && make clean && make`.
-- Confirm `paper.pdf` is fresh and that the bibliography shows the live CHMM arXiv ID.
+- Confirm `paper.pdf` is fresh and that the bibliography shows the new title and the live CHMM arXiv ID.
 
 ### Step 3: Submit SM-paper to arXiv
 
@@ -82,13 +88,13 @@ The SM-paper's three CHMM citations credit a real algorithmic contribution: the 
 
 | Item | Repo | File | Status |
 |---|---|---|---|
-| Replace the one CHMM-to-SM citation with `\citet{yu2010hidden}` | CHMM-paper | `sections/baselines_appendix.tex:122` | Done 2026-05-04 |
+| Replace the one CHMM-to-SM citation with `\citet{yu2010hidden}` | CHMM-paper | `sections/baselines_appendix.tex` | Done 2026-05-04 |
 | Remove orphan `@article{alswaidan2026smchmm,...}` from CHMM bib | CHMM-paper | `references.bib` | Done 2026-05-04 |
-| Fix SM-side bib title field to match the actual CHMM-paper title | SM-CHMM-AR-Paper | `references.bib:5` | Done 2026-05-04 |
-| Clean rebuild of CHMM-paper, verify zero undefined-citation warnings | CHMM-paper | (build) | Done 2026-05-04 |
+| Fix SM-side bib title field to match the actual CHMM-paper title | SM-CHMM-AR-Paper | `references.bib:5` | Done 2026-05-04 (superseded by 2026-05-05 title trim; needs one-line resync at Step 2) |
+| Clean rebuild of CHMM-paper, verify zero undefined-citation warnings | CHMM-paper | (build) | Done 2026-05-05 (66 pages after review-response sweep) |
 | Update SM-side `plan-cross-paper-citations.md` to reflect Plan B | SM-CHMM-AR-Paper | `plan-cross-paper-citations.md` | Done 2026-05-04 |
 
-Verification (post `make clean && make` on 2026-05-04): final `paper.pdf` is 63 pages, 1{,}521{,}196 bytes; `paper.log` and `paper.blg` contain zero `Citation undefined` / `Reference undefined` warnings and zero references to the removed `alswaidan2026smchmm` key. The only residual log warnings are pre-existing float-placement notices, which are unrelated to the cross-reference plan.
+Verification (post `make clean && make` on 2026-05-05): final `paper.pdf` is 66 pages, 1{,}535{,}474 bytes; `paper.log` and `paper.blg` contain zero `Citation undefined` / `Reference undefined` warnings and zero references to the removed `alswaidan2026smchmm` key. The only residual log warnings are pre-existing float-placement notices, which are unrelated to the cross-reference plan.
 
 ---
 
@@ -108,7 +114,7 @@ Three formal citation calls, all crediting a specific algorithmic recipe:
 | `sections/algorithms_appendix.tex:147` | Algorithm 2 inline comment: "weighted LAD + weighted-median / WMAD M-step of \citet{alswaidan2026chmm}." | Same |
 | `sections/algorithms_appendix.tex:192` | Algorithm 3 plug-in init step 1: "Laplace weighted median \citep{alswaidan2026chmm}." | Same |
 
-Bib entry: `SM-CHMM-AR-Paper/references.bib:4-10`. Title field has been corrected to match the live CHMM-paper title; the `journal` field still has the placeholder `arXiv:XXXX.XXXXX` to be filled in at submission (Step 2 above).
+Bib entry: `SM-CHMM-AR-Paper/references.bib:4-10`. Title field was corrected on 2026-05-04 to match the then-current CHMM-paper title; the CHMM title was further trimmed on 2026-05-05 (dropped the "Spectral Rank" subtitle), so the SM-paper bib `title` field needs a one-line resync at the same time as the arXiv-ID backfill in Step 2 above. The `journal` field still has the placeholder `arXiv:XXXX.XXXXX` to be filled in at submission.
 
 #### CHMM-paper -> SM-CHMM-AR-Paper
 
