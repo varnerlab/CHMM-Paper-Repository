@@ -84,6 +84,29 @@ The identity~\eqref{eq:supp_bilinear} fails at $\tau = 0$ since $\E[G_t^2 \mid s
 \paragraph{Squared-return, complex-eigenvalue, and Jordan-block extensions.}
 Replacing $|G_t|$ with $G_t^2$ and $\mathbf m$ with $\mathbf M = (\E[G_t^2 \mid s_t = i])_i$ leaves the proof termwise valid, giving $\rho_{G^2}(\tau) = \sum_{k \ge 2} \tilde w_k \lambda_k^\tau$ on the same non-unit spectrum. Complex-conjugate eigenvalue pairs $(re^{\pm i\theta}, \cdot)$ contribute real damped oscillations $A r^\tau \cos\theta\tau + B r^\tau \sin\theta\tau$; non-diagonalisable $\mathbf T$ adds polynomial-times-geometric prefactors via Jordan blocks, with the same exponential rate $\max_{k \ge 2} |\lambda_k|$. Theorem~\ref{thm:supp_spectral_acf} as stated remains valid; the dominant timescale used in Section~\ref{sec:theory} corresponds to a real positive $\lambda_2$ on the fits of this paper.
 
+\subsection{Variant Decision Guide}
+\label{sec:variant_decision_guide}
+
+Recommended CHMM emission family by use-case priority. All four variants share the forward-backward scaffold and quantile-based initialisation; the M-step is the only architectural difference. The shared-$\nu$ Student-$t$ row is the headline heavy-tail recommendation: per-state heavy tails without a penalty hyperparameter at the highest IS KS pass rate of any CHMM variant in Table~\ref{tab:model_comparison}. The penalised CHMM-t at $\lambda = 20$ is retained as a sensitivity reference; the $\lambda$ value was tuned at $K = 18$ and is reported at $K^\star = 3$ as an upper bound on the unpenalised heavy tail.
+
+\begin{table}[!ht]
+\centering
+\small
+\caption{\textbf{Variant decision guide at $K^\star = 3$.}}
+\label{tab:variant_choice}
+\begin{tabular}{l l}
+\toprule
+Use-case priority & Recommended variant \\
+\midrule
+Simplest closed-form fit; kurtosis fidelity secondary              & CHMM-N \\
+Closest IS kurtosis match without a shape parameter                & CHMM-L \\
+Per-state heavy tails, no penalty hyperparameter \emph{(headline)} & CHMM-t shared-$\nu$ \\
+Per-state heavy tails, IS-calibrated $\lambda$-shrinkage           & CHMM-t pen.\ ($\lambda = 20$) \\
+Adaptive per-state shape; data-chosen Gaussian-bulk / Laplace-tail mixture & CHMM-GED \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{State-Resolution and Multi-Emission Sensitivity}
 \label{sec:supp_sensitivity}
 

@@ -1,3 +1,51 @@
+\subsubsection{Architecture Diagram}
+\label{sec:supp_chmm_architecture}
+
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}[
+    font=\small,
+    >={Stealth[length=2mm, width=1.6mm]},
+    state/.style={draw, circle, minimum size=9mm, inner sep=0pt,
+                  fill=black!4, thick},
+    obs/.style={draw, rectangle, rounded corners=1pt, minimum size=9mm,
+                inner sep=1pt, fill=black!10, thick},
+    block/.style={draw, rectangle, rounded corners=1.5pt, align=center,
+                  minimum height=11mm, minimum width=34mm, inner sep=1.5mm,
+                  fill=black!6, thick},
+    flow/.style={-Stealth, thick, black!75},
+    lbl/.style={font=\footnotesize\itshape, black!65, inner sep=1pt},
+    eq/.style={font=\footnotesize, inner sep=1pt},
+]
+\node[state] (s1) at (0, 0) {$s_{t-1}$};
+\node[state, right=14mm of s1] (s2) {$s_t$};
+\node[state, right=14mm of s2] (s3) {$s_{t+1}$};
+\node[left=6mm of s1] (sdots) {$\cdots$};
+\node[right=6mm of s3] (edots) {$\cdots$};
+\draw[flow] (sdots) -- (s1);
+\draw[flow] (s1) -- (s2) node[midway, above, eq] {$T_{ij}$};
+\draw[flow] (s2) -- (s3) node[midway, above, eq] {$T_{ij}$};
+\draw[flow] (s3) -- (edots);
+\node[lbl, above=2mm of s2] {latent regime chain $s_t \in \{1,\ldots,K\}$};
+\node[obs, below=12mm of s1] (o1) {$G_{t-1}$};
+\node[obs, below=12mm of s2] (o2) {$G_t$};
+\node[obs, below=12mm of s3] (o3) {$G_{t+1}$};
+\draw[flow] (s1) -- (o1) node[midway, right, eq] {$b_{s_{t-1}}$};
+\draw[flow] (s2) -- (o2) node[midway, right, eq] {$b_{s_t}$};
+\draw[flow] (s3) -- (o3) node[midway, right, eq] {$b_{s_{t+1}}$};
+\node[lbl, below=2mm of o2] {observed excess growth rate $G_t \in \mathbb{R}$};
+\node[block, right=18mm of edots] (mstep)
+    {M-step\\ update $\mathbf{T}$, $\{\boldsymbol\theta_k\}$\\ (family-specific)};
+\node[block, below=6mm of mstep] (estep)
+    {E-step\\ forward--backward\\ $\gamma_t(k),\ \xi_t(i,j)$};
+\draw[flow, black!75] ([xshift=-3mm]mstep.south) -- ([xshift=-3mm]estep.north);
+\draw[flow, black!75] ([xshift=3mm]estep.north) -- ([xshift=3mm]mstep.south);
+\node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
+\end{tikzpicture}
+\caption{\textbf{CHMM architecture and training loop.} A $K$-state latent Markov chain with transition matrix $\mathbf{T}$ generates the regime sequence $s_t$; each $s_t$ emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}$. The four CHMM variants share everything except the per-state emission family (Gaussian, Student-$t$, Laplace, GED). EM alternates an E-step (log-space forward-backward) and a family-specific M-step until $|\Delta \mathcal L| < 10^{-4}$.}
+\label{fig:chmm_architecture}
+\end{figure}
+
 \subsubsection{Forward-Backward Recursions and M-Step Updates}
 \label{sec:baum_welch_supp}
 
@@ -253,4 +301,4 @@ A CHMM-t bracket sweep on $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0, \infty\}$ at $K 
 \subsubsection{Pipeline Summary}
 \label{sec:supp_pipeline_summary}
 
-Pipeline~A: observed returns $G_t \to$ fit CHMM (Baum-Welch, body operating point $K^\star = 3$ with $K = 18$ as the kurtosis-fidelity sensitivity reference; the appendix per-ticker rollup of Table~\ref{tab:sector_panel} and the Pipeline-B marginals of Table~\ref{tab:cross_asset} use $K = 18$) $\to$ simulate $1{,}000$ paths $\to$ per-asset metrics (Table~\ref{tab:model_comparison}). Pipeline~B reuses the Pipeline-A $K = 18$ per-asset fits as marginals, draws a copula sample $\mathbf U \sim \mathcal C(\Sigma)$ from the fitted Student-$t$ copula on ranks, rank-reorders the per-asset Pipeline-A paths to match $\mathbf U$, and reports cross-asset metrics (Table~\ref{tab:cross_asset}). The single-asset scaffold is shared across both pipelines; the CHMM training and simulation steps are Algorithms~\ref{alg:chmm_em} and~\ref{alg:chmm_simulate}, the cross-asset rank-reordering step is Algorithm~\ref{alg:copula_sim}, and the architecture diagram for the single-asset scaffold is body Figure~\ref{fig:chmm_architecture}.
+Pipeline~A: observed returns $G_t \to$ fit CHMM (Baum-Welch, body operating point $K^\star = 3$ with $K = 18$ as the kurtosis-fidelity sensitivity reference; the appendix per-ticker rollup of Table~\ref{tab:sector_panel} and the Pipeline-B marginals of Table~\ref{tab:cross_asset} use $K = 18$) $\to$ simulate $1{,}000$ paths $\to$ per-asset metrics (Table~\ref{tab:model_comparison}). Pipeline~B reuses the Pipeline-A $K = 18$ per-asset fits as marginals, draws a copula sample $\mathbf U \sim \mathcal C(\Sigma)$ from the fitted Student-$t$ copula on ranks, rank-reorders the per-asset Pipeline-A paths to match $\mathbf U$, and reports cross-asset metrics (Table~\ref{tab:cross_asset}). The single-asset scaffold is shared across both pipelines; the CHMM training and simulation steps are Algorithms~\ref{alg:chmm_em} and~\ref{alg:chmm_simulate}, the cross-asset rank-reordering step is Algorithm~\ref{alg:copula_sim}, and the architecture diagram for the single-asset scaffold is Figure~\ref{fig:chmm_architecture}.

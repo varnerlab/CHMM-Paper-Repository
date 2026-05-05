@@ -89,7 +89,7 @@
     linkcolor=blue,
     citecolor=blue,
     urlcolor=blue,
-    pdftitle={Continuous Hidden Markov Models for Equity Returns: Spectral Rank, Heavy-Tail Emission Families, and Regime-Conditional Value-at-Risk},
+    pdftitle={Continuous Hidden Markov Models for Equity Returns: Heavy-Tail Emission Families and Regime-Conditional Value-at-Risk},
     pdfauthor={Abdulrahman Alswaidan, Cade Jin, Jeffrey D. Varner},
     pdfsubject={CHMM synthetic-data generator for daily US-equity returns},
     pdfkeywords={CHMM, Baum-Welch, Student-t emissions, semi-Markov, stylized facts, copula, Value-at-Risk, Kupiec, synthetic data}
@@ -119,7 +119,7 @@
 \newcommand{\TIS}[1]{\ensuremath{T_{\text{IS}} = #1}}
 \newcommand{\TOoS}[1]{\ensuremath{T_{\text{OoS}} = #1}}
 
-\title{Continuous Hidden Markov Models for Equity Returns:\\ Spectral Rank, Heavy-Tail Emission Families,\\ and Regime-Conditional Value-at-Risk}
+\title{Continuous Hidden Markov Models for Equity Returns:\\ Heavy-Tail Emission Families\\ and Regime-Conditional Value-at-Risk}
 
 \author{
     Abdulrahman Alswaidan\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA. Email: \texttt{aa2725@cornell.edu}.}
@@ -137,11 +137,13 @@
 
 % ========================================================================================= %
 \begin{abstract}
-The classical verdict that hidden Markov models with $K = 2$--$3$ Gaussian states cannot reproduce the slow autocorrelation of absolute equity returns has shaped two decades of regime-switching work toward semi-Markov sojourn extensions. We provide empirical evidence that this verdict is a marginal-mixture limit, not a temporal one: applying the textbook bilinear identity for the absolute-return ACF over the non-unit eigenvalues of the transition matrix and recasting the failure as a rank statement on $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$, an effective-rank diagnostic on the fitted $\hat{\mathbf T}$ shows the implied $K - 1$ rank bound is non-binding at $K \ge 3$ at the cross-ticker median.
+We present a continuous hidden Markov model (CHMM) framework for daily US-equity returns. The textbook bilinear identity for the absolute-return autocorrelation function recasts the empirical Ryd\'{e}n et al.\ low-$K$ failure as an effective-rank statement on the centred transition matrix $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$. An empirical diagnostic on the fitted estimator $\hat{\mathbf T}$ shows the implied $K - 1$ rank bound is non-binding at the cross-ticker median for $K \ge 3$, with the bound still doing visible work on the left tail of the distribution (minimum dominant-mode share $32.6\%$ on NEM).
 
-A unified ECM scaffold supports four emission families (Gaussian, Student-$t$, Laplace, Generalised Error Distribution) that share identical forward-backward recursions and quantile-based initialisation; the M-step is the only architectural difference. The empirical study covers SPY 2014--2026, a sector-balanced 30-ticker panel, a CRSP cross-decade transfer (1994--2004 IS / 2004--2006 OoS), and a six-asset US-equity copula extension. Headline operating result: a regime-conditional Value-at-Risk that propagates the one-step-ahead state forecast through the predictive mixture passes the Christoffersen joint conditional-coverage test cleanly across emission families on the headline OoS window, and on $19/24$ rows of a six-fold rolling-origin walk-forward, with rejections concentrated on out-of-distribution stress folds.
+A unified ECM scaffold supports four emission families (Gaussian, Student-$t$, Laplace, Generalised Error Distribution) with shared forward-backward recursions and quantile-based initialisation; the M-step is the only architectural difference. The empirical study covers SPY 2014 to 2026, a sector-balanced 30-ticker panel, a CRSP cross-decade transfer (1994 to 2004 in-sample, 2004 to 2006 out-of-sample), and a six-asset US-equity copula extension.
 
-Positioning is honest: the i.i.d.\ bootstrap and an ML hidden semi-Markov model both exceed the CHMM on raw single-window OoS Kolmogorov--Smirnov; the CHMM's value-add is the structural use cases that those alternatives cannot serve (regime-conditional VaR, multi-asset copula composition, parametric synthetic-data privacy), and a unified emission-family ablation that the literature lacks. The empirical scope is the three symmetric Cont (2001) stylized facts on daily US-equity returns under stationary OoS; a non-equity stress test (GLD) collapses under static fitting, and periodic refit is the deployment recipe.
+Headline operating result: a regime-conditional Value-at-Risk that propagates the one-step-ahead state forecast through the predictive mixture passes the Christoffersen joint conditional-coverage test cleanly at $\alpha = 0.05$ across emission families on the headline out-of-sample window and on $19/24$ rows of a six-fold rolling-origin walk-forward; rejections concentrate on out-of-distribution stress folds. At $\alpha = 0.01$ the Engle-Manganelli dynamic-quantile backstop rejects $K = 18$ on the headline window, so the strict-tail Christoffersen pass is power-driven.
+
+Positioning is honest. The i.i.d.\ bootstrap and a maximum-likelihood hidden semi-Markov model both exceed the CHMM on raw single-window out-of-sample Kolmogorov-Smirnov. The CHMM value-add is the structural use cases that those alternatives cannot serve (regime-conditional VaR, multi-asset copula composition, parametric synthetic-data privacy), together with a unified emission-family ablation. The single-window OoS sits at the upper tail of a six-fold rolling-origin walk-forward whose median CHMM-N OoS KS is $62.1\%$ at $K^\star = 3$, the operationally informative summary. Scope is daily US equities under stationary OoS; a non-equity stress test on GLD collapses under static fitting, and periodic refit is the deployment recipe.
 \end{abstract}
 
 \noindent\textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch, Student-$t$ Emissions, Stylized Facts, Volatility Clustering, Value-at-Risk, Synthetic-Data Generator.
@@ -159,6 +161,9 @@ Positioning is honest: the i.i.d.\ bootstrap and an ML hidden semi-Markov model 
 \label{sec:methods}
 \input{sections/model}
 \input{sections/estimation}
+
+\section{Spectral Mechanism}
+\label{sec:spectral}
 \input{sections/theory}
 
 \section{Empirical Study}

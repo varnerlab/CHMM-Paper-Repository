@@ -1,5 +1,19 @@
 # Review-Response Plan
 
+> **Implementation status (updated 2026-05-05):** Wave 1 (text-only) is
+> complete. Body now compiles to 15 pages with references starting on p.15
+> and supplementary on p.21. No em dashes anywhere. Abstract is citation-
+> free and arXiv-compliant. Wave 3 new runner skeletons (`run_filtered_
+> bootstrap_var.jl`, `run_caviar_var.jl`, `run_vendor_stitch_check.jl`,
+> `run_non_us_asset_quarterly_refit.jl`) are authored and registered in
+> `RUNNERS.md`. Wave 2 reruns are wired through env-var overrides on the
+> existing scripts (`CROSS_ASSET_K`, `LAMBDA_CV_K`, `SECTOR_PANEL_K`).
+> The remaining work is purely compute: kick the runners off in
+> `~/Desktop/Project-Repos/CHMM-Model` and fold the resulting numbers
+> into the appropriate body / appendix tables.
+
+
+
 Tracks all 20 review items with: (a) the fix to the paper text, (b) the
 runner script(s) in `~/Desktop/Project-Repos/CHMM-Model` to (re)execute, and
 (c) the tables/figures/sections to update afterward. Items are grouped into
@@ -382,6 +396,89 @@ day 7   Final LaTeX rebuild; cross-check abstract, intro contribution
   comparison instead; full Bayesian CHMM is out of scope.
 
 ---
+
+## Implementation log (Wave 1 + scaffolding)
+
+Concrete edits applied during this implementation pass:
+
+**Paper text (Wave 1, all done).**
+- `paper.tex` — title trimmed (dropped "Spectral Rank" subtitle); abstract
+  rewritten with no citations and no em dashes, leading with the walk-
+  forward median and the Christoffersen-cc α = 0.05 qualifier; theory
+  promoted from a Methods subsection to a top-level
+  `\section{Spectral Mechanism}` (label `sec:spectral`). The pre-existing
+  `sec:theory` label is retained inside `theory.tex` so old refs still
+  resolve.
+- `sections/introduction.tex` — trimmed the "at the cross-ticker median"
+  repetition; updated the contributions list to flag the rank-bound
+  heterogeneity (NEM left tail) and the Engle-Manganelli α = 0.01
+  rejection.
+- `sections/results.tex` — Table 1 collapsed (CRPS column moved into
+  prose tie-break paragraph; bolding policy switched to within-block);
+  body prose rewritten to demote CHMM-t-pen and promote the shared-ν
+  CHMM-t row as the heavy-tail headline; MS-GARCH paragraph reframed as
+  plug-in vs plug-in; HSMM-Gamma comparison added to the ML HSMM co-
+  headline paragraph.
+- `sections/var_backtest.tex` — opening sentence qualified to α = 0.05
+  with explicit note that the α = 0.01 K = 18 pass is power-driven
+  (DQ p = 0.017).
+- `sections/discussion.tex` — variant decision guide table moved to the
+  supplementary; kurtosis-gap paragraph compressed; leverage-axis
+  paragraph merged into a one-paragraph "stylized-fact scope and
+  parameter parsimony" closer.
+- `sections/conclusion.tex` — Author Contributions clarified for C.J.
+  ("ECM-derivation methodology review and validation of the cross-
+  decade and cross-ticker pipelines"); CoI / Contributions / Data
+  Availability merged into one paragraph to recover ~5 lines.
+- `sections/model.tex` + `sections/algorithms_appendix.tex` — TikZ
+  architecture figure moved out of body into the algorithms appendix.
+  Model-section reference rewritten to point at
+  `Appendix~\ref{sec:supp_algorithms}`.
+- `sections/supplementary.tex` — added `\subsection{Variant Decision
+  Guide}` with `\label{sec:variant_decision_guide}` and the table that
+  used to live in the discussion.
+- `sections/cross_asset_appendix.tex` — table-cell em dashes (`---`)
+  swapped for double-hyphen `--` per the no-em-dash constraint.
+
+**Companion repo runner scaffolding (Waves 2 + 3, ready to execute).**
+- New: `runners/baselines/run_filtered_bootstrap_var.jl` (Item 6a).
+- New: `runners/baselines/run_caviar_var.jl` (Item 6b).
+- New: `runners/diagnostics/run_vendor_stitch_check.jl` (Item 9).
+- New: `runners/cross_asset/run_non_us_asset_quarterly_refit.jl`
+  (Item 11). Configurable via `GLD_REFIT_K`, `GLD_REFIT_FAMILY` env
+  vars.
+- Edited: `runners/headline/run_cross_asset_sim_copula.jl` defaults to
+  K = 3 with `CROSS_ASSET_K=18` env-var override (Item 2A).
+- Edited: `runners/robustness/run_lambda_cv_pre2020.jl` defaults to
+  K = 3 with `LAMBDA_CV_K=18` env-var override (Item 3).
+- Edited: `runners/robustness/run_sector_panel_quarterly_refit.jl`
+  defaults to K = 3 with `SECTOR_PANEL_K=18` env-var override
+  (Item 2A).
+- `RUNNERS.md` updated with the four new runners.
+
+**What is NOT yet done (compute pending).**
+- Items 2A, 3, 11 require running the now-K-3-defaulted scripts and
+  folding the new numbers into the appropriate paper tables. Once
+  numbers are available: Table 1 CHMM-t-pen row may need to refresh
+  if Item 3 lands a different λ\*; Table 4 cross-asset numbers refresh
+  at K = 3 for Item 2A; the Item 4 stationarity-scope summary table
+  pulls its GLD-refit cell from Item 11.
+- Item 6 (filtered-bootstrap + CAViaR rows in Table 5 of `var_backtest.tex`)
+  is wired to runners that exist but have not been executed. Once
+  those produce `results/filtered_bootstrap_var/...` and
+  `results/caviar_var/...`, add the two rows to Table 5 and reframe
+  the lead paragraph as "matches / beats the closest non-state-space
+  contenders."
+- Item 9 vendor-stitch result is the gating diagnostic. If the runner
+  rejects vendor agreement, Items 6, 11, 2A, 3, 12 must be rerun on a
+  Polygon-only OoS cutoff and many tables may shift.
+- Item 8 non-overlapping cross-asset audit: still requires a one-shot
+  audit of the existing appendix outputs (no new runner needed).
+- Item 12 n=6 sector panel promotion: requires verifying the n=6
+  outputs already exist, then a body-table swap.
+- Item 4 stationarity-scope summary table: deliberately deferred until
+  Item 11's GLD-refit cell is populated, to avoid pushing the body
+  back over 15 pages.
 
 ## Sign-off checklist (pre-resubmit)
 
