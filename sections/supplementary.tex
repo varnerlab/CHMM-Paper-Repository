@@ -84,6 +84,11 @@ The identity~\eqref{eq:supp_bilinear} fails at $\tau = 0$ since $\E[G_t^2 \mid s
 \paragraph{Squared-return, complex-eigenvalue, and Jordan-block extensions.}
 Replacing $|G_t|$ with $G_t^2$ and $\mathbf m$ with $\mathbf M = (\E[G_t^2 \mid s_t = i])_i$ leaves the proof termwise valid, giving $\rho_{G^2}(\tau) = \sum_{k \ge 2} \tilde w_k \lambda_k^\tau$ on the same non-unit spectrum. Complex-conjugate eigenvalue pairs $(re^{\pm i\theta}, \cdot)$ contribute real damped oscillations $A r^\tau \cos\theta\tau + B r^\tau \sin\theta\tau$; non-diagonalisable $\mathbf T$ adds polynomial-times-geometric prefactors via Jordan blocks, with the same exponential rate $\max_{k \ge 2} |\lambda_k|$. Theorem~\ref{thm:supp_spectral_acf} as stated remains valid; the dominant timescale used in Section~\ref{sec:theory} corresponds to a real positive $\lambda_2$ on the fits of this paper.
 
+\subsection{Vendor-Stitch Sanity Check}
+\label{sec:vendor_stitch}
+
+The OoS series spans January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 572$) and is sourced from two vendors: Polygon.io via Massive (early portion) and Alpaca Markets / IEX (held-out extension). To verify that the stitch introduces no boundary artefact we compare the two vendors on every shared trading day. Of the $323$ overlap days, the per-day VWAP differential, the per-day annualised log-return differential, and a rolling 30-day kurtosis differential are all identically zero (mean, standard deviation, and maximum absolute value all $0.000$ to floating-point precision); the two-sample Kolmogorov-Smirnov test on the overlap returns gives $D = 0.000$ and $p = 1.00$. The two vendors are exact-match on the overlap, so the stitched OoS series is single-source-equivalent and no boundary artefact appears at the November 18, 2025 stitch date. The diagnostic is reproducible from \texttt{runners/diagnostics/run\_vendor\_stitch\_check.jl}.
+
 \subsection{Variant Decision Guide}
 \label{sec:variant_decision_guide}
 

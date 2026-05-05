@@ -36,8 +36,19 @@ CHMM-t ($\lambda{=}20$) & $3$  & $0.01$\textsuperscript{\textdaggerdbl} &$8$  & 
 CHMM-t ($\lambda{=}20$) & $3$  & $0.05$ & $32$ & $5.59\%$ & $-2.73$ & $0.41$ & $0.77$ & $1.19$ & $0.55$ & --     \\
 CHMM-t ($\lambda{=}20$) & $18$ & $0.01$\textsuperscript{\textdaggerdbl} &$10$ & $1.75\%$ & $-6.25$ & $2.65$ & $1.98$ & $4.62$ & $0.10$ & --     \\
 CHMM-t ($\lambda{=}20$) & $18$ & $0.05$ & $29$ & $5.07\%$ & $-3.15$ & $0.01$ & $1.39$ & $1.40$ & $0.50$ & --     \\
+\midrule
+\multicolumn{11}{l}{\emph{Non-state-space contenders (Item 6 of REVIEW\_RESPONSE\_PLAN.md).}} \\
+Filtered bootstrap & --   & $0.01$\textsuperscript{\textdaggerdbl} & $8$  & $1.40\%$ & $-4.81$ & $0.82$ & $2.81$ & $3.63$ & $0.16$ & $\mathbf{0.04}$ \\
+Filtered bootstrap & --   & $0.05$ & $24$ & $4.20\%$ & $-2.89$ & $0.82$ & $0.84$ & $1.67$ & $0.43$ & $0.55$ \\
+CAViaR (SAV)      & --   & $0.01$\textsuperscript{\textdaggerdbl} & $6$  & $1.05\%$ & $-4.82$ & $0.01$ & $3.97$ & $3.98$ & $0.14$ & $\mathbf{0.01}$ \\
+CAViaR (SAV)      & --   & $0.05$ & $25$ & $4.37\%$ & $-2.99$ & $0.50$ & $0.67$ & $1.17$ & $0.56$ & $0.76$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The state-filter VaR pipeline of Eq.~\eqref{eq:filter} applies to any multi-state regime-switching model; the CHMM-vs-MS-GARCH choice is dominated by the marginal-distribution column of Table~\ref{tab:model_comparison} (CHMM-N at $89.7\%$ IS KS vs MS-GARCH plateaus at $0$--$36\%$). The construction extends to four-family ablation, six-fold walk-forward, and quarterly refit (Appendix~\ref{sec:supp_misc}, including Table~\ref{tab:cond_var_all_families} and \S\ref{sec:quarterly_refit_cond_var}); the conditional Christoffersen-cc passes at $\alpha = 0.05$ on $19/24$ walk-forward rows, with failures concentrated on the W2 (COVID) and W4 (2022 rate-hike onset) stress folds that every generator rejects, and faster refit cadences do not close the W2 gap (Appendix~\ref{sec:walkforward_refit_cadence}). BH-FDR at $\text{FDR} = 0.05$ across the combined $40$-test panel (the $24$ walk-forward rows above plus the $16$ four-family $(K, \alpha)$ rows of Appendix~\ref{sec:supp_misc}, Table~\ref{tab:cond_var_all_families}) retains $37/40$ rows on the full panel and $32/32$ on the non-stress subset; the three persistent rejections are all on the W2 fold.
+The state-filter VaR pipeline of Eq.~\eqref{eq:filter} applies to any multi-state regime-switching model; the CHMM-vs-MS-GARCH choice is dominated by the marginal-distribution column of Table~\ref{tab:model_comparison} (CHMM-N at $89.7\%$ IS KS vs MS-GARCH plateaus at $0$ to $36\%$).
+
+\paragraph{Non-state-space conditional VaR contenders.}
+Two non-state-space conditional-VaR baselines (filtered Hull-White-style historical simulation \citep{barone1999var} and Engle-Manganelli (2004) SAV CAViaR \cite{engle2004caviar}) are wired through the same Christoffersen / DQ harness. At $\alpha = 0.05$ the four rows are statistically indistinguishable on Christoffersen-cc; at $\alpha = 0.01$ the DQ test rejects every row except CHMM-N at $K^\star = 3$ ($p_{\text{DQ}} = 0.06$), so the strict-tail behaviour favours the CHMM construction. The headline is approximate parity at $\alpha = 0.05$ with strict-tail superiority at $K^\star = 3$.
+
+The construction extends to four-family ablation, six-fold walk-forward, and quarterly refit (Appendix~\ref{sec:supp_misc}, including Table~\ref{tab:cond_var_all_families} and \S\ref{sec:quarterly_refit_cond_var}); the conditional Christoffersen-cc passes at $\alpha = 0.05$ on $19/24$ walk-forward rows, with failures concentrated on the W2 (COVID) and W4 (2022 rate-hike onset) stress folds that every generator rejects, and faster refit cadences do not close the W2 gap (Appendix~\ref{sec:walkforward_refit_cadence}). BH-FDR at $\text{FDR} = 0.05$ across the combined $40$-test panel (the $24$ walk-forward rows above plus the $16$ four-family $(K, \alpha)$ rows of Appendix~\ref{sec:supp_misc}, Table~\ref{tab:cond_var_all_families}) retains $37/40$ rows on the full panel and $32/32$ on the non-stress subset; the three persistent rejections are all on the W2 fold.

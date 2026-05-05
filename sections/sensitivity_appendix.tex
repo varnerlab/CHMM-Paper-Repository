@@ -461,7 +461,10 @@ $200$  & $-2.076$ & $91.2$ & $3.09$ & $2.73$ \\
 \end{tabular}
 \end{table}
 
-Reading: the held-out validation log-likelihood is maximised at $\lambda^\star = 20$, matching the body operating point of Table~\ref{tab:model_comparison}. Validation KS picks $\lambda^\star = 0$ but the band $[0, 200]$ spans only $2.2$pp ($89.8$--$92.0\%$), within the simulation-noise envelope at $N_\text{paths} = 500$. The body $\lambda = 20$ is therefore held-out-validated and not driven by the OoS window.
+Reading: the held-out validation log-likelihood is maximised at $\lambda^\star = 20$ at $K = 18$, matching the body operating point of Table~\ref{tab:model_comparison}. Validation KS picks $\lambda^\star = 0$ but the band $[0, 200]$ spans only $2.2$pp ($89.8$ to $92.0\%$), within the simulation-noise envelope at $N_\text{paths} = 500$. The body $\lambda = 20$ at $K = 18$ is therefore held-out-validated and not driven by the OoS window.
+
+\paragraph{Re-tuning at $K^\star = 3$ (Item 3 of REVIEW\_RESPONSE\_PLAN.md).}
+Repeating the same held-out CV at the body operating point $K^\star = 3$ on the same pre-2020 slices gives a distinct optimum: per-observation validation log-likelihood is monotone in $\lambda$ on the same grid, with $\lambda^\star = 50$ minimising the negative log-likelihood ($-1.9192$ at $\lambda = 50$ versus $-1.9217$ at $\lambda = 20$ and $-1.9268$ at $\lambda = 0$); validation KS also picks $\lambda^\star = 50$ at $95.0\%$ pass rate. The simulated kurtosis at $\lambda = 50$ is $2.77$, well below the body's observed $7.68$ IS / $5.29$ OoS targets, confirming that the penalty over-shrinks at $K^\star = 3$. The body retains $\lambda = 20$ at $K^\star = 3$ as a sensitivity reference (the headline heavy-tail recipe is the shared-$\nu$ ablation of Appendix~\ref{sec:chmm_t_shared_nu}).
 
 \subsubsection{Cross-Decade Validation: 1994-2004 IS / 2004-2006 OoS via CRSP}
 \label{sec:cross_decade_validation}

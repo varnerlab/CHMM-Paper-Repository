@@ -1,7 +1,7 @@
 \subsection{Data and Excess Growth Rates}
 \label{sec:data}
 
-The single-asset analysis uses daily SPDR S\&P~500 ETF (SPY) prices from January~3, 2014 to January~3, 2024 (a ten-year training window, $T_{\text{IS}} = 2{,}516$), with the period from January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 572$) held out. Prices are split-adjusted but not dividend-adjusted; the data sources are described in the acknowledgments. For ticker $i$ and trading day $j$ the annualised excess growth rate is
+The single-asset analysis uses daily SPDR S\&P~500 ETF (SPY) prices from January~3, 2014 to January~3, 2024 (a ten-year training window, $T_{\text{IS}} = 2{,}516$), with the period from January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 572$) held out. Prices are split-adjusted but not dividend-adjusted; the data sources are described in the acknowledgments. A vendor-stitch sanity check (Polygon vs Alpaca / IEX on the 323-day overlap, Appendix~\ref{sec:vendor_stitch}) returns zero VWAP and return differential and Kolmogorov-Smirnov $p = 1.00$, so the OoS series is single-source-equivalent on the overlap and no boundary artefact is detected. For ticker $i$ and trading day $j$ the annualised excess growth rate is
 \begin{equation}
     G_{i,j} \equiv \frac{1}{\Delta t} \ln\!\left(\frac{P_{i,j}}{P_{i,j-1}}\right) - r_f, \qquad \Delta t = 1/252, \quad r_f = 0,
     \label{eq:growth_rate}

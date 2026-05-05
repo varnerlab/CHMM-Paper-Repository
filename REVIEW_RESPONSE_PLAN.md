@@ -1,16 +1,60 @@
 # Review-Response Plan
 
-> **Implementation status (updated 2026-05-05):** Wave 1 (text-only) is
-> complete. Body now compiles to 15 pages with references starting on p.15
-> and supplementary on p.21. No em dashes anywhere. Abstract is citation-
-> free and arXiv-compliant. Wave 3 new runner skeletons (`run_filtered_
-> bootstrap_var.jl`, `run_caviar_var.jl`, `run_vendor_stitch_check.jl`,
-> `run_non_us_asset_quarterly_refit.jl`) are authored and registered in
-> `RUNNERS.md`. Wave 2 reruns are wired through env-var overrides on the
-> existing scripts (`CROSS_ASSET_K`, `LAMBDA_CV_K`, `SECTOR_PANEL_K`).
-> The remaining work is purely compute: kick the runners off in
-> `~/Desktop/Project-Repos/CHMM-Model` and fold the resulting numbers
-> into the appropriate body / appendix tables.
+> **Implementation status (updated 2026-05-05, second pass):** Body
+> compiles to 15 pages exactly (sections 1-7 fully contained in pages
+> 1-15; admin block + references span 15-20; supplementary 21-65). No
+> em dashes anywhere. Abstract is citation-free and arXiv-compliant.
+> Five runners executed against the live data with results folded into
+> the paper:
+>
+> - **Item 9 (vendor stitch).** PASS. 323-day overlap, zero VWAP / zero
+>   return / zero rolling-kurtosis differential, KS p = 1.00. New body
+>   sentence in `sections/model.tex`; supplementary subsection
+>   `sec:vendor_stitch`.
+> - **Item 6a (filtered bootstrap VaR).** Numbers in Table 5: α = 0.05
+>   p_cc = 0.43, p_DQ = 0.55; α = 0.01 p_cc = 0.16, p_DQ = 0.04
+>   (rejects).
+> - **Item 6b (CAViaR SAV VaR).** Numbers in Table 5: α = 0.05
+>   p_cc = 0.56, p_DQ = 0.76; α = 0.01 p_cc = 0.14, p_DQ = 0.01
+>   (rejects strongly). Net story for the new contender paragraph:
+>   approximate parity at α = 0.05, strict-tail superiority at K\* = 3
+>   on DQ.
+> - **Item 3 (λ-CV at K = 3).** Held-out CV at K = 3 selects λ\* = 50
+>   (vs the body's λ = 20 at K = 18). Reported as a paragraph in
+>   Appendix `sec:lambda_cv_pre2020`; the body retains λ = 20 at
+>   K\* = 3 as a sensitivity reference (the headline heavy-tail recipe
+>   is the shared-ν ablation per the variant decision guide).
+> - **Item 2A (cross-asset at K = 3).** Body Table 4 refreshed with
+>   K\* = 3 numbers; off-diag MAE essentially K-robust (0.027 IS /
+>   0.209 OoS at both K = 3 and K = 18); per-asset KS sits lower at
+>   K\* = 3 but cross-asset task is dominated by the dependence layer.
+> - **Item 11 (GLD quarterly refit).** OoS KS lifts from 0% (static)
+>   to 2.50% (quarterly refit at K = 3); architecturally mis-specified
+>   for non-equity, periodic refit does not recover. Reported in
+>   `sections/cross_asset_appendix.tex` paragraph after the GLD
+>   Pipeline-A diagnostic.
+> - **Item 4 (stationarity-scope table).** Done. New
+>   `Table~\ref{tab:stationarity_scope}` consolidates the four stress
+>   sources (cross-ticker, cross-decade, GLD, walk-forward W2 / W4)
+>   with their static-fit OoS KS and periodic-refit mitigation. Lives
+>   in `sections/discussion.tex`.
+> - **Items 8 + 12.** Already addressed by the existing appendix
+>   `cross_asset_appendix.tex` (non-overlapping cross-asset comparison
+>   panel) and `sensitivity_appendix.tex` `sec:sector_panel_n6` (60-
+>   ticker n = 6 ANOVA), with the body referencing both inline. No
+>   further action needed.
+> - **Item 2A second leg (sector quarterly refit at K = 3).** Done.
+>   Median OoS KS lifts from $69.1\%$ (static) to $84.7\%$ (quarterly
+>   refit), failures from $11/30$ to $8/30$. Reported in the body
+>   cross-ticker paragraph alongside the existing K = 18 reference
+>   ($83.0\%$, $7/30$).
+>
+> Body status: 15 pages exact; no em dashes; abstract citation-free
+> and arXiv-compliant. All 20 review items have either a paper edit
+> (Wave 1), a runner result folded into the paper (Items 2A, 3, 6, 9,
+> 11), or a verified pre-existing appendix treatment (Items 8, 12, 16).
+> Item 4's consolidated stationarity-scope table is now in the
+> discussion section.
 
 
 
