@@ -2,8 +2,8 @@
 
 LaTeX sources for the working paper
 
-> **Continuous Hidden Markov Models for Equity Returns: Spectral Rank,
-> Heavy-Tail Emission Families, and Regime-Conditional Value-at-Risk**
+> **Continuous Hidden Markov Models for Equity Returns:
+> Heavy-Tail Emission Families and Regime-Conditional Value-at-Risk**
 > Alswaidan A, Jin C, Varner JD, Cornell University, 2026.
 
 This repo holds only the paper sources (`paper.tex` as the shell,
@@ -24,8 +24,8 @@ every figure and table live in the sibling repository
 ```bibtex
 @article{alswaidan2026chmm,
   title   = {Continuous Hidden Markov Models for Equity Returns:
-             Spectral Rank, Heavy-Tail Emission Families,
-             and Regime-Conditional Value-at-Risk},
+             Heavy-Tail Emission Families and Regime-Conditional
+             Value-at-Risk},
   author  = {Alswaidan, Abdulrahman and Jin, Cade and Varner, Jeffrey D.},
   year    = {2026},
   institution = {Cornell University},
@@ -50,7 +50,7 @@ pdflatex -interaction=nonstopmode paper.tex
 pdflatex -interaction=nonstopmode paper.tex
 ```
 
-Produces `paper.pdf`. The current draft compiles to 65 pages (body,
+Produces `paper.pdf`. The current draft compiles to 66 pages (body,
 bibliography, and appendices).
 
 `make clean` removes the usual LaTeX auxiliary files; `make distclean`
@@ -77,7 +77,7 @@ repo cleanliness but is a required submission artifact.
     `algorithms_appendix.tex`, `metrics_appendix.tex`,
     `sensitivity_appendix.tex`, `baselines_appendix.tex`,
     `cross_asset_appendix.tex`.
-- `references.bib` -- bibliography (110 entries).
+- `references.bib` -- bibliography (111 entries).
 - `figs/` -- figures referenced by the paper, copied from the companion
   code repo. Includes the four-panel stylized-facts figure, IS / OoS
   comparison panels at K in {3, 6, 12, 18, 21}, per-family ablation
@@ -111,7 +111,7 @@ Entry points (run from that repo root with `julia --project=. <script>`):
 | `runners/headline/run_figures.jl`                         | Body Figures 1-4                                                      |
 | `runners/var_backtest/*.jl`                               | regime-conditional VaR + Christoffersen + DQ tables                   |
 | `runners/robustness/*.jl`                                 | walk-forward, cross-decade, k-selection HAC, kurtosis CI              |
-| `runners/spectral/*.jl`                                   | spectral / rank diagnostics for Methods §3.3                          |
+| `runners/spectral/*.jl`                                   | spectral / rank diagnostics for §4 Spectral Mechanism                 |
 | `runners/cross_asset/*.jl`                                | half-unit copula CI, non-US stress test                               |
 | `runners/baselines/*.jl`                                  | Appendix B: SV-AR(1), MSM, Merton-JD, HSMM-Gamma                      |
 
@@ -122,10 +122,13 @@ CSVs from `CHMM-Model/results/` into `CHMM-paper/figs/` and
 
 ## Status
 
-- **2026-05-04** -- arXiv-submission-ready. Compiles cleanly to 65 pages
-  with no LaTeX warnings (no overfull / underfull boxes, no
-  float-too-large notices); `paper.bbl` is built and ready to bundle
-  into the submission tarball.
+- **2026-05-06** -- arXiv-submission-ready after the 2026-05-05 review-response
+  sweep. Compiles cleanly to 66 pages with no LaTeX warnings (no overfull /
+  underfull boxes, no float-too-large notices, no undefined references);
+  `paper.bbl` is built and ready to bundle into the submission tarball.
+  See `CROSS_REF_PLAN.md` for the CHMM-first arXiv submission flow and
+  `PROFF_PREP.md` for the non-specialist brief on the model, tests, and
+  numbers.
 - The paper is the headline equity-returns CHMM contribution; the
   companion VIX / semi-Markov extension lives in
   [`SM-CHMM-AR-Paper`](https://github.com/altashly1/SM-CHMM-AR-Paper)
