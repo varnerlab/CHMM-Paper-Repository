@@ -1,7 +1,7 @@
 \subsubsection{OoS KS Test-Power Calibration}
 \label{sec:ks_power}
 
-Table~\ref{tab:ks_power} reports the two-sample KS test-power calibration used to anchor the OoS KS pass rates of Section~\ref{sec:model_comparison}.
+Table~\ref{tab:ks_power} reports the two-sample KS test-power calibration used to anchor the OoS KS pass rates of the headline generator comparison.
 For each of $1{,}000$ Monte Carlo replications (seed = 20260420), a simulated series of length $T_{\text{OoS}} = 572$ is drawn from each of three reference generators and tested against the observed OoS series using the same $\alpha = 0.05$ threshold as the main-body pass-rate metric.
 
 \begin{table}[!ht]
@@ -20,7 +20,7 @@ Gaussian$(\hat\mu_{\text{IS}}, \hat\sigma_{\text{IS}})$ at length $T_{\text{IS}}
 \end{tabular}
 \end{table}
 
-The $90.0\%$ "nearly correct" rate is the practical ceiling for the CHMM OoS KS pass rates reported in Section~\ref{sec:model_comparison} ($80$--$84\%$); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
+The $90.0\%$ "nearly correct" rate is the practical ceiling for the CHMM OoS KS pass rates reported in the headline generator comparison ($80$ to $84\%$); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
 
 \subsubsection{Block-Bootstrap KS Recalibration and Mean p-value Distribution}
 \label{sec:ks_block_bootstrap}
@@ -34,7 +34,7 @@ For (ii), we report the mean two-sample KS p-value across simulated paths plus i
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Block-bootstrap KS recalibration and p-value distribution}. All numbers under seed \texttt{20260422} with $N_{\text{paths}} = 500$. ``asymp pass'' is the original Section~\ref{sec:model_comparison} metric (two-sample KS p-value $\geq 0.05$). ``mean pv'' is the mean two-sample KS p-value across paths, with $q_5$ and $q_{95}$ as the lower / upper p-value quantiles. ``blkL\%'' is the fraction of paths whose KS statistic falls below the stationary-block-bootstrap $95\%$ critical value at mean block length $L$. Block-bootstrap critical values: $0.0306$ ($L = 5$), $0.0338$ ($L = 10$), $0.0350$ ($L = 20$); asymptotic critical value $0.0383$.}
+\caption{\textbf{Block-bootstrap KS recalibration and p-value distribution}. All numbers under seed \texttt{20260422} with $N_{\text{paths}} = 500$. ``asymp pass'' is the original Table~\ref{tab:model_comparison} metric (two-sample KS p-value $\geq 0.05$). ``mean pv'' is the mean two-sample KS p-value across paths, with $q_5$ and $q_{95}$ as the lower / upper p-value quantiles. ``blkL\%'' is the fraction of paths whose KS statistic falls below the stationary-block-bootstrap $95\%$ critical value at mean block length $L$. Block-bootstrap critical values: $0.0306$ ($L = 5$), $0.0338$ ($L = 10$), $0.0350$ ($L = 20$); asymptotic critical value $0.0383$.}
 \label{tab:ks_block_bootstrap}
 \begin{tabular}{l c c c c c c c}
 \toprule
@@ -105,7 +105,7 @@ CHMM-GED                                 & $79.2$ & $51.6$ \\
 \subsubsection{QuantGAN Deep-Generative Baseline}
 \label{sec:quantgan_supp}
 
-The QuantGAN row used in Section~\ref{sec:model_comparison} is a repo-native approximation to the convolutional WGAN of \citet{wiese2020quantgan}: a 1D convolutional generator and critic (each three layers, channels $32$, kernel size $5$; latent dim $L = 8$, leaky-ReLU on the critic), Wasserstein loss with critic weight clipping at $\pm 0.01$ \citep{arjovsky2017wasserstein}, Adam at $\eta = 10^{-4}$, batch $64$, $15$ epochs $\times\,120$ steps with four critic updates per generator update, trained on rolling windows of length $W = 64$ on standardised SPY returns and stitched end-to-end at synthesis. Implementation: Julia with \texttt{Flux.jl} \cite{innes2018flux}; seed $20260422$. The deep-generative row reaches $0\%$ IS / OoS KS and IS kurtosis $2.1$ vs.\ observed $7.7$ (Table~\ref{tab:extended_baselines}), consistent with documented GAN failure modes on volatility-clustering benchmarks \citep{takahashi2019modeling, kwon2024can}; the runner is materially smaller than the reference seven-block TCN with Lambert-W pre-processing in \citet{wiese2020quantgan}, so the row is the panel's deep-generative negative control rather than a verdict on the QuantGAN literature.
+The QuantGAN row used in the headline generator comparison is a repo-native approximation to the convolutional WGAN of \citet{wiese2020quantgan}: a 1D convolutional generator and critic (each three layers, channels $32$, kernel size $5$; latent dim $L = 8$, leaky-ReLU on the critic), Wasserstein loss with critic weight clipping at $\pm 0.01$ \citep{arjovsky2017wasserstein}, Adam at $\eta = 10^{-4}$, batch $64$, $15$ epochs $\times\,120$ steps with four critic updates per generator update, trained on rolling windows of length $W = 64$ on standardised SPY returns and stitched end-to-end at synthesis. Implementation: Julia with \texttt{Flux.jl} \cite{innes2018flux}; seed $20260422$. The deep-generative row reaches $0\%$ IS / OoS KS and IS kurtosis $2.1$ vs.\ observed $7.7$ (Table~\ref{tab:extended_baselines}), consistent with documented GAN failure modes on volatility-clustering benchmarks \citep{takahashi2019modeling, kwon2024can}; the runner is materially smaller than the reference seven-block TCN with Lambert-W pre-processing in \citet{wiese2020quantgan}, so the row is the panel's deep-generative negative control rather than a verdict on the QuantGAN literature.
 
 \subsubsection{Expanded Baseline Panel: GARCH Family, Semi-Markov CHMM, and QuantGAN}
 \label{sec:extended_baselines}
@@ -172,7 +172,7 @@ No extended GARCH variant occupies the joint (KS, ACF) corner: GARCH(1,1)-$t$ is
 \subsubsection{Stochastic-Volatility, Multifractal, and Jump-Diffusion Baselines}
 \label{sec:sv_msm_jd_baselines}
 
-For completeness alongside the Markov-switching family of Section~\ref{sec:model_comparison}, we add the canonical state-space and jump baselines that the body Table~\ref{tab:model_comparison} does not exercise: a stochastic-volatility (SV-AR(1)) row in the Taylor 1986 / Harvey-Ruiz-Shephard 1994 lognormal log-AR(1) tradition; a Markov-switching multifractal (MSM, Calvet-Fisher 2004) row at $\bar k = 8$ multipliers; and a Merton 1976 Poisson-Gaussian jump-diffusion row. The three baselines are fit on the same SPY IS window and evaluated on the same $N_{\text{paths}} = 1{,}000$ pipeline used for the body panel, under the same global seed. Implementation lives in the companion \texttt{CHMM-Model.jl} package.
+For completeness alongside the Markov-switching family of the headline generator comparison, we add the canonical state-space and jump baselines that the body Table~\ref{tab:model_comparison} does not exercise: a stochastic-volatility (SV-AR(1)) row in the Taylor 1986 / Harvey-Ruiz-Shephard 1994 lognormal log-AR(1) tradition; a Markov-switching multifractal (MSM, Calvet-Fisher 2004) row at $\bar k = 8$ multipliers; and a Merton 1976 Poisson-Gaussian jump-diffusion row. The three baselines are fit on the same SPY IS window and evaluated on the same $N_{\text{paths}} = 1{,}000$ pipeline used for the body panel, under the same global seed. Implementation lives in the companion \texttt{CHMM-Model.jl} package.
 
 \begin{table}[!ht]
 \centering

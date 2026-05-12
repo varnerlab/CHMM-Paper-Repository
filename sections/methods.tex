@@ -1,0 +1,53 @@
+\subsection{Data and model}
+\label{sec:data_and_model}
+
+The single-asset analysis uses daily SPDR S\&P~500 ETF (SPY) prices from January~3, 2014 to January~3, 2024 (a ten-year training window, $T_{\text{IS}} = 2{,}516$), with the period from January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 572$) held out. Prices are split-adjusted but not dividend-adjusted; the data sources are described in the acknowledgments. A vendor-stitch sanity check on the 323-day Polygon vs Alpaca / IEX overlap returned zero VWAP and return differential and Kolmogorov-Smirnov (KS) $p = 1.00$, so the OoS series is single-source-equivalent on the overlap and no boundary artefact is detected. The empirical study extends beyond SPY to a sector-balanced 30-ticker panel spanning ten GICS sectors with three large-cap representatives each, a CRSP cross-decade transfer (1994 to 2004 in-sample, 2004 to 2006 out-of-sample), and a six-asset US-equity universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ) used for the cross-asset copula extension. For ticker $i$ and trading day $j$ the annualised excess growth rate is
+\begin{equation}
+    G_{i,j} \equiv \frac{1}{\Delta t} \ln\!\left(\frac{P_{i,j}}{P_{i,j-1}}\right) - r_f, \qquad \Delta t = 1/252, \quad r_f = 0,
+    \label{eq:growth_rate}
+\end{equation}
+with $P_{i,j}$ the session volume-weighted average price (VWAP). The factor $1/\Delta t$ is a constant rescaling; all simulations and metrics are evaluated on the daily-scale series.
+
+We model $G_t$ as a CHMM $\mathcal{M} = (\mathcal{S}, \mathbf{T}, \mathbf{F}, \boldsymbol{\pi})$ with $K$ latent states, per-state emission density $f_k(x; \boldsymbol\theta_k)$ with corresponding per-state cumulative distribution function (CDF) $F_k(x; \boldsymbol\theta_k) = \int_{-\infty}^x f_k(u; \boldsymbol\theta_k)\,du$ used in the regime-conditional VaR construction below, transition matrix $\mathbf{T} \in \mathbb{R}^{K \times K}$, and initial distribution $\boldsymbol{\pi}$~\cite{rabiner1986introduction}. The stationary marginal is the $K$-component mixture
+\begin{equation}
+    f(x) = \sum_{k=1}^{K} \bar{\pi}_k\, f_k(x; \boldsymbol\theta_k), \qquad \bar{\boldsymbol{\pi}} = \bar{\boldsymbol{\pi}} \mathbf{T},
+    \label{eq:mixture}
+\end{equation}
+with $\bar{\boldsymbol\pi}$ the stationary distribution. Existence and uniqueness require irreducibility and aperiodicity of $\mathbf T$ (Assumption~\ref{ass:irred}), and we learn $\mathbf{T}$, $\boldsymbol\theta_{1:K}$, and $\boldsymbol{\pi}$ jointly by EM. The four emission families share a single forward-backward scaffold and quantile-based initialization, and the M-step is the only architectural difference (architecture diagram in Figure~\ref{fig:chmm_architecture}). \emph{CHMM-N}: $f_k = \mathcal{N}(\mu_k, \sigma_k^2)$. \emph{CHMM-t}: $f_k = t_{\nu_k}(\mu_k, \sigma_k)$ with per-state degrees of freedom $\nu_k \in [\nu_{\min}, \nu_{\max}]$. \emph{CHMM-L}: $f_k = \mathrm{Laplace}(\mu_k, \beta_k)$ with per-state Laplace scale denoted $\beta_k$ to avoid collision with the canonical Laplace-scale symbol $b$. \emph{CHMM-GED}: $f_k = \mathrm{GED}(\mu_k, \alpha_k, p_k)$ with per-state shape $p_k \in [p_{\min}, p_{\max}]$ that nests Gaussian ($p_k = 2$) and Laplace ($p_k = 1$) as boundary cases.
+
+\subsection{Estimation by EM}
+\label{sec:estimation}
+
+Estimation of $(\mathbf{T}, \{\boldsymbol\theta_k\}, \boldsymbol\pi)$ proceeds by EM in log-space. We write $O_t$ for the observed daily excess growth rate $G_t$ at time $t$ and $\gamma_t(k) = \Prob(s_t = k \mid O_{1:T})$ for the smoothed posterior probability of state $k$ at time $t$ under the current parameter iterate, both returned by the shared forward-backward recursion. All four emission families share the same log-space forward-backward recursions and the same quantile-based initialization~\cite{bilmes1998gentle}: observations are sorted, partitioned into $K$ equal-sized chunks, and each state's initial location and scale are seeded from the corresponding chunk; $T_{ij}^{(0)} = \pi_k^{(0)} = 1/K$. The EM loop iterates to tolerance $|\mathcal{L}^{(n)} - \mathcal{L}^{(n-1)}| < 10^{-4}$ with $\texttt{max\_iter} = 60$, and convergence is typically reached in 20 to 40 iterations. The implementation is in Python~3.11 using NumPy~1.26 and SciPy~1.11, with all golden-section searches run to a relative tolerance of $10^{-4}$ and an inner iteration cap of $80$. Quantile-based initialization is what makes Baum-Welch reach a non-degenerate $K \ge 3$ fit. Random initialisations standard in the 1990s often converge to overlapping local optima, which is one of the two compounding sources of the low-$K$ failure observed by \citet{ryden1998stylized}; the other is the spectral one developed below. Algorithmic details and the forward-backward recursion are reported in the appendix.
+
+The four emission families differ only in the M-step. \emph{CHMM-N (Gaussian).} The classical Baum-Welch M-step~\cite{baum1970maximization} is closed form:
+\[
+\mu_k \leftarrow \frac{\sum_t \gamma_t(k)\, O_t}{\sum_t \gamma_t(k)},
+\qquad
+\sigma_k^2 \leftarrow \frac{\sum_t \gamma_t(k)\, (O_t - \mu_k)^2}{\sum_t \gamma_t(k)}.
+\]
+\emph{CHMM-t (Student-$t$ via ECM).} We adopt the ECM formulation of \citet{peel2000robust} and \citet{liu1995ml}, the same heavy-tailed innovation choice studied by \citet{abantovalle2017svm} for stochastic-volatility-in-mean models. The latent precision
+\begin{equation}
+    u_{t,k} = \frac{\nu_k + 1}{\nu_k + ((O_t - \mu_k)/\sigma_k)^2}
+    \label{eq:tprecision}
+\end{equation}
+is treated as an augmented E-step quantity, and the M-step updates
+\begin{equation}
+    \mu_k \leftarrow \frac{\sum_t \gamma_t(k) u_{t,k} O_t}{\sum_t \gamma_t(k) u_{t,k}},
+    \qquad
+    \sigma_k^2 \leftarrow \frac{\sum_t \gamma_t(k) u_{t,k} (O_t - \mu_k)^2}{\sum_t \gamma_t(k)}
+    \label{eq:tupdate}
+\end{equation}
+have closed form conditional on $\nu_k$. The degrees of freedom $\nu_k$ are updated by a golden-section search maximizing the per-state $Q$-function $Q_k(\nu) = \sum_t \gamma_t(k) \log t_\nu(O_t; \mu_k, \sigma_k)$ over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$. The two-block CM step preserves the EM monotonicity guarantee on the compact bracket, so the incomplete-data log-likelihood is non-decreasing across iterations. \emph{CHMM-L (Laplace).} The weighted maximum-likelihood estimators are in closed form: $\mu_k$ is the posterior-weighted median of the observations (weights $\gamma_t(k)$, computed by cumulative-weight bracketing with linear interpolation between neighbouring order statistics at a cumulative-weight tolerance of $10^{-8}$), and $\beta_k \leftarrow \sum_t \gamma_t(k) |O_t - \mu_k| / \sum_t \gamma_t(k)$. \emph{CHMM-GED (Generalized Error Distribution via three-stage ECM).} For $f_k(x) = \mathrm{GED}(x; \mu_k, \alpha_k, p_k)$ the M-step decomposes into three CM updates per state: a bracketed $\mu_k \leftarrow \arg\min_{\mu} \sum_t \gamma_t(k)\,|O_t - \mu|^{p_k}$ via golden-section over $[\mu_k^{(n-1)} - 5\alpha_k^{(n-1)}, \mu_k^{(n-1)} + 5\alpha_k^{(n-1)}]$ centred on the previous EM iterate, then the closed-form scale $\alpha_k \leftarrow \big[(p_k / W_k) \sum_t \gamma_t(k)\,|O_t - \mu_k|^{p_k}\big]^{1/p_k}$ with $W_k = \sum_t \gamma_t(k)$, and finally a bracketed $p_k \leftarrow \arg\max_{p \in [p_{\min}, p_{\max}]} \sum_t \gamma_t(k)\, \log f_k(O_t; \mu_k, \alpha_k, p)$ via golden-section over $[p_{\min}, p_{\max}] = [0.5, 3.0]$. Each CM step is a partial maximization, so EM monotonicity holds on the compact bracket, and CHMM-N (all $p_k = 2$) and CHMM-L (all $p_k = 1$) are the boundary cases.
+
+\subsection{Evaluation}
+\label{sec:evaluation}
+
+The empirical study is organised along two pipelines. \emph{Pipeline~A} fits a CHMM to each ticker independently and evaluates single-asset metrics, carrying the descriptive, state-count, headline-generator, cross-ticker, and Value-at-Risk analyses. \emph{Pipeline~B} reuses each per-asset CHMM marginal and injects cross-asset dependence through a rank-based Student-$t$ copula~\cite{demarta2005tcopula, mcneil2015quantitative}; profile MLE selects $\nu^\star$, and the rank-reordering simulator of \citet{iman1982distribution} preserves each fitted CHMM marginal under Sklar's theorem~\cite{sklar1959fonctions}, with SIM, Gaussian-copula, and truncated C-vine comparators reported in the appendix. Each CHMM family is benchmarked against representatives from each generator tier, all fit on the same IS window: an i.i.d.\ bootstrap~\cite{politis1994stationary} as the non-parametric distributional ceiling, Gaussian and Laplace i.i.d.\ generators as marginal baselines, GARCH(1,1) Gaussian~\cite{bollerslev1986generalized} and Student-$t$~\cite{bollerslev1987conditionally} as conditional-variance baselines, and MS-GARCH~\cite{haas2004new} as the closest regime-switching foil. Extended GARCH-family, semi-Markov, deep-generative QuantGAN~\cite{wiese2020quantgan}, stochastic-volatility, multifractal, and jump-diffusion baselines are reported in the appendix.
+
+For each model we simulate $P = 1{,}000$ independent paths of length $T$ following~\cite{stenger2024thinking}, under a deterministic global seed root $20260420$; a secondary seed $20260422$ is used for the cross-asset Pipeline-B panels and the block-bootstrap recalibration, and the seed is fixed per panel and stated in every relevant table caption. Headline metrics are the two-sample Kolmogorov-Smirnov~\cite{kolmogorov1933, smirnov1948} pass rate at $\alpha = 0.05$, mean simulated excess kurtosis, and the absolute-return ACF mean absolute error (MAE) over $L = 252$ lags,
+\begin{equation}
+    \text{ACF-MAE} = \frac{1}{L}\sum_{\tau=1}^{L} \left| \hat\rho^{\text{obs}}_{|G|}(\tau) - \bar{\hat\rho}^{\,\text{sim}}_{|G|}(\tau) \right|,
+    \label{eq:acf_mae}
+\end{equation}
+where $\hat\rho^{\text{obs}}_{|G|}(\tau)$ is the empirical absolute-return ACF at lag $\tau$ on the observed window and $\bar{\hat\rho}^{\,\text{sim}}_{|G|}(\tau)$ its path-averaged simulated counterpart over the $P$ simulated paths. A separate Value-at-Risk panel carries the unconditional Kupiec~\cite{kupiec1995techniques} and expected-shortfall (ES) envelope diagnostics, while block-bootstrap KS recalibration, Anderson-Darling (AD), $W_1$, Hellinger, and continuous ranked probability score (CRPS) auxiliaries are reported in the appendix.

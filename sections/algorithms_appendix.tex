@@ -49,7 +49,7 @@
 \subsubsection{Forward-Backward Recursions and M-Step Updates}
 \label{sec:baum_welch_supp}
 
-For reference, the in-text Baum-Welch description of Section~\ref{sec:chmm_def} is underpinned by the standard log-space recursions \cite{rabiner1986introduction, bilmes1998gentle}.
+For reference, the in-text Baum-Welch description of the Methods is underpinned by the standard log-space recursions \cite{rabiner1986introduction, bilmes1998gentle}.
 Define the forward variable $\alpha_t(k) = \Prob(O_{1:t}, S_t = k \mid \mathcal{M})$ and the backward variable $\beta_t(k) = \Prob(O_{t+1:T} \mid S_t = k, \mathcal{M})$.
 The log-space recursions are
 \begin{align}
@@ -94,7 +94,7 @@ We extend this M-step with an optional exponential shrinkage prior on $1/\nu_k$,
     Q_k^{\text{pen}}(\nu) \;=\; \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k) \;-\; \lambda \, / \, \nu,
     \label{eq:nu_pen}
 \end{equation}
-maximised by the same golden-section search ($\lambda = 0$ recovers the unpenalised \citet{peel2000robust, liu1995ml} ECM; the rate sweep and its effect on simulated IS kurtosis are in Section~\ref{sec:discussion}).
+maximised by the same golden-section search ($\lambda = 0$ recovers the unpenalised \citet{peel2000robust, liu1995ml} ECM; the rate sweep and its effect on simulated IS kurtosis are in the body Discussion).
 
 \paragraph{CHMM-L M-step (closed-form weighted Laplace MLE).}
 For Laplace emissions $f_k(x) = \tfrac{1}{2 \beta_k} \exp(-|x - \mu_k|/\beta_k)$ (with the per-state Laplace scale denoted $\beta_k$ rather than the canonical Laplace-scale symbol $b$) the weighted-MLE estimators are available in closed form:
@@ -278,7 +278,7 @@ Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all four e
 \subsubsection{Per-State Shape Diagnostics: CHMM-t and CHMM-GED}
 \label{sec:nu_diagnostics}
 
-This appendix backs the discussion in Section~\ref{sec:discussion} of the per-state shape allocation under CHMM-t and CHMM-GED on SPY IS at $K = 18$ (seed = $20260420$).
+This appendix backs the discussion in the body Discussion of the per-state shape allocation under CHMM-t and CHMM-GED on SPY IS at $K = 18$ (seed = $20260420$).
 
 \paragraph{CHMM-t per-state $\nu_k$.}
 Figure~\ref{fig:nu_hist} plots the per-state $\nu_k$ histogram for the $K = 18$ CHMM-t fit.
@@ -293,7 +293,7 @@ The simulated IS mixture kurtosis of $17.34$ is driven by the posterior mass rou
 \end{figure}
 
 \paragraph{CHMM-GED per-state $p_k$ (Gaussian-bulk / Laplace-tail bimodality).}
-The body Section~\ref{sec:model_comparison} reports and discusses the $\hat p_k$ partition (Figure~\ref{fig:p_hist}). Briefly, the $K = 18$ CHMM-GED fit on SPY IS is bimodal: thirteen states attain the upper ECM bracket at $p_k = 3.0$, one state lands at intermediate $p_k = 1.6$, and four states cluster in the Laplace-shape regime $p_k \in [0.86, 1.24]$, concentrated in the high-volatility ranks. The smallest fitted $p_k$ on SPY is $0.86$, well clear of every $p_{\min}$ tested in the bracket sweep, so the lower bracket is non-binding. The bimodal partition replicates across $10$ Monte Carlo seeds and across the cross-asset universe (Appendix~\ref{sec:supp_robustness}).
+The body the body generator comparison reports and discusses the $\hat p_k$ partition (Figure~\ref{fig:p_hist}). Briefly, the $K = 18$ CHMM-GED fit on SPY IS is bimodal: thirteen states attain the upper ECM bracket at $p_k = 3.0$, one state lands at intermediate $p_k = 1.6$, and four states cluster in the Laplace-shape regime $p_k \in [0.86, 1.24]$, concentrated in the high-volatility ranks. The smallest fitted $p_k$ on SPY is $0.86$, well clear of every $p_{\min}$ tested in the bracket sweep, so the lower bracket is non-binding. The bimodal partition replicates across $10$ Monte Carlo seeds and across the cross-asset universe (Appendix~\ref{sec:supp_robustness}).
 
 A CHMM-t bracket sweep on $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0, \infty\}$ at $K = 18$ shows the simulated IS kurtosis stays in the $12.5$--$15.1$ band across finite brackets and only collapses to $5.03$ in the full Gaussian limit; the overshoot is a feature of the Student-$t$ emission at $K = 18$, not a lower-bracket artefact. The analogous CHMM-GED sweep on $p_{\max} \in \{2.0, 2.5, 3.0, 3.5, 4.0\}$ leaves the Gaussian-like-state count invariant at $13/18$ and the heavy-shape count in $\{4, 5\}$; tightening $p_{\max}$ from $4.0$ to $3.0$ costs about $4$ nats of LL. The $p_{\min}$ sweep on $\{0.5, 0.7, 0.85\}$ is fully degenerate: every floor produces an identical fit because the smallest observed $\hat p_k$ on SPY is $0.86$.
 

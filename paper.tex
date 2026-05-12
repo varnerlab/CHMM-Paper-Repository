@@ -82,6 +82,13 @@
 % --- Bibliography ---
 \usepackage[numbers,sort&compress]{natbib}
 
+% --- Author block (multi-author with numbered affiliations) ---
+\usepackage{authblk}
+\renewcommand\Authsep{\qquad}
+\renewcommand\Authand{\qquad}
+\renewcommand\Authands{\qquad}
+\setlength{\affilsep}{0.6em}
+
 % --- Links (load last) ---
 \usepackage{hyperref}
 \hypersetup{
@@ -121,15 +128,14 @@
 
 \title{Continuous Hidden Markov Models for Equity Returns:\\ Heavy-Tail Emission Families\\ and Regime-Conditional Value-at-Risk}
 
-\author{
-    Abdulrahman Alswaidan\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA. Email: \texttt{aa2725@cornell.edu}.}
-    \and
-    Cade Jin\thanks{Cornell Ann S.\ Bowers College of Computing and Information Science, Cornell University, Ithaca, NY, USA. Email: \texttt{cj383@cornell.edu}.}
-    \and
-    Jeffrey D.\ Varner\thanks{Cornell University, Robert Frederick Smith School of Chemical and Biomolecular Engineering, Ithaca, NY, USA. Email: \texttt{jdv27@cornell.edu}.}
-}
+\author[1]{Abdulrahman Alswaidan}
+\author[2]{Cade Jin}
+\author[1]{Jeffrey D.~Varner\thanks{\raggedright Corresponding author: \texttt{jdv27@cornell.edu}. Coauthor contacts: \texttt{aa2725@cornell.edu} (A.A.), \texttt{cj383@cornell.edu} (C.J.).\par}}
+\affil[1]{Robert Frederick Smith School of Chemical and Biomolecular Engineering, Cornell University, Ithaca, NY 14850, USA}
+\affil[2]{Cornell Ann S.~Bowers College of Computing and Information Science, Cornell University, Ithaca, NY 14850, USA}
 
-\date{\today}
+\date{}
+
 
 \begin{document}
 
@@ -137,13 +143,7 @@
 
 % ========================================================================================= %
 \begin{abstract}
-We present a continuous hidden Markov model (CHMM) framework for daily US-equity returns. The textbook bilinear identity for the absolute-return autocorrelation function recasts the empirical Ryd\'{e}n et al.\ low-$K$ failure as an effective-rank statement on the centred transition matrix $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$. An empirical diagnostic on the fitted estimator $\hat{\mathbf T}$ shows the implied $K - 1$ rank bound is non-binding at the cross-ticker median for $K \ge 3$, with the bound still doing visible work on the left tail of the distribution (minimum dominant-mode share $32.6\%$ on NEM).
-
-A unified ECM scaffold supports four emission families (Gaussian, Student-$t$, Laplace, Generalised Error Distribution) with shared forward-backward recursions and quantile-based initialisation; the M-step is the only architectural difference. The empirical study covers SPY 2014 to 2026, a sector-balanced 30-ticker panel, a CRSP cross-decade transfer (1994 to 2004 in-sample, 2004 to 2006 out-of-sample), and a six-asset US-equity copula extension.
-
-Headline operating result: a regime-conditional Value-at-Risk that propagates the one-step-ahead state forecast through the predictive mixture passes the Christoffersen joint conditional-coverage test cleanly at $\alpha = 0.05$ across emission families on the headline out-of-sample window and on $19/24$ rows of a six-fold rolling-origin walk-forward; rejections concentrate on out-of-distribution stress folds. At $\alpha = 0.01$ the Engle-Manganelli dynamic-quantile backstop rejects $K = 18$ on the headline window, so the strict-tail Christoffersen pass is power-driven.
-
-Positioning is honest. The i.i.d.\ bootstrap and a maximum-likelihood hidden semi-Markov model both exceed the CHMM on raw single-window out-of-sample Kolmogorov-Smirnov. The CHMM value-add is the structural use cases that those alternatives cannot serve (regime-conditional VaR, multi-asset copula composition, parametric synthetic-data privacy), together with a unified emission-family ablation. The single-window OoS sits at the upper tail of a six-fold rolling-origin walk-forward whose median CHMM-N OoS KS is $62.1\%$ at $K^\star = 3$, the operationally informative summary. Scope is daily US equities under stationary OoS; a non-equity stress test on GLD collapses under static fitting, and periodic refit is the deployment recipe.
+Synthetic generators of daily US-equity returns support stress testing, regulatory backtesting, and downstream model training on data that cannot be released for privacy or licensing reasons, but the regime-switching route has been shaped for two decades by a negative result: low-state-count hidden Markov models with Gaussian emissions fail to reproduce the slow decay of the absolute-return autocorrelation function. We revisited that result through a continuous hidden Markov model framework in which a textbook mixture-of-eigenvalues identity recasts the failure as an effective-rank statement on the centred transition matrix, and an empirical diagnostic on the fitted estimator showed that the implied rank bound is non-binding at the cross-ticker median once enough latent states are admitted, shifting the binding axis from the temporal kernel to the marginal mixture. We developed a unified expectation-conditional-maximisation scaffold supporting four heavy-tailed emission families (Gaussian, Student-$t$, Laplace, and Generalised Error Distribution) under shared forward-backward recursions and quantile-based initialisation, with the maximisation step the only architectural difference between families. The empirical study covered a decade of daily SPY data, a sector-balanced 30-ticker panel, a CRSP cross-decade transfer between non-overlapping ten-year and two-year windows, and a six-asset US-equity copula extension. We built a regime-conditional Value-at-Risk that propagates the one-step-ahead state forecast through the family-appropriate predictive mixture, and validated it under the Christoffersen joint conditional-coverage test alongside an Engle-Manganelli dynamic-quantile backstop. The construction is honestly positioned against an i.i.d.\ bootstrap and a maximum-likelihood hidden semi-Markov benchmark that exceed it on raw single-window distributional fidelity; the continuous HMM's value lies in the structural use cases those alternatives cannot serve, namely regime-conditional risk forecasting, multi-asset copula composition, and parametric synthetic-data privacy. The scope is daily US equities under stationary out-of-sample regimes, and periodic refit is the deployment protocol for stress folds the static fit cannot bracket.
 \end{abstract}
 
 \noindent\textbf{Keywords:} Continuous Hidden Markov Model, Baum-Welch, Student-$t$ Emissions, Stylized Facts, Volatility Clustering, Value-at-Risk, Synthetic-Data Generator.
@@ -159,8 +159,7 @@ Positioning is honest. The i.i.d.\ bootstrap and a maximum-likelihood hidden sem
 
 \section{Methods}
 \label{sec:methods}
-\input{sections/model}
-\input{sections/estimation}
+\input{sections/methods}
 
 \section{Spectral Mechanism}
 \label{sec:spectral}
