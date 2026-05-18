@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Skill(audit-magic-numbers)"
+      "Skill(audit-magic-numbers)",
+      "Skill(style-check)",
+      "Skill(review-section)"
     ]
   }
 }
