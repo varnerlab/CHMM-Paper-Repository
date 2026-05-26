@@ -1,54 +1,4 @@
-\subsubsection{Architecture Diagram}
-\label{sec:supp_chmm_architecture}
-
-\begin{figure}[!ht]
-\centering
-\begin{tikzpicture}[
-    font=\small,
-    >={Stealth[length=2mm, width=1.6mm]},
-    state/.style={draw, circle, minimum size=9mm, inner sep=0pt,
-                  fill=black!4, thick},
-    obs/.style={draw, rectangle, rounded corners=1pt, minimum size=9mm,
-                inner sep=1pt, fill=black!10, thick},
-    block/.style={draw, rectangle, rounded corners=1.5pt, align=center,
-                  minimum height=11mm, minimum width=34mm, inner sep=1.5mm,
-                  fill=black!6, thick},
-    flow/.style={-Stealth, thick, black!75},
-    lbl/.style={font=\footnotesize\itshape, black!65, inner sep=1pt},
-    eq/.style={font=\footnotesize, inner sep=1pt},
-]
-\node[state] (s1) at (0, 0) {$s_{t-1}$};
-\node[state, right=14mm of s1] (s2) {$s_t$};
-\node[state, right=14mm of s2] (s3) {$s_{t+1}$};
-\node[left=6mm of s1] (sdots) {$\cdots$};
-\node[right=6mm of s3] (edots) {$\cdots$};
-\draw[flow] (sdots) -- (s1);
-\draw[flow] (s1) -- (s2) node[midway, above, eq] {$T_{ij}$};
-\draw[flow] (s2) -- (s3) node[midway, above, eq] {$T_{ij}$};
-\draw[flow] (s3) -- (edots);
-\node[lbl, above=2mm of s2] {latent regime chain $s_t \in \{1,\ldots,K\}$};
-\node[obs, below=12mm of s1] (o1) {$G_{t-1}$};
-\node[obs, below=12mm of s2] (o2) {$G_t$};
-\node[obs, below=12mm of s3] (o3) {$G_{t+1}$};
-\draw[flow] (s1) -- (o1) node[midway, right, eq] {$b_{s_{t-1}}$};
-\draw[flow] (s2) -- (o2) node[midway, right, eq] {$b_{s_t}$};
-\draw[flow] (s3) -- (o3) node[midway, right, eq] {$b_{s_{t+1}}$};
-\node[lbl, below=2mm of o2] {observed excess growth rate $G_t \in \mathbb{R}$};
-\node[block, right=18mm of edots] (mstep)
-    {M-step\\ update $\mathbf{T}$, $\{\boldsymbol\theta_k\}$\\ (family-specific)};
-\node[block, below=6mm of mstep] (estep)
-    {E-step\\ forward--backward\\ $\gamma_t(k),\ \xi_t(i,j)$};
-\draw[flow, black!75] ([xshift=-3mm]mstep.south) -- ([xshift=-3mm]estep.north);
-\draw[flow, black!75] ([xshift=3mm]estep.north) -- ([xshift=3mm]mstep.south);
-\node[lbl, above=1mm of mstep] {EM until $|\Delta \mathcal{L}| < 10^{-4}$};
-\end{tikzpicture}
-\caption{\textbf{CHMM architecture and training loop.} A $K$-state latent Markov chain with transition matrix $\mathbf{T}$ generates the regime sequence $s_t$; each $s_t$ emits the observed excess growth rate $G_t$ through a state-specific density $b_{s_t}$. The four CHMM variants share everything except the per-state emission family (Gaussian, Student-$t$, Laplace, GED). EM alternates an E-step (log-space forward-backward) and a family-specific M-step until $|\Delta \mathcal L| < 10^{-4}$.}
-\label{fig:chmm_architecture}
-\end{figure}
-
-\subsubsection{Forward-Backward Recursions and M-Step Updates}
-\label{sec:baum_welch_supp}
-
+\paragraph{Forward-backward recursions and M-step updates.}
 For reference, the in-text Baum-Welch description of the Methods is underpinned by the standard log-space recursions \cite{rabiner1986introduction, bilmes1998gentle}.
 Define the forward variable $\alpha_t(k) = \Prob(O_{1:t}, S_t = k \mid \mathcal{M})$ and the backward variable $\beta_t(k) = \Prob(O_{t+1:T} \mid S_t = k, \mathcal{M})$.
 The log-space recursions are
@@ -122,12 +72,10 @@ and CM-3 updates the shape by maximising the per-state $Q$-function over the bra
     p_k^{(n+1)} \;=\; \arg\max_{p \in [p_{\min},\, p_{\max}]} \;\sum_t \gamma_t(k)\, \log f_k\!\big(O_t;\, \mu_k^{(n+1)},\, \alpha_k^{(n+1)},\, p\big),
     \label{eq:ged_p}
 \end{equation}
-again by a $40$-iteration golden-section search over $[p_{\min}, p_{\max}] = [0.5, 3.0]$. Equation~\eqref{eq:ged_alpha} is the unique zero of $\partial Q_k/\partial \alpha$, so CM-2 is exact maximization. CM-1 and CM-3 are bracketed maximization. Each CM step is therefore a partial maximization, and the standard ECM monotonicity result \citep{mengrubin1993ecm} applies on the compact bracket; Proposition~\ref{prop:ecm_monotone} states the guarantee in full. Boundary cases: $p_k = 2$ recovers Gaussian (with $\sigma = \alpha/\sqrt{2}$); $p_k = 1$ recovers Laplace (with $b = \alpha$).
+again by a $40$-iteration golden-section search over $[p_{\min}, p_{\max}] = [0.5, 3.0]$. Equation~\eqref{eq:ged_alpha} is the unique zero of $\partial Q_k/\partial \alpha$, so CM-2 is exact maximisation. CM-1 and CM-3 are bracketed maximisation. Each CM step is therefore a partial maximisation, and the standard ECM monotonicity result \citep{mengrubin1993ecm} applies on the compact bracket; Proposition~\ref{prop:ecm_monotone} states the guarantee in full. Boundary cases: $p_k = 2$ recovers Gaussian (with $\sigma = \alpha/\sqrt{2}$); $p_k = 1$ recovers Laplace (with $b = \alpha$).
 
-\subsubsection{Algorithm Descriptions}
-\label{sec:algorithms}
-
-Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all four emission families: a shared scaffold (quantile-based initialisation, log-space forward-backward, transition update) plus four family-specific branches at lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep}. Algorithm~\ref{alg:chmm_simulate} is the simulator. Algorithm~\ref{alg:copula_sim} is the cross-asset rank-reordering simulator for the multi-asset construction. Viterbi and SIM-resampling pseudocode is provided in the companion code repository; both are textbook constructions and we omit them from the appendix.
+\paragraph{Algorithm descriptions.}
+Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all four emission families: a shared scaffold (quantile-based initialisation, log-space forward-backward, transition update) plus four family-specific branches at lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep}. Algorithm~\ref{alg:chmm_simulate} is the simulator. Algorithm~\ref{alg:copula_sim} is the cross-asset rank-reordering simulator for the multi-asset construction. Viterbi and SIM-resampling pseudocode are provided in the companion code repository; both are textbook constructions and we omit them from the appendix.
 
 % ========================================================================================= %
 % Algorithm 1: Baum-Welch (EM) for Continuous Gaussian HMM
@@ -204,11 +152,6 @@ Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all four e
 \end{algorithmic}
 \end{breakablealgorithm}
 
-% Backward-compatibility labels: any older cross-reference to the separate algorithms now points at the unified block.
-\newcommand{\algbaumwelch}{\ref{alg:chmm_em}}
-\newcommand{\algecmstudentt}{\ref{alg:chmm_em}}
-\newcommand{\algemlaplace}{\ref{alg:chmm_em}}
-
 % Viterbi pseudocode omitted (textbook construction; reference implementation in companion code repository).
 
 % ========================================================================================= %
@@ -275,9 +218,7 @@ Algorithm~\ref{alg:chmm_em} is the unified EM procedure shared across all four e
 % reference implementation in companion code repository).
 
 
-\subsubsection{Per-State Shape Diagnostics: CHMM-t and CHMM-GED}
-\label{sec:nu_diagnostics}
-
+\paragraph{Per-state shape diagnostics: CHMM-t and CHMM-GED.}
 This appendix backs the discussion in the body Discussion of the per-state shape allocation under CHMM-t and CHMM-GED on SPY IS at $K = 18$ (seed = $20260420$).
 
 \paragraph{CHMM-t per-state $\nu_k$.}
@@ -293,12 +234,11 @@ The simulated IS mixture kurtosis of $17.34$ is driven by the posterior mass rou
 \end{figure}
 
 \paragraph{CHMM-GED per-state $p_k$ (Gaussian-bulk / Laplace-tail bimodality).}
-The body the body generator comparison reports and discusses the $\hat p_k$ partition (Figure~\ref{fig:p_hist}). Briefly, the $K = 18$ CHMM-GED fit on SPY IS is bimodal: thirteen states attain the upper ECM bracket at $p_k = 3.0$, one state lands at intermediate $p_k = 1.6$, and four states cluster in the Laplace-shape regime $p_k \in [0.86, 1.24]$, concentrated in the high-volatility ranks. The smallest fitted $p_k$ on SPY is $0.86$, well clear of every $p_{\min}$ tested in the bracket sweep, so the lower bracket is non-binding. The bimodal partition replicates across $10$ Monte Carlo seeds and across the cross-asset universe (Appendix~\ref{sec:supp_robustness}).
+The body generator comparison reports and discusses the $\hat p_k$ partition (Figure~\ref{fig:p_hist}). Briefly, the $K = 18$ CHMM-GED fit on SPY IS is bimodal: thirteen states attain the upper ECM bracket at $p_k = 3.0$, one state lands at intermediate $p_k = 1.6$, and four states cluster in the Laplace-shape regime $p_k \in [0.86, 1.24]$, concentrated in the high-volatility ranks. The smallest fitted $p_k$ on SPY is $0.86$, well clear of every $p_{\min}$ tested in the bracket sweep, so the lower bracket is non-binding. The bimodal partition replicates across $10$ Monte Carlo seeds and across the cross-asset universe (full robustness panel in the cross-asset robustness appendix).
 
+\paragraph{Bracket-sensitivity sweeps.}
 A CHMM-t bracket sweep on $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0, \infty\}$ at $K = 18$ shows the simulated IS kurtosis stays in the $12.5$--$15.1$ band across finite brackets and only collapses to $5.03$ in the full Gaussian limit; the overshoot is a feature of the Student-$t$ emission at $K = 18$, not a lower-bracket artefact. The analogous CHMM-GED sweep on $p_{\max} \in \{2.0, 2.5, 3.0, 3.5, 4.0\}$ leaves the Gaussian-like-state count invariant at $13/18$ and the heavy-shape count in $\{4, 5\}$; tightening $p_{\max}$ from $4.0$ to $3.0$ costs about $4$ nats of LL. The $p_{\min}$ sweep on $\{0.5, 0.7, 0.85\}$ is fully degenerate: every floor produces an identical fit because the smallest observed $\hat p_k$ on SPY is $0.86$.
 
 
-\subsubsection{Evaluation summary}
-\label{sec:supp_pipeline_summary}
-
-For the single-asset analysis, observed returns $G_t$ are fit by Baum-Welch CHMM (body operating point $K^\star = 3$ with $K = 18$ as the kurtosis-fidelity sensitivity reference; the appendix per-ticker rollup of Table~\ref{tab:sector_panel} and the multi-asset marginals of Table~\ref{tab:cross_asset} use $K = 18$), then $1{,}000$ paths are simulated and per-asset metrics computed (Table~\ref{tab:model_comparison}). For the multi-asset analysis we reuse these single-asset $K = 18$ per-asset fits as marginals, draw a copula sample $\mathbf U \sim \mathcal C(\Sigma)$ from the fitted Student-$t$ copula on ranks, rank-reorder the per-asset single-asset paths to match $\mathbf U$, and report cross-asset metrics (Table~\ref{tab:cross_asset}). The single-asset CHMM scaffold is shared across both; the CHMM training and simulation steps are Algorithms~\ref{alg:chmm_em} and~\ref{alg:chmm_simulate}, the cross-asset rank-reordering step is Algorithm~\ref{alg:copula_sim}, and the architecture diagram for the single-asset scaffold is Figure~\ref{fig:chmm_architecture}.
+\paragraph{Evaluation summary.}
+For the single-asset analysis, observed returns $G_t$ are fit by Baum-Welch CHMM at the body operating point $K^\star = 3$, with $K = 18$ retained as the kurtosis-fidelity sensitivity reference; $1{,}000$ paths are then simulated and per-asset metrics computed (Table~\ref{tab:model_comparison}). For the multi-asset analysis we reuse the per-asset $K^\star = 3$ fits as marginals, draw a copula sample $\mathbf U \sim \mathcal C(\Sigma)$ from the fitted Student-$t$ copula on ranks, rank-reorder the per-asset single-asset paths to match $\mathbf U$, and report cross-asset metrics (Table~\ref{tab:cross_asset}). The single-asset CHMM scaffold is shared across both; the CHMM training and simulation steps are Algorithms~\ref{alg:chmm_em} and~\ref{alg:chmm_simulate}, the cross-asset rank-reordering step is Algorithm~\ref{alg:copula_sim}, and the architecture diagram for the single-asset scaffold is Figure~\ref{fig:chmm_architecture}.

@@ -114,7 +114,27 @@ Adaptive per-state shape; data-chosen Gaussian-bulk / Laplace-tail mixture & CHM
 \subsection{State-Resolution and Multi-Emission Sensitivity}
 \label{sec:supp_sensitivity}
 
-This appendix reports the full $K$-sweep underlying the headline operating point of the body Results, the multi-emission family extension confirming that $K = 18$ is stable under Student-t and Laplace emissions, the EM convergence curves at representative $K$, the IS and OoS visual comparison panels at non-selected $K \in \{3, 6, 12, 21\}$, the multi-emission figure panels at $K = 18$, and the Ryd\'{e}n $K = 2$ replication.
+This appendix reports the full $K$-sweep underlying the headline operating point of the body Results, the multi-emission family extension confirming that $K = 18$ is stable under Student-t and Laplace emissions, the EM convergence curves at representative $K$, the IS and OoS visual comparison panels at non-selected $K \in \{3, 6, 12, 21\}$, the multi-emission figure panels at $K = 18$, and the Ryd\'{e}n $K = 2$ replication. Table~\ref{tab:cross_ticker} summarises the cross-ticker generalisation distribution at the main operating point.
+
+\begin{table}[!ht]
+\centering
+\small
+\caption{\textbf{Cross-ticker generalisation, sector-balanced 30-ticker panel} (penalised CHMM-t at $\lambda = 20$, $1{,}000$ paths, seed $= 20260420$, main-paper $K^\star = 3$). The OoS distribution is wider than the IS distribution and is concentrated at the tickers that introduced a new regime (LLY, UNH, NEM). The full per-ticker panel, per-sector rollup, $K = 6$ and $K = 18$ sensitivity rebuilds, and quarterly-refit approach are reported in this appendix.}
+\label{tab:cross_ticker}
+\begin{tabular}{l c}
+\toprule
+Metric & $K^\star = 3$ \\
+\midrule
+IS KS pass rate (\%) median           & $96.8$ \\
+IS KS pass rate (\%) mean $\pm$ s.d.  & $95.1 \pm 4.9$ \\
+OoS KS pass rate (\%) median          & $69.1$ \\
+OoS KS pass rate (\%) mean $\pm$ s.d. & $66.2 \pm 28.2$ \\
+$|G_t|$ ACF-MAE median                & $0.0399$ \\
+Kurtosis residual (sim $-$ obs) median & $7.18$ \\
+Tickers OoS KS $< 60\%$ (IS-fixed)    & $11 / 30$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \input{sections/sensitivity_appendix}
 
@@ -286,4 +306,44 @@ Truncated C-vine (root SPY) & $97.2$  & $86.0$  & $0.068$ & $0.235$ \\
 \bottomrule
 \end{tabular}%
 }
+\end{table}
+
+\paragraph{Emission-family lookup.}
+Table~\ref{tab:emission_families} lists the four CHMM variants' per-state densities and parameter ranges as a quick reference complementing the inline definitions in Methods.
+
+\begin{table}[!ht]
+\centering
+\small
+\caption{\textbf{The four CHMM emission families.} Per-state density $f_k$ with parameter ranges. CHMM-N and CHMM-L sit at the boundary of CHMM-GED: $p_k = 2$ for all $k$ gives Gaussian, $p_k = 1$ gives Laplace.}
+\label{tab:emission_families}
+\begin{tabular}{l l l}
+\toprule
+Variant  & Per-state density $f_k$                & Per-state parameter range \\
+\midrule
+CHMM-N   & $\mathcal{N}(\mu_k, \sigma_k^2)$       & $\sigma_k > 0$ \\
+CHMM-t   & $t_{\nu_k}(\mu_k, \sigma_k)$           & $\sigma_k > 0$, $\nu_k \in [\nu_{\min}, \nu_{\max}]$ \\
+CHMM-L   & $\mathrm{Laplace}(\mu_k, \beta_k)$     & $\beta_k > 0$ \\
+CHMM-GED & $\mathrm{GED}(\mu_k, \alpha_k, p_k)$   & $\alpha_k > 0$, $p_k \in [p_{\min}, p_{\max}]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Stationarity-scope summary.}
+Table~\ref{tab:stationarity_scope} summarises static-fit OoS performance and periodic-refit mitigation across the four independent stress sources tested in this paper. Referenced from the discussion of stationarity scope in the main paper.
+
+\begin{table}[!ht]
+\centering
+\small
+\caption{\textbf{Stationarity-scope summary.} Static-IS-fit OoS performance and periodic-refit mitigation across the four independent stress sources tested in this paper.}
+\label{tab:stationarity_scope}
+\begin{tabular}{l c c}
+\toprule
+Stress source & Static-fit OoS KS & Refit mitigation \\
+\midrule
+Cross-ticker (30 panel) & $11/30 < 60\%$ & Quarterly: $7/30 < 60\%$ \\
+Cross-decade (2004 to 2006) & $3$ to $5\%$ & slice $< 600$ d, untested \\
+GLD non-equity stress & $0\%$ & Quarterly: $2.5\%$ \\
+Walk-forward W2, W4 & $< 10\%$ & no cadence closes \\
+\bottomrule
+\end{tabular}
 \end{table}
