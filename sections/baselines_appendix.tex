@@ -1,7 +1,7 @@
 \subsubsection{OoS KS Test-Power Calibration}
 \label{sec:ks_power}
 
-Table~\ref{tab:ks_power} reports the two-sample KS test-power calibration used to anchor the OoS KS pass rates of the headline generator comparison.
+We calibrated the two-sample KS test power to anchor the OoS KS pass rates of the main generator comparison (Table~\ref{tab:ks_power}).
 For each of $1{,}000$ Monte Carlo replications (seed = 20260420), a simulated series of length $T_{\text{OoS}} = 572$ is drawn from each of three reference generators and tested against the observed OoS series using the same $\alpha = 0.05$ threshold as the main-body pass-rate metric.
 
 \begin{table}[!ht]
@@ -25,7 +25,7 @@ The $90.0\%$ "nearly correct" rate is the practical ceiling for the CHMM OoS KS 
 \subsubsection{Block-Bootstrap KS Recalibration and Mean p-value Distribution}
 \label{sec:ks_block_bootstrap}
 
-Two complementary concerns can be raised about the headline IS KS pass-rate metric: (i) the asymptotic two-sample KS test assumes i.i.d.\ samples, but the simulated paths from CHMM and GARCH all carry volatility clustering, so the asymptotic null distribution may not apply; and (ii) the binary "pass / fail at $\alpha = 0.05$" reduces a continuous p-value to a one-bit summary. Table~\ref{tab:ks_block_bootstrap} reports two recalibrations addressing each concern.
+Two complementary concerns can be raised about the headline IS KS pass-rate metric. The asymptotic two-sample KS test assumes i.i.d.\ samples, but the simulated paths from CHMM and GARCH all carry volatility clustering, so the asymptotic null distribution may not apply. The binary "pass / fail at $\alpha = 0.05$" also reduces a continuous p-value to a one-bit summary. We computed two recalibrations addressing each concern (Table~\ref{tab:ks_block_bootstrap}).
 
 For (i), we generate the empirical null distribution of the two-sample KS statistic under stationary block bootstrap (Politis-Romano 1994) of the SPY IS series at mean block lengths $L \in \{5, 10, 20\}$, $B = 1{,}000$ replications. The resulting $95\%$ block-bootstrap critical values are $0.0306$, $0.0338$, and $0.0350$ respectively, all \emph{smaller} than the asymptotic critical value $1.36 \sqrt{2/n_{\text{IS}}} = 0.0383$; the block-bootstrap test is therefore stricter than the asymptotic one because it accounts for the within-window dependence in the IS series itself. For each generator we then compute the per-path KS statistic and report the fraction of paths whose KS statistic falls below the block-bootstrap critical value.
 
@@ -54,7 +54,7 @@ CHMM-GED is the strongest entry on the block-aware metric across all three block
 
 \paragraph{OoS-anchored block-bootstrap recalibration.}
 \label{sec:ks_block_bootstrap_oos}
-The body block-bootstrap recalibration above is anchored on the IS series; we report here whether the same construction holds on the OoS window. We repeat the procedure with the stationary block bootstrap re-anchored on $R_{\text{OoS}}$ ($n_{\text{OoS}} = 572$, $B = 1{,}000$, $L \in \{5, 10, 20\}$, $N_{\text{paths}} = 500$). Block-bootstrap critical values: $0.0577$, $0.0629$, $0.0647$ at $L = 5, 10, 20$ respectively, against asymptotic $0.0804$. Table~\ref{tab:ks_block_bootstrap_oos} reports the OoS-anchored panel (source: \texttt{results/robustness/ks\_block\_bootstrap\_oos.csv}).
+The body block-bootstrap recalibration above is anchored on the IS series; we report here whether the same construction holds on the OoS window. We repeat the procedure with the stationary block bootstrap re-anchored on $R_{\text{OoS}}$ ($n_{\text{OoS}} = 572$, $B = 1{,}000$, $L \in \{5, 10, 20\}$, $N_{\text{paths}} = 500$). Block-bootstrap critical values: $0.0577$, $0.0629$, $0.0647$ at $L = 5, 10, 20$ respectively, against asymptotic $0.0804$. The OoS-anchored panel is reported in Table~\ref{tab:ks_block_bootstrap_oos} (source: \texttt{results/robustness/ks\_block\_bootstrap\_oos.csv}).
 
 \begin{table}[!ht]
 \centering
@@ -78,7 +78,7 @@ CHMM-GED          & $81.0$ & $0.327$ & $0.010$ & $0.837$ & $44.4$ & $53.6$ \\
 The cross-generator OoS ordering matches the IS ordering (bootstrap $>$ CHMM-t $>$ CHMM-N/GED $>$ CHMM-L $\gg$ GARCH); the asymp-vs-block gap is larger on OoS ($\sim 25$pp for the CHMM family at $L = 20$) than on IS ($\sim 5$pp), but the CHMM-over-GARCH advantage is preserved.
 
 \paragraph{Body operating-point summary at $L = 20$.}
-Table~\ref{tab:ks_block_body} reports the OoS asymptotic pass rate alongside the OoS block-bootstrap pass rate at $L = 20$ (block-bootstrap $95\%$ critical value $0.0647$ vs.\ asymptotic $0.0804$) at the body operating point $K^\star = 3$. Read together with Table~\ref{tab:model_comparison}, the OoS panel under a temporally-aware null moves CHMM-N from a ``passes most of the time'' generator to a ``passes about half the time'' generator at $L = 20$. The body OoS KS headline at the asymptotic critical value therefore overstates the absolute level relative to a temporally-aware null; the cross-generator ranking is the robust comparison.
+The OoS asymptotic pass rate alongside the OoS block-bootstrap pass rate at $L = 20$ (block-bootstrap $95\%$ critical value $0.0647$ vs.\ asymptotic $0.0804$) at the body operating point $K^\star = 3$ is reported in Table~\ref{tab:ks_block_body}. Read together with Table~\ref{tab:model_comparison}, the OoS panel under a temporally-aware null moves CHMM-N from a ``passes most of the time'' generator to a ``passes about half the time'' generator at $L = 20$. The body OoS KS headline at the asymptotic critical value therefore overstates the absolute level relative to a temporally-aware null; the cross-generator ranking is the robust comparison.
 
 \begin{table}[t]
 \centering
@@ -124,7 +124,7 @@ The conceptual foil of the present paper, drawing on an explicit-duration HSMM e
 \medskip
 \noindent\emph{Caveat on the SM-CHMM estimator.} The plug-in construction above (single-shot Viterbi decoding under the converged CHMM fit, then AR(1)-residual + AIC-sojourn refit) is not maximum-likelihood for the underlying HSMM: it does not iterate the joint forward-backward over (state, duration) pairs in the spirit of \citet{yu2010hidden}. A full ML HSMM at $K = 18$ would refit the duration-augmented log-likelihood jointly. The empirical reading we draw from the rows below is therefore strictly: \emph{under the plug-in estimator}, the SM-CHMM weakens the headline KS / ACF / kurtosis pattern relative to the standard CHMM at the same $K$. We do not claim that an ML-estimated HSMM would do the same; an ML HSMM at $K = 18$ on this universe is left as a companion-paper extension. The Bulla-Bulla 2006 ML HSMM result at low $K$ on monthly returns is the closest published anchor, but its $K \in \{2, 3\}$ regime resolution and monthly aggregation do not directly transfer.
 
-Table~\ref{tab:extended_baselines} reports the IS / OoS distributional fidelity, kurtosis, ACF-MAE, and Kupiec breach diagnostics for the extended GARCH family, the SM-CHMM rows, and the QuantGAN deep-generative row, alongside the headline CHMM panel. Three structural observations.
+The IS / OoS distributional fidelity, kurtosis, ACF-MAE, and Kupiec breach diagnostics for the extended GARCH family, the SM-CHMM rows, and the QuantGAN deep-generative row, alongside the main CHMM panel, are reported in Table~\ref{tab:extended_baselines}. Three structural observations follow.
 
 \begin{table}[t]
 \centering
@@ -231,7 +231,7 @@ The CHMM family at $K = 18$ produces a non-trivial negative leverage signal desp
 \subsubsection{Full One-Shot Student-t Copula MLE}
 \label{sec:full_tcopula_mle}
 
-A natural concern with the body two-step copula estimator (Kendall's-$\tau$ inversion for $\hat\Sigma$, then profile MLE on $\nu$ with $\hat\Sigma$ held fixed) is that it may be biased toward the Gaussian limit when the marginal kurtosis differs across assets. We address this with a coordinate-ascent one-shot MLE that jointly maximises the Student-$t$ copula log-likelihood over $(\Sigma, \nu)$ on the same six-asset US-equity universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ; $T_{\text{IS}} = 2{,}516$, seed $20260420$). The procedure alternates: (i) bracketed golden-section maximisation of $\nu$ at the current $\Sigma$, (ii) method-of-moments refit of $\Sigma$ at the current $\nu$ on the $t$-quantile-transformed pseudo-uniform sample with PSD projection. Iteration terminates at $|\Delta \log L| < 10^{-3}$.
+A natural concern with the body two-step copula estimator (Kendall's-$\tau$ inversion for $\hat\Sigma$, then profile MLE on $\nu$ with $\hat\Sigma$ held fixed) is that it may be biased toward the Gaussian limit when the marginal kurtosis differs across assets. We address this with a coordinate-ascent one-shot MLE that jointly maximises the Student-$t$ copula log-likelihood over $(\Sigma, \nu)$ on the same six-asset US-equity universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ; $T_{\text{IS}} = 2{,}516$, seed $20260420$). The procedure alternates a bracketed golden-section maximisation of $\nu$ at the current $\Sigma$ with a method-of-moments refit of $\Sigma$ at the current $\nu$ on the $t$-quantile-transformed pseudo-uniform sample with PSD projection. Iteration terminates at $|\Delta \log L| < 10^{-3}$.
 
 \begin{table}[!ht]
 \centering

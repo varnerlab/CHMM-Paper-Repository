@@ -33,11 +33,11 @@ We evaluate equation~\eqref{eq:tcop_ll} on the discrete grid $\nu \in \{2, 3, 4,
 In the body cross-asset analysis the selected value was $\hat{\nu} = 6$ on the six-asset universe.
 
 \paragraph{Sampling the copula.}
-To sample $T$ rows from the $d$-dimensional Gaussian copula with correlation $\Sigma$, we (i) compute the Cholesky factor $\Sigma = L L^\top$, (ii) draw $Z \sim \mathcal{N}(0, I_d)$ i.i.d.\ and form $Y = L Z$, and (iii) return $U = \Phi(Y)$ componentwise.
+To sample $T$ rows from the $d$-dimensional Gaussian copula with correlation $\Sigma$, we compute the Cholesky factor $\Sigma = L L^\top$, draw $Z \sim \mathcal{N}(0, I_d)$ i.i.d.\ and form $Y = L Z$, then return $U = \Phi(Y)$ componentwise.
 For the Student-t copula with degrees of freedom $\nu$, we draw $W \sim \chi^2_\nu / \nu$ independent of $Y$ and form the multivariate-$t$ variate $X = Y / \sqrt{W}$, then return $U = t_\nu(X)$ componentwise.
 
 \paragraph{SIM regression summary.}
-Table~\ref{tab:sim_regression} reports the fitted SIM regression coefficients and goodness-of-fit statistics for the non-market assets in the body cross-asset analysis.
+The fitted SIM regression coefficients and goodness-of-fit statistics for the non-market assets in the body cross-asset analysis are reported in Table~\ref{tab:sim_regression}.
 QQQ's high $R^2 = 0.840$ reflects that the Nasdaq-100 ETF is essentially a linear combination of large-cap technology names that also drive the S\&P~500 index, while JNJ's lower $R^2 = 0.260$ reflects the limited systematic exposure of low-beta healthcare stocks.
 These factor loadings and residual magnitudes are what the SIM simulation re-injects at simulation time, and they explain the uneven per-asset KS pass rates reported in Table~\ref{tab:cross_asset_supp_summary}.
 
@@ -62,7 +62,7 @@ QQQ  & $0.047$   & $1.122$ & $0.840$ \\
 \subsubsection{Student-t Copula Profile Log-Likelihood}
 \label{sec:copula_profile_supp}
 
-Figure~\ref{fig:copula_profile} plots the profile log-likelihood of the Student-t copula used in the multi-asset construction, computed on the six-asset SPY cross-section over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ used in the body cross-asset analysis.
+The profile log-likelihood of the Student-t copula used in the multi-asset construction, computed on the six-asset SPY cross-section over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ used in the body cross-asset analysis, is plotted in Fig.~\ref{fig:copula_profile}.
 The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum profile log-likelihood ($6157.47$), and the neighbouring grid points $\nu = 5$ ($6143.37$) and $\nu = 8$ ($6148.37$) each within $15$ profile-log-likelihood units of the peak, indicating a shallow-but-clean optimum that agrees with the $4$--$10$ range typically reported for equity-portfolio Student-t copulas in the risk-management literature. The AIC penalty for the additional $\nu$ parameter is $2$ (one degree of freedom relative to the Gaussian copula limit $\nu \to \infty$), and the AIC differential between the Student-t at $\nu^\star = 6$ and the Gaussian copula limit on these data is $-2 \cdot (6157.47 - 6143.37) - 2 = -30.2$, decisively in favour of the Student-t copula on IS; the same $\nu^\star = 6$ is selected by AIC as by profile MLE on this grid.
 
 \begin{figure}[!ht]
@@ -75,7 +75,7 @@ The curve is smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum 
 \subsubsection{Cross-Asset Correlation Heat Maps (Companion to Table~\ref{tab:cross_asset_supp_summary})}
 \label{sec:cross_asset_corr_supp}
 
-Figure~\ref{fig:cross_asset_corr} visualises the observed and path-averaged simulated correlation matrices for the dependence models of the body cross-asset analysis.
+The observed and path-averaged simulated correlation matrices for the dependence models of the body cross-asset analysis are visualised in Fig.~\ref{fig:cross_asset_corr}.
 The panel ordering is SIM, Gaussian copula, Student-t copula, and a truncated C-vine variant with SPY as root, each reported quantitatively in Table~\ref{tab:cross_asset_supp_summary} and (for the C-vine) Section~\ref{sec:cvine_supp}.
 All five panels share the six-asset SPY cross-section and the same CHMM-N marginals at $K = 18$, so any visible differences between the simulated panels reflect only the dependence construction.
 
@@ -115,7 +115,7 @@ The truncated C-vine variant in panel~(e) of Figure~\ref{fig:cross_asset_corr} u
 
 The body the body cross-asset analysis reports a static-IS-fit OoS off-diagonal MAE of $0.209$, an order of magnitude larger than the IS value of $0.027$. the body discussion attributes this to the stationarity-scope limit and recommends periodic refit. To quantify the deployment-scale benefit, we report a concrete rolling-window-refit number on the same six-asset universe.
 
-We refit the multi-asset Student-t copula on a $252$-day rolling window (one trading year) sliding by $63$ days (one trading quarter) across the OoS span, holding the per-asset CHMM-N marginals fixed at the IS fits used for Table~\ref{tab:cross_asset}. Each refit yields a Kendall's-$\tau$ correlation matrix and a profile-MLE-selected $\nu^\star$ on the discrete grid $\{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$; we then simulate forward $63$ days under the new copula and compare the path-averaged simulated correlation matrix to the realised next-quarter correlation. Table~\ref{tab:rolling_copula} reports the per-quarter detail.
+We refit the multi-asset Student-t copula on a $252$-day rolling window (one trading year) sliding by $63$ days (one trading quarter) across the OoS span, holding the per-asset CHMM-N marginals fixed at the IS fits used for Table~\ref{tab:cross_asset}. Each refit yields a Kendall's-$\tau$ correlation matrix and a profile-MLE-selected $\nu^\star$ on the discrete grid $\{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$; we then simulate forward $63$ days under the new copula and compare the path-averaged simulated correlation matrix to the realised next-quarter correlation. The per-quarter detail is reported in Table~\ref{tab:rolling_copula}.
 
 \begin{table}[!ht]
 \centering
@@ -162,7 +162,7 @@ A quarterly-refit version of GLD CHMM-N at $K^\star = 3$ (5y rolling estimation 
 Refitting the Student-t copula on the augmented seven-ticker universe at $\nu^\star = 6$ gives IS off-diagonal MAE of $0.029$ (six-ticker baseline: $0.027$) and OoS off-diagonal MAE of $0.179$ (six-ticker baseline: $0.209$). Adding the low-equity-correlation gold ETF \emph{reduces} the OoS off-diagonal MAE, because the equity-cluster correlation degradation is the dominant component; pairs involving GLD have moderate IS-to-OoS shifts ($|\Delta| \in [0.04, 0.19]$) while the largest equity-cluster pairs (JNJ--QQQ, SPY--JNJ, NVDA--JNJ) have $|\Delta| > 0.48$ on OoS.
 
 \paragraph{Per-pair OoS gap localisation.}
-Table~\ref{tab:per_pair_offdiag_mae} reports the per-pair off-diagonal absolute deviation between observed and path-averaged simulated correlation matrices on IS and OoS, sorted by OoS $|\Delta|$. The OoS gap concentrates in pairs involving JNJ (the defensive single-name proxy): JNJ's IS correlation with the broad equity factor (QQQ, SPY) collapses on OoS, in some pairs flipping sign, and the IS-fixed copula has no mechanism for tracking that shift. The gold-ETF pairs (SPY-GLD, JPM-GLD, JNJ-GLD, QQQ-GLD) sit in the middle of the ranking with $|\Delta|$ between $0.10$ and $0.19$ on OoS. The dominant cause of the OoS off-diagonal gap is therefore neither equity-cluster size nor copula-degree mis-specification but a single-name regime shift in the JNJ-equity-factor relationship that the IS-fitted dependence layer cannot anticipate.
+The per-pair off-diagonal absolute deviation between observed and path-averaged simulated correlation matrices on IS and OoS, sorted by OoS $|\Delta|$, is reported in Table~\ref{tab:per_pair_offdiag_mae}. The OoS gap concentrates in pairs involving JNJ (the defensive single-name proxy): JNJ's IS correlation with the broad equity factor (QQQ, SPY) collapses on OoS, in some pairs flipping sign, and the IS-fixed copula has no mechanism for tracking that shift. The gold-ETF pairs (SPY-GLD, JPM-GLD, JNJ-GLD, QQQ-GLD) sit in the middle of the ranking with $|\Delta|$ between $0.10$ and $0.19$ on OoS. The dominant cause of the OoS off-diagonal gap is therefore neither equity-cluster size nor copula-degree mis-specification but a single-name regime shift in the JNJ-equity-factor relationship that the IS-fitted dependence layer cannot anticipate.
 
 \begin{table}[t]
 \centering
