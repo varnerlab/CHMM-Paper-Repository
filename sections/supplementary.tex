@@ -185,7 +185,7 @@ We defined six rolling-origin folds, each train $5$ years and test $1$ year, ref
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
-\caption{\textbf{Walk-forward / rolling-origin OoS for CHMM-N}. Six folds, each train 5 years and test 1 year; $N_{\text{paths}} = 500$ per fold. KS pass rate at $\alpha = 0.05$. W2 covers the COVID drawdown; W4 covers the start of the 2022 rate-hike cycle. The bracketed pairs in the bottom row report $[Q_1, Q_3]$ across the six folds (the empirical first and third quartiles, not a scalar IQR width).}
+\caption{\textbf{Walk-forward / rolling-origin OoS for CHMM-N}. Six folds, each train 5 years and test 1 year; $N_{\text{paths}} = 500$ per fold. The KS pass rate is reported at $\alpha = 0.05$. Fold W2 covers the COVID drawdown; fold W4 covers the start of the 2022 rate-hike cycle. The bracketed pairs in the bottom row report $[Q_1, Q_3]$ across the six folds (the empirical first and third quartiles, not a scalar IQR width).}
 \label{tab:walkforward}
 \begin{tabular}{l c c c c c c}
 \toprule
@@ -314,7 +314,7 @@ Table~\ref{tab:emission_families} lists the four CHMM variants' per-state densit
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{The four CHMM emission families.} Per-state density $f_k$ with parameter ranges. CHMM-N and CHMM-L sit at the boundary of CHMM-GED: $p_k = 2$ for all $k$ gives Gaussian, $p_k = 1$ gives Laplace.}
+\caption{\textbf{The four CHMM emission families.} Per-state density $f_k$ with parameter ranges. The Gaussian and Laplace variants sit at the boundary of CHMM-GED: $p_k = 2$ for all $k$ gives Gaussian, $p_k = 1$ gives Laplace.}
 \label{tab:emission_families}
 \begin{tabular}{l l l}
 \toprule
