@@ -1,32 +1,33 @@
-This appendix documents the precise form of the seven per-path metrics referenced in the body evaluation protocol.
+This appendix documents the seven per-path metrics used in the evaluation protocol.
 For each model, 1{,}000 independent paths of length $T$ are simulated (200 paths for the cross-asset extension) and each metric is computed per path before aggregation.
 
 \paragraph{Kolmogorov--Smirnov (KS) pass rate.}
-The two-sample KS statistic \cite{kolmogorov1933, smirnov1948} measures the maximum vertical distance between two empirical CDFs,
+The two-sample KS statistic~\cite{kolmogorov1933, smirnov1948} measures the maximum vertical distance between two empirical CDFs,
 \begin{equation}
-    D_{n,m} = \sup_x |F_n(x) - G_m(x)|.
+    D_{n,m} = \sup_x |F_n(x) - G_m(x)|,
     \label{eq:ks}
 \end{equation}
+where $F_n$ and $G_m$ are the empirical CDFs of the two samples and $n$ and $m$ their sizes.
 The KS pass rate is the fraction of paths for which the test fails to reject distributional equivalence against the reference data at $\alpha = 0.05$.
 
 \paragraph{Anderson--Darling (AD) pass rate.}
-The AD test is the integrated squared CDF deviation with a quadratic tail weighting, making it more sensitive than KS to tail discrepancies.
+The AD test~\citep{scholz1987ksample} is the integrated squared CDF deviation with a quadratic tail weighting, making it more sensitive than KS to tail discrepancies.
 The AD pass rate is the fraction of paths for which the two-sample AD test fails to reject at $\alpha = 0.05$.
 
 \paragraph{Excess kurtosis.}
 Mean simulated excess kurtosis across paths, compared to the observed value.
 Given Gaussian emissions, the CHMM is expected to underestimate kurtosis relative to the heavy-tailed empirical distribution, and the shortfall is one of the reported diagnostics.
 
-\paragraph{ACF-MAE.}
+\paragraph{Autocorrelation-function MAE (ACF-MAE).}
 Mean absolute error between observed and mean-simulated autocorrelation functions of $|G_t|$ over $L = 252$ lags,
 \begin{equation}
     \text{ACF-MAE} = \frac{1}{L}\sum_{\tau=1}^{L} \left| \hat\rho^{\text{obs}}_{|G|}(\tau) - \bar{\hat\rho}^{\,\text{sim}}_{|G|}(\tau) \right|.
     \label{eq:acf_mae_supp}
 \end{equation}
-This is the direct diagnostic for the Ryd\'{e}n et al.\ limitation.
+This is the direct diagnostic for the \citet{ryden1998stylized} limitation.
 
 \paragraph{Wasserstein-1 distance.}
-The mean absolute difference of sorted empirical quantiles, equivalent to the $L^1$ distance between the empirical CDFs \cite{glasserman2003monte},
+The mean absolute difference of sorted empirical quantiles, equivalent to the $L^1$ distance between the empirical CDFs~\cite{glasserman2003monte},
 \begin{equation}
     W_1(F, G) = \int_0^1 |F^{-1}(u) - G^{-1}(u)|\, du.
     \label{eq:wasserstein}
@@ -45,7 +46,7 @@ The fraction of 99 equally-spaced observed quantiles (1st through 99th percentil
 A coverage of 100\% indicates that the simulation envelope fully brackets the observed distribution at every percentile.
 
 \paragraph{Cross-asset metrics.}
-For the cross-asset extension we additionally track the mean Frobenius norm $\|\hat\Sigma_{\text{sim}}^{(p)} - \hat\Sigma_{\text{obs}}\|_F$ and the off-diagonal Pearson correlation MAE between simulated and observed return matrices, averaged over paths. The off-diagonal MAE is averaged over the $d(d-1)/2$ unique upper-triangular entries of the symmetric correlation matrix (so $15$ entries for the six-asset cross-section of the body cross-asset analysis), not double-counted across both triangles:
+For the cross-asset extension we additionally track the mean Frobenius norm $\|\hat\Sigma_{\text{sim}}^{(p)} - \hat\Sigma_{\text{obs}}\|_F$ and the off-diagonal Pearson correlation MAE between simulated and observed return matrices, averaged over paths. The off-diagonal MAE is averaged over the $d(d-1)/2$ unique upper-triangular entries of the symmetric correlation matrix (so $15$ entries for the six-asset cross-section of the main text cross-asset analysis), not double-counted across both triangles:
 \begin{equation*}
     \text{MAE}_{\text{off-diag}} \;=\; \frac{1}{P}\sum_{p=1}^{P} \frac{2}{d(d-1)} \sum_{1 \leq i < j \leq d} \left| \hat\Sigma^{(p)}_{\text{sim},\,ij} - \hat\Sigma_{\text{obs},\,ij} \right|.
 \end{equation*}
@@ -53,18 +54,18 @@ For the cross-asset extension we additionally track the mean Frobenius norm $\|\
 \subsubsection{Continuous Ranked Probability Score and Diebold-Mariano}
 \label{sec:crps_methods}
 
-The OoS CRPS column of Table~\ref{tab:model_comparison} reports a proper-scoring-rule complement to the KS pass rate. We use the unbiased sample CRPS estimator: for an ensemble of $N$ simulated paths $\{x_i\}_{i=1}^N$ at time $t$ and observed value $y_t$,
+The OoS CRPS column of Table~\ref{tab:model_comparison} reports a proper scoring rule complementing the KS pass rate~\citep{gneiting2007strictly}. We use the unbiased sample CRPS estimator: for an ensemble of $N$ simulated paths $\{x_i\}_{i=1}^N$ at time $t$ and observed value $y_t$,
 \begin{equation}
     \widehat{\text{CRPS}}_t = \frac{1}{N} \sum_{i=1}^N |x_i - y_t| - \frac{1}{N(N-1)} \sum_{1 \le i < j \le N} |x_i - x_j|.
 \end{equation}
-The double sum is computed in $O(N \log N)$ via the sorted-ensemble identity $\sum_{i<j} (x_{(j)} - x_{(i)}) = \sum_i x_{(i)} (2i - N - 1)$. The ensemble at each $t$ is the cross-section of the $N = 1{,}000$ unconditional simulated paths used throughout the body Results; this yields a marginal-predictive CRPS suitable for an unconditional generative-fidelity assessment, distinct from the conditional one-step-ahead CRPS used in forecasting.
+The double sum is computed in $O(N \log N)$ via the sorted-ensemble identity $\sum_{i<j} (x_{(j)} - x_{(i)}) = \sum_i x_{(i)} (2i - N - 1)$. The ensemble at each $t$ is the cross-section of the $N = 1{,}000$ unconditional simulated paths used throughout the main text; this yields a marginal-predictive CRPS suitable for an unconditional generative-fidelity assessment, distinct from the conditional one-step-ahead CRPS used in forecasting.
 
-For pairwise comparison we report a Diebold-Mariano test on the per-$t$ loss differential $d_t = \widehat{\text{CRPS}}_t^A - \widehat{\text{CRPS}}_t^B$ with a Newey-West HAC variance under a Bartlett kernel and bandwidth $h = \lfloor T_{\text{OoS}}^{1/3} \rfloor = 8$. Two-sided $p$-values are reported under the standard-normal null. The body claim of the body generator comparison is: CHMM ties or beats every benchmark on mean OoS CRPS, with Gaussian i.i.d.\ the only significantly worse comparator.
+For pairwise comparison we report a Diebold-Mariano test~\citep{diebold1995comparing} on the per-$t$ loss differential $d_t = \widehat{\text{CRPS}}_t^A - \widehat{\text{CRPS}}_t^B$ with a Newey-West HAC variance under a Bartlett kernel and bandwidth $h = \lfloor T_{\text{OoS}}^{1/3} \rfloor = 8$. Two-sided $p$-values are reported under the standard-normal null. The main-text claim is that the CHMM tied or beat every benchmark on mean OoS CRPS, with Gaussian i.i.d.\ the only significantly worse comparator.
 
-\subsubsection{Christoffersen Conditional-Coverage Panel (Companion to the body VaR back-test)}
+\subsubsection{Christoffersen Conditional-Coverage Panel}
 \label{sec:christoffersen_supp}
 
-The body the body VaR back-test reports the unconditional Kupiec $\text{LR}_{\text{uc}}$ statistic. This appendix reports the full Christoffersen \cite{christoffersen1998evaluating} panel: $\text{LR}_{\text{uc}}$ (unconditional coverage), $\text{LR}_{\text{ind}}$ (breach independence), and $\text{LR}_{\text{cc}} = \text{LR}_{\text{uc}} + \text{LR}_{\text{ind}}$ (joint conditional coverage), at $\alpha \in \{0.01, 0.05\}$ on the SPY IS and OoS windows. The breach series is constructed from the pooled-archive VaR threshold (the $\alpha$-quantile of $\mathrm{vec}(\text{sim archive})$ across paths and time), then $\text{br}_t = (R_t \le \widehat{\text{VaR}}_\alpha)$.
+The main-text VaR back-test reports only the unconditional Kupiec $\text{LR}_{\text{uc}}$ statistic~\citep{kupiec1995techniques}. This appendix reports the full Christoffersen~\cite{christoffersen1998evaluating} panel: $\text{LR}_{\text{uc}}$ (unconditional coverage), $\text{LR}_{\text{ind}}$ (breach independence), and $\text{LR}_{\text{cc}} = \text{LR}_{\text{uc}} + \text{LR}_{\text{ind}}$ (joint conditional coverage), at $\alpha \in \{0.01, 0.05\}$ on the SPY IS and OoS windows. The breach series is constructed from the pooled-archive VaR threshold (the $\alpha$-quantile of $\mathrm{vec}(\text{sim archive})$ across paths and time), then $\text{br}_t = (R_t \le \widehat{\text{VaR}}_\alpha)$.
 
 \begin{table}[!ht]
 \centering
@@ -110,12 +111,12 @@ CHMM-GED & OoS & $0.05$ & $19$  & $3.32\%$ & $3.83$ & $0.05$ & $5.26$  & $0.02$ 
 \end{tabular}
 \end{table}
 
-The headline reads as follows. On the unconditional (Kupiec) leg every CHMM variant passes at both levels on both windows; the $\text{LR}_{\text{uc}}$ statistic for the four CHMM rows at $\alpha = 0.05$ on OoS clusters at $3.03$--$3.83$ (just below the $\chi^2_1$ critical value $3.841$), reflecting the integer-breach grid at $T_{\text{OoS}} = 572$ noted in the body table caption. On the independence leg every unconditional generator in the panel (bootstrap, GARCH, and all four CHMM variants) rejects: $\text{LR}_{\text{ind}}$ is in the range $4.71$--$56.46$ across rows. This is structural rather than CHMM-specific. Volatility-clustering in $R_{\text{oos}}$ produces persistent regimes of high and low realised volatility, the OoS-window breaches concentrate inside the high-volatility regime, and a constant-across-$t$ VaR threshold (the construction every unconditional generator uses) cannot track that timing. The natural fix is a regime-conditional VaR that propagates the CHMM latent-state forecast $\Prob(s_{t+1}\,|\,\text{history}_t)$ through the per-state emission-mixture; this is operationally the conditional-VaR companion-paper direction noted in the body Discussion.
+Two patterns stand out (Table~\ref{tab:christoffersen_var}). On the unconditional (Kupiec) leg every CHMM variant passed at both levels on both windows; the $\text{LR}_{\text{uc}}$ statistic for the four CHMM rows at $\alpha = 0.05$ on OoS clustered at $3.03$--$3.83$ (just below the $\chi^2_1$ critical value $3.841$), reflecting the integer-breach grid at $T_{\text{OoS}} = 572$ noted in the main text table caption. On the independence leg every unconditional generator in the panel (bootstrap, GARCH, and all four CHMM variants) rejected: $\text{LR}_{\text{ind}}$ ranged over $4.71$--$56.46$ across rows. This is structural rather than CHMM-specific. Volatility-clustering in $R_{\text{oos}}$ produces persistent regimes of high and low realised volatility, the OoS-window breaches concentrate inside the high-volatility regime, and a constant-across-$t$ VaR threshold (the construction every unconditional generator uses) cannot track that timing. The natural fix is a regime-conditional VaR that propagates the CHMM latent-state forecast $\Prob(s_{t+1}\,|\,\text{history}_t)$ through the per-state emission-mixture; this is operationally the conditional-VaR companion-paper direction noted in the main text Discussion.
 
-\subsubsection{VaR / ES Envelope Visualization (Companion to Table~\ref{tab:var_es})}
+\subsubsection{Value-at-Risk and Expected-Shortfall Envelope Visualization (Companion to Table~\ref{tab:var_es})}
 \label{sec:var_es_supp}
 
-The median and $[5\%, 95\%]$ envelopes across simulated paths are visualised in Fig.~\ref{fig:var_es}; the numeric values are reported in Table~\ref{tab:var_es}.
+The median and $[5\%, 95\%]$ envelopes across simulated paths are visualised in Figure~\ref{fig:var_es}; the numeric values are reported in Table~\ref{tab:var_es}.
 
 \begin{figure}[H]
 \centering
@@ -135,7 +136,7 @@ The median and $[5\%, 95\%]$ envelopes across simulated paths are visualised in 
 \includegraphics[width=\textwidth]{figs/Fig-VaR-ES-d.pdf}
 \caption{OoS ES ($\alpha = 0.05$).}
 \end{subfigure}
-\caption{\textbf{VaR / ES envelope diagnostic} (SPY, \NPaths{1{,}000}; global seed policy in the body evaluation protocol). Each panel shows the simulated median (dot) and $[5\%, 95\%]$ envelope (error bar) across paths against the observed historical value (dashed red line); panels (a)/(b) are the IS window at $\alpha = 0.01$, panels (c)/(d) are the OoS window at $\alpha = 0.05$, and the x-axis in each panel lists the five generators kept for the volatility-aware conditional-coverage comparison (GARCH(1,1), CHMM-N, CHMM-t, CHMM-L, CHMM-GED). The i.i.d.\ bootstrap is omitted here because its envelope is by construction matched to the empirical marginal and does not discriminate among volatility-aware models. The y-axis is the annualized log excess growth rate (daily log return scaled by $1/\Delta t$ with $\Delta t = 1/252$), consistent with the $R_{\text{IS}} / R_{\text{OoS}}$ convention used throughout the paper. Headline: every observed red line falls inside the corresponding simulated envelope, confirming that the CHMM family passes the coverage leg of the back-test complementary to the Kupiec likelihood-ratio leg in the body VaR back-test.}
+\caption{\textbf{VaR / ES envelope diagnostic} (SPY, \NPaths{1{,}000}; global seed policy under the evaluation protocol). Each panel shows the simulated median (dot) and $[5\%, 95\%]$ envelope (error bar) across paths against the observed historical value (dashed red line); panels (a)/(b) are the IS window at $\alpha = 0.01$, panels (c)/(d) are the OoS window at $\alpha = 0.05$, and the x-axis in each panel lists the five generators kept for the conditional-coverage comparison among volatility-aware models (GARCH(1,1), CHMM-N, CHMM-t, CHMM-L, CHMM-GED). The i.i.d.\ bootstrap is omitted here because its envelope is by construction matched to the empirical marginal and does not discriminate among volatility-aware models. The y-axis is the annualized log excess growth rate (daily log return scaled by $1/\Delta t$ with $\Delta t = 1/252$), consistent with the $R_{\text{IS}} / R_{\text{OoS}}$ convention used throughout the paper. Every observed red line falls inside the corresponding simulated envelope, confirming that the CHMM family passes the coverage leg of the back-test complementary to the Kupiec likelihood-ratio leg in the main text VaR back-test.}
 \label{fig:var_es}
 \end{figure}
 
