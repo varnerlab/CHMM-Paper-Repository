@@ -37,8 +37,8 @@ so that conditional on $\nu_k$ the location and scale admit closed-form weighted
     \left(\sigma_k^{\text{new}}\right)^2 = \frac{\sum_t \gamma_t(k)\, u_{t,k}\, (O_t - \mu_k^{\text{new}})^2}{\sum_t \gamma_t(k)}.
     \label{eq:tupdate_supp}
 \end{equation}
-The degrees-of-freedom parameter $\nu_k$ is then refined by a one-dimensional golden-section search on the per-state $Q$-function $Q_k(\nu) = \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k)$ over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$.
-This two-block ECM preserves the monotonicity of the standard EM guarantee on the compact bracket $[\nu_{\min}, \nu_{\max}]$, with the search invariant $Q_k(\nu^{(n+1)}) \ge Q_k(\nu^{(n)})$ at every iteration; the guarantee is stated in full in Proposition~\ref{prop:ecm_monotone}.
+The degrees-of-freedom parameter $\nu_k$ is then refined by a 40-iteration one-dimensional golden-section search on the per-state objective $Q_k(\nu) = \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k)$ over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$.
+Exact conditional maximisation would preserve the standard ECM ascent property. Because the implementation uses a finite numerical search, we treat this as an approximate block update and diagnose convergence from the observed-data log-likelihood trace rather than assert exact monotonicity at every finite-precision iteration.
 We extend this M-step with an optional exponential shrinkage prior on $1/\nu_k$, corresponding to the penalised objective
 \begin{equation}
     Q_k^{\text{pen}}(\nu) \;=\; \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k) \;-\; \lambda \, / \, \nu,
@@ -56,10 +56,10 @@ For Laplace emissions $f_k(x) = \tfrac{1}{2 b_k} \exp(-|x - \mu_k|/b_k)$, with t
 The weighted median is computed by cumulative-weight bracketing with linear interpolation between adjacent order statistics at the half-total weight crossing.
 The Laplace M-step carries no shape parameter, so CHMM-L is strictly cheaper per iteration than CHMM-t (which requires the per-state $Q_k$ search).
 
-\paragraph{CHMM-GED M-step (three-stage ECM with closed-form scale).}
-For Generalized Error Distribution emissions $f_k(x) = \mathrm{GED}(x; \mu_k, \alpha_k, p_k) = \frac{p_k}{2 \alpha_k \Gamma(1/p_k)} \exp\!\big(-(|x - \mu_k|/\alpha_k)^{p_k}\big)$ the M-step decomposes into three CM updates per state. Given current $(\mu_k^{(n)}, \alpha_k^{(n)}, p_k^{(n)})$, CM-1 updates the location by minimising the per-state weighted $L^{p_k}$ loss,
+\paragraph{CHMM-GED M-step (three-stage ECM-style update with closed-form scale).}
+For Generalized Error Distribution emissions $f_k(x) = \mathrm{GED}(x; \mu_k, \alpha_k, p_k) = \frac{p_k}{2 \alpha_k \Gamma(1/p_k)} \exp\!\big(-(|x - \mu_k|/\alpha_k)^{p_k}\big)$ the M-step decomposes into three block updates per state. Given current $(\mu_k^{(n)}, \alpha_k^{(n)}, p_k^{(n)})$, the first block updates the location by minimising the per-state weighted $L^{p_k}$ loss,
 \begin{equation}
-    \mu_k^{(n+1)} \;=\; \arg\min_{\mu \in I_k} \;\sum_t \gamma_t(k)\, \big|O_t - \mu\big|^{p_k^{(n)}},
+    \mu_k^{(n+1)} \;=\; \operatorname{GoldenSearchMin}_{\mu \in I_k} \;\sum_t \gamma_t(k)\, \big|O_t - \mu\big|^{p_k^{(n)}},
     \qquad I_k \;=\; \big[\min_t O_t,\, \max_t O_t\big],
     \label{eq:ged_mu}
 \end{equation}
@@ -70,10 +70,10 @@ by a $40$-iteration golden-section search; CM-2 updates the scale in closed form
 \end{equation}
 and CM-3 updates the shape by maximising the per-state $Q$-function over the bracket,
 \begin{equation}
-    p_k^{(n+1)} \;=\; \arg\max_{p \in [p_{\min},\, p_{\max}]} \;\sum_t \gamma_t(k)\, \log f_k\!\big(O_t;\, \mu_k^{(n+1)},\, \alpha_k^{(n+1)},\, p\big),
+    p_k^{(n+1)} \;=\; \operatorname{GoldenSearchMax}_{p \in [p_{\min},\, p_{\max}]} \;\sum_t \gamma_t(k)\, \log f_k\!\big(O_t;\, \mu_k^{(n+1)},\, \alpha_k^{(n+1)},\, p\big),
     \label{eq:ged_p}
 \end{equation}
-again by a $40$-iteration golden-section search over $[p_{\min}, p_{\max}] = [0.5, 3.0]$. The scale update is the unique zero of $\partial Q_k/\partial \alpha$, so CM-2 is exact maximisation, while CM-1 and CM-3 are bracketed maximisations. Each CM step is therefore a partial maximisation, and the standard ECM monotonicity result~\citep{mengrubin1993ecm} applies on the compact bracket; the guarantee is stated in full in Proposition~\ref{prop:ecm_monotone}. At the boundary cases, $p_k = 2$ recovers Gaussian (with $\sigma = \alpha/\sqrt{2}$) and $p_k = 1$ recovers Laplace (with $b = \alpha$).
+again by a $40$-iteration golden-section search over $[p_{\min}, p_{\max}] = [0.5, 3.0]$. The scale update is the exact conditional maximiser. The location objective is convex when $p_k \ge 1$ but can be nonconvex when $p_k < 1$, and both bracketed searches are finite numerical approximations. Accordingly, we use ``ECM-style'' for this three-block procedure and assess convergence from the observed-data log-likelihood trace; the exact ECM monotonicity result~\citep{mengrubin1993ecm} would require every block to attain a conditional maximum. At the boundary cases, $p_k = 2$ recovers Gaussian (with $\sigma = \alpha/\sqrt{2}$) and $p_k = 1$ recovers Laplace (with $b = \alpha$).
 
 \paragraph{Algorithm descriptions.}
 The unified EM procedure shared across all four emission families is given in Algorithm~\ref{alg:chmm_em}: a shared framework (quantile-based initialisation, log-space forward-backward, transition update) plus four family-specific branches at lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep}. The simulator is given in Algorithm~\ref{alg:chmm_simulate}, and the cross-asset rank-reordering simulator for the multi-asset construction in Algorithm~\ref{alg:copula_sim}. Viterbi and SIM-resampling pseudocode are provided in the companion code repository; both are textbook constructions and we omit them from the appendix.
@@ -84,7 +84,7 @@ The unified EM procedure shared across all four emission families is given in Al
 % Unified EM algorithm with family-specific M-step switch
 % ========================================================================================= %
 \begin{breakablealgorithm}
-\caption{Unified EM algorithm for the CHMM family. Lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep} branch on the emission family $F \in \{\mathcal{N}, t, L, \text{GED}\}$; every other line is identical across families. The CHMM-N and CHMM-L variants instantiate classical EM; CHMM-t and CHMM-GED instantiate ECM sequences whose final CM step updates the per-state shape parameter ($\nu_k$ for CHMM-t, $p_k$ for CHMM-GED) by a one-dimensional golden-section search on the per-state $Q$-function. Hyperparameter defaults used throughout this paper: convergence tolerance $\text{tol} = 10^{-4}$ on $\Delta \mathcal L$, $\texttt{max\_iter} = 60$, $40$-iteration golden-section sub-step on every bracketed CM, CHMM-t bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$ with initial $\nu^{(0)} = 6$, CHMM-GED bracket $(p_{\min}, p_{\max}) = (0.5, 3.0)$ with initial $p^{(0)} = 1.5$ and a $\mu_k$ search interval widened to cover the observed data range.}
+\caption{Unified EM algorithm for the CHMM family. Lines~\ref{line:init}, \ref{line:emit}, and \ref{line:mstep} branch on the emission family $F \in \{\mathcal{N}, t, L, \text{GED}\}$; every other line is identical across families. The CHMM-N and CHMM-L variants instantiate classical EM; CHMM-t and CHMM-GED use ECM-style block updates whose shape step is a finite one-dimensional golden-section search. Hyperparameter defaults used throughout this paper: convergence tolerance $\text{tol} = 10^{-4}$ on $\Delta \mathcal L$, $\texttt{max\_iter} = 60$, $40$-iteration golden-section sub-step on every bracketed update, CHMM-t bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$ with initial $\nu^{(0)} = 6$, CHMM-GED bracket $(p_{\min}, p_{\max}) = (0.5, 3.0)$ with initial $p^{(0)} = 1.5$ and a $\mu_k$ search interval widened to cover the observed data range.}
 \label{alg:chmm_em}
 \footnotesize
 \setlength{\baselineskip}{0.95\baselineskip}
@@ -135,14 +135,14 @@ The unified EM procedure shared across all four emission families is given in Al
     \STATE \qquad $u_{t,k} \leftarrow (\nu_k + 1) / (\nu_k + ((O_t - \mu_k)/\sigma_k)^2)$ for all $t, k$.
     \STATE \qquad $\mu_k \leftarrow \sum_t \gamma_t(k)\, u_{t,k}\, O_t / \sum_t \gamma_t(k)\, u_{t,k}$.
     \STATE \qquad $\sigma_k \leftarrow \max\!\left(\sqrt{\sum_t \gamma_t(k)\, u_{t,k}\,(O_t - \mu_k)^2 / \sum_t \gamma_t(k)},\; 10^{-6}\right)$.
-    \STATE \qquad $\nu_k \leftarrow \arg\max_{\nu \in [\nu_{\min}, \nu_{\max}]} \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k)$ \COMMENT{40-iter golden-section search.}
+    \STATE \qquad $\nu_k \leftarrow \operatorname{GoldenSearchMax}_{\nu \in [\nu_{\min}, \nu_{\max}]} \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k)$ \COMMENT{40 iterations.}
     \STATE \quad $F = L$ \COMMENT{closed-form weighted Laplace MLE.}
     \STATE \qquad $\mu_k \leftarrow \text{WeightedMedian}(O_{1:T},\, \gamma_{1:T}(k))$ \COMMENT{cumulative-weight bracketing with interpolation at the $W_k/2$ crossing.}
     \STATE \qquad $b_k \leftarrow \max\!\left(\sum_t \gamma_t(k)\, |O_t - \mu_k| / \sum_t \gamma_t(k),\; 10^{-6}\right)$.
-    \STATE \quad $F = \text{GED}$ \COMMENT{three-stage ECM: bracketed $\mu_k$, closed-form $\alpha_k$, bracketed $p_k$.}
-    \STATE \qquad $\mu_k \leftarrow \arg\min_{\mu \in I_k} \sum_t \gamma_t(k)\, |O_t - \mu|^{p_k}$ \COMMENT{40-iter golden-section search on $I_k = [\min_t O_t, \max_t O_t]$.}
+    \STATE \quad $F = \text{GED}$ \COMMENT{three-stage ECM-style update: bracketed $\mu_k$, closed-form $\alpha_k$, bracketed $p_k$.}
+    \STATE \qquad $\mu_k \leftarrow \operatorname{GoldenSearchMin}_{\mu \in I_k} \sum_t \gamma_t(k)\, |O_t - \mu|^{p_k}$ \COMMENT{40 iterations on $I_k = [\min_t O_t, \max_t O_t]$.}
     \STATE \qquad $\alpha_k \leftarrow \max\!\Big(\big[(p_k / W_k) \sum_t \gamma_t(k)\, |O_t - \mu_k|^{p_k}\big]^{1/p_k},\; 10^{-6}\Big)$ where $W_k = \sum_t \gamma_t(k)$ \COMMENT{closed form, unique zero of $\partial Q_k / \partial \alpha$.}
-    \STATE \qquad $p_k \leftarrow \arg\max_{p \in [p_{\min}, p_{\max}]} \sum_t \gamma_t(k)\, \log \mathrm{GED}(O_t; \mu_k, \alpha_k, p)$ \COMMENT{40-iter golden-section search.}
+    \STATE \qquad $p_k \leftarrow \operatorname{GoldenSearchMax}_{p \in [p_{\min}, p_{\max}]} \sum_t \gamma_t(k)\, \log \mathrm{GED}(O_t; \mu_k, \alpha_k, p)$ \COMMENT{40 iterations.}
 
     \STATE \textbf{Convergence check.} $\mathcal{L}^{(n)} \leftarrow \underset{k}{\text{logsumexp}}(\log \alpha_T(k))$.
     \IF{$|\mathcal{L}^{(n)} - \mathcal{L}_{\text{prev}}| < \text{tol}$} \STATE \textbf{break} \ENDIF
