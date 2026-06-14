@@ -1,5 +1,5 @@
 This appendix documents the seven per-path metrics used in the evaluation protocol.
-For each model, 1{,}000 independent paths of length $T$ are simulated (200 paths for the cross-asset extension) and each metric is computed per path before aggregation.
+For each model, 1{,}000 independent paths of length $T$ are simulated (200 paths for the cross-asset extension) and each metric is computed per path before aggregation, except the ACF-MAE, which compares the observed ACF against the across-path mean simulated ACF.
 
 \paragraph{Kolmogorov--Smirnov (KS) pass rate.}
 The two-sample KS statistic~\cite{kolmogorov1933, smirnov1948} measures the maximum vertical distance between two empirical CDFs,
@@ -8,7 +8,9 @@ The two-sample KS statistic~\cite{kolmogorov1933, smirnov1948} measures the maxi
     \label{eq:ks}
 \end{equation}
 where $F_n$ and $G_m$ are the empirical CDFs of the two samples and $n$ and $m$ their sizes.
-The KS pass rate is the fraction of paths for which the test fails to reject distributional equivalence against the reference data at $\alpha = 0.05$.
+The KS pass rate is the fraction of paths whose marginal is not rejected against the reference data at $\alpha = 0.05$.
+We read it as a descriptive marginal-fidelity score, not a calibrated test: the asymptotic two-sample KS null assumes i.i.d.\ observations, whereas observed and simulated paths carry serial dependence, so the nominal $p$-values are not calibrated here.
+The stationary block-bootstrap KS recalibration provides the temporally aware inferential check.
 
 \paragraph{Anderson--Darling (AD) pass rate.}
 The AD test~\citep{scholz1987ksample} is the integrated squared CDF deviation with a quadratic tail weighting, making it more sensitive than KS to tail discrepancies.

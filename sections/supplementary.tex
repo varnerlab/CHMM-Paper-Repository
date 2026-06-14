@@ -23,11 +23,11 @@ The transition matrix $\mathbf T \in \R^{K \times K}$ is irreducible and aperiod
 
 \begin{assumption}[Finite second moment and emission contrast]
 \label{ass:moments}
-Each per-state emission density $f_k(\cdot;\boldsymbol\theta_k)$ has finite second moment, $\E_{f_k}[G^2] < \infty$, and at least two states differ in either location $\mu_k$ or scale $\sigma_k$.
+Each per-state emission density $f_k(\cdot;\boldsymbol\theta_k)$ has finite second moment, $\E_{f_k}[G^2] < \infty$. For a non-degenerate absolute-return ACF we further require the state-conditional absolute-return means $m_k = \E[|G_t| \mid s_t = k]$ to differ across at least two states; this rules out only the trivial flat-ACF case and is not needed for the ACF identity itself.
 \end{assumption}
 
 \paragraph{Numerical optimisation scope.}
-The CHMM-N and CHMM-L M-steps are exact conditional maximisations. For CHMM-t and CHMM-GED, exact maximisation of every numerical block would give the standard ECM ascent property~\cite{wu1983convergence, mengrubin1993ecm}. The implementation instead uses fixed-iteration bounded searches for $\nu_k$, $\mu_k$, and $p_k$. These are approximate block updates, and the GED location objective can be nonconvex when $p_k < 1$. We therefore do not claim exact likelihood monotonicity for every finite-precision iteration. Numerical convergence is assessed from the observed-data log-likelihood trace using the tolerance and iteration cap stated in Algorithm~\ref{alg:chmm_em}. Even when an ascent condition is enforced, bounded monotone likelihood values imply convergence of the likelihood sequence, not necessarily convergence of the full parameter sequence to a unique maximiser.
+The CHMM-N and CHMM-L M-steps are exact conditional maximisations. For CHMM-t and CHMM-GED, exact maximisation of every numerical block would give the standard ECM/ECME ascent property~\cite{wu1983convergence, mengrubin1993ecm}. The implementation instead uses fixed-iteration bounded searches for $\nu_k$, $\mu_k$, and $p_k$. These are approximate block updates, and the GED location objective can be nonconvex when $p_k < 1$. We therefore do not claim exact likelihood monotonicity for every finite-precision iteration. Numerical convergence is assessed from the observed-data log-likelihood trace using the tolerance and iteration cap stated in Algorithm~\ref{alg:chmm_em}. Even when an ascent condition is enforced, bounded monotone likelihood values imply convergence of the likelihood sequence, not necessarily convergence of the full parameter sequence to a unique maximiser.
 
 \paragraph{Numerical full-rank check on $\hat{\mathbf T}$.}
 Full rank of $\mathbf T$ is a separate sufficient condition in the HMM identifiability result of \citet{allman2009identifiability}; it does not follow from irreducibility. As an empirical diagnostic, the fitted $\hat{\mathbf T}$ at $K = 18$ across the four emission families on SPY IS was full rank in the numerical sense (smallest singular value $\sigma_{\min} \in [0.0007, 0.0170]$, condition numbers $63$ to $1{,}620$), and the deflated matrix $\hat{\mathbf T} - \mathbf 1\bar{\boldsymbol\pi}^\top$ had numerical rank exactly $K - 1 = 17$ across all four families. This fitted-matrix check is not by itself a proof of population identifiability.
@@ -85,7 +85,7 @@ The OoS series spans January~4, 2024 through April~20, 2026 ($T_{\text{OoS}} = 5
 \subsection{Variant Decision Guide}
 \label{sec:variant_decision_guide}
 
-This appendix recommends a CHMM emission family by use-case priority (Table~\ref{tab:variant_choice}). All four variants share the forward-backward framework and quantile-based initialisation; the M-step is the only architectural difference. The shared-$\nu$ Student-$t$ row is the main heavy-tail recommendation: per-state heavy tails without a penalty hyperparameter at the highest IS KS pass rate of any CHMM variant in Table~\ref{tab:model_comparison}. The penalised CHMM-t at $\lambda = 20$ is retained as a sensitivity reference; the $\lambda$ value was tuned at $K = 18$ and is reported at $K^\star = 3$ as an upper bound on the unpenalised heavy tail.
+This appendix recommends a CHMM emission family by use-case priority (Table~\ref{tab:variant_choice}). All four variants share the forward-backward framework, the transition update, and quantile-based initialisation; they differ in the emission density and its M-step update. The shared-$\nu$ Student-$t$ row is the main heavy-tail recommendation: per-state heavy tails without a penalty hyperparameter at the highest IS KS pass rate of any CHMM variant in Table~\ref{tab:model_comparison}. The penalised CHMM-t at $\lambda = 20$ is retained as a sensitivity reference; the $\lambda$ value was tuned at $K = 18$ and is reported at $K^\star = 3$ as an upper bound on the unpenalised heavy tail.
 
 \begin{table}[!ht]
 \centering
@@ -220,10 +220,10 @@ CHMM-t ($\lambda=20$) & $3$  & $0.01$ & $8$  & $1.40\%$ & $-5.59$ & $0.82$ & $2.
 CHMM-t ($\lambda=20$) & $3$  & $0.05$ & $32$ & $5.59\%$ & $-2.73$ & $0.41$ & $0.77$ & $1.19$ \\
 CHMM-t ($\lambda=20$) & $18$ & $0.01$ & $10$ & $1.75\%$ & $-6.25$ & $2.65$ & $1.98$ & $4.62$ \\
 CHMM-t ($\lambda=20$) & $18$ & $0.05$ & $29$ & $5.07\%$ & $-3.15$ & $0.01$ & $1.39$ & $1.40$ \\
-CHMM-L             & $3$  & $0.01$ & $5$  & $0.87\%$ & $-5.45$ & $0.10$ & $4.74$ & $4.84$ \\
-CHMM-L             & $3$  & $0.05$ & $26$ & $4.55\%$ & $-2.63$ & $0.26$ & $2.23$ & $2.48$ \\
-CHMM-L             & $18$ & $0.01$ & $9$  & $1.57\%$ & $-6.18$ & $1.62$ & $0.29$ & $1.91$ \\
-CHMM-L             & $18$ & $0.05$ & $30$ & $5.24\%$ & $-2.80$ & $0.07$ & $1.16$ & $1.23$ \\
+CHMM-L             & $3$  & $0.01$ & $5$  & $0.87\%$ & $-5.43$ & $0.10$ & $4.74$ & $4.84$ \\
+CHMM-L             & $3$  & $0.05$ & $26$ & $4.55\%$ & $-2.62$ & $0.26$ & $2.23$ & $2.48$ \\
+CHMM-L             & $18$ & $0.01$ & $9$  & $1.57\%$ & $-6.16$ & $1.62$ & $0.29$ & $1.91$ \\
+CHMM-L             & $18$ & $0.05$ & $32$ & $5.59\%$ & $-2.82$ & $0.41$ & $0.77$ & $1.19$ \\
 CHMM-GED           & $3$  & $0.01$ & $7$  & $1.22\%$ & $-5.73$ & $0.27$ & $3.34$ & $3.61$ \\
 CHMM-GED           & $3$  & $0.05$ & $31$ & $5.42\%$ & $-2.54$ & $0.21$ & $0.96$ & $1.16$ \\
 CHMM-GED           & $18$ & $0.01$ & $9$  & $1.57\%$ & $-6.55$ & $1.62$ & $2.36$ & $3.98$ \\
