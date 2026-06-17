@@ -1,0 +1,5 @@
+model,is_ks_pct,oos_ks_pct,is_sim_kurt,oos_sim_kurt,is_acf_mae,is_acf_mae_raw,seed,n_paths,is_T,oos_T,source_runner
+Bootstrap,99.8,91.8,7.55,6.86,0.0628,0.0235,20260421,1000,2516,572,runners/headline/run_baselines_and_cross_asset.jl
+Gaussian iid,0.0,1.5,0.00,-0.02,0.0627,0.0235,20260422,1000,2516,572,runners/headline/run_baselines_and_cross_asset.jl
+Laplace iid,98.2,86.3,2.96,2.80,0.0628,0.0235,20260423,1000,2516,572,runners/headline/run_baselines_and_cross_asset.jl
+GARCH(1,1),27.4,59.6,7.59,2.70,0.0490,0.0244,20260426,1000,2516,572,runners/headline/run_baselines_and_cross_asset.jl

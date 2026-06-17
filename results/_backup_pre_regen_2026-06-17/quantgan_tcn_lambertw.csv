@@ -1,0 +1,3 @@
+scope,delta,ks_pass_pct,kurt_obs,kurt_sim,acf_mae_abs,acf_mae_raw,n_finite_paths
+IS,0.10162,0.00,7.678,0.395,0.06244,0.03511,500
+OoS,0.10162,0.00,5.294,0.362,0.05769,0.06079,500
