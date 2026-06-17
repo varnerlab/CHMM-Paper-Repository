@@ -1,4 +1,4 @@
-# CHMM-paper
+# CHMM-Paper-Repository
 
 LaTeX sources for the working paper
 
@@ -11,7 +11,7 @@ This repo holds only the paper sources (`paper.tex` as the shell,
 PDFs and result CSVs referenced by the manuscript). The analysis code,
 data-loading scripts, fitted models, and the Julia modules that produce
 every figure and table live in the sibling repository
-[`CHMM-Model`](https://github.com/altashly1/CHMM-Model).
+[`CHMM-Model-Repository`](https://github.com/varnerlab/CHMM-Model-Repository).
 
 ## Authors
 
@@ -50,7 +50,7 @@ pdflatex -interaction=nonstopmode paper.tex
 pdflatex -interaction=nonstopmode paper.tex
 ```
 
-Produces `paper.pdf`. The current draft compiles to 66 pages (body,
+Produces `paper.pdf`. The current draft compiles to 67 pages (body,
 bibliography, and appendices).
 
 `make clean` removes the usual LaTeX auxiliary files; `make distclean`
@@ -70,14 +70,15 @@ repo cleanliness but is a required submission artifact.
   `\input{sections/*}` for each section body and the appendix.
 - `sections/` -- one `.tex` per section (content-named, no version
   suffixes):
-  - **Body**: `introduction.tex`, `related_work.tex`, `model.tex`,
-    `estimation.tex`, `theory.tex`, `results.tex`, `var_backtest.tex`,
-    `discussion.tex`, `conclusion.tex`, `walkforward_body_table.tex`.
+  - **Body** (in the order `paper.tex` inputs them): `introduction.tex`,
+    `related_work.tex`, then `methods.tex` and `theory.tex` (both under
+    the *Methods* section), `results.tex`, `discussion.tex`, and
+    `conclusion.tex`.
   - **Appendix** (assembled by `supplementary.tex`):
-    `algorithms_appendix.tex`, `metrics_appendix.tex`,
-    `sensitivity_appendix.tex`, `baselines_appendix.tex`,
-    `cross_asset_appendix.tex`.
-- `references.bib` -- bibliography (111 entries).
+    `algorithms_appendix.tex`, `baselines_appendix.tex`,
+    `cross_asset_appendix.tex`, `metrics_appendix.tex`, and
+    `sensitivity_appendix.tex`.
+- `references.bib` -- bibliography (114 entries).
 - `figs/` -- figures referenced by the paper, copied from the companion
   code repo. Includes the four-panel stylized-facts figure, IS / OoS
   comparison panels at K in {3, 6, 12, 18, 21}, per-family ablation
@@ -86,13 +87,17 @@ repo cleanliness but is a required submission artifact.
   correlation panel, the copula profile, and the VaR-ES panel.
 - `results/robustness/` -- CSV result tables (k-selection, walk-forward,
   KS block-bootstrap, MS-GARCH conditional VaR, QuantGAN panels, leverage
-  effect, etc.) referenced verbatim by the paper.
+  effect, etc.) referenced verbatim by the paper. A dated
+  `results/_backup_pre_regen_<date>/` snapshot preserves the previous
+  CSVs from the most recent regeneration sweep.
 
 ## Regenerating the figures and tables
 
 All figures and tables in the paper are produced by the Julia scripts in
-the sibling [`CHMM-Model`](https://github.com/altashly1/CHMM-Model) repo.
-Entry points (run from that repo root with `julia --project=. <script>`):
+the sibling
+[`CHMM-Model-Repository`](https://github.com/varnerlab/CHMM-Model-Repository)
+repo. Entry points (run from that repo root with
+`julia --project=. <script>`):
 
 | Script                                                    | Produces                                                              |
 |-----------------------------------------------------------|-----------------------------------------------------------------------|
@@ -115,19 +120,22 @@ Entry points (run from that repo root with `julia --project=. <script>`):
 | `runners/cross_asset/*.jl`                                | half-unit copula CI, non-US stress test                               |
 | `runners/baselines/*.jl`                                  | Appendix B: SV-AR(1), MSM, Merton-JD, HSMM-Gamma                      |
 
-`CHMM-Model/RUNNERS.md` is the authoritative runner-to-paper-artefact
-map. After regenerating, copy the PDFs from `CHMM-Model/figs/` and the
-CSVs from `CHMM-Model/results/` into `CHMM-paper/figs/` and
-`CHMM-paper/results/` respectively before rebuilding this paper.
+`CHMM-Model-Repository/RUNNERS.md` is the authoritative
+runner-to-paper-artefact map. After regenerating, copy the PDFs from
+`CHMM-Model-Repository/figs/` and the CSVs from
+`CHMM-Model-Repository/results/` into this repo's `figs/` and `results/`
+respectively before rebuilding this paper.
 
 ## Status
 
+- **2026-06-17** -- regenerated the result CSVs (previous tables kept in
+  `results/_backup_pre_regen_2026-06-17/`). The current draft compiles to
+  67 pages with no overfull / underfull boxes and no undefined references
+  or citations.
 - **2026-05-06** -- arXiv-submission-ready after the 2026-05-05 review-response
-  sweep. Compiles cleanly to 66 pages with no LaTeX warnings (no overfull /
-  underfull boxes, no float-too-large notices, no undefined references);
-  `paper.bbl` is built and ready to bundle into the submission tarball.
-  See `CROSS_REF_PLAN.md` for the CHMM-first arXiv submission flow and
-  `PROFF_PREP.md` for the non-specialist brief on the model, tests, and
+  sweep. `paper.bbl` is built and ready to bundle into the submission
+  tarball. See `CROSS_REF_PLAN.md` for the CHMM-first arXiv submission flow
+  and `PROFF_PREP.md` for the non-specialist brief on the model, tests, and
   numbers.
 - The paper is the headline equity-returns CHMM contribution; the
   companion VIX / semi-Markov extension lives in
@@ -141,8 +149,8 @@ MIT. See [`LICENSE`](LICENSE).
 
 ## Related repositories
 
-- [`CHMM-Model`](https://github.com/altashly1/CHMM-Model) -- companion
-  Julia code repository (data loaders, fitted models, runners).
+- [`CHMM-Model-Repository`](https://github.com/varnerlab/CHMM-Model-Repository)
+  -- companion Julia code repository (data loaders, fitted models, runners).
 - [`SM-CHMM-AR-Model`](https://github.com/altashly1/SM-CHMM-AR-Model) /
   [`SM-CHMM-AR-Paper`](https://github.com/altashly1/SM-CHMM-AR-Paper) --
   semi-Markov CHMM-AR extension targeting the CBOE Volatility Index.
