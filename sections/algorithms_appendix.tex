@@ -164,7 +164,7 @@ The unified EM procedure shared across all four emission families is given in Al
 \small
 \begin{algorithmic}[1]
 \REQUIRE Trained CHMM $\mathcal{M} = (\mathbf{T}, \{\boldsymbol\theta_k\}, \boldsymbol{\pi}, F)$ with $\boldsymbol\theta_k = (\mu_k, \sigma_k)$ for $F = \mathcal{N}$; $(\mu_k, \sigma_k, \nu_k)$ for $F = t$; $(\mu_k, b_k)$ for $F = L$; $(\mu_k, \alpha_k, p_k)$ for $F = \mathrm{GED}$. Number of steps $M$, Number of paths $P$
-\ENSURE Simulated return paths $\{\hat{G}^{(p)}_{1:M}\}_{p=1}^{P}$
+\ENSURE Simulated growth-rate paths $\{\hat{G}^{(p)}_{1:M}\}_{p=1}^{P}$
 
 \FOR{$p = 1$ to $P$}
     \STATE Sample initial state $S_1$ from the stationary distribution of $\hat{\mathbf T}$.
@@ -242,4 +242,4 @@ A CHMM-t bracket sweep on $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0, \infty\}$ at $K 
 
 
 \paragraph{Evaluation summary.}
-Observed returns $G_t$ are fit by Baum-Welch CHMM at the default $K^\star = 3$, with $K = 18$ retained as the sensitivity reference for kurtosis fidelity; $1{,}000$ paths are then simulated and per-asset metrics computed (Table~\ref{tab:model_comparison}). For the multi-asset analysis we reuse the per-asset $K^\star = 3$ fits as marginals, draw a copula sample $\mathbf U \sim \mathcal C(\Sigma)$ from the fitted Student-$t$ copula on ranks, rank-reorder the per-asset single-asset paths to match $\mathbf U$, and report cross-asset metrics (Table~\ref{tab:cross_asset}). The single-asset CHMM framework is shared across both; the CHMM training and simulation steps are Algorithms~\ref{alg:chmm_em} and~\ref{alg:chmm_simulate}, the cross-asset rank-reordering step is Algorithm~\ref{alg:copula_sim}, and the architecture diagram for the single-asset framework is Figure~\ref{fig:chmm_architecture}.
+Observed growth rates $G_t$ are fit by Baum-Welch CHMM at the default $K^\star = 3$, with $K = 18$ retained as the sensitivity reference for kurtosis fidelity; $1{,}000$ paths are then simulated and per-asset metrics computed (Table~\ref{tab:model_comparison}). For the multi-asset analysis we reuse the per-asset $K^\star = 3$ fits as marginals, draw a copula sample $\mathbf U \sim \mathcal C(\Sigma)$ from the fitted Student-$t$ copula on ranks, rank-reorder the per-asset single-asset paths to match $\mathbf U$, and report cross-asset metrics (Table~\ref{tab:cross_asset}). The single-asset CHMM framework is shared across both; the CHMM training and simulation steps are Algorithms~\ref{alg:chmm_em} and~\ref{alg:chmm_simulate}, the cross-asset rank-reordering step is Algorithm~\ref{alg:copula_sim}, and the architecture diagram for the single-asset framework is Figure~\ref{fig:chmm_architecture}.
