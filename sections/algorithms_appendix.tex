@@ -225,7 +225,7 @@ This appendix backs the main-text discussion of the per-state shape allocation u
 \paragraph{CHMM-t per-state $\nu_k$.}
 The per-state $\nu_k$ histogram for the $K = 18$ CHMM-t fit is plotted in Figure~\ref{fig:nu_hist}.
 Thirteen of the eighteen states rested at the upper ECM bracket ($\nu_k = 50$), and only two states lay near the lower bracket ($\nu_2 = 2.19$, $\nu_4 = 2.10$).
-The simulated IS mixture kurtosis of $17.44$ was driven by the posterior mass routed to those two very heavy-tailed states, not by a systemic collapse to the lower bracket.
+The simulated IS mixture kurtosis was driven by the posterior mass routed to those two very heavy-tailed states, not by a systemic collapse to the lower bracket.
 
 \begin{figure}[!ht]
 \centering
@@ -238,7 +238,7 @@ The simulated IS mixture kurtosis of $17.44$ was driven by the posterior mass ro
 The generator comparison reports and discusses the $\hat p_k$ partition (Figure~\ref{fig:p_hist}). Briefly, the $K = 18$ CHMM-GED fit on SPY IS was bimodal: eleven states attained exactly $p_k = 3.0$ (thirteen were Gaussian-like with $p_k \ge 1.85$), one state landed at intermediate $p_k = 1.6$, and four states clustered in the Laplace-shape regime $p_k \in [0.86, 1.24]$, concentrated in the high-volatility ranks. The smallest fitted $p_k$ on SPY was $0.86$, well clear of every $p_{\min}$ tested in the bracket sweep, so the lower bracket was non-binding. The bimodal partition replicated across $10$ Monte Carlo seeds and across the cross-asset universe (full robustness panel in the cross-asset robustness appendix).
 
 \paragraph{Bracket-sensitivity sweeps.}
-A CHMM-t bracket sweep on $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0, \infty\}$ at $K = 18$ showed that the kurtosis overshoot is a feature of the Student-$t$ emission at $K = 18$, not a lower-bracket artefact. The simulated IS kurtosis stayed in the $12.25$--$15.12$ band across finite brackets and collapsed to $5.03$ only in the full Gaussian limit. The analogous CHMM-GED sweep on $p_{\max} \in \{2.0, 2.5, 3.0, 3.5, 4.0\}$ left the non-Gaussian state count invariant at $5/18$, with Laplace-like states in $\{3,4,5\}$; tightening $p_{\max}$ from $4.0$ to $3.0$ cost about $4$ nats of LL. The $p_{\min}$ sweep on $\{0.5, 0.7, 0.85\}$ was fully degenerate: every floor produced an identical fit because the smallest observed $\hat p_k$ on SPY was $0.86$.
+A CHMM-t bracket sweep on $\nu_{\min} \in \{2.1, 2.5, 3.0, 4.0, \infty\}$ at $K = 18$ showed that the kurtosis overshoot is a feature of the Student-$t$ emission at $K = 18$, not a lower-bracket artefact. The simulated IS kurtosis stayed in a heavy-tailed band across finite brackets and collapsed only in the full Gaussian limit. The analogous CHMM-GED sweep on $p_{\max} \in \{2.0, 2.5, 3.0, 3.5, 4.0\}$ left the non-Gaussian state count invariant, with Laplace-like states in $\{3,4,5\}$; tightening $p_{\max}$ from $4.0$ to $3.0$ cost only a few nats of LL. The $p_{\min}$ sweep on $\{0.5, 0.7, 0.85\}$ was fully degenerate: every floor produced an identical fit because the smallest observed $\hat p_k$ on SPY was $0.86$.
 
 
 \paragraph{Evaluation summary.}
