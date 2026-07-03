@@ -77,7 +77,7 @@ The main-text spectral mechanism states the algebraic upper bound: the deflated 
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Per-mode contribution to the absolute growth-rate ACF identity}, CHMM-N at $K = 18$ (top panel; top six modes plus tail aggregate) and at $K = 3$ (bottom panel; full). Modes ordered by $|a_k \lambda_k|$ descending. ``cum'' is cumulative share of $\sum_k |a_k \lambda_k|$. At $K = 18$ the top mode (|$\lambda$| = $0.929$) carries $93.6\%$ of the lag-1 ACF, three modes reach $95\%$, and at lag $20$ only the dominant mode contributes non-negligibly. At $K = 3$ the dominant mode (|$\lambda$| = $0.953$) alone carries $96.8\%$ of lag-1 ACF; the temporal axis is therefore as well-satisfied at $K = 3$ as at $K = 18$, consistent with the main text finding that the binding constraint at low $K$ is the marginal mixture, not the eigenvalue spectrum.}
+\caption{\textbf{Per-mode contribution to the absolute growth-rate ACF identity}, CHMM-N at $K = 18$ (top panel; top six modes plus tail aggregate), at $K = 3$ (middle panel; full), and at $K = 2$ (bottom panel; single mode). Modes ordered by $|a_k \lambda_k|$ descending. ``cum'' is cumulative share of $\sum_k |a_k \lambda_k|$. At $K = 18$ the top mode (|$\lambda$| = $0.929$) carries $93.6\%$ of the lag-1 ACF, three modes reach $95\%$, and at lag $20$ only the dominant mode contributes non-negligibly. At $K = 3$ the dominant mode (|$\lambda$| = $0.953$) alone carries $96.8\%$ of lag-1 ACF, and at $K = 2$ the rank bound is at its tight extreme: the single non-unit eigenvalue (|$\lambda$| = $0.942$) carries $100\%$ of the lag-1 ACF. The temporal axis is therefore as well-satisfied at $K = 2$ and $K = 3$ as at $K = 18$, consistent with the main text finding that the binding constraint at low $K$ is the marginal mixture, not the eigenvalue spectrum.}
 \label{tab:spectral_rank}
 \begin{tabular}{c c c c c c c}
 \toprule
@@ -97,6 +97,10 @@ rank & $|\lambda_k|$ & $|a_k|$ & $|a_k \lambda_k|$ & $a_k \lambda_k^5$ & $a_k \l
 \midrule
 1 & $0.953$ & $0.292$ & $0.278$ & $0.230$ & $0.112$ & $0.968$ \\
 2 & $0.866$ & $0.011$ & $0.009$ & $0.005$ & $0.0006$ & $1.000$ \\
+\midrule
+\multicolumn{7}{l}{\textit{$K = 2$, $\rho_{|G|}(1) = 0.252$, $\sigma^2_{|G|} = 2.393$ (rank bound tight)}} \\
+\midrule
+1 & $0.942$ & $0.267$ & $0.252$ & $0.199$ & $0.081$ & $1.000$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -131,7 +135,7 @@ The SPY share of $93.6\%$ sat in the right tail of the distribution; the cross-t
 \subsubsection{Ryd\'{e}n K = 2 Replication}
 \label{sec:ryden_replication}
 
-Direct replication of the \citet{ryden1998stylized} $K = 2$ setting on SPY IS under quantile and random-seed initialisation gave an essentially constant absolute growth-rate ACF-MAE across six initialisations (one quantile + five random seeds, drawn from a moderate perturbation of sample moments), while the IS KS pass rate fell well short of the heavier-tailed CHMM variants. Concretely, CHMM-N at $K = 2$ reached IS KS $79.0\%$ (against $91.5\%$ at $K^\star = 3$), $|G_t|$ ACF-MAE $0.0501$ (against $0.0462$), and simulated excess kurtosis $2.57$ (against $3.83$): the $K = 2 \to 3$ change is almost entirely distributional (KS, excess kurtosis) and negligible on the ACF. The spectral decomposition explains why the temporal axis is unaffected: at $K = 2$ a single non-unit eigenvalue ($\lambda_2 = 0.942$ Gaussian, $0.954$ shared-$\nu$ Student-$t$) already carries $100\%$ of the lag-1 $|G|$ ACF, and this dominant mode is comparably persistent to the dominant mode at higher $K$ (Gaussian $0.942$, $0.953$, $0.929$ at $K = 2, 3, 18$; Student-$t$ $0.954$, $0.936$, $0.913$). The constant ACF-MAE and the saturated single-mode spectrum confirm the main-text reading: the binding low-$K$ constraint was the marginal shape rather than the number of decay modes.
+Direct replication of the \citet{ryden1998stylized} $K = 2$ setting on SPY IS under quantile and random-seed initialisation gave an essentially constant absolute growth-rate ACF-MAE across six initialisations (one quantile + five random seeds, drawn from a moderate perturbation of sample moments), while the IS KS pass rate fell well short of the heavier-tailed CHMM variants. Concretely, CHMM-N at $K = 2$ reached IS KS $79.0\%$ (against $91.5\%$ at $K^\star = 3$), $|G_t|$ ACF-MAE $0.0501$ (against $0.0462$), and simulated excess kurtosis $2.57$ (against $3.83$): the $K = 2 \to 3$ change is almost entirely distributional (KS, excess kurtosis) and negligible on the ACF. The spectral decomposition explains why the temporal axis is unaffected: at $K = 2$ a single non-unit eigenvalue ($\lambda_2 = 0.942$ Gaussian, $0.954$ shared-$\nu$ Student-$t$) already carries $100\%$ of the lag-1 $|G|$ ACF, and this dominant mode is comparably persistent to the dominant mode at higher $K$ (Gaussian $0.942$, $0.953$, $0.929$ at $K = 2, 3, 18$; Student-$t$ $0.954$, $0.936$, $0.913$). A companion four-family fit at $K = 2$ (paper-canonical seed $20260420$, $1{,}000$ paths) isolates the lever: holding the two states fixed, the Gaussian emission gives IS KS $76.8\%$ and simulated excess kurtosis $2.56$ (within the replication's init range above), a per-state Student-$t$ gives $91.6\%$ and $6.24$, and CHMM-GED $90.0\%$ and $4.11$, at an unchanged $|G_t|$ ACF-MAE ($\approx 0.050$); the marginal, not the state count, moves the fit. The constant ACF-MAE and the saturated single-mode spectrum confirm the main-text reading: the binding low-$K$ constraint was the marginal shape rather than the number of decay modes.
 
 
 \subsubsection{\texorpdfstring{Cross-Ticker Per-State-Resolution Sensitivity ($K^\star = 3$ vs $K^\star = 6$ vs $K = 18$)}{Cross-Ticker Per-State-Resolution Sensitivity (K* = 3 vs K* = 6 vs K = 18)}}
