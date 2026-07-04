@@ -420,7 +420,7 @@ $18$ & $86.0$ & $80.2$ & $4.28$ & $4.06$ & $0.0462$ & $0.0548$ \\
 
 \begin{table}[H]
 \centering
-\caption{\textbf{VaR and Expected-Shortfall envelope for SPY} ($N_{\text{paths}} = 1{,}000$). Each entry is the median and $[5, 95]\%$ envelope across paths of the left-tail VaR / ES at $\alpha \in \{0.01, 0.05\}$; observed historical values are in the first row of each block.}
+\caption{\textbf{VaR and Expected-Shortfall envelope for SPY} ($N_{\text{paths}} = 1{,}000$). Each entry is the median and $[5, 95]\%$ envelope across paths of the left-tail VaR / ES at $\alpha \in \{0.01, 0.05\}$; observed historical values are in the first row of each block. This ES envelope is unconditional; the same one-step-ahead state-mixture predictive supports a regime-conditional ES through closed-form per-state tail expectations weighted by the forward-filter state probabilities, the coherent counterpart of the regime-conditional VaR of Table~\ref{tab:cond_var}, which we leave as an extension.}
 \label{tab:var_es}
 \small
 \resizebox{\textwidth}{!}{%
