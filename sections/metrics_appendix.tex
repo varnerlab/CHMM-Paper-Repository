@@ -28,27 +28,6 @@ Mean absolute error between observed and mean-simulated autocorrelation function
 \end{equation}
 This is the direct diagnostic for the \citet{ryden1998stylized} limitation.
 
-\paragraph{Formal volatility-clustering test.}
-ACF-MAE is a distance, not a hypothesis test: it has no null distribution and no critical value, so acceptance is only relative (near the GARCH ceiling is good, near the i.i.d.\ floor is no clustering). As a formal companion we apply the Ljung-Box portmanteau test~\citep{ljung1978} to $|G_t|$ at lag $20$, the volatility-clustering diagnostic used in the discrete-state predecessor~\citep{alswaidan2026hybrid}, together with the McLeod-Li~\citep{mcleod1983} squared-return variant on $G_t^2$; both test the no-autocorrelation null $H_0$ (no ARCH effect) against a $\chi^2_{20}$ reference with critical value $31.41$ at the $5\%$ level. On the observed SPY series $H_0$ is rejected decisively on both windows (Table~\ref{tab:arch_clustering}; $|G_t|$ statistic $Q = 2959$ in-sample and $Q = 251$ out-of-sample, both $p < 10^{-40}$), confirming that the third stylized fact is statistically significant rather than a descriptive level. For each generator we report the temporal analog of the KS pass rate: over the $1{,}000$ simulated paths, the median $Q$-statistic (a graded measure, since a binary reject rate saturates for any clustered series) and the fraction of paths that reject $H_0$. The reading tracks the ACF-MAE column exactly: the i.i.d.\ bootstrap sits at the no-clustering floor (median $Q$ below the critical value, reject rate at the nominal $5\%$ size), while GARCH and the CHMM variants retain the ARCH structure in essentially every path. The test therefore corroborates the ACF-MAE ranking with a calibrated p-value, and the two agree.
-
-\begin{table}[tbp]
-\centering
-\caption{\textbf{Formal volatility-clustering (Ljung-Box / McLeod-Li) test} on SPY (seed $20260420$, $1{,}000$ simulated paths, CHMM at $K^\star = 3$). $Q_{|G|}$ is the Ljung-Box statistic on $|G_t|$ at lag $20$; the McLeod-Li variant on $G_t^2$ gives the same ordering (companion CSV in the code repository). For generators the entry is the median $Q$ across paths and the reject rate (fraction of paths with $p < 0.05$); the Observed row is the single-series statistic, rejecting $H_0$ at $p < 10^{-40}$ on both windows. Critical value $\chi^2_{20}(0.95) = 31.41$. The i.i.d.\ bootstrap sits at the no-clustering floor ($Q$ below critical, reject rate near the nominal $5\%$ size); GARCH and the CHMM rows reject in essentially every path, matching the ACF-MAE column of Table~\ref{tab:model_comparison}.}
-\label{tab:arch_clustering}
-\small
-\begin{tabular}{l r r r r}
-\toprule
-Generator & IS $Q_{|G|}$ & IS rej.\ \% & OoS $Q_{|G|}$ & OoS rej.\ \% \\
-\midrule
-\textit{Observed (target)}          & $2959$ & --    & $251$  & --     \\
-i.i.d.\ bootstrap                    & $18.9$ & $4.2$ & $18.7$ & $5.7$  \\
-GARCH(1,1)                           & $3221$ & $100$ & $414$  & $100$  \\
-CHMM-N                               & $1813$ & $100$ & $366$  & $100$  \\
-CHMM-t (pen.\ $\lambda = 20$)        & $737$  & $100$ & $163$  & $99.5$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \paragraph{Wasserstein-1 distance.}
 The mean absolute difference of sorted empirical quantiles, equivalent to the $L^1$ distance between the empirical CDFs~\cite{glasserman2003monte},
 \begin{equation}
