@@ -330,17 +330,17 @@ The full per-construction multi-asset panel is in the cross-asset appendix; for 
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Cross-asset dependence summary} (multi-asset construction; CHMM-N marginals at $K = 3$; $200$ paths; seed \texttt{20260422}). Median per-asset KS pass rate (\%) and off-diagonal MAE of the simulated correlation matrix vs.\ observed. Bold marks the column winner. The Student-t copula at $\nu^\star = 6$ is the strongest dependence layer on the two IS columns; on OoS the Gaussian copula attains marginally lower off-diagonal MAE ($0.204$ vs.\ $0.209$) while the truncated C-vine sits between the elliptical copulas and the SIM baseline. Full per-asset detail is in the cross-asset appendix.}
+\caption{\textbf{Cross-asset dependence summary} (multi-asset construction; CHMM-N marginals at $K = 3$; $200$ paths; seed \texttt{20260422}). Median per-asset KS pass rate (\%) and off-diagonal MAE of the simulated correlation matrix vs.\ observed. Bold marks the column winner in the off-diagonal MAE columns only: the three copulas preserve the same CHMM-N marginals by rank reordering, so their per-asset KS medians differ only by Monte-Carlo path noise and no KS winner is marked. The Student-t copula at $\nu^\star = 6$ attains the lowest IS off-diagonal MAE; on OoS the Gaussian copula attains marginally lower off-diagonal MAE ($0.204$ vs.\ $0.209$) while the truncated C-vine sits between the elliptical copulas and the SIM baseline. Full per-asset detail is in the cross-asset appendix.}
 \label{tab:cross_asset_supp_summary}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{l c c c c}
 \toprule
 & Median IS KS & Median OoS KS & Off-diag MAE IS & Off-diag MAE OoS \\
 \midrule
-Single Index Model       & $71.0$  & $87.0$  & $0.077$ & $0.252$ \\
-Gaussian copula          & $88.8$  & $\mathbf{87.5}$  & $0.029$ & $\mathbf{0.204}$ \\
-Student-t copula ($\nu^\star = 6$) & $\mathbf{89.5}$  & $85.8$  & $\mathbf{0.027}$ & $0.209$ \\
-Truncated C-vine (root SPY) & $90.0$  & $86.0$  & $0.068$ & $0.236$ \\
+Single Index Model       & $71.0$  & $84.2$  & $0.077$ & $0.252$ \\
+Gaussian copula          & $88.8$  & $84.2$  & $0.029$ & $\mathbf{0.204}$ \\
+Student-t copula ($\nu^\star = 6$) & $89.5$  & $81.5$  & $\mathbf{0.027}$ & $0.209$ \\
+Truncated C-vine (root SPY) & $90.0$  & $81.0$  & $0.068$ & $0.236$ \\
 \bottomrule
 \end{tabular}%
 }

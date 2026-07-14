@@ -21,12 +21,20 @@ Mean simulated excess kurtosis across paths, compared to the observed value.
 Given Gaussian emissions, the CHMM is expected to underestimate excess kurtosis relative to the heavy-tailed empirical distribution, and the shortfall is one of the reported diagnostics.
 
 \paragraph{Autocorrelation-function MAE (ACF-MAE).}
-Mean absolute error between observed and mean-simulated autocorrelation functions of $|G_t|$ over $L = 252$ lags,
+Mean absolute error between the observed and simulated autocorrelation functions of $|G_t|$ over $L = 252$ lags, computed per simulated path and averaged over the $P$ paths,
 \begin{equation}
-    \text{ACF-MAE} = \frac{1}{L}\sum_{\tau=1}^{L} \left| \hat\rho^{\text{obs}}_{|G|}(\tau) - \bar{\hat\rho}^{\,\text{sim}}_{|G|}(\tau) \right|.
+    \text{ACF-MAE} = \frac{1}{P}\sum_{p=1}^{P}\frac{1}{L}\sum_{\tau=1}^{L} \left| \hat\rho^{\text{obs}}_{|G|}(\tau) - \hat\rho^{\,\text{sim},(p)}_{|G|}(\tau) \right|.
     \label{eq:acf_mae_supp}
 \end{equation}
 This is the direct diagnostic for the \citet{ryden1998stylized} limitation.
+
+\paragraph{Hill tail index.}
+For the magnitude series $|G_t|$ with descending order statistics $x_{(1)} \ge \cdots \ge x_{(T)}$ and $k = \lceil 0.05\,T \rceil$ upper-tail exceedances, the Hill estimator~\cite{hill1975tail} is
+\begin{equation}
+    \hat\xi = \frac{1}{k}\sum_{i=1}^{k} \log \frac{x_{(i)}}{x_{(k+1)}}, \qquad \hat\alpha = 1/\hat\xi,
+    \label{eq:hill_supp}
+\end{equation}
+so that $\hat\alpha$ estimates the tail index of a Pareto-type tail. The same estimator is applied to the observed window and to each simulated path. The observed confidence interval is a stationary block bootstrap (mean block length $10$, $B = 2{,}000$); the simulated band is the across-path $[2.5\%, 97.5\%]$ quantile band. The per-side variant applies the estimator to gains and losses separately with equal exceedance counts.
 
 \paragraph{Wasserstein-1 distance.}
 The mean absolute difference of sorted empirical quantiles, equivalent to the $L^1$ distance between the empirical CDFs~\cite{glasserman2003monte},
