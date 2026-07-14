@@ -3,10 +3,12 @@
 Comparison of Paper II ("Continuous Hidden Markov Models for Equity Returns: Heavy-Tail
 Emission Families and Regime-Conditional Value-at-Risk") as published on arXiv against the
 current repository LaTeX source. This file supersedes the 2026-07-07 diff notes; it covers
-both the pre-exam revision wave and the 2026-07-13 reconciliation pass.
+the pre-exam revision wave, the 2026-07-13 reconciliation pass, and the 2026-07-14 Ryden
+source-check pass (section 8).
 
-- Version A (repo): `CHMM-Paper-Repository/paper.tex` + `sections/*.tex` at commit `c145c82`
-  (2026-07-13). The thesis chapter `chapters/papers/paper-two/` is a verified word-level
+- Version A (repo): `CHMM-Paper-Repository/paper.tex` + `sections/*.tex` as of 2026-07-14
+  (reconciliation base commit `c145c82` plus the section 8 pass). The thesis chapter
+  `chapters/papers/paper-two/` is a verified word-level
   mirror of this version (differences are only US spelling, `_p2` label suffixes, and thesis
   caption style).
 - Version B (arXiv): `arXiv:2606.23492v1 [q-fin.ST]`, 22 Jun 2026 (the only published
@@ -23,6 +25,10 @@ The repo is a strictly later and more defensible revision. Changes fall into thr
    per-asset data. This is the only place the two versions now disagree on a number.
 3. **One new analysis** (2026-07-13): a Hill tail-index table and paragraph that put the
    heavy-tail claim on a stable estimator instead of resting it on excess kurtosis alone.
+4. **Ryden source-check corrections** (2026-07-14): a line-by-line check against the full
+   Ryden, Terasvirta, and Asbrink (1998) text fixed one citation-order error and one
+   mechanism mis-attribution, and strengthened the data-difference argument with their own
+   raw-data numbers (section 8). No numeric result of ours changed.
 
 Everything else that both versions report numerically is identical.
 
@@ -82,6 +88,7 @@ how far into the extreme tail the match extends.
 | Results + Conclusion, bootstrap/HSMM-N comparison | Added: the OoS-KS win of the i.i.d. bootstrap and the ML HSMM-N is confined to the marginal axis; both benchmark rows sit at the i.i.d. \|G_t\| ACF-MAE floor (0.0628 and 0.0629) while CHMM-N clusters below it at 0.0462 | Win reported; clustering counterpoint left implicit in the table | Prevents over-reading "HSMM-N is simply better"; the Gamma-sojourn K = 18 nuance in the conclusion is unchanged |
 | Methods + metrics appendix, ACF-MAE definition | Per-path MAE averaged over the P paths (matches the code, `run_chmm_t_penalised_headline.jl`) | MAE against the path-averaged mean ACF | The published numbers were always computed per path; the equation now matches what was computed. No value changes |
 | Methods, EM cost | New sentence: each EM iteration costs O(K^2 T) for the forward-backward recursions and transition update, plus per-family emission updates | Qualitative only | Standard cost statement, aids the compute discussion |
+| Methods, path count | "P (reported as N_paths in the result tables)" | P and N_paths used without an explicit bridge | The two symbols denote the same quantity; one clause ties them |
 | Discussion, leverage effect | Not targeted; a partial effect emerges from the regime means (per-path envelope brackets the observed IS value of -0.135, `tab:leverage_effect`); the dynamic effect is not modelled | "symmetric emissions cannot reproduce a negative cross-correlation by construction" | The arXiv sentence contradicted the paper's own leverage appendix table |
 | Sensitivity appendix, shared-nu reading | "14.4 for the unpenalised per-state nu_k fit at K = 18 (Table extended_baselines; consistent with the lambda = 0 entry of Table nu_shrinkage)" | "14.4 for the per-state nu_k unpenalised row in the main text" | The main text has no such row; the pointer was stale from the earlier K = 18 main-panel draft |
 | Cross-asset table caption | States the dependence-metric convention explicitly: correlation computed per simulated path against the observed matrix, then averaged (full-matrix convention; off-diagonal MAE over the d(d-1)/2 unique upper-triangle entries) | Convention implicit | Makes the numbers reproducible without reading the code |
@@ -194,3 +201,43 @@ ACF-MAE with the new operational floor definition (section 3) plus the Bartlett-
 Deck-side Ljung-Box, DFA-Hurst, and power-law-decay diagnostics remain presentation
 material and are not backported; the tolerance footnote makes the manuscript's clustering
 criterion self-contained without them.
+
+## 8. Ryden source-check pass (2026-07-14)
+
+A line-by-line check of the repo text against the full Ryden, Terasvirta, and Asbrink
+(1998) paper (Journal of Applied Econometrics 13(3), 217-244) produced four wording
+corrections and one strengthening, all in the repo and the thesis mirror, none in arXiv v1.
+No number of ours changed.
+
+- **Citation order (related work).** The arXiv text says Ryden evaluated "against the Cont
+  stylized facts"; Ryden 1998 predates Cont 2001 by three years and evaluated the Granger
+  and Ding (1995) property list. Now: "the stylized facts later codified by Cont (2001)",
+  with the setup made concrete (K = 2 or 3 zero-mean states, subseries of the 1928 to 1991
+  S&P 500 index).
+- **Mechanism attribution (introduction and related work).** Both versions previously
+  attributed the "geometric sojourn-time distribution" diagnosis to Ryden; that framing is
+  Bulla and Bulla's (2006). Ryden's own diagnosis, now quoted directly, is that the slow
+  ACF is the one stylized fact the model could not generate "at least not easily by ML
+  estimation": a finite-state chain produces only exponential ACF decay, and the joint
+  maximum-likelihood fit, constrained by the remaining properties of the data, did not
+  reach the slow-exponential region the transition probabilities allow in principle. This
+  also makes Ryden's own trade-off reading the direct antecedent of the paper's
+  two-channel decomposition.
+- **Strengthened data argument (discussion).** The "difference is the data, not a
+  contradiction" paragraph now cites Ryden et al.'s own raw-data results: on the
+  non-outlier-reduced subseries their two-regime fits understated the absolute-return
+  kurtosis (8.2 against an observed 27.1, and 14.0 against 33.7; their Table I), so the
+  marginal channel already binds on raw data in their own tables. The paragraph also names
+  the outlier-reduction convention (winsorising at four sample standard deviations,
+  following Granger and Ding) and corrects "his" to "their" (the paper has three authors).
+- **Replication caveat (appendix A.7.6).** "Direct replication" softened to "Replication
+  of the K = 2 Gaussian setting", with a new sentence flagging the transported setting:
+  the original fixes state means at zero and maximises the likelihood by direct search on
+  1928 to 1991 S&P 500 subseries, whereas our fit estimates per-state means by EM on the
+  SPY window.
+
+Verified as accurate against the source and left unchanged: "K = 2 or 3", "fit jointly by
+ML", "judged the ACF fit unsatisfactory", "Ryden's own outlier-reduced subseries broke on
+the temporal channel", the reference entry (all three authors, correct volume and pages),
+and the theory and supplementary statements that recast the low-K failure as a rank
+condition.
