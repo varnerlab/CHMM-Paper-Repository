@@ -217,40 +217,40 @@ $18$ & $5.80$ & $\mathbf{95.8}$ & $\mathbf{6.25}$ & $0.0542$ & $0.0234$ & $\math
 \paragraph{Reading.}
 The aggregate-mean IS overshoot disappeared under shared-$\nu$ at every $K$: the largest IS sim kurt was $9.38$ at $K^\star = 6$ (vs.\ observed $7.68$, well inside the bootstrap CI), versus $14.4$ for the unpenalised per-state $\nu_k$ fit at $K = 18$ (Table~\ref{tab:extended_baselines}; consistent with the $\lambda = 0$ entry of Table~\ref{tab:nu_shrinkage}). The $K = 18$ shared-$\nu$ row was the cleanest single-row IS / OoS heavy-tail match in the entire panel: $6.25$ IS / $5.00$ OoS, against observed $7.68$ / $5.29$ and against $8.56$ / $7.07$ for the penalised CHMM-t at $\lambda = 20$. IS / OoS KS pass rates were within $\sim 1$pp of the penalised row, and the $|G_t|$ ACF-MAE was identical to it at $K = 18$. The per-state $\nu_k$ design is therefore the binding constraint behind the aggregate-mean overshoot that motivates the $\lambda$-shrinkage and bracket-lift discussion in the main text: a single shared $\nu$ at $K = 18$ produced the best joint KS / excess kurtosis row in the panel without any penalty. The analysis retains the per-state $\nu_k$ + $\lambda = 20$ construction for direct comparability with the \citet{peel2000robust, liu1995ml} tradition; for heavy-tail fidelity without a penalty hyperparameter, the shared-$\nu$ fit at $K = 18$ is the better choice.
 
-\subsubsection{\texorpdfstring{Christoffersen-cc Monte Carlo Power Calibration at $T_{\text{OoS}} = 572$}{Christoffersen-cc Monte Carlo Power Calibration at T\_OoS = 572}}
+\subsubsection{\texorpdfstring{Christoffersen-cc Monte Carlo Power Calibration at $T_{\text{OoS}} = 573$}{Christoffersen-cc Monte Carlo Power Calibration at T\_OoS = 573}}
 \label{sec:christoffersen_power}
 
-A Monte Carlo power calibration of the Christoffersen-cc joint conditional-coverage test~\citep{christoffersen1998evaluating} at the $T_{\text{OoS}} = 572$ length used for Table~\ref{tab:cond_var} simulates breach indicator sequences from a two-state Markov chain on $\{0, 1\}$ with marginal probability $\alpha$ and second eigenvalue $\rho$, where $\rho = 0$ is the i.i.d.\ null and $\rho > 0$ measures the level of breach clustering; $B = 5{,}000$ replicates per cell.
+A Monte Carlo power calibration of the Christoffersen-cc joint conditional-coverage test~\citep{christoffersen1998evaluating} at the $T_{\text{OoS}} = 573$ length used for Table~\ref{tab:cond_var} simulates breach indicator sequences from a two-state Markov chain on $\{0, 1\}$ with marginal probability $\alpha$ and second eigenvalue $\rho$, where $\rho = 0$ is the i.i.d.\ null and $\rho > 0$ measures the level of breach clustering; $B = 5{,}000$ replicates per cell.
 
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Christoffersen-cc power at $T_{\text{OoS}} = 572$.} Empirical rejection rate at nominal $\alpha = 0.05$, across alpha levels and Markov-chain second-eigenvalue $\rho$. $\rho = 0$ row is the empirical Type-I error under the i.i.d.\ null (should sit near $5\%$ if asymptotic chi-squared is well-calibrated). Critical values $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$.}
+\caption{\textbf{Christoffersen-cc power at $T_{\text{OoS}} = 573$.} Empirical rejection rate at nominal $\alpha = 0.05$, across alpha levels and Markov-chain second-eigenvalue $\rho$. $\rho = 0$ row is the empirical Type-I error under the i.i.d.\ null (should sit near $5\%$ if asymptotic chi-squared is well-calibrated). Critical values $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$.}
 \label{tab:christoffersen_power}
 \begin{tabular}{c c c c c}
 \toprule
 $\alpha$ & $\rho$ & rej-UC \% & rej-IND \% & rej-CC \% \\
 \midrule
-$0.01$ & $0.00$ & $\phantom{0}4.9$ & $\phantom{0}1.6$ & $\phantom{0}3.2$ \\
-$0.01$ & $0.05$ & $\phantom{0}6.3$ & $15.9$ & $11.4$ \\
-$0.01$ & $0.10$ & $\phantom{0}7.5$ & $28.5$ & $22.1$ \\
-$0.01$ & $0.20$ & $\phantom{0}9.4$ & $51.3$ & $42.6$ \\
-$0.01$ & $0.30$ & $13.9$ & $67.6$ & $62.8$ \\
-$0.01$ & $0.50$ & $21.4$ & $75.9$ & $81.5$ \\
+$0.01$ & $0.00$ & $\phantom{0}5.4$ & $\phantom{0}1.8$ & $\phantom{0}3.4$ \\
+$0.01$ & $0.05$ & $\phantom{0}6.4$ & $15.3$ & $11.4$ \\
+$0.01$ & $0.10$ & $\phantom{0}7.3$ & $27.9$ & $21.1$ \\
+$0.01$ & $0.20$ & $10.4$ & $51.7$ & $42.6$ \\
+$0.01$ & $0.30$ & $14.4$ & $67.2$ & $63.1$ \\
+$0.01$ & $0.50$ & $22.3$ & $75.6$ & $82.1$ \\
 \midrule
-$0.05$ & $0.00$ & $\phantom{0}4.9$ & $\phantom{0}3.8$ & $\phantom{0}4.1$ \\
-$0.05$ & $0.05$ & $\phantom{0}5.3$ & $18.8$ & $15.3$ \\
-$0.05$ & $0.10$ & $\phantom{0}6.1$ & $46.2$ & $39.0$ \\
-$0.05$ & $0.20$ & $\phantom{0}9.4$ & $86.9$ & $83.9$ \\
-$0.05$ & $0.30$ & $13.6$ & $97.4$ & $97.9$ \\
-$0.05$ & $0.50$ & $24.3$ & $99.7$ & $100.0$ \\
+$0.05$ & $0.00$ & $\phantom{0}5.9$ & $\phantom{0}4.7$ & $\phantom{0}4.0$ \\
+$0.05$ & $0.05$ & $\phantom{0}6.5$ & $18.5$ & $15.0$ \\
+$0.05$ & $0.10$ & $\phantom{0}8.1$ & $46.5$ & $39.4$ \\
+$0.05$ & $0.20$ & $11.6$ & $87.2$ & $83.8$ \\
+$0.05$ & $0.30$ & $15.8$ & $97.5$ & $97.9$ \\
+$0.05$ & $0.50$ & $27.3$ & $99.7$ & $100.0$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Reading.}
-At $\rho = 0$ the empirical rejection rate sat at $4\%$--$5\%$ for all three statistics, confirming that the asymptotic $\chi^2$ calibration is correctly sized at $T = 572$. Power was asymmetric across $\alpha$. At $\alpha = 0.05$ ($\sim 28.6$ expected breaches), Christoffersen-cc reached $80\%$ power against $\rho \ge 0.20$ ($83.9\%$) and essentially full power at $\rho = 0.50$. At $\alpha = 0.01$ ($\sim 5.7$ expected breaches) it reached $80\%$ power only at $\rho \ge 0.50$ ($81.5\%$); at $\rho = 0.20$ the rejection rate was $42.6\%$, well below conventional power thresholds.
-The reading for Table~\ref{tab:cond_var} is therefore tier-dependent. The $\alpha = 0.05$ clean pass at every $(K, \alpha)$ carried strong power against moderate clustering ($\rho \ge 0.20$); the $\alpha = 0.01$ rows carried strong power only against severe clustering ($\rho \ge 0.50$), so the $\alpha = 0.01$ pass should be read as ``not detectably worse than a strongly-clustered alternative'' rather than ``calibrated against any plausible alternative''. The regime-conditional construction therefore stands at $\alpha = 0.05$ and is power-bounded at $\alpha = 0.01$; the main-text VaR back-test should be read with this calibration in mind.
+At $\rho = 0$ the empirical rejection rates sat within about one point of the nominal $5\%$ for all three statistics, confirming that the asymptotic $\chi^2$ calibration is approximately correctly sized at $T = 573$. Power was asymmetric across $\alpha$. At $\alpha = 0.05$ ($\sim 28.6$ expected breaches), Christoffersen-cc reached $80\%$ power against $\rho \ge 0.20$ ($83.8\%$) and essentially full power at $\rho = 0.50$. At $\alpha = 0.01$ ($\sim 5.7$ expected breaches) it reached $80\%$ power only at $\rho \ge 0.50$ ($82.1\%$); at $\rho = 0.20$ the rejection rate was $42.6\%$, well below conventional power thresholds.
+The reading for Table~\ref{tab:cond_var} is therefore tier-dependent. The uniform $\alpha = 0.05$ non-rejections carried strong power against moderate clustering ($\rho \ge 0.20$); the $\alpha = 0.01$ rows carried strong power only against severe clustering ($\rho \ge 0.50$), so the $\alpha = 0.01$ non-rejections should be read as ``not detectably worse than a strongly-clustered alternative'' rather than ``calibrated against any plausible alternative''. The regime-conditional construction therefore stands at $\alpha = 0.05$ and is power-bounded at $\alpha = 0.01$; the main-text VaR back-test should be read with this calibration in mind.
 
 \subsubsection{Engle-Manganelli Dynamic Quantile Test}
 \label{sec:engle_manganelli_dq}
@@ -266,22 +266,22 @@ on the IS-fixed regime-conditional VaR series of the main text VaR back-test, wi
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Engle-Manganelli DQ test on the regime-conditional VaR}, alongside Christoffersen-cc on the same breach series, for CHMM-N at $K \in \{3, 18\}$, $\alpha \in \{0.01, 0.05\}$; $T_{\text{OoS}} = 572$, $q = 4$ lagged Hit indicators, $\chi^2_6$ critical at $5\%$ is $12.59$.}
+\caption{\textbf{Engle-Manganelli DQ test on the regime-conditional VaR}, alongside Christoffersen-cc on the same breach series, for CHMM-N at $K \in \{3, 18\}$, $\alpha \in \{0.01, 0.05\}$; $T_{\text{OoS}} = 573$, $q = 4$ lagged Hit indicators, $\chi^2_6$ critical at $5\%$ is $12.59$.}
 \label{tab:engle_manganelli_dq}
 \begin{tabular}{c c c c c c}
 \toprule
 $K$ & $\alpha$ & breach \% & $\text{cc}\,p$ & $\text{DQ}$ & $\text{DQ}\,p$ \\
 \midrule
-$3$  & $0.01$ & $1.57$ & $0.137$ & $12.29$ & $0.056$ \\
-$3$  & $0.05$ & $6.12$ & $0.491$ & $\phantom{1}9.32$ & $0.156$ \\
-$18$ & $0.01$ & $1.57$ & $0.137$ & $\mathbf{15.46}$ & $\mathbf{0.017}$ \\
-$18$ & $0.05$ & $4.55$ & $0.678$ & $\phantom{1}3.99$ & $0.678$ \\
+$3$  & $0.01$ & $1.57$ & $0.137$ & $12.27$ & $0.056$ \\
+$3$  & $0.05$ & $6.28$ & $0.391$ & $10.82$ & $0.094$ \\
+$18$ & $0.01$ & $1.57$ & $0.137$ & $\mathbf{15.47}$ & $\mathbf{0.017}$ \\
+$18$ & $0.05$ & $4.54$ & $0.674$ & $\phantom{1}4.00$ & $0.676$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Reading.}
-Both conditional-coverage tests passed cleanly at $\alpha = 0.05$ at both state counts (Table~\ref{tab:engle_manganelli_dq}), so the $\alpha = 0.05$ clean pass survives the higher-power alternative. The p-values were cc $0.491$ and DQ $0.156$ at $K = 3$, and $0.678$ for both tests at $K = 18$. At $\alpha = 0.01$ the DQ test rejected conditional coverage at $K = 18$ ($p = 0.017$) where Christoffersen-cc did not ($p = 0.137$), and was borderline at $K = 3$ ($p = 0.056$). This is consistent with the power-calibration result of Table~\ref{tab:christoffersen_power}: at $\alpha = 0.01$ Christoffersen-cc has only $42.6\%$ power against moderate breach-clustering eigenvalues $\rho = 0.20$, so the higher-power DQ test detects miscalibration that Christoffersen-cc misses. The DQ result therefore reinforces the reading that $\alpha = 0.05$ is the operationally informative tier; the $\alpha = 0.01$ tier is not decided by the panel and should be read as power-limited rather than as a clean pass, with the DQ rejection at $K = 18$ the concrete instance.
+Neither conditional-coverage test rejected at $\alpha = 0.05$ at either state count (Table~\ref{tab:engle_manganelli_dq}), so the $\alpha = 0.05$ non-rejections survive the higher-power alternative. The p-values were cc $0.391$ and DQ $0.094$ at $K = 3$, and cc $0.674$ / DQ $0.676$ at $K = 18$. At $\alpha = 0.01$ the DQ test rejected conditional coverage at $K = 18$ ($p = 0.017$) where Christoffersen-cc did not ($p = 0.137$), and was borderline at $K = 3$ ($p = 0.056$). This is consistent with the power-calibration result of Table~\ref{tab:christoffersen_power}: at $\alpha = 0.01$ Christoffersen-cc has only $42.6\%$ power against moderate breach-clustering eigenvalues $\rho = 0.20$, so the higher-power DQ test detects miscalibration that Christoffersen-cc misses. The DQ result therefore reinforces the reading that $\alpha = 0.05$ is the operationally informative tier; the $\alpha = 0.01$ tier is not decided by the panel and should be read as power-limited rather than as established calibration, with the DQ rejection at $K = 18$ the concrete instance.
 
 
 \subsubsection{Quarterly-Refit Regime-Conditional VaR Back-Test}
@@ -292,21 +292,21 @@ Re-fitting CHMM-N at $K \in \{3, 18\}$ every $63$ trading days on a rolling $5$y
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Quarterly-refit regime-conditional VaR back-test on SPY OoS.} $T_{\text{OoS}} = 572$, refit cadence $= 63$ days, train window $= 1{,}260$ days, seed $= 20260420$. Compare against Table~\ref{tab:cond_var} (IS-fixed parameters). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$.}
+\caption{\textbf{Quarterly-refit regime-conditional VaR back-test on SPY OoS.} $T_{\text{OoS}} = 573$, refit cadence $= 63$ days, train window $= 1{,}260$ days, seed $= 20260420$. Compare against Table~\ref{tab:cond_var} (IS-fixed parameters). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$.}
 \label{tab:cond_var_quarterly_refit}
 \begin{tabular}{l c c c c c c c c c}
 \toprule
 $K$ & $\alpha$ & breaches & br rate & med VaR & $\text{LR}_{\text{uc}}$ & $\text{LR}_{\text{ind}}$ & $\text{LR}_{\text{cc}}$ & $p_{\text{cc}}$ \\
 \midrule
-$3$  & $0.01$ & $\phantom{0}6$ & $1.05\%$ & $-5.10$ & $0.014$ & $3.97$ & $3.98$ & $0.137$ \\
-$3$  & $0.05$ & $29$ & $5.07\%$ & $-3.13$ & $0.006$ & $0.19$ & $0.20$ & $0.906$ \\
-$18$ & $0.01$ & $\phantom{0}6$ & $1.05\%$ & $-5.84$ & $0.014$ & $3.97$ & $3.98$ & $0.137$ \\
-$18$ & $0.05$ & $19$ & $3.32\%$ & $-3.14$ & $3.83$ & $2.08$ & $5.91$ & $0.052$ \\
+$3$  & $0.01$ & $\phantom{0}6$ & $1.05\%$ & $-5.10$ & $0.013$ & $3.97$ & $3.98$ & $0.136$ \\
+$3$  & $0.05$ & $29$ & $5.06\%$ & $-3.12$ & $0.004$ & $0.19$ & $0.20$ & $0.906$ \\
+$18$ & $0.01$ & $\phantom{0}5$ & $0.87\%$ & $-5.64$ & $0.098$ & $4.75$ & $4.84$ & $0.089$ \\
+$18$ & $0.05$ & $20$ & $3.49\%$ & $-3.10$ & $3.06$ & $1.78$ & $4.84$ & $0.089$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The quarterly-refit construction passed Christoffersen-cc at $\alpha = 0.05$ on three of four rows; the $K = 18, \alpha = 0.05$ row sat at $p_{\text{cc}} = 0.052$ (marginal). Refit tightened VaR coverage ($3.32\%$ vs.\ $4.55\%$ IS-fixed) but did not strictly improve the cc-statistic at this $T_{\text{OoS}}$.
+The quarterly-refit construction was not rejected by Christoffersen-cc on any of the four rows, though the two $K = 18$ rows sat at $p_{\text{cc}} = 0.089$ (marginal). Refit tightened VaR coverage at $K = 18$, $\alpha = 0.05$ ($3.49\%$ vs.\ $4.54\%$ IS-fixed) but did not strictly improve the cc-statistic at this $T_{\text{OoS}}$.
 
 \subsubsection{Walk-Forward Refit-Cadence Sweep (Monthly / Weekly)}
 \label{sec:walkforward_refit_cadence}

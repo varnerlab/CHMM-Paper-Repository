@@ -225,22 +225,22 @@ CHMM-GED ($K = 18$)        & $-0.072$ & $[-0.113, -0.029]$ & $-0.076$ & $[-0.163
 \paragraph{Reading.}
 The CHMM family at $K = 18$ produced a non-trivial negative leverage signal despite symmetric per-state emissions: state-mixing on $\hat{\mathbf T}$ asymmetrically couples high-$\sigma_k$ states to negative-$\mu_k$ states, carrying $\sim 65\%$ of the IS observed leverage magnitude. The CHMM-N IS interval $[Q_5, Q_{95}] = [-0.138, -0.037]$ bracketed the IS observed value $-0.135$ at the lower boundary, as did the two asymmetric GARCH variants (EGARCH and GJR-GARCH), which carry an explicit leverage term; CHMM-GED was the second-strongest CHMM entry by median without bracketing. The OoS observed leverage of $-0.214$ exceeded every generator's $Q_5$ (including asymmetric GARCH); closing this residual gap requires skew-emission CHMM extensions or refit to the OoS distribution, both deferred to companion work.
 
-\subsubsection{Full One-Shot Student-t Copula MLE}
+\subsubsection{Iterated Pseudo-Likelihood Student-t Copula Estimator}
 \label{sec:full_tcopula_mle}
 
-A natural concern with the main text two-step copula estimator (Kendall's-$\tau$ inversion for $\hat\Sigma$, then profile MLE on $\nu$ with $\hat\Sigma$ held fixed) is that it may be biased toward the Gaussian limit when the marginal excess kurtosis differs across assets. We addressed this with a coordinate-ascent one-shot MLE that jointly maximises the Student-$t$ copula log-likelihood over $(\Sigma, \nu)$ on the same six-asset US-equity universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ; $T_{\text{IS}} = 2{,}516$, seed $20260420$). The procedure alternates a bracketed golden-section maximisation of $\nu$ at the current $\Sigma$ with a method-of-moments refit of $\Sigma$ at the current $\nu$ on the $t$-quantile-transformed pseudo-uniform sample with PSD projection. Iteration terminates at $|\Delta \log L| < 10^{-3}$.
+A natural concern with the main text two-step copula estimator (Kendall's-$\tau$ inversion for $\hat\Sigma$, then profile MLE on $\nu$ with $\hat\Sigma$ held fixed) is that it may be biased toward the Gaussian limit when the marginal excess kurtosis differs across assets. We addressed this with an iterated pseudo-likelihood estimator that alternates over $(\Sigma, \nu)$ on the same six-asset US-equity universe (SPY, NVDA, JNJ, JPM, AAPL, QQQ; $T_{\text{IS}} = 2{,}516$, seed $20260420$): a bracketed golden-section maximisation of the copula log-likelihood over $\nu$ at the current $\Sigma$, alternating with a method-of-moments refit of $\Sigma$ at the current $\nu$ on the $t$-quantile-transformed pseudo-uniform sample with PSD projection. Iteration terminates at $|\Delta \log L| < 10^{-3}$. The $\nu$ step is a likelihood maximisation, but the $\Sigma$ step is a moment substitution rather than an argmax, so the alternation is not a joint MLE and need not increase the likelihood at every step; we report it as a robustness check on the two-step estimator rather than as a gold-standard joint maximiser.
 
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Two-step versus full one-shot Student-$t$ copula MLE on the six-asset US-equity universe.} The off-diagonal correlation differences are reported as the maximum absolute difference $\max_{ij} |\Delta \rho_{ij}|$ across the $\binom{6}{2} = 15$ pairs and the median absolute difference; both are sub-$0.025$, so the main text $\nu^\star = 6$ choice on $\hat\Sigma$ obtained by Kendall's-$\tau$ inversion is robust to the estimator switch.}
+\caption{Two-step versus iterated pseudo-likelihood Student-$t$ copula estimation on the six-asset US-equity universe. The off-diagonal correlation differences are reported as the maximum absolute difference $\max_{ij} |\Delta \rho_{ij}|$ across the $\binom{6}{2} = 15$ pairs and the median absolute difference; both are sub-$0.025$, so the main text $\nu^\star = 6$ choice on $\hat\Sigma$ obtained by Kendall's-$\tau$ inversion is robust to the estimator switch.}
 \label{tab:full_tcopula_mle}
 \begin{tabular}{l c c}
 \toprule
 Estimator & $\hat\nu$ & log-likelihood \\
 \midrule
 Two-step construction & $6.00$ & $6157.47$ \\
-\textbf{Full one-shot MLE}   & $\mathbf{6.40}$ & $\mathbf{6163.02}$ \\
+\textbf{Iterated pseudo-likelihood}   & $\mathbf{6.40}$ & $\mathbf{6163.02}$ \\
 \midrule
 log-L improvement   & \multicolumn{2}{c}{$+5.55$} \\
 $\max |\Delta \rho_{ij}|$ across $15$ pairs & \multicolumn{2}{c}{$0.024$} \\
