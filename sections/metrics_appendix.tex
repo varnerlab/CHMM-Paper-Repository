@@ -1,5 +1,5 @@
-This appendix documents the seven per-path metrics used in the evaluation protocol.
-For each model, 1{,}000 independent paths of length $T$ are simulated (200 paths for the cross-asset extension) and each metric is computed per path before aggregation, except the ACF-MAE, which compares the observed ACF against the across-path mean simulated ACF.
+This appendix documents the eight per-path metrics used in the evaluation protocol.
+For each model, 1{,}000 independent paths of length $T$ are simulated (200 paths for the cross-asset extension) and each metric is computed per path before aggregation.
 
 \paragraph{Kolmogorov--Smirnov (KS) pass rate.}
 The two-sample KS statistic~\cite{kolmogorov1933, smirnov1948} measures the maximum vertical distance between two empirical CDFs,
@@ -80,7 +80,7 @@ The main-text VaR back-test reports only the unconditional Kupiec $\text{LR}_{\t
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Christoffersen conditional-coverage VaR back-test} (SPY, seed = $20260420$, $K = 18$, $1{,}000$ simulated paths). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. ``br rate'' is the empirical breach rate; $\text{LR}_{\text{uc}}$ is the Kupiec statistic ($\sim\chi^2_1$ under correct unconditional coverage); $\text{LR}_{\text{ind}}$ is the Christoffersen independence statistic ($\sim\chi^2_1$ under independent breaches); $\text{LR}_{\text{cc}} = \text{LR}_{\text{uc}} + \text{LR}_{\text{ind}}$ is the joint conditional-coverage statistic ($\sim\chi^2_2$). PASS if statistic is below critical. Every unconditional generator (i.i.d.\ bootstrap, GARCH, and all four CHMM variants) rejects independence on OoS at $\alpha = 0.05$, consistent with breach clustering driven by volatility-clustering in $R_{\text{oos}}$ rather than a CHMM-specific mis-specification of conditional dynamics.}
+\caption{\textbf{Christoffersen conditional-coverage VaR back-test} (SPY, seed = $20260420$, $K = 18$, $1{,}000$ simulated paths). Critical values: $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. The CHMM-t row is the default unpenalised per-state-$\nu$ fit. ``br rate'' is the empirical breach rate; $\text{LR}_{\text{uc}}$ is the Kupiec statistic ($\sim\chi^2_1$ under correct unconditional coverage); $\text{LR}_{\text{ind}}$ is the Christoffersen independence statistic ($\sim\chi^2_1$ under independent breaches); $\text{LR}_{\text{cc}} = \text{LR}_{\text{uc}} + \text{LR}_{\text{ind}}$ is the joint conditional-coverage statistic ($\sim\chi^2_2$). PASS if statistic is below critical. Every unconditional generator (i.i.d.\ bootstrap, GARCH, and all four CHMM variants) rejects independence on OoS at $\alpha = 0.05$, consistent with breach clustering driven by volatility-clustering in $R_{\text{oos}}$ rather than a CHMM-specific mis-specification of conditional dynamics.}
 \label{tab:christoffersen_var}
 \begin{tabular}{l l c r r r r r r r r}
 \toprule

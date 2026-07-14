@@ -132,7 +132,61 @@ Condensed from the earlier diff notes; all still present.
   sentence, the stationary-OoS dataset scope, the periodic-refit recommendation).
 - No citation was removed; the only addition is Hill (1975).
 
-## 6. Volatility-clustering evidence: decision note
+## 6. Full-manuscript consistency audit (2026-07-13, second pass)
+
+A start-to-end audit of the full source (three independent readings: numeric
+consistency, claims, definitions) produced one further batch of corrections, all
+in the repo (and the thesis mirror), none in arXiv v1:
+
+**Abstract (three changes).**
+- The benchmark sentence no longer implies the semi-Markov model is incapable of
+  the downstream heads: "...matched or exceeded the model on raw single-window
+  fit; the bootstrap carries no latent state for a regime-conditional forecast,
+  and semi-Markov versions of the risk and multi-asset heads are left to
+  companion work." (arXiv: "supported neither the regime-conditional risk
+  forecast nor the multi-asset composition", which over-read as impossibility.)
+- The rank-bound claim is scoped to where the spectral diagnostic was actually
+  run: "We evaluated the model on SPY, a ... panel, a CRSP cross-decade
+  transfer, and a six-asset copula extension; on the SPY and panel spectral
+  diagnostics, the rank bound was not active at the typical ticker..." (arXiv
+  read as if all four settings carried the rank evidence; the CRSP transfer is a
+  regime-introduction stress case.)
+- "passed a joint conditional-coverage test on held-out data and on most
+  walk-forward folds" (the 19/24 walk-forward result is no longer omitted), and
+  "diagnosed whether additional decay modes could help" (the identity is a
+  diagnostic, not a K-selection rule).
+
+**Statement corrections (body).**
+- The sub-60% failing-ticker list in the sector-panel sensitivity now matches
+  its own table: NVDA, UNH, LLY, JPM, WFC, HD, NFLX, VZ, NEE, WMT, NEM (the old
+  list named BAC, which passes at 84.8, and omitted NVDA, WFC, VZ).
+- The convergence note no longer claims "monotonically increasing log-likelihood
+  (EM guarantee)" for all families; it now matches the paper's own ECM caveats
+  (guaranteed for closed-form Gaussian/Laplace, observed empirically for
+  Student-t/GED).
+- The leverage-effect sentence is scoped to what the table shows: CHMM-N's
+  envelope brackets the observed -0.135; the other variants recover about half.
+- Two citations that pointed at the qualitative variant-decision guide for
+  quantitative kurtosis content now point at the main comparison table.
+- The metrics appendix opener now counts eight per-path metrics and no longer
+  carries a stale sentence describing the old mean-ACF estimand.
+- Grammar: "a excess" corrected to "an excess" (three places).
+
+**Cross-run annotations (numbers explained, none changed).** Several appendix
+diagnostics re-fit or re-simulate the same models in their own harness, and the
+paper now says so wherever the values differ from the headline tables: the
+extended panel's GARCH(1,1) row (0.0309 vs the headline 0.0490, optimizer and
+draw); the kurtosis-CI table's aggregate kurtosis (16.65/8.94 own draw vs
+18.87/8.56 headline, the documented draw sensitivity); the rolling-copula static
+baseline (0.207 in-harness vs 0.209 headline); the block-bootstrap KS tables
+(fits at K = 18, not the K* = 3 main rows; the OoS body table is a 500-path
+re-run); the K = 2 IS KS (76.8 canonical seed vs 79.0 init-ensemble, now
+cross-annotated); the pre-2020 validation slice (n = 378 by date-slicing vs
+n = 377 computing growth within the slice); and one unsourced 0.0467 corrected
+to the canonical 0.0462. Bare "CHMM-t" rows in the K = 18 diagnostics are now
+labelled as the unpenalised per-state-nu fit.
+
+## 7. Volatility-clustering evidence: decision note
 
 A Ljung-Box / McLeod-Li formal clustering test was drafted for the paper on 2026-07-04 and
 reverted the same day. Decision (2026-07-13): the paper's clustering evidence stays as the
