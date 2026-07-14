@@ -1,4 +1,4 @@
-This appendix collects supplementary material referenced in the main text: the public API of the companion package, the EM forward-backward recursions and algorithm pseudocode, and the validation metric definitions. It also reports the formal propositions, the full state-resolution and multi-emission sensitivity panels, robustness and KS-power calibration, the extended GARCH and SM-CHMM baselines, the full cross-asset panel, and the $K$-selection and $\nu_k$ diagnostics referenced from the discussion.
+This appendix collects supplementary material referenced in the main text: the EM forward-backward recursions and algorithm pseudocode, and the validation metric definitions. It also reports the formal propositions, the state-resolution and emission-family sensitivity panels, robustness and KS-power calibration, the extended GARCH and SM-CHMM baselines, the full cross-asset panel, and the $K$-selection and $\nu_k$ diagnostics referenced from the discussion.
 
 \subsection{CHMM Algorithms and Derivations}
 \label{sec:supp_algorithms}
@@ -108,7 +108,7 @@ Adaptive per-state shape; data-chosen Gaussian-bulk / Laplace-tail mixture & CHM
 \subsection{State-Resolution and Multi-Emission Sensitivity}
 \label{sec:supp_sensitivity}
 
-This appendix reports the full $K$-sweep underlying the main state count, the multi-emission family extension confirming that $K = 18$ is stable under Student-t and Laplace emissions, the EM convergence curves at representative $K$, the IS and OoS visual comparison panels at non-selected $K \in \{3, 6, 12, 21\}$, the multi-emission figure panels at $K = 18$, and the Ryd\'{e}n $K = 2$ replication. The cross-ticker generalisation distribution at the main state count is summarised in Table~\ref{tab:cross_ticker}.
+This appendix reports the cross-ticker panels and their quarterly-refit rebuilds, the spectral effective-rank diagnostics, the Ryd\'{e}n $K = 2$ replication, the excess kurtosis bootstrap CIs and the shared-$\nu$ ablation, the VaR power calibrations and refit-cadence sweeps, and the cross-decade CRSP validation; the full $K$-sweep table and the EM convergence traces are companion artefacts in the code repository. The cross-ticker generalisation distribution at the main state count is summarised in Table~\ref{tab:cross_ticker}.
 
 \begin{table}[!ht]
 \centering
@@ -135,7 +135,7 @@ Tickers OoS KS $< 60\%$ (IS-fixed)    & $11 / 30$ \\
 \subsection{Robustness, Test Power, Multi-Seed, and Auxiliary Baselines}
 \label{sec:supp_robustness}
 
-This appendix collects the robustness diagnostics and auxiliary baseline panel referenced from the main text Results: the KS test-power calibration, block-bootstrap KS recalibration, bandwidth/bin-count and multi-seed sensitivity, the auxiliary block-bootstrap baseline, the QuantGAN deep-generative baseline, the per-ticker OoS price-simulation figures, and the expanded baseline panel that adds the GARCH family and the SM-CHMM foil to the main table.
+This appendix collects the robustness diagnostics and auxiliary baseline panels referenced from the main text Results: the KS test-power calibration, the IS- and OoS-anchored block-bootstrap KS recalibrations, the QuantGAN deep-generative baseline, the expanded baseline panel that adds the GARCH family and the SM-CHMM foil to the main table, the stochastic-volatility, multifractal, and jump-diffusion baselines, the leverage-effect diagnostic, and the full one-shot Student-$t$ copula MLE; bin-count and multi-seed sensitivity checks are companion artefacts in the code repository.
 
 \input{sections/baselines_appendix}
 
@@ -195,7 +195,7 @@ $21$ & $-2.5847$ & $4.2$ & $-2.2609$ & $94.2$ & --                & --          
 \end{table}
 
 \paragraph{Penalised-ECM rate sweep.}
-The bracket sensitivity is reported in the per-state $\nu_k$ diagnostics block of the algorithms appendix; here we report the complementary $1/\nu_k$ shrinkage rate sweep referenced in the main text Discussion. An exponential $1/\nu_k$ prior at rate $\lambda \in \{0, 5, 20, 50, 100, 200\}$ reduced simulated excess kurtosis monotonically (Table~\ref{tab:nu_shrinkage}): $14.30, 11.19, 8.43, 5.41, 3.96, 3.67$. The recommended rate $\lambda = 20$ brought simulated excess kurtosis to $\approx 8$ (close to the observed $7.68$) at a $1$pp IS KS cost. Only the $\nu_{\min}$ state parameter actually moved ($2.1 \to 4.89$); upper bracket and median remained at $50$. The overshoot is therefore a single-state artefact of the two tail regimes hitting the lower bracket under unpenalised ECM.
+The bracket sensitivity is reported in the per-state $\nu_k$ diagnostics block of the algorithms appendix; here we report the complementary $1/\nu_k$ shrinkage rate sweep that underlies the main text's $\lambda = 20$ specification. An exponential $1/\nu_k$ prior at rate $\lambda \in \{0, 5, 20, 50, 100, 200\}$ reduced simulated excess kurtosis monotonically (Table~\ref{tab:nu_shrinkage}): $14.30, 11.19, 8.43, 5.41, 3.96, 3.67$. The recommended rate $\lambda = 20$ brought simulated excess kurtosis to $\approx 8$ (close to the observed $7.68$) at a $1$pp IS KS cost. Only the $\nu_{\min}$ state parameter actually moved ($2.1 \to 4.89$); upper bracket and median remained at $50$. The overshoot is therefore a single-state artefact of the two tail regimes hitting the lower bracket under unpenalised ECM.
 
 \begin{table}[!htbp]
 \centering

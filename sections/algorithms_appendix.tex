@@ -44,7 +44,7 @@ We extend this M-step with an optional exponential shrinkage prior on $1/\nu_k$,
     Q_k^{\text{pen}}(\nu) \;=\; \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k) \;-\; \lambda \, / \, \nu,
     \label{eq:nu_pen}
 \end{equation}
-maximised by the same golden-section search ($\lambda = 0$ recovers the unpenalised \citet{peel2000robust, liu1995ml} ECME $\nu$ update; the rate sweep and its effect on simulated IS excess kurtosis are in the main text Discussion).
+maximised by the same golden-section search ($\lambda = 0$ recovers the unpenalised \citet{peel2000robust, liu1995ml} ECME $\nu$ update; the rate sweep and its effect on simulated IS excess kurtosis are reported in the $K$-selection and $\nu_k$ diagnostics appendix, Table~\ref{tab:nu_shrinkage}).
 
 \paragraph{CHMM-L M-step (closed-form weighted Laplace MLE).}
 For Laplace emissions $f_k(x) = \tfrac{1}{2 b_k} \exp(-|x - \mu_k|/b_k)$, with the per-state Laplace scale denoted $b_k$ to avoid collision with the backward variable $\beta_t$, the weighted-MLE estimators are available in closed form:

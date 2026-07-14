@@ -29,6 +29,11 @@ The repo is a strictly later and more defensible revision. Changes fall into thr
    Ryden, Terasvirta, and Asbrink (1998) text fixed one citation-order error and one
    mechanism mis-attribution, and strengthened the data-difference argument with their own
    raw-data numbers (section 8). No numeric result of ours changed.
+5. **Self-consistency pass** (2026-07-14): a second full read fixed stale appendix
+   sentences describing earlier drafts (most seriously, text calling the paper's own
+   regime-conditional VaR a companion-paper direction), one direction error in the
+   7-ticker GLD extension, an overclaim in the shared-nu kurtosis framing, and
+   bold-marker and pointer inconsistencies (section 9). No numeric result changed.
 
 Everything else that both versions report numerically is identical.
 
@@ -241,3 +246,62 @@ ML", "judged the ACF fit unsatisfactory", "Ryden's own outlier-reduced subseries
 the temporal channel", the reference entry (all three authors, correct volume and pages),
 and the theory and supplementary statements that recast the low-K failure as a rank
 condition.
+
+## 9. Full-manuscript self-consistency pass (2026-07-14)
+
+A second start-to-end read (main text plus every appendix) checked whether the many
+revision waves left the paper contradicting itself. The core story is consistent
+throughout; the pass fixed a set of stale appendix sentences that still described
+earlier drafts, plus one direction error, in the repo and the thesis mirror. arXiv v1
+carries the older wording on all of these.
+
+Contradictions fixed:
+
+- **Christoffersen appendix vs the paper's own title contribution.** The appendix said
+  the main-text VaR back-test "reports only the unconditional Kupiec statistic" and
+  closed by calling the regime-conditional VaR a "companion-paper direction"; both
+  sentences predate the regime-conditional head, which the main text builds and
+  back-tests with full Christoffersen and DQ panels. Now scoped correctly: that
+  appendix covers the unconditional constant-threshold generator VaR, and its closing
+  sentence points at the main-text construction that fixes the independence rejections.
+- **Direction error in the 7-ticker GLD extension.** The paragraph claimed both that
+  adding GLD "improved the OoS fit" and that the OoS off-diagonal MAE "rose modestly
+  above the six-ticker baseline". The source output (Non_US_Asset.txt) shows 0.179
+  against 0.211: it fell below. The wrong sentence now carries the correct direction
+  and both harness values.
+- **CRPS appendix described a nonexistent table column and a retired claim.** "The OoS
+  CRPS column of Table 1" (CRPS is reported in main-text prose, not as a column) and
+  "the CHMM tied or beat every benchmark" (the main text claims statistical
+  indistinguishability) are both corrected.
+- **Kurtosis-CI appendix defended a retired framing.** "The main-text framing, that the
+  penalised CHMM-t provides the cleanest IS heavy-tail match" no longer exists in the
+  main text (that row is a sensitivity reference whose aggregate mean overshoots); the
+  appendix now states the current framing and keeps its per-path analysis.
+
+Overclaim and formatting corrections:
+
+- The shared-nu row is no longer called "the closest heavy-tail approach without a
+  penalty hyperparameter": on kurtosis distance alone the penalty-free CHMM-L and
+  CHMM-GED rows sit closer to observed (5.24/5.20 and 5.45/5.09 against 7.68/5.29).
+  The sentence now claims what the numbers support (best joint KS-plus-tails row
+  without a penalty) and says the rest explicitly. The main table's kurtosis bolds now
+  follow the caption's own best-within-block rule (closest-to-observed: GARCH(1,1)
+  7.59, Bayesian MS-GARCH K = 4, CHMM-GED IS, CHMM-L OoS), and "CHMM-L sat between
+  Gaussian and Student-t" is anchored to the penalised row in the discussion and
+  conclusion (it is false against the shared-nu value).
+- Leverage-effect table: bolding now matches its caption rule (envelope brackets the
+  observed IS value): EGARCH and GJR-GARCH added (both bracket, as expected with an
+  explicit leverage term), CHMM-GED removed (its envelope does not reach -0.135).
+- Stale pointers: the KS-power reading quoted a CHMM OoS KS range of "80 to 84%" that
+  matches no current row (now 63.6 to 82.1); the "joint-fit corner" spec is scoped to
+  what the K = 18 rows actually satisfy; three supplementary preambles promised content
+  that lives in the companion code repository or was cut (package API, bin-count and
+  multi-seed sensitivity, per-ticker price-simulation figures, EM convergence curves,
+  visual K panels) and now list the actual contents; the methods sentence on auxiliary
+  metrics now says where each panel actually lives (W1 and Hellinger are companion
+  artefacts); the nu-shrinkage rate sweep is pointed at its supplementary table rather
+  than "the main text Discussion"; the cross-decade caption credits the extended-panel
+  table for its K = 18 row.
+
+No numeric result changed anywhere in this pass; the 7-ticker fix corrects prose to
+match the already-committed output file.

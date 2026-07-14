@@ -20,7 +20,7 @@ Gaussian$(\hat\mu_{\text{IS}}, \hat\sigma_{\text{IS}})$ at length $T_{\text{IS}}
 \end{tabular}
 \end{table}
 
-The $90.0\%$ ``nearly correct'' rate is the practical ceiling for the CHMM OoS KS pass rates reported in the main generator comparison ($80$ to $84\%$); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
+The $90.0\%$ ``nearly correct'' rate is the practical ceiling for the CHMM OoS KS pass rates reported in the main generator comparison ($63.6$ to $82.1\%$ across the CHMM rows of Table~\ref{tab:model_comparison}); the $0\%$ rate on the Gaussian misspecified generator confirms that the KS test retains ample power at IS length to reject clearly wrong generators.
 
 \subsubsection{Block-Bootstrap KS Recalibration and Mean p-value Distribution}
 \label{sec:ks_block_bootstrap}
@@ -192,7 +192,7 @@ Merton-JD       & $98.3$ & $91.1$ & $3.12$ & $2.98$ & $0.0627$ & $0.0236$ \\
 \paragraph{Reading.}
 The stochastic-volatility row reproduced the IS excess kurtosis target almost exactly ($7.52$ vs. observed $7.68$) and matched the CHMM-N $|G_t|$ ACF-MAE within $0.0004$ ($0.0466$ vs $0.0462$ at $K^\star = 3$); its KS pass rate was poor ($38.2\%$ IS / $35.3\%$ OoS) because the Gaussian-conditional-on-volatility marginal cannot reproduce the bimodal-bulk / heavy-tail empirical density that the regime-mixture CHMM marginals can. The Merton jump-diffusion row was the inverse trade-off: KS at $98.3\%$ IS / $91.1\%$ OoS (the highest OoS KS in the panel except for the i.i.d.\ bootstrap), but excess kurtosis $3.12$ undershot $7.68$ by half and the absolute growth-rate ACF-MAE regressed to the i.i.d.\ baseline level ($0.0627$, the same level as the bootstrap row of Table~\ref{tab:model_comparison}) because the constant-volatility diffusion plus i.i.d.\ jumps carries no temporal persistence. The multifractal row under the moment-matching fit reported here (closed-form ACF-of-log$|r|$ matching with $\bar k = 8$ binomial multipliers) did not converge to a viable generator on this $T_{\text{IS}} = 2{,}516$ window: the marginal excess kurtosis collapsed to $0.62$ and KS dropped to $0\%$. A full HMM-style filter on the $2^{\bar k}$-state latent multiplier chain~\citep{calvet2004regime} is the standard exact fit and is deferred as a companion-paper direction; under the moment-fit reported here MSM was dominated.
 
-The main conclusion survived the addition of these three rows: no single competitor occupied the joint-fit corner that the CHMM family at $K = 18$ does (KS $\ge 80\%$, excess kurtosis within $1$ unit of observed, $|G_t|$ ACF-MAE $\le 0.06$; Table~\ref{tab:model_comparison}). The SV-AR(1) model was the closest competitor on excess kurtosis and ACF but lost on KS; Merton-JD won on KS but lost on excess kurtosis and ACF; MSM under this fit was dominated.
+The main conclusion survived the addition of these three rows: no single competitor occupied the joint-fit corner that the CHMM family at $K = 18$ spans (KS $\ge 80\%$ and $|G_t|$ ACF-MAE $\le 0.06$ on every family row, with CHMM-L closing the excess kurtosis gap to within $1$ unit of observed; Table~\ref{tab:extended_baselines}). The SV-AR(1) model was the closest competitor on excess kurtosis and ACF but lost on KS; Merton-JD won on KS but lost on excess kurtosis and ACF; MSM under this fit was dominated.
 
 \subsubsection{Leverage-Effect Diagnostic}
 \label{sec:leverage_effect}
@@ -212,18 +212,18 @@ Generator & median & $[Q_5, Q_{95}]$ & median & $[Q_5, Q_{95}]$ \\
 \midrule
 i.i.d.\ bootstrap          & $+0.000$ & $[-0.034, +0.030]$ & $+0.004$ & $[-0.069, +0.068]$ \\
 GARCH(1,1) Gaussian        & $-0.004$ & $[-0.066, +0.064]$ & $-0.003$ & $[-0.112, +0.107]$ \\
-EGARCH(1,1)                & $-0.093$ & $[-0.147, -0.047]$ & $-0.087$ & $[-0.199, -0.002]$ \\
-GJR-GARCH(1,1)             & $-0.079$ & $[-0.153, -0.017]$ & $-0.073$ & $[-0.174, +0.023]$ \\
+\textbf{EGARCH(1,1)}                & $\mathbf{-0.093}$ & $\mathbf{[-0.147, -0.047]}$ & $-0.087$ & $[-0.199, -0.002]$ \\
+\textbf{GJR-GARCH(1,1)}             & $\mathbf{-0.079}$ & $\mathbf{[-0.153, -0.017]}$ & $-0.073$ & $[-0.174, +0.023]$ \\
 \textbf{CHMM-N ($K = 18$)} & $\mathbf{-0.089}$ & $\mathbf{[-0.138, -0.037]}$ & $-0.087$ & $[-0.190, +0.015]$ \\
 CHMM-t ($K = 18$)          & $-0.067$ & $[-0.116, -0.020]$ & $-0.067$ & $[-0.166, +0.019]$ \\
 CHMM-L ($K = 18$)          & $-0.065$ & $[-0.109, -0.020]$ & $-0.064$ & $[-0.159, +0.021]$ \\
-\textbf{CHMM-GED ($K = 18$)} & $\mathbf{-0.072}$ & $[-0.113, -0.029]$ & $-0.076$ & $[-0.163, +0.025]$ \\
+CHMM-GED ($K = 18$)        & $-0.072$ & $[-0.113, -0.029]$ & $-0.076$ & $[-0.163, +0.025]$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Reading.}
-The CHMM family at $K = 18$ produced a non-trivial negative leverage signal despite symmetric per-state emissions: state-mixing on $\hat{\mathbf T}$ asymmetrically couples high-$\sigma_k$ states to negative-$\mu_k$ states, carrying $\sim 65\%$ of the IS observed leverage magnitude. The CHMM-N IS interval $[Q_5, Q_{95}] = [-0.138, -0.037]$ bracketed the IS observed value $-0.135$ at the lower boundary; CHMM-GED was the second-strongest CHMM entry. The OoS observed leverage of $-0.214$ exceeded every generator's $Q_5$ (including asymmetric GARCH); closing this residual gap requires skew-emission CHMM extensions or refit to the OoS distribution, both deferred to companion work.
+The CHMM family at $K = 18$ produced a non-trivial negative leverage signal despite symmetric per-state emissions: state-mixing on $\hat{\mathbf T}$ asymmetrically couples high-$\sigma_k$ states to negative-$\mu_k$ states, carrying $\sim 65\%$ of the IS observed leverage magnitude. The CHMM-N IS interval $[Q_5, Q_{95}] = [-0.138, -0.037]$ bracketed the IS observed value $-0.135$ at the lower boundary, as did the two asymmetric GARCH variants (EGARCH and GJR-GARCH), which carry an explicit leverage term; CHMM-GED was the second-strongest CHMM entry by median without bracketing. The OoS observed leverage of $-0.214$ exceeded every generator's $Q_5$ (including asymmetric GARCH); closing this residual gap requires skew-emission CHMM extensions or refit to the OoS distribution, both deferred to companion work.
 
 \subsubsection{Full One-Shot Student-t Copula MLE}
 \label{sec:full_tcopula_mle}
