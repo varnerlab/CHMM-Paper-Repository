@@ -63,7 +63,7 @@ QQQ  & $0.047$   & $1.122$ & $0.840$ \\
 \label{sec:copula_profile_supp}
 
 The profile log-likelihood of the Student-t copula used in the multi-asset construction, computed on the six-asset SPY cross-section over the grid $\nu \in \{2, 3, 4, 5, 6, 8, 10, 15, 20, 30\}$ used in the main text cross-asset analysis, is plotted in Figure~\ref{fig:copula_profile}.
-The curve was smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum profile log-likelihood ($6157.47$), and the neighbouring grid points $\nu = 5$ ($6143.37$) and $\nu = 8$ ($6148.37$) each within $15$ profile-log-likelihood units of the peak, indicating a shallow-but-clean optimum. The separation from the Gaussian copula limit ($\nu \to \infty$) is established by the parametric bootstrap CI of the half-unit-grid analysis, which requires no Gaussian-copula fit.
+The curve was smooth and single-peaked, with $\nu^{*} = 6$ attaining the maximum profile log-likelihood ($6157.47$), and the neighbouring grid points $\nu = 5$ ($6143.37$) and $\nu = 8$ ($6148.37$) each within $15$ profile-log-likelihood units of the peak, indicating a shallow-but-clean optimum. The separation from the Gaussian copula limit ($\nu \to \infty$) is established by the boundary-appropriate likelihood-ratio test with a simulated Gaussian-copula null reported in the half-unit-grid analysis ($\mathrm{LR} = 697.2$, Monte-Carlo $p = 0.002$).
 
 \begin{figure}[!ht]
 \centering
@@ -144,6 +144,34 @@ $9$ & $[2769, 3020]$ & $[3021, 3083]$ & $6$  & $0.138$ \\
 \end{table}
 
 The quarterly refit closed part of the OoS gap but not most of it: mean off-diagonal MAE moved from $0.207$ static to $0.185$ rolling ($\sim 10\%$ relative improvement). The improvement was concentrated in the later OoS quarters (Q4, Q7, Q8, Q9 all below $0.15$) where the rolling window incorporates more recent OoS data, while early-OoS quarters (Q1, Q3, Q5, Q6) remained at the static-IS level because the rolling window was still dominated by IS observations. The refitted $\nu^\star$ sequence ($15, 15, 10, 6, 6, 6, 5, 5, 6$) tracked the gradual shift from the equity-cluster IS regime toward the OoS regime, supporting the quarterly-refit recommendation in the main-text Discussion. The residual gap (mean MAE $\approx 0.185$ versus IS $0.027$) is consistent with the per-pair JNJ-equity-factor regime shift documented in Table~\ref{tab:per_pair_offdiag_mae}: even a perfectly-refitted copula on the historical $252$ days cannot anticipate the regime shift at the next quarter's start, only track it once it has unfolded.
+
+\subsubsection{Non-Overlapping Six-Name Comparison Basket}
+\label{sec:nonoverlap_basket}
+
+The main six-asset universe contains overlapping ETFs and constituents (SPY holds NVDA, JNJ, JPM, and AAPL; QQQ holds AAPL and NVDA), which concentrates the dependence structure in strong positive co-movement: the observed mean absolute off-diagonal correlation on the IS window is $0.529$. To test the composition away from that overlap we repeated the pipeline on six single names, one per GICS sector, with no ETFs and no cross-holdings: MSFT (Information Technology), UNH (Health Care), BAC (Financials), CAT (Industrials), PG (Consumer Staples), and XOM (Energy), whose IS mean absolute off-diagonal correlation is $0.361$. Per-asset CHMM-N marginals at $K^\star = 3$, Kendall's-$\tau$ inversion, rank reordering, $200$ paths, seed $20260422$ (\path{runners/cross_asset/run_nonoverlap_basket.jl}; artifact \path{results/cross_asset/nonoverlap_basket.txt}).
+
+\begin{table}[!ht]
+\centering
+\small
+\caption{\textbf{Non-overlapping six-name basket} (one large-cap per GICS sector, no ETFs; CHMM-N marginals at $K^\star = 3$; $200$ paths; seed $20260422$). Per-asset KS pass rates at $\alpha = 0.05$ and off-diagonal correlation MAE for the Student-$t$ ($\nu^\star = 6$) and Gaussian copulas on the IS and OoS windows.}
+\label{tab:nonoverlap_basket}
+\begin{tabular}{l c c c c}
+\toprule
+Asset & $t$ IS & $t$ OoS & Gauss IS & Gauss OoS \\
+\midrule
+MSFT & $90.5\%$ & $91.0\%$ & $91.5\%$ & $89.5\%$ \\
+UNH  & $99.5\%$ & $21.5\%$ & $98.5\%$ & $18.0\%$ \\
+BAC  & $96.5\%$ & $82.5\%$ & $98.5\%$ & $84.5\%$ \\
+CAT  & $97.5\%$ & $82.5\%$ & $98.5\%$ & $86.5\%$ \\
+PG   & $100.0\%$ & $97.5\%$ & $99.5\%$ & $95.5\%$ \\
+XOM  & $78.5\%$ & $57.0\%$ & $78.5\%$ & $65.0\%$ \\
+\midrule
+Off-diag MAE & $0.031$ & $0.253$ & $0.032$ & $0.248$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three observations. First, the composition is not an artefact of the overlap-easy universe: on the weaker-dependence basket the in-sample off-diagonal MAE ($0.031$ Student-$t$, $0.032$ Gaussian) is comparable to the main basket's $0.027$, and profile MLE again selected $\nu^\star = 6$. Second, the static-fit OoS degradation is worse here ($0.253$ against $0.209$ on the main basket), consistent with the stationarity-scope reading: six independent single names carry more idiosyncratic regime drift than an ETF-anchored cluster. Third, the per-asset failure pattern reproduces the single-name regime-introduction mechanism documented in the cross-ticker panel: UNH, one of the named regime-introducing tickers of the 30-ticker analysis, collapses OoS ($21.5\%$ KS) while the other five names stay between $57\%$ and $97.5\%$. The Student-$t$ versus Gaussian gap remains inside path-to-path noise on both windows, matching the main-basket OoS finding.
 
 \subsubsection{Non-US Asset Class Extension and Per-Pair OoS Off-Diagonal Breakdown}
 \label{sec:non_us_asset_supp}

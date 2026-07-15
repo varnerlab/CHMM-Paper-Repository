@@ -128,6 +128,14 @@ respectively before rebuilding this paper.
 
 ## Status
 
+- **2026-07-14** -- audit and technical-review response pass: K-selection
+  re-run on session VWAP, VaR panel re-run on 573 forecasts (boundary return
+  included), Gaussian-copula boundary LR test added, multi-asset composition
+  scoped as cross-sectional, non-overlapping basket panel and BH FDR
+  adjustment added, VaR filters moved to log-space. The current draft
+  compiles to 70+ pages (page count moves with these additions) with no
+  undefined references; the page count in older entries below reflects the
+  draft as of their dates.
 - **2026-06-17** -- regenerated the result CSVs (previous tables kept in
   `results/_backup_pre_regen_2026-06-17/`). The current draft compiles to
   67 pages with no overfull / underfull boxes and no undefined references
