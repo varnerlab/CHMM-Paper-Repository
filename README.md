@@ -128,6 +128,14 @@ respectively before rebuilding this paper.
 
 ## Status
 
+- **2026-07-14 (rerun response)** -- follow-up to the technical-review rerun:
+  fourth pdflatex pass added to the Makefile so `make` converges without a
+  manual pass; the Student-t versus Gaussian OoS off-diagonal MAE gap is now
+  quantified across 20 paired simulation seeds (the gap is small but
+  systematic in the Gaussian's favour on both baskets, superseding the
+  earlier "path-to-path noise" reading); the six-name basket wording is
+  "six selected GICS sectors"; model-repository docs now state the
+  script-loaded harness design explicitly and the test suite runs headless.
 - **2026-07-14** -- audit and technical-review response pass: K-selection
   re-run on session VWAP, VaR panel re-run on 573 forecasts (boundary return
   included), Gaussian-copula boundary LR test added, multi-asset composition
