@@ -50,8 +50,8 @@ pdflatex -interaction=nonstopmode paper.tex
 pdflatex -interaction=nonstopmode paper.tex
 ```
 
-Produces `paper.pdf`. The current draft compiles to 67 pages (body,
-bibliography, and appendices).
+Produces `paper.pdf` (body, bibliography, and appendices; the page count
+moves with the draft, currently 76 pages).
 
 `make clean` removes the usual LaTeX auxiliary files; `make distclean`
 also removes `paper.pdf`.
@@ -101,7 +101,7 @@ repo. Entry points (run from that repo root with
 
 | Script                                                    | Produces                                                              |
 |-----------------------------------------------------------|-----------------------------------------------------------------------|
-| `run_full_rebuild.jl`                                     | end-to-end rebuild of every paper artefact                            |
+| `run_full_rebuild.jl`                                     | headline rebuild (eight stages; see model-repo `RUNNERS.md` for the complete artefact map) |
 | `runners/headline/run_all_analysis.jl`                    | SPY-only stylized facts + per-K internals                             |
 | `runners/headline/run_multi_emission_analysis.jl`         | CHMM-N / -t / -L / -GED at K* block                                   |
 | `runners/headline/run_baselines_and_cross_asset.jl`       | Pipeline A baselines + Pipeline B setup                               |
