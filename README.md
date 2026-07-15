@@ -128,6 +128,17 @@ respectively before rebuilding this paper.
 
 ## Status
 
+- **2026-07-14 (final-review response)** -- the seed-uncertainty panel now
+  runs under strict common random numbers (shared base normals and shared
+  marginal draws per replicate; the Student-t chi-square mixing has its own
+  component stream), the fit determinism that makes the panel reuse the
+  headline parameterisation exactly is verified and stated, and the
+  manuscript wording is narrowed to the fixed-fit Monte-Carlo scope: the
+  Student-t minus Gaussian OoS off-diagonal MAE gap is $+0.0055$
+  [$+0.0050$, $+0.0060$] on the main basket and $+0.0080$
+  [$+0.0073$, $+0.0088$] on the non-overlapping basket, stable across
+  replicates rather than path-to-path noise, and small relative to the
+  quarterly-refit effect.
 - **2026-07-14 (rerun response)** -- follow-up to the technical-review rerun:
   fourth pdflatex pass added to the Makefile so `make` converges without a
   manual pass; the Student-t versus Gaussian OoS off-diagonal MAE gap is now
