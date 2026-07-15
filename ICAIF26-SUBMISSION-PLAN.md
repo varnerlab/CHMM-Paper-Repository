@@ -15,7 +15,7 @@ The 76-page CHMM working paper (arXiv:2606.23492, thesis Paper II) is to be cond
 
 ## New repo layout
 
-`/Users/abdulrahmanalswaidan/Desktop/Project-Repos/Thesis/CHMM-ICAIF26-Paper/`
+`/Users/abdulrahmanalswaidan/Desktop/Project-Repos/CHMM-ICAIF26-Paper/`
 
 ```
 main.tex                 # acmart shell: topmatter, abstract, \input chain, bib
