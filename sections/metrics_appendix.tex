@@ -10,7 +10,7 @@ The two-sample KS statistic~\cite{kolmogorov1933, smirnov1948} measures the maxi
 where $F_n$ and $G_m$ are the empirical CDFs of the two samples and $n$ and $m$ their sizes.
 The KS pass rate is the fraction of paths whose marginal is not rejected against the reference data at $\alpha = 0.05$.
 We read it as a descriptive marginal-fidelity score, not a calibrated test: the asymptotic two-sample KS null assumes i.i.d.\ observations, whereas observed and simulated paths carry serial dependence, so the nominal $p$-values are not calibrated here.
-The stationary block-bootstrap KS recalibration provides the temporally aware inferential check.
+A stationary block-bootstrap recalibration (appendix) supplies dependence-aware critical values by drawing, per null replicate, two \emph{independent} block resamples of the observed series and computing the KS statistic between them, so the null replicate mimics the actual observed-versus-simulated comparison; the threshold remains conditional on the empirical IS distribution (no generator refit per replicate), so the recalibrated pass rates are also read descriptively.
 
 \paragraph{Anderson--Darling (AD) pass rate.}
 The AD test~\citep{scholz1987ksample} is the integrated squared CDF deviation with a quadratic tail weighting, making it more sensitive than KS to tail discrepancies.
@@ -70,7 +70,7 @@ The OoS sample-CRPS, reported as a tie-break alongside Table~\ref{tab:model_comp
 \end{equation}
 The double sum is computed in $O(N \log N)$ via the sorted-ensemble identity $\sum_{i<j} (x_{(j)} - x_{(i)}) = \sum_i x_{(i)} (2i - N - 1)$. The ensemble at each $t$ is the cross-section of the $N = 1{,}000$ unconditional simulated paths used throughout the main text; this yields a marginal-predictive CRPS suitable for an unconditional generative-fidelity assessment, distinct from the conditional one-step-ahead CRPS used in forecasting.
 
-For pairwise comparison we report a Diebold-Mariano test~\citep{diebold1995comparing} on the per-$t$ loss differential $d_t = \widehat{\text{CRPS}}_t^A - \widehat{\text{CRPS}}_t^B$ with a Newey-West HAC variance under a Bartlett kernel and bandwidth $h = \lfloor T_{\text{OoS}}^{1/3} \rfloor = 8$. Two-sided $p$-values are reported under the standard-normal null. The main-text claim is that the four CHMM variants are statistically indistinguishable from the i.i.d.\ bootstrap and GARCH(1,1) on mean OoS CRPS; under this test the Gaussian i.i.d.\ generator is the only significantly worse comparator.
+For pairwise comparison we report a Diebold-Mariano test~\citep{diebold1995comparing} on the per-$t$ loss differential $d_t = \widehat{\text{CRPS}}_t^A - \widehat{\text{CRPS}}_t^B$ with a Newey-West HAC variance under a Bartlett kernel and bandwidth $h = \lfloor T_{\text{OoS}}^{1/3} \rfloor = 8$. Two-sided $p$-values are reported under the standard-normal null. The main-text panel covers exactly the five displayed CHMM rows (CHMM-N, penalised CHMM-t, CHMM-L, CHMM-GED, and shared-$\nu$ CHMM-t) over their ten pairwise loss differentials with Holm step-down correction; the supported statement is that no pairwise equal-mean-loss null is rejected after correction, together with HAC $95\%$ confidence intervals on the mean differences of roughly $\pm 0.005$--$0.010$. This is a non-rejection, not an equivalence result: no equivalence margin is pre-specified, and one pair (penalised CHMM-t vs.\ CHMM-L) is nominally significant before correction.
 
 \subsubsection{Christoffersen Conditional-Coverage Panel}
 \label{sec:christoffersen_supp}

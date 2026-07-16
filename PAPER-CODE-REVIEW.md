@@ -1,287 +1,209 @@
-# Technical, Code, and Narrative Review
+# Fresh Technical, Code, and Narrative Review
 
-## Manuscript
+## Scope and revisions reviewed
 
-**Continuous Hidden Markov Models for Equity Returns: Heavy-Tail Emission Families and Regime-Conditional Value-at-Risk**
+**Manuscript:** *Continuous-Emission Hidden Markov Models for Equity Returns: Heavy-Tail Emission Families and Regime-Conditional Value-at-Risk*
 
-Review date: 2026-07-16  
-Paper repository reviewed at: `9a1d8e4`  
-Companion model repository reviewed at: `e34fafa`
+**Review date:** 2026-07-16
+
+**Paper repository:** `ca69b68`
+
+**Companion model repository:** `02d3688`
+
+This is a fresh review of the repositories' current heads, not a restatement of the earlier review. I read the main manuscript and relevant appendices, traced the headline values into the current Julia runners and artifacts, inspected the recent source changes, ran the model tests and paper/artifact consistency gate, and compiled the manuscript from a clean temporary build directory.
 
 ## Overall assessment
 
 **Recommendation: major revision before submission.**
 
-The paper asks a worthwhile question and has several real strengths: the positive-lag HMM autocovariance identity is stated with appropriate diagonalizability and moment qualifications; the manuscript now distinguishes a continuous-*emission* HMM from a new model class; the one-step predictive-mixture VaR equations are explicit; the cross-asset rank-reordering construction is correctly scoped as cross-sectional rather than temporal; and the paper is unusually candid about non-stationarity, the i.i.d. bootstrap, the HSMM, and the stronger GARCH ACF results. The current Julia test suite also passes in full (116/116 tests).
+The latest revision fixes most of the earlier paper/code mismatches. Vendor provenance is now stated honestly; the copula refit has paired targets and `K = 3` marginals; the core Gaussian, Student-t, Laplace, and GED fitters return evaluated parameter iterates; transition-update limits are correct; the spectral diagnostic groups complex-conjugate modes and reconstructs the matrix ACF; VaR forecast origins are aligned; strict-tail DQ results are qualified by a finite-sample exercise; and the main ACF claim is narrower. The current model suite passes 7,100/7,100 tests, the consistency script exits successfully, and the paper builds without unresolved citations or references.
 
-The current paper and current code repository are nevertheless not mutually consistent. The two most serious problems are:
+The replacement analyses introduce several new or still-unresolved correctness issues, however. The most consequential are:
 
-1. The paper claims a 323-day Polygon-versus-Alpaca overlap check found no vendor break, but the current code audit establishes that no raw cross-vendor overlap exists and that the earlier check compared the Alpaca extension with the same rows already copied into the stitched file. The stated validation is therefore circular and the sentence in Methods is false.
-2. The reported quarterly-copula improvement from 0.207 to 0.185 is not a like-for-like comparison. The static number is a full-window error, the rolling number is an average of quarter-specific errors, and the runner uses `K = 18` marginals while the paper says it holds the headline `K^\star = 3` marginals fixed.
+1. the ACF confidence band uses 20-day blocks to make claims through lag 252, mechanically destroying dependence beyond the block length;
+2. the recommended shared-`nu` model still uses a private runner-level fitter with the old unevaluated-final-update defect;
+3. several non-rejections are described as “statistically indistinguishable,” and a bootstrap probability is incorrectly labelled a p-value;
+4. the “temporally aware” KS calibration does not simulate the stated two-sample null;
+5. the copula conclusion compares the family and refit effects under different scoring designs; and
+6. the new provenance manifest and runner documentation are already stale despite the consistency check passing.
 
-Other major concerns are a one-M-step lag in every EM convergence check, stale spectral numbers, an unsupported expansion of the CRPS/Diebold-Mariano conclusion to the current headline rows, retention of two materially different fits of the same GARCH specification, and a central “reproduces slow decay” claim that is much stronger than the fitted population spectrum supports at long lags.
+These are repairable without abandoning the paper's main contribution, but they affect central claims rather than only presentation.
 
-The paper can become technically defensible without changing its basic contribution. The immediate job is to establish one canonical code commit and regenerate a single internally consistent result bundle, then narrow the central claim from “reproduces slow ACF decay” to what is actually shown by horizon-specific diagnostics.
+## What the latest revision fixed correctly
 
-## Critical findings
+- **Vendor provenance:** Methods and Appendix `sec:feed_boundary` now disclose the date-disjoint Polygon and Alpaca files, retire the circular 323-day comparison, and treat the mid-OoS feed switch as an unresolved limitation.
+- **Core EM checkpointing:** the four library fitters in `src/Compute.jl` now evaluate before mutation; Student-t and GED return the best evaluated finite checkpoint, and tests independently recompute the returned likelihood.
+- **Transition update:** Algorithm 1 now uses `t = 1,...,T-1` for both expected-transition sums.
+- **Spectral decomposition:** `runners/spectral/spectral_common.jl` groups conjugate pairs, uses the unconjugated left-eigenvector product, calls the denominator an absolute component-magnitude budget, and verifies reconstruction against direct matrix powers to numerical precision.
+- **GARCH ACF conventions:** the manuscript now distinguishes per-path ACF-MAE from pooled-curve ACF-MAE instead of presenting them as two fits of the same estimand.
+- **VaR alignment and qualification:** CHMM and MS-GARCH use the same 573 forecast targets; exact binomial values, a limited parametric DQ calibration, and paired pinball losses substantially improve the risk section.
+- **Copula pairing:** static and rolling Student-t copulas are now scored against the same quarter-level targets with the same `K = 3` marginal models.
+- **Narrative scope:** the abstract acknowledges the feed change and failure beyond roughly three months; Results has real subsections and an application/specification table.
 
-### 1. The vendor-overlap validation is circular, and the paper states it as genuine
+## Critical technical findings
 
-**Evidence**
+### 1. The ACF “confidence band” cannot support the horizon claims made from it
 
-- Methods says: “The 323-day Polygon versus Alpaca/IEX overlap check found no visible break at the vendor join” (`sections/methods.tex:4`).
-- The current code artifact says the raw files are date-disjoint: Polygon/Massive ends on 2024-12-31 and Alpaca/IEX begins on 2025-01-03. It explicitly records that the retired overlap check compared stitched rows with the Alpaca rows from which they were copied (`../CHMM-Model-Repository/results/diagnostics/feed_boundary_check.txt`).
-- The obsolete `vendor_stitch_check.csv` still survives in the current model repository and reports exact equality over 323 days, even though the producing runner has been moved to `_attic`.
-- The actual feed switch occurs inside the main OoS evaluation window. The replacement diagnostic finds a VWAP-scale standard deviation of 1.640 before the switch and 2.215 after it. That difference is confounded with time variation, so it does not prove a feed effect, but it makes the unavailable cross-feed validation important rather than cosmetic.
-- `RUNNERS.md` still points readers to the retired runner as if it were valid (`../CHMM-Model-Repository/RUNNERS.md`, Diagnostics section).
+`runners/headline/run_acf_horizon_diagnostics.jl` constructs a moving-block bootstrap with fixed block length `L = 20`, concatenating independently sampled blocks, and then reports pointwise percentile bands for lags 1--252. The Figure 2 caption says the observed ACF above the band at lags 21--63 “reflects dependence beyond the block scale.” That behavior is built into the resampling scheme: independently concatenated 20-day blocks sever dependence across block boundaries, so their ACF distribution is forced toward zero beyond approximately 20 days.
 
-**Why this matters**
+The artifact makes the effect visible. At lag 63 the observed ACF is `0.0849`, the bootstrap interval is approximately `[-0.0534, 0.0546]`, and the simulated 90% envelope ends at `0.0622`. Calling this evidence that the model “tracks the observed decay through lag approximately 63” is too strong. The model's fitted population ACF is only `0.0144` at lag 63 and effectively zero by lag 126.
 
-The headline OoS results mix consolidated Polygon aggregates with Alpaca's IEX-only feed. A genuine overlap comparison would be the natural check for a distributional discontinuity, but it was never available from the data in the repository. The paper currently converts a failed provenance check into affirmative evidence.
+The horizon-banded MAE comparison remains a valid descriptive calculation: CHMM-N improves on the permutation floor at lags 1--63 and loses at lags 64--252. What is not valid is treating the `L = 20` percentile envelope as uncertainty for long-lag ACF estimates or interpreting observed values beyond the block size as departures from that band.
 
-**Required fix**
+**Required fix:** use an uncertainty method designed for the maximum lag being reported: a substantially longer, data-selected block length; subsampling with explicit lag-dependent validity; a sieve/model-based bootstrap; or asymptotic HAC bands. Report simultaneous rather than only pointwise bands if the curve is used for a horizon-wide claim. Until then, remove the observed-bootstrap band beyond its defensible lag range and change “tracks through 63” to the exact banded-MAE result.
 
-- Delete the 323-day-overlap sentence and state the true provenance and feed-switch date.
-- Remove the obsolete CSV and stale `RUNNERS.md` entry.
-- Either obtain a genuine same-date cross-feed sample or rerun the headline OoS analysis on a single consistent feed/cutoff. At minimum, report pre/post-feed results separately and state that time and feed effects cannot be identified from the current design.
-- Update the Data Availability statement to the actual vendor cutoffs.
+### 2. The shared-`nu` fitter did not receive the core EM checkpoint repair
 
-### 2. The quarterly-copula “0.207 to 0.185” improvement is not identified by the implemented comparison
+The core library fitters were repaired, but the recommended shared-`nu` Student-t model is implemented separately inside:
 
-**Evidence**
+- `runners/headline/run_chmm_t_shared_nu.jl:84-210`; and
+- a copied implementation in `runners/robustness/run_crps_dm_kstar3.jl:118-244`.
 
-- The paper says the rolling exercise holds the Table 3 `K^\star = 3` CHMM-N marginals fixed (`sections/cross_asset_appendix.tex:116,122`).
-- The runner hard-codes `K = 18` and refits those marginals for the rolling harness (`../CHMM-Model-Repository/runners/cross_asset/run_cross_asset_rolling_copula.jl:36,81-89`).
-- The static baseline compares one simulated 572-day panel with the one full-OoS correlation matrix (`run_cross_asset_rolling_copula.jl:102-109`).
-- Each rolling number instead compares a simulated 63-day panel with that quarter's realized correlation matrix, after which the nine quarter-specific MAEs are averaged (`run_cross_asset_rolling_copula.jl:111-143`). Mean quarter-specific MAE is not the same estimand as full-window MAE.
-- The last five OoS observations are omitted from the nine complete 63-day rolling blocks, although the prose says the exercise covers the OoS span.
-- The paper calls 0.209 versus 0.207 “path noise,” but those figures also differ in state count and harness.
+Both routines evaluate `ll_now`, save the current parameters, perform the M-step, and only then check `abs(ll_now - prev_ll) < tol`. When that condition fires, they return the just-updated parameters, whose likelihood was not evaluated. At the iteration cap they likewise return a post-update iterate. Their “last” snapshot protects only against a later non-finite likelihood; it is not a best-evaluated checkpoint.
 
-**Why this matters**
+This directly affects the row the paper recommends for heavy-tail fidelity, including its KS, kurtosis, and CRPS numbers. It also contradicts the general Methods statement that every parameter iterate is scored before it can escape and that returned parameters, likelihood, and posterior match.
 
-The reported difference cannot be attributed to refitting because the baseline and treatment are scored on different targets. Quarter-to-quarter variation in realized correlations changes the difficulty of the metric independently of refitting.
+**Required fix:** move shared-`nu` estimation into the library, apply the same evaluate-before-update/best-checkpoint contract, delete the copied runner implementation, add the same returned-likelihood regression test, and regenerate every shared-`nu` artifact.
 
-**Required fix**
+### 3. The kurtosis bootstrap probability is not a p-value
 
-Choose one of two valid designs:
+`run_kurtosis_bootstrap.jl` independently bootstraps the IS and OoS series and computes the fraction of paired Monte Carlo draws satisfying `kurtosis_IS > kurtosis_OoS`. The paper labels `Pr(IS > OoS) = 0.756` an “empirical bootstrap one-sided p-value for the alternative.” It is neither a conventional p-value nor a null-calibrated test. It is a descriptive bootstrap probability under resampling distributions centered near the two observed samples. Calling it a p-value reverses the usual tail-probability convention and does not impose the null of equal kurtosis.
 
-1. Score both a static copula and the rolling-refit copula against every identical next-quarter target, then compare paired quarter-level losses; or
-2. concatenate static and rolling simulations over the same complete OoS dates and score both against the same full-window target.
+Overlapping marginal 95% confidence intervals also do not by themselves test the difference at 5%; a confidence interval for the difference is required.
 
-Use `K^\star = 3` in both arms if that is the paper's headline, include the final partial quarter under a stated convention, and attach uncertainty across dates/blocks rather than only Monte Carlo paths.
+**Required fix:** bootstrap the difference and report its percentile/basic/BCa interval, or construct a null-imposed permutation/block-bootstrap test appropriate to two dependent time series. Until then, call `0.756` a descriptive bootstrap probability and remove “statistically indistinguishable.”
 
-## Major technical findings
+### 4. The KS block-bootstrap calibration does not reproduce the stated null
 
-### 3. Paper and code are pinned to incompatible revisions
+The headline KS pass rates use an i.i.d. two-sample reference despite serial dependence. The appendix attempts to fix this by comparing the fixed observed series with one stationary-block resample of itself and taking the 95th percentile of those KS distances. This is not the null distribution of a KS statistic between two independent dependent series generated from the same marginal process. It conditions on one empirical series, reuses that series as the resampling population, does not refit the candidate generator, and consequently understates or otherwise changes the two-sample uncertainty it claims to calibrate.
 
-The Data Availability statement says the reported results correspond to model commit `5d406b7` (`sections/conclusion.tex`, Data Availability Statement), while the reviewed model repository is four substantive commits later. Those commits:
+The construction may be useful as a conditional posterior-predictive distance threshold, but it is not a generic “temporally aware KS test.” The fact that its critical values are smaller than the i.i.d. two-sample value is a warning that the estimand has changed, not evidence that accounting for clustering necessarily makes the test stricter.
 
-- invalidate the vendor-overlap check;
-- change the cross-ticker spectral median from 0.756 to 0.726, median `n95` from 6 to 7, and NEM's minimum share from 0.326 to 0.287;
-- add the missing shared-`nu` CRPS result (OoS 1.0406); and
-- correct a figure-axis label.
+**Required fix:** simulate two independent block-bootstrap series per null replicate, or use a model-based bootstrap that refits the generator and reproduces the complete comparison. State whether the goal is a conditional goodness-of-fit check or an unconditional two-sample test. Until then, lead with continuous distances/proper scores and keep both KS pass rates descriptive.
 
-The paper still prints the pre-fix spectral values throughout the abstract/Results/Conclusion and Table S (`sections/results.tex:1`; `sections/sensitivity_appendix.tex:118-133`). It also prints SPY `n95 = 2` in the cross-ticker table, while the corrected artifact gives 3.
+## Major findings
 
-**Fix:** select one release commit, regenerate/copy every consumed artifact, update every number, and record both paper and model commit hashes in a machine-readable manifest. A paper-facing `artifacts.csv` should map each table/figure to runner, input data hash, seed, and output file.
+### 5. “Statistically indistinguishable” is still inferred from failure to reject
 
-### 4. The EM routines return parameters whose likelihood was not evaluated
+The current CRPS runner now covers the exact five displayed CHMM rows and applies Holm correction, which is a real improvement. The supported statement is: **none of ten pairwise equal-mean-loss nulls was rejected after Holm correction.** That is not evidence that the rows are statistically equivalent or indistinguishable; no equivalence margins, power analysis, or confidence-interval decision rule is supplied. One unadjusted comparison is nominally significant (`p = 0.0417`) before Holm correction.
 
-All four fitters compute the observed-data likelihood in the E-step, perform the M-step, and then test convergence using the pre-M-step likelihood. On convergence or at `max_iter`, they return the post-M-step parameters (`../CHMM-Model-Repository/src/Compute.jl:317-401,508-599,663-722,843-935`). Algorithm 1 discloses the lag at `sections/algorithms_appendix.tex:146-151`.
+The stale `sections/metrics_appendix.tex:73` is worse: it still says four CHMM variants are indistinguishable from the i.i.d. bootstrap and GARCH and that Gaussian i.i.d. is the only significantly worse comparator, while the current runner tests only ten pairs among five CHMM rows.
 
-Consequences:
+**Fix:** use “no pairwise null was rejected after Holm correction,” show confidence intervals for the loss differences, and reserve “equivalent/indistinguishable” for a pre-specified equivalence test.
 
-- the reported final likelihood and posterior `gamma` do not correspond to the returned parameters;
-- the final update is never checked for finiteness or decrease when convergence fires or the iteration cap is reached;
-- the Student-t/GED “last-known-good” snapshot is restored only if the *next* iteration discovers a non-finite likelihood, not when the loop exits normally;
-- this is especially material for the hybrid Student-t and non-convex GED blocks, for which monotone observed-likelihood ascent is not guaranteed.
+### 6. The family-versus-refit copula conclusion is not like-for-like
 
-The prose now says it restores “the last parameter iterate whose likelihood was finite” (`sections/methods.tex:89`), but normal convergence can still return an unevaluated iterate. The code docstring also contradicts the manuscript by saying GED monotonicity holds on the compact bracket (`src/Compute.jl:749-751`), even though the location objective is non-convex for `p < 1` and the golden-section search assumes unimodality.
+The repaired static-versus-rolling comparison is like-for-like within the Student-t family. The broader conclusion that “refitting the dependence layer, not choosing its family, drives out-of-sample dependence error” is still based on two different designs:
 
-**Fix:** evaluate the likelihood after every complete update, store a coherent `(parameters, likelihood, gamma)` checkpoint, return the best evaluated finite iterate for hybrid blocks, and optionally backtrack a materially decreasing update. Add regression tests that recompute the returned model's likelihood and compare it with the final stored value.
+- Student-t versus Gaussian family choice is scored mainly against one full-window OoS correlation matrix (`0.209` versus `0.204`); and
+- static versus rolling Student-t is scored against ten quarter-specific matrices (`0.289` versus `0.223`).
 
-### 5. The transition update is wrong in the displayed pseudocode
+Effect sizes from those different targets are not directly comparable. To identify the claim, the same quarter-level harness must cross family and refit status: static Gaussian, rolling Gaussian, static Student-t, and rolling Student-t.
 
-Algorithm 1 writes
+The quarter inference also gives the final five-day block the same weight as each 63-day block. A six-variable sample correlation matrix from five observations is extremely noisy and rank-deficient, and the appendix itself calls that row target-noise-dominated. A paired t-test over only ten adjacent time blocks, with overlapping 252-day estimation windows and no dependence correction, should be described as suggestive rather than “statistically supported.”
 
-`T_ij <- sum_t xi_t(i,j) / sum_t gamma_t(i)`
+**Fix:** run the 2x2 family/refit design on identical complete blocks; handle the final partial block separately or weight by information/horizon; use block/wild-bootstrap uncertainty or report the ten differences descriptively.
 
-after Methods has said unqualified sums run over `t = 1,...,T`. The correct denominator is `sum_{t=1}^{T-1} gamma_t(i)`. The source code avoids the mistake by normalizing each row of the accumulated expected-transition counts (`src/Compute.jl:380-385`, and analogues), so this is a paper/code mismatch rather than the fitted-code defect.
+### 7. The “specification map” is retrospective and internally inconsistent
 
-**Fix:** put explicit limits on both sums in the paper and add a unit test against a small reference HMM.
+Results says the map turns application choices into a “declared protocol rather than post hoc preferences,” but the map is written after the results and explicitly uses OoS performance to recommend shared-`nu` Student-t (“best CHMM OoS KS”). That is model selection on the held-out evaluation window unless another untouched test set is reserved.
 
-### 6. The current CRPS significance claim is not backed by a current runnable comparison
+The map also lists the cross-ticker application as penalized CHMM-t at `K = 18`, while the main cross-ticker paragraph says it fits that model at `K* = 3` and reports the `69.1%` median/quarterly-refit result at `K = 3`. The `K = 18` result is a sensitivity check. The cross-asset rationale “closed-form per-state CDFs” does not uniquely select CHMM-N because the other implemented emission families also expose CDFs.
 
-The main text says the four `K^\star = 3` CHMM variants are statistically indistinguishable on OoS CRPS and the table caption repeats that conclusion (`sections/results.tex:5,9`). The support is not aligned with those rows:
+**Fix:** call the map an ex-post analysis map, correct the cross-ticker row, and separate selection, validation, and final testing. If OoS is used to choose the recommended family, report the choice as exploratory or evaluate it on a new window.
 
-- the DM runner is archived under `_attic` and points to a missing `results/_attic_v10/...` cache;
-- its comparison covers CHMM-N, unpenalized CHMM-t, and CHMM-L, but not CHMM-GED, penalized CHMM-t, or shared-`nu` CHMM-t;
-- `results/robustness/crps_dm_multiday.csv` likewise contains only N/t/L legacy rows;
-- the current `K = 3` headline CRPS values come from a different runner and simulation bundle;
-- the newly scored shared-`nu` row is 1.0406 in the model artifact, while it has no corresponding current DM test.
+### 8. The ACF claim remains contradictory across sections
 
-The sample-CRPS definition itself is transparently described as marginal/unconditional (`sections/metrics_appendix.tex:67-73`), which is good. The problem is only the scope of the inference.
+The abstract and Results now correctly say the advantage occurs at short and medium horizons and that the population ACF vanishes at long horizons. Discussion then says the model “matched the three symmetric Cont stylized-fact diagnostics,” that the ACF was “matched within our lag-252 MAE tolerance at any K >= 2,” and that the marginal, not the ACF, binds. No pre-registered tolerance exists, and the new horizon result explicitly shows the model loses to i.i.d. at lags 64--252.
 
-**Fix:** produce one current per-day loss matrix for every row in the displayed table, run the same HAC comparison on those exact simulations, correct for the family of pairwise comparisons, and vendor the output. Until then, report the CRPS values descriptively without “statistically indistinguishable.”
+The defensible conclusion is narrower: on SPY, the fitted CHMM reduces a sample-ACF MAE aggregate because it captures lags 1--63; it does not reproduce the long-horizon slow-decay component. The cross-ticker `K = 18` spectrum has median `n95 = 4`, so the stronger rank-non-binding statement is established only for SPY at low K, as Results partly acknowledges.
 
-### 7. The spectral “share of the ACF” statistic needs a mathematically consistent complex-mode definition
+**Fix:** use that narrow claim consistently in Introduction, Discussion, and Conclusion. Remove “matched all three” and the undefined lag-252 tolerance.
 
-The theoretical text correctly says complex-conjugate eigenvalues combine into real damped oscillatory modes (`sections/theory.tex:3-10`). The diagnostic code instead counts every complex eigenvalue separately and defines share using `sum |a_k lambda_k|` (`runners/spectral/run_spectral_rank*.jl`). For a conjugate pair, the real ACF contribution is `2 Re(a_k lambda_k^tau)`, not `2 |a_k lambda_k^tau|`; cancellation and phase therefore matter. Even among real modes, an absolute-contribution budget is not literally a percentage of `rho(1)`.
+### 9. Provenance tooling reports green while its own metadata is stale
 
-This distinction is material off SPY: changing from `|Re(a lambda)|` to `|a lambda|` moved the cross-ticker median from 0.756 to 0.726 and substantially increased the effective-rank counts.
+`results/artifacts_manifest.csv` still marks the MS-GARCH conditional block “UNTRACED,” the spectral paper values stale, the Christoffersen zero-breach bug known, and the rolling-copula artifact pending. All four were supposedly repaired in the same commit. `RUNNERS.md` still describes the rolling-copula output as the obsolete `0.185` result with `0/6` failures, and `results/README.md` retains old table numbering and runner paths.
 
-**Fix:** group conjugate pairs into real components before ranking, call the denominator an “absolute component-magnitude budget,” and separately report reconstruction error of the theoretical ACF against the direct matrix formula. Avoid saying a mode “carries X% of the ACF” unless the share is defined on signed real contributions without hidden cancellation.
+The consistency checker passes because it searches for a numeric substring anywhere in an artifact path and anywhere in a TeX file. It does not parse tables, verify labels/rows/columns, validate seeds/data hashes, or confirm that a runner produced the current file. For example, the string `0.223` appearing somewhere in a report is sufficient.
 
-### 8. The fitted population spectrum does not support a strong one-year “slow decay reproduced” claim
+**Fix:** make the manifest authoritative and machine-readable; store exact row/column keys, hashes, runner commit, inputs, and seeds; have the checker parse CSV/TOML/JSON values rather than search strings; fail on stale manifest statuses. Add the shared-`nu`, ACF-band, and inference artifacts to the test contract.
 
-For the SPY `K = 3` fit, the dominant eigenvalue is 0.9534 and the second is 0.8656. Using the reported weights, the theoretical population `|G|` ACF at lag 252 is approximately `1.7e-6`; the dominant-mode half-life is about 14.5 trading days. The model can improve average sample-ACF MAE over 252 lags while still having essentially no population persistence at the far end of that range.
+### 10. The mixed-feed OoS window remains an unresolved identification limit
 
-The current success rule is explicitly post hoc: CHMM-N's 0.0462 is below an i.i.d. path-noise floor near 0.063, and the paper calls that “within our lag-252 MAE tolerance” (`sections/results.tex:5`). A well-fit GARCH/MS-GARCH reaches 0.0284-0.0316 on the same IS metric. No simulated-versus-observed ACF curve appears in the main paper; all empirical figures are in the appendix, and the available figure set is not actually included for the headline claim.
+The paper now states this correctly, but the issue still constrains every single-window OoS ranking: consolidated Polygon data and IEX-only Alpaca bars are mixed inside the evaluation period, with no same-date overlap to estimate a feed effect. The appendix's pre/post comparison cannot identify vendor versus calendar-regime change.
 
-**Fix:** replace “reproduces slow decay” with “reduces lag-252 sample-ACF error relative to i.i.d. baselines” unless stronger evidence is added. Put an empirical-versus-simulated ACF plot in Results, show horizon-banded error (1-5, 6-20, 21-63, 64-252), compare the theoretical population ACF with the empirical confidence band, and pre-specify any tolerance.
+**Fix:** obtain a genuine same-date overlap, rerun on a consistent vendor/cutoff, or split the headline evaluation at the feed boundary. The current caveat is honest but does not restore a clean OoS estimand.
 
-### 9. Two different fits of the same GARCH(1,1) specification remain in the headline evidence
+### 11. VaR inference is improved, but the strict-tail evidence remains narrow
 
-The main table retains a GARCH(1,1) row with ACF-MAE 0.0490 “for artifact consistency,” while the appendix's grid-initialized ML refit of the same specification gives 0.0309 (`sections/results.tex:3,9`). This is not a harmless footnote: the difference changes the comparative conclusion on volatility clustering.
+The aligned 573-day harness, exact binomial calculation, and paired pinball loss are technically useful. The finite-sample DQ bootstrap, however, covers only CHMM-N `K = 3` and MS-GARCH `K = 4`, uses `B = 500`, and conditions on estimated parameters without refitting. It cannot calibrate every strict-tail DQ row in the large family panel. The paper mostly acknowledges this and now makes the 5% tier primary, which is appropriate.
 
-The single ACF columns in the main table are also IS values, although the table juxtaposes IS and OoS distributional columns without labeling the ACF window. The paper then makes broad model-class statements from those values.
+**Fix:** retain the conservative wording, increase `B`, and if strict-tail comparisons remain prominent, bootstrap every displayed contender with parameter re-estimation or explicitly limit inference to the two calibrated rows. In the abstract, prefer “was not rejected” to “passes.”
 
-**Fix:** choose one canonical multi-start fit and regenerate every GARCH artifact from it. Label ACF columns by window and report both IS and OoS. Do not preserve a known inferior fit in a headline comparison merely to keep an older artifact stable.
+## Code-quality findings
 
-### 10. Strict-tail VaR inference remains too dependent on asymptotic p-values
-
-The revised paper correctly adds the strong MS-GARCH `K = 4` comparator and avoids claiming pairwise superiority. Remaining issues are:
-
-- at 1% VaR and 573 forecasts, only about 5.7 breaches are expected;
-- the DQ `chi^2_6` p-values that drive the family separation have no finite-sample null calibration in the repository;
-- the Christoffersen power runner does not calibrate DQ and its own local Kupiec implementation incorrectly sets `LR_uc = 0` when the simulated breach count is zero (`runners/var_backtest/run_christoffersen_power.jl:40-48`);
-- CHMM/filtered-bootstrap/CAViaR use 573 forecasts, while MS-GARCH uses 572;
-- separate specification-test p-values do not rank quantile forecasts.
-
-**Fix:** align forecast origins, use an exact/binomial or parametric-bootstrap calibration at 1%, bootstrap the DQ statistic under each fitted null, and add a paired quantile-loss comparison with dependence-robust uncertainty. Until then, make 5% conditional coverage primary and treat 1% DQ as exploratory.
-
-## Model-selection and narrative coherence
-
-### 11. The paper does not maintain one primary CHMM specification through its applications
-
-The narrative calls shared-`nu` CHMM-t the preferred penalty-free heavy-tail trade-off, but:
-
-- the cross-asset head uses CHMM-N;
-- the main VaR head emphasizes CHMM-N and penalized per-state CHMM-t;
-- the sixteen-row VaR family panel omits the shared-`nu` variant;
-- the main table contains five CHMM rows, while its caption says “the four CHMM rows”;
-- Methods presents four emission families, but shared-`nu` versus per-state-`nu` is a consequential fifth specification choice.
-
-This makes it unclear whether the contribution is a model, a family-comparison platform, or several use-case-specific choices.
-
-**Fix:** define a decision rule before Results. Either designate one primary configuration and run all downstream heads on it, or explicitly present the paper as a modular framework and give a short table mapping each use case to its chosen variant and selection criterion. Do not call a variant preferred if the applications do not use it.
-
-### 12. KS pass rate is too prominent for a deliberately uncalibrated metric
-
-The paper acknowledges that the two-sample KS null assumes i.i.d. samples and calls the pass rate descriptive. It nevertheless uses that pass rate as the lead headline metric, uses thresholds such as 60% to define failures, and makes “robust ranking” claims from it. Serial dependence differs across generators, so the degree of miscalibration is model-dependent; a pass-rate comparison is not simply a noisy version of a common test.
-
-**Fix:** lead with a common distance/proper-score axis (Wasserstein, energy/MMD, marginal CRPS) and uncertainty over time blocks. Keep KS as a familiar descriptive diagnostic, preferably using the same block-aware calibration for every headline row.
-
-### 13. The return construction is transparent now, but it remains an unusual risk scale
-
-The manuscript correctly clarifies that the data are split-adjusted, not dividend-adjusted, and that `G_t = 252 log(P_t/P_{t-1})` is annualized log *price* growth with `r_f = 0`. That correction should be carried through the title/captions and tables more consistently:
-
-- VaR around -4.56 visually looks extreme until divided by 252 (about -1.8% daily);
-- using session VWAP rather than a standard adjusted close makes comparison with the cited daily-return literature less direct;
-- omission of dividends is not innocuous for the high-dividend sector names.
-
-**Fix:** report risk results primarily in daily percentage units, with annualized growth in parentheses if needed. Add adjusted-close/total-return sensitivity or narrow all claims to VWAP price growth.
-
-## Code quality and reproducibility
-
-### 14. The test suite passes but does not cover the failure modes that matter most to the paper
-
-Verification on the reviewed model commit: `Pkg.test()` passed 116/116 tests in about 96 seconds. The optional R/MSGARCH test was not run by default.
-
-Important gaps:
-
-- no returned-parameter/final-likelihood consistency test;
-- no monotonicity/decrease checkpoint tests for Student-t or GED;
-- no GED factory/simulation test in the main compute suite;
-- no VaR no-lookahead/indexing regression test;
-- no DQ reference implementation or finite-sample calibration test;
-- no spectral reconstruction/conjugate-pair test;
-- no test that the rolling and static copula comparisons use identical state counts, dates, and scoring targets;
-- no test that paper-facing numbers match current artifacts.
-
-**Fix:** add small deterministic reference tests for each item and a paper-artifact validation script that fails when a displayed value differs from its CSV/text source.
-
-### 15. The reproducibility documentation is materially stale
-
-Examples:
-
-- `RUNNERS.md` maps a deleted vendor runner and describes outputs/section numbers that no longer match the paper.
-- `results/README.md` lists old `track_*` directories and scripts that are absent or archived.
-- `SPECIFICATION.md` still lists Student-t emissions as a future direction even though they are central to the paper.
-- `CLAUDE.md` describes the contribution as Gaussian CHMM and claims it reproduces all facts at small K, inconsistent with the current paper's caveats.
-- `run_full_rebuild.jl` calls itself an eight-stage driver while its header enumerates nine stages and the executable list runs eight; it explicitly does not rebuild many paper-facing results.
-- the current CRPS inference runner is archived and not runnable from its documented input path.
-
-**Fix:** generate the runner-to-artifact map from a manifest rather than hand-maintaining it. Provide a clean-environment smoke target, a full paper target, and a documented “slow/external” target for R/QuantGAN/CRSP components.
-
-### 16. Smaller correctness/documentation defects
-
-- `_weighted_median` says it returns the upper endpoint when half the weight falls between adjacent observations, but its `>= half` condition returns the lower endpoint in the equal-weight two-point case (`src/Compute.jl:603-625`). Both are valid minimizers, but documentation and behavior disagree.
-- `viterbi` always initializes with a uniform prior even for heavy-tailed models whose fitter updates `pi` (`src/Compute.jl:132-135`), and the model structs do not store fitted `pi`. This does not affect the reported forward-filter VaR, which starts from stationarity, but it makes the general API inconsistent with the fitted model definition.
-- The existing LaTeX log contains an overfull box of about 56 pt for the large VaR table (`paper.log`, lines 927 onward). `make` currently reports the target up to date rather than performing a fresh rebuild.
-- The main-table caption says “four CHMM rows” although five are printed.
+- The main Julia suite passes **7,100/7,100 tests in 5m38s**. The optional R/`MSGARCH` tests remain opt-in and were not run.
+- The new likelihood-consistency, spectral reconstruction, VaR-indexing, and artifact-shape tests are valuable.
+- No test exercises the private shared-`nu` fitter's likelihood/parameter consistency.
+- Artifact tests validate stored breach flags against stored returns and VaR values, but do not independently reproduce the forecasting recursion; a jointly shifted forecast/return pair could still pass.
+- `baum_welch_student_t` contains a duplicated `K = number_of_states` assignment, and `baum_welch_laplace` contains a duplicated nested `if Σw > 0`; harmless at runtime, but evidence that the large patch needs a cleanup pass.
+- `Types.jl` describes the Gaussian model as having “continuous states” rather than continuous emissions and calls its uniform initial distribution fitted, contradicting the documented Gaussian convention.
+- The shared-`nu` implementation is duplicated across runners instead of being a tested library component.
+- `run_full_rebuild.jl` explicitly rebuilds only eight headline stages, while the Data Availability Statement says runners regenerate every reported table. There is no single clean-environment command that proves the complete 83-page artifact set, including R, CRSP, VaR, robustness, and cross-asset extras.
 
 ## Narrative-flow review
 
-### What works
+### Improvements
 
-- The central temporal-versus-marginal decomposition is intelligible and potentially useful.
-- The paper now distinguishes algebraic capacity from empirical use of that capacity.
-- Limitations around non-stationarity, privacy, finite geometric memory, and cross-sectional copula composition are unusually explicit.
-- The strongest comparators are no longer completely hidden: bootstrap, HSMM, well-fit GARCH, and MS-GARCH VaR results are visible.
+- The new title removes the continuous-state/continuous-time ambiguity.
+- The abstract is more candid and focused than the previous version.
+- Results now has four meaningful subsections and a useful application map.
+- The main ACF curve, feed limitation, strong MS-GARCH comparator, and finite-sample VaR caveat are visible rather than buried.
 
-### What needs restructuring
+### Remaining problems
 
-The 79-page compiled document reads like an accumulated review-response record rather than a focused paper. The same Ryden story and the same finite-geometric-memory caveat recur in the Introduction, Related Work, Theory, Results, Discussion, and Conclusion. Results is a sequence of extremely long paragraphs rather than a hierarchy of empirical questions. Discussion and Conclusion largely repeat Results, sometimes with additional numbers.
+The clean build is **83 pages**: 22 pages through the Conclusion and 61 pages of supplementary material. The body is more structured, but many paragraphs still carry an entire referee-response chain, and table captions regularly contain methods, caveats, provenance, historical corrections, and conclusions at once. Phrases such as “earlier drafts mixed,” “third-review item,” retired procedures, runner names, and artifact paths belong in a reproducibility note or changelog, not the scientific narrative.
 
-Recommended main-text structure:
+Discussion and Conclusion repeat nearly the whole result panel and sometimes revert to stronger claims than Results. The cross-ticker, ACF, CRPS, copula, and VaR qualifications are individually responsible, but their accumulation makes the paper read as a response dossier rather than a focused contribution.
 
-1. **Question and contribution.** One page: low-K temporal versus marginal channels, what is new, and what is not.
-2. **Model and estimation.** Define the four families, one primary variant, and the convergence qualification.
-3. **Evaluation protocol.** Data provenance, state-count selection, primary metrics, baselines, and predeclared success criteria.
-4. **Single-asset results.** Put the observed/simulated ACF figure in the main text; show distributional and temporal axes separately.
-5. **Risk application.** One aligned VaR table with finite-sample caveats and pairwise loss comparison.
-6. **Cross-asset application.** Clearly label it cross-sectional; show a like-for-like rolling comparison.
-7. **Limitations and conclusion.** One short section: finite memory, feed/data scope, regime introduction, dividends, privacy.
+Recommended body structure:
 
-Specific editing recommendations:
+1. **Question and contribution:** one precise claim about temporal modes versus marginal flexibility.
+2. **Model and estimation:** four families plus the shared-`nu` variant, with a single convergence contract.
+3. **Evaluation design:** state selection, untouched test policy, metrics, feeds, and baselines.
+4. **Single-asset evidence:** marginal fit and horizon-banded ACF, with one valid uncertainty figure.
+5. **Risk application:** aligned VaR comparison, 5% tier primary.
+6. **Cross-asset application:** cross-sectional-only composition and a 2x2 family/refit experiment.
+7. **Scope and conclusion:** feed, finite memory, regime introduction, and no privacy claim.
 
-- Cut the abstract to the question, method, two principal results, and two scope limits. It currently contains too many diagnostics and comparator caveats to function as an abstract.
-- Add Results subsections; most current paragraphs carry five to ten distinct claims.
-- Move sensitivity numbers, implementation histories, and reviewer-response explanations out of captions.
-- Replace repeated “reproduced the three stylized facts” language with metric-specific claims.
-- Shorten the Conclusion to a synthesis rather than a second Discussion plus research agenda.
-- Consider the title “Continuous-Emission Hidden Markov Models...” because “continuous hidden Markov model” can be read as continuous-time or continuous-state.
+Specific edits:
 
-## Suggested revision order
+- Replace all “statistically indistinguishable” language with the exact test outcome unless an equivalence test is added.
+- Remove reviewer-history prose and file paths from main captions.
+- Make one statement about the three stylized facts and use it consistently.
+- Shorten the Conclusion to synthesis; it currently functions as a second Results/Discussion.
+- Update `hyperref` metadata: the compiled PDF title still says “Continuous Hidden Markov Models,” not the new “Continuous-Emission” title.
+- Reduce the specification-map language from “declared protocol” to an honest analysis map unless it was timestamped before evaluation.
 
-1. Freeze a canonical model commit and create the paper-artifact manifest.
-2. Correct the vendor provenance and decide whether a single-feed rerun is required.
-3. Rebuild the rolling-copula experiment with identical arms and targets.
-4. Repair EM checkpointing and rerun all affected CHMM artifacts, especially Student-t/GED.
-5. Regenerate the spectral table with grouped real modes and update all stale values.
-6. Recompute CRPS/DM on the exact displayed rows and align the VaR forecast windows.
-7. Replace the stale GARCH headline row with the canonical fit.
-8. Recalibrate the central ACF claim with plots, horizon bands, and a predeclared tolerance.
-9. Restructure and shorten the manuscript.
-10. Run a clean full rebuild, all tests including optional external baselines, and an automated paper/artifact consistency check.
+## Recommended revision order
 
-## Verification performed for this review
+1. Repair and centralize the shared-`nu` fitter; regenerate its row and CRPS panel.
+2. Replace the invalid long-lag ACF bootstrap band and harmonize the ACF claim everywhere.
+3. Correct the kurtosis bootstrap inference and all non-rejection/equivalence language.
+4. Redesign the block-aware KS calibration or demote KS to a descriptive metric.
+5. Run the copula 2x2 family/refit experiment on identical complete blocks.
+6. Correct the specification map and protect a genuinely untouched test window.
+7. Refresh the manifest/docs and replace substring checks with structured artifact assertions.
+8. Decide whether a consistent-feed rerun is required for the headline OoS panel.
+9. Tighten the body and captions; move response history to a separate document.
+10. Run the full Julia suite, optional R tests, every paper-facing runner, and a clean end-to-end paper rebuild.
 
-- Read the complete paper shell and all main section sources, plus the relevant algorithm, metrics, sensitivity, baseline, and cross-asset appendices.
-- Traced headline claims into the Julia fitters, VaR filters, DQ/Christoffersen code, spectral diagnostics, cross-asset runners, result artifacts, and repository history.
-- Compared the paper's pinned model commit with the current model HEAD.
-- Ran the Julia test suite: **116/116 passed**; optional R/MSGARCH tests remained opt-in.
-- Inspected the current compiled PDF metadata (79 pages) and LaTeX log; no unresolved citation/reference warning was found, but one large overfull box remains.
-- Confirmed both worktrees were clean before writing this review.
+## Verification performed
 
+- Reviewed paper commit `ca69b68` and model commit `02d3688`; both worktrees were clean before this file was replaced.
+- Read the complete main manuscript and the relevant algorithms, metrics, sensitivity, baseline, cross-asset, and feed appendices.
+- Traced headline ACF, spectral, CRPS, copula, VaR, GARCH, vendor, and state-selection claims into current source and artifacts.
+- Ran `Pkg.test()`: **7,100/7,100 tests passed** in 5m38s; optional R/MSGARCH tests were not run.
+- Ran `runners/diagnostics/run_paper_artifact_check.jl`: it reported all registered checks passing, subject to the checker limitations above.
+- Compiled from a clean temporary directory with `latexmk`: success, **83 pages**, no unresolved citations or references; only three underfull boxes in the specification-map table.
+- Confirmed the paper and model worktrees remained otherwise unchanged.

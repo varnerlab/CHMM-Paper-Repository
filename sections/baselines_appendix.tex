@@ -27,74 +27,74 @@ The $90.0\%$ ``nearly correct'' rate is the practical ceiling for the CHMM OoS K
 
 Two complementary concerns can be raised about the main IS KS pass-rate metric. The asymptotic two-sample KS test assumes i.i.d.\ samples, but the simulated paths from CHMM and GARCH all carry volatility clustering, so the asymptotic null distribution may not apply. The binary ``pass/fail at $\alpha = 0.05$'' also reduces a continuous p-value to a one-bit summary. We computed two recalibrations addressing each concern (Table~\ref{tab:ks_block_bootstrap}).
 
-To address the dependence concern, we generated the empirical null distribution of the two-sample KS statistic under the stationary block bootstrap~\citep{politis1994stationary} of the SPY IS series at mean block lengths $L \in \{5, 10, 20\}$, $B = 1{,}000$ replications. The resulting $95\%$ block-bootstrap critical values were $0.0306$, $0.0338$, and $0.0350$ respectively, all \emph{smaller} than the asymptotic critical value $1.36 \sqrt{2/n_{\text{IS}}} = 0.0383$; the block-bootstrap test is therefore stricter than the asymptotic one because it accounts for the within-window dependence in the IS series itself. For each generator we then computed the per-path KS statistic and report the fraction of paths whose KS statistic falls below the block-bootstrap critical value.
+To address the dependence concern, we generated the empirical null distribution of the two-sample KS statistic under a two-sample stationary-block-bootstrap null~\citep{politis1994stationary}: each of $B = 1{,}000$ replicates draws \emph{two independent} block resamples of the SPY IS series (mean block lengths $L \in \{5, 10, 20\}$) and computes the KS statistic between them, so the null replicate has the same structure as the actual observed-versus-simulated comparison --- two independent length-$n$ series sharing the observed marginal and short-range dependence. The resulting $95\%$ critical values were $0.0433$, $0.0469$, and $0.0497$, all \emph{larger} than the asymptotic i.i.d.\ value $1.36 \sqrt{2/n_{\text{IS}}} = 0.0383$: accounting for serial dependence widens the null distribution of the two-sample KS statistic, so the dependence-aware test is \emph{less} strict than the asymptotic one, and the asymptotic pass rates reported in the main table are conservative in this respect. The threshold remains conditional on the empirical IS distribution (no generator refit per replicate), so all pass rates in this appendix are descriptive. For each generator we report the fraction of paths whose KS statistic falls below the block-bootstrap critical value.
 
 To address the binarisation concern, we report the mean two-sample KS p-value across simulated paths plus its $5$/$25$/$50$/$75$/$95$ quantiles, giving a continuous picture of how distinguishable each generator's paths are from the observed IS series.
 
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Block-bootstrap KS recalibration and p-value distribution}. All numbers under seed \texttt{20260422} with $N_{\text{paths}} = 500$; the CHMM rows are this diagnostic's own fits at $K = 18$ (CHMM-t is the unpenalised per-state-$\nu$ fit), so the pass rates are not the $K^\star = 3$ main-table values. ``asymp pass'' uses the metric definition of Table~\ref{tab:model_comparison} (two-sample KS p-value $\geq 0.05$), recomputed within this run. ``mean pv'' is the mean two-sample KS p-value across paths, with $q_5$ and $q_{95}$ as the lower / upper p-value quantiles. ``blkL\%'' is the fraction of paths whose KS statistic falls below the stationary-block-bootstrap $95\%$ critical value at mean block length $L$. Block-bootstrap critical values: $0.0306$ ($L = 5$), $0.0338$ ($L = 10$), $0.0350$ ($L = 20$); asymptotic critical value $0.0383$.}
+\caption{\textbf{Block-bootstrap KS recalibration and p-value distribution}. All numbers under seed \texttt{20260422} with $N_{\text{paths}} = 500$; the CHMM rows are this diagnostic's own fits at $K = 18$ (CHMM-t is the unpenalised per-state-$\nu$ fit), so the pass rates are not the $K^\star = 3$ main-table values. ``asymp pass'' uses the metric definition of Table~\ref{tab:model_comparison} (two-sample KS p-value $\geq 0.05$), recomputed within this run. ``mean pv'' is the mean two-sample KS p-value across paths, with $q_5$ and $q_{95}$ as the lower / upper p-value quantiles. ``blkL\%'' is the fraction of paths whose KS statistic falls below the two-sample stationary-block-bootstrap $95\%$ critical value at mean block length $L$ (two independent IS resamples per null replicate). Critical values: $0.0433$ ($L = 5$), $0.0469$ ($L = 10$), $0.0497$ ($L = 20$); asymptotic i.i.d.\ value $0.0383$.}
 \label{tab:ks_block_bootstrap}
 \begin{tabular}{l c c c c c c c}
 \toprule
 Generator & asymp pass\% $\uparrow$ & mean pv $\uparrow$ & pv $q_{05}$ & pv $q_{95}$ & blk5\% $\uparrow$ & blk10\% $\uparrow$ & blk20\% $\uparrow$ \\
 \midrule
-i.i.d.\ bootstrap & $99.6$ & $0.820$ & $0.352$ & $0.999$ & $97.6$ & $99.4$ & $99.6$ \\
-GARCH(1,1)        & $26.8$ & $0.048$ & $0.000$ & $0.227$ & $\mathbf{6.8}$ & $\mathbf{13.6}$ & $\mathbf{17.4}$ \\
-CHMM-N            & $94.8$ & $0.546$ & $0.047$ & $0.976$ & $81.2$ & $89.4$ & $91.6$ \\
-CHMM-t            & $\mathbf{95.8}$ & $\mathbf{0.571}$ & $0.060$ & $0.987$ & $82.4$ & $89.2$ & $91.6$ \\
-CHMM-L            & $94.4$ & $0.504$ & $0.047$ & $0.948$ & $80.2$ & $88.0$ & $90.4$ \\
-\textbf{CHMM-GED} & $95.6$ & $0.547$ & $0.064$ & $0.968$ & $\mathbf{83.2}$ & $\mathbf{90.2}$ & $\mathbf{93.2}$ \\
+i.i.d.\ bootstrap & $99.6$ & $0.820$ & $0.352$ & $0.999$ & $100.0$ & $100.0$ & $100.0$ \\
+GARCH(1,1)        & $26.8$ & $0.048$ & $0.000$ & $0.227$ & $42.4$ & $54.4$ & $63.0$ \\
+CHMM-N            & $94.8$ & $0.546$ & $0.047$ & $0.976$ & $98.4$ & $98.8$ & $99.2$ \\
+CHMM-t            & $\mathbf{95.8}$ & $\mathbf{0.571}$ & $0.060$ & $0.987$ & $98.2$ & $99.4$ & $99.6$ \\
+CHMM-L            & $94.4$ & $0.504$ & $0.047$ & $0.948$ & $98.0$ & $99.0$ & $99.6$ \\
+\textbf{CHMM-GED} & $95.6$ & $0.547$ & $0.064$ & $0.968$ & $\mathbf{98.8}$ & $\mathbf{99.6}$ & $\mathbf{100.0}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The GED variant was the strongest entry on the block-aware metric across all three block lengths (Table~\ref{tab:ks_block_bootstrap}). Its pass rates were $83.2$, $90.2$, and $93.2\%$ at $L = 5, 10, 20$; GARCH(1,1) dropped from $26.8\%$ asymp to $6.8$--$17.4\%$ block-aware (the block-aware test catches its misspecification more sharply), while the CHMM family saw only a small block-bootstrap penalty ($\sim 5$pp).
+Under the dependence-aware null every CHMM variant passes on essentially all paths ($98$--$100\%$ across the three block lengths), the i.i.d.\ bootstrap passes on all, and GARCH(1,1) rises from $26.8\%$ asymptotic to $42$--$63\%$ block-aware while remaining clearly the weakest entry (Table~\ref{tab:ks_block_bootstrap}). The cross-generator ordering is unchanged from the asymptotic metric; the level shift reflects the wider dependence-aware null rather than any change in the fits.
 
 \paragraph{OoS-anchored block-bootstrap recalibration.}
 \label{sec:ks_block_bootstrap_oos}
-The block-bootstrap recalibration of Table~\ref{tab:ks_block_bootstrap} is anchored on the IS series; we report here whether the same construction holds on the OoS window. We repeated the procedure with the stationary block bootstrap re-anchored on $R_{\text{OoS}}$ ($n_{\text{OoS}} = 572$, $B = 1{,}000$, $L \in \{5, 10, 20\}$, $N_{\text{paths}} = 500$). The block-bootstrap critical values were $0.0577$, $0.0629$, and $0.0647$ at $L = 5, 10, 20$ respectively, against asymptotic $0.0804$. The OoS-anchored panel is reported in Table~\ref{tab:ks_block_bootstrap_oos}; the source CSV is in the companion code repository.
+The block-bootstrap recalibration of Table~\ref{tab:ks_block_bootstrap} is anchored on the IS series; we report here whether the same construction holds on the OoS window. We repeated the procedure (two independent block resamples per null replicate) re-anchored on $R_{\text{OoS}}$ ($n_{\text{OoS}} = 572$, $B = 1{,}000$, $L \in \{5, 10, 20\}$, $N_{\text{paths}} = 500$). The critical values were $0.0857$, $0.0909$, and $0.0927$ at $L = 5, 10, 20$ respectively, again above the asymptotic $0.0804$. The OoS-anchored panel is reported in Table~\ref{tab:ks_block_bootstrap_oos}; the source CSV is in the companion code repository.
 
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{OoS-anchored block-bootstrap KS recalibration.} Same construction as Table~\ref{tab:ks_block_bootstrap} (CHMM rows at $K = 18$, this run's own fits) but with the stationary block bootstrap anchored on $R_{\text{OoS}}$ ($n = 572$). ``asymp pass'' is the main OoS metric (two-sample KS p-value $\ge 0.05$); ``blkL\%'' is the OoS block-bootstrap pass rate at mean block length $L$. The CHMM-vs-GARCH cross-generator ordering is preserved under the block-aware recalibration on both windows; the CHMM family's OoS block-aware penalty ($\sim 25$pp drop from asymp to $L = 20$) is larger than the IS penalty ($\sim 5$pp), reflecting the smaller OoS window where temporal-clustering structure is harder to disentangle from finite-sample noise.}
+\caption{\textbf{OoS-anchored block-bootstrap KS recalibration.} Same construction as Table~\ref{tab:ks_block_bootstrap} (CHMM rows at $K = 18$, this run's own fits) but with the two-sample stationary-block-bootstrap null anchored on $R_{\text{OoS}}$ ($n = 572$). ``asymp pass'' is the main OoS metric (two-sample KS p-value $\ge 0.05$); ``blkL\%'' is the OoS block-bootstrap pass rate at mean block length $L$. The cross-generator ordering is preserved under the dependence-aware recalibration on both windows, with all pass rates shifted upward by the wider null.}
 \label{tab:ks_block_bootstrap_oos}
 \begin{tabular}{l c c c c c c}
 \toprule
 Generator & asymp pass\% $\uparrow$ & mean pv $\uparrow$ & pv $q_{05}$ & pv $q_{95}$ & blk5\% $\uparrow$ & blk10\% $\uparrow$ \\
 \midrule
-i.i.d.\ bootstrap & $90.4$ & $0.437$ & $0.030$ & $0.912$ & $60.8$ & $69.0$ \\
-GARCH(1,1)        & $59.2$ & $0.164$ & $0.000$ & $0.645$ & $19.4$ & $26.0$ \\
-CHMM-N            & $81.0$ & $0.318$ & $0.010$ & $0.876$ & $41.2$ & $51.2$ \\
-\textbf{CHMM-t}   & $\mathbf{84.8}$ & $\mathbf{0.355}$ & $0.018$ & $\mathbf{0.911}$ & $\mathbf{47.4}$ & $\mathbf{58.4}$ \\
-CHMM-L            & $77.4$ & $0.280$ & $0.008$ & $0.791$ & $38.8$ & $49.0$ \\
-CHMM-GED          & $81.0$ & $0.327$ & $0.010$ & $0.837$ & $44.4$ & $53.6$ \\
+i.i.d.\ bootstrap & $90.4$ & $0.437$ & $0.030$ & $0.912$ & $94.2$ & $96.8$ \\
+GARCH(1,1)        & $59.2$ & $0.164$ & $0.000$ & $0.645$ & $65.8$ & $75.6$ \\
+CHMM-N            & $81.0$ & $0.318$ & $0.010$ & $0.876$ & $87.0$ & $91.4$ \\
+\textbf{CHMM-t}   & $\mathbf{84.8}$ & $\mathbf{0.355}$ & $0.018$ & $\mathbf{0.911}$ & $\mathbf{90.8}$ & $\mathbf{94.0}$ \\
+CHMM-L            & $77.4$ & $0.280$ & $0.008$ & $0.791$ & $84.2$ & $90.0$ \\
+CHMM-GED          & $81.0$ & $0.327$ & $0.010$ & $0.837$ & $86.4$ & $90.8$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The cross-generator OoS ordering matched the IS ordering (bootstrap $>$ CHMM-t $>$ CHMM-N/GED $>$ CHMM-L $\gg$ GARCH); the asymp-vs-block gap was larger on OoS ($\sim 25$pp for the CHMM family at $L = 20$) than on IS ($\sim 5$pp), but the CHMM-over-GARCH advantage was preserved.
+The cross-generator OoS ordering matched the IS ordering (bootstrap $>$ CHMM-t $>$ CHMM-N/GED $>$ CHMM-L $\gg$ GARCH), and on both windows the dependence-aware pass rates sit above the asymptotic ones, so the asymptotic metric's cross-generator ranking is the robust comparison while its absolute levels are conservative.
 
 \paragraph{Default-state-count summary at $L = 20$.}
-The OoS asymptotic pass rate alongside the OoS block-bootstrap pass rate at $L = 20$ (block-bootstrap $95\%$ critical value $0.0647$ vs.\ asymptotic $0.0804$) at the default $K^\star = 3$ is reported in Table~\ref{tab:ks_block_body}. Under a temporally aware null, CHMM-N moved from passing most of the time to passing about half the time at $L = 20$ (read against Table~\ref{tab:model_comparison}). The OoS KS result at the asymptotic critical value therefore overstates the absolute level relative to a temporally aware null; the cross-generator ranking is the robust comparison.
+The OoS asymptotic pass rate alongside the OoS block-bootstrap pass rate at $L = 20$ (two-sample block-bootstrap $95\%$ critical value $0.0927$ vs.\ asymptotic $0.0804$) at the default $K^\star = 3$ is reported in Table~\ref{tab:ks_block_body}. Under the dependence-aware null every $K^\star = 3$ family's pass rate rises by $10$--$19$pp relative to the asymptotic value; the ranking across families is unchanged.
 
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Block-aware OoS KS recalibration at $L = 20$} (stationary block bootstrap of \citealp{politis1994stationary}, $B = 1{,}000$, $500$ OoS-length simulated paths per generator, seed $20260422$). The asymp column recomputes the Table~\ref{tab:model_comparison} OoS metric at $500$ paths under this table's seed, so its values differ from the $1{,}000$-path main-table column by path noise ($\le 2$pp); the block-bootstrap $95\%$ null KS critical value at $L = 20$ is $0.0647$ vs the asymptotic $0.0804$. State count $K^\star = 3$.}
+\caption{\textbf{Block-aware OoS KS recalibration at $L = 20$} (two-sample stationary-block-bootstrap null of \citealp{politis1994stationary}, two independent OoS resamples per replicate, $B = 1{,}000$, $500$ OoS-length simulated paths per generator, seed $20260422$). The asymp column recomputes the Table~\ref{tab:model_comparison} OoS metric at $500$ paths under this table's seed and RNG stream, so its values differ from the $1{,}000$-path main-table column by path noise ($\le 3$pp); the block-bootstrap $95\%$ null KS critical value at $L = 20$ is $0.0927$ vs the asymptotic $0.0804$. State count $K^\star = 3$.}
 \label{tab:ks_block_body}
 \begin{tabular}{l c c}
 \toprule
 Model & OoS KS asymp.\ (\%) & OoS KS block $L = 20$ (\%) \\
 \midrule
-Bootstrap                                & $90.4$ & $73.2$ \\
-GARCH(1,1)                               & $59.2$ & $31.4$ \\
-CHMM-N                                   & $79.8$ & $58.6$ \\
-CHMM-t pen.\ ($\lambda = 20$)            & $\mathbf{79.8}$ & $\mathbf{54.2}$ \\
-CHMM-L                                   & $64.6$ & $34.6$ \\
-CHMM-GED                                 & $79.2$ & $51.6$ \\
+Bootstrap                                & $90.4$ & $97.4$ \\
+GARCH(1,1)                               & $59.2$ & $75.8$ \\
+CHMM-N                                   & $79.8$ & $90.8$ \\
+CHMM-t pen.\ ($\lambda = 20$)            & $\mathbf{82.4}$ & $\mathbf{92.8}$ \\
+CHMM-L                                   & $64.4$ & $83.6$ \\
+CHMM-GED                                 & $79.2$ & $90.2$ \\
 \bottomrule
 \end{tabular}
 \end{table}

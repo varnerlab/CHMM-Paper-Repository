@@ -111,7 +111,7 @@ The post-switch segment has a visibly larger VWAP-scale standard deviation ($2.2
 \subsection{Variant Decision Guide}
 \label{sec:variant_decision_guide}
 
-This appendix recommends a CHMM emission family by use-case priority (Table~\ref{tab:variant_choice}). All four variants share the forward-backward framework, the transition update, and quantile-based initialisation; they differ in the emission density and its M-step update. The shared-$\nu$ Student-$t$ row is the main heavy-tail recommendation: per-state heavy tails without a penalty hyperparameter at the highest IS KS pass rate of any CHMM variant in Table~\ref{tab:model_comparison}. The penalised CHMM-t at $\lambda = 20$ is retained as a sensitivity reference; the $\lambda$ value was tuned at $K = 18$ and is reported at $K^\star = 3$ as an upper bound on the unpenalised heavy tail.
+This appendix recommends a CHMM emission family by use-case priority (Table~\ref{tab:variant_choice}). All four variants share the forward-backward framework, the transition update, and quantile-based initialisation; they differ in the emission density and its M-step update. The shared-$\nu$ Student-$t$ row is the heavy-tail recommendation: per-state heavy tails without a penalty hyperparameter at the highest IS KS pass rate of any CHMM variant in Table~\ref{tab:model_comparison}. Because the recommendation draws on OoS performance and no untouched test window is reserved behind the OoS evaluation window, it is exploratory (Table~\ref{tab:spec_map}). The penalised CHMM-t at $\lambda = 20$ is retained as a sensitivity reference; the $\lambda$ value was tuned at $K = 18$ and is reported at $K^\star = 3$ as an upper bound on the unpenalised heavy tail.
 
 \begin{table}[!ht]
 \centering
