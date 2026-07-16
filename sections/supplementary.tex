@@ -78,10 +78,35 @@ The identity~\eqref{eq:supp_bilinear} fails at $\tau = 0$ since $\E[G_t^2 \mid s
 \paragraph{Squared growth-rate, complex-eigenvalue, and Jordan-block extensions.}
 If every emission has a finite fourth moment, replacing $|G_t|$ with $G_t^2$ and $\mathbf m$ with $\mathbf M = (\E[G_t^2 \mid s_t = i])_i$ leaves the proof termwise valid and gives $\rho_{G^2}(\tau) = \sum_{k \ge 2} \tilde a_k \lambda_k^\tau$ on the same non-unit spectrum. This additional condition is not automatic for CHMM-t when some $\nu_k \le 4$. Complex-conjugate eigenvalue pairs $(re^{\pm i\theta}, \cdot)$ contribute real damped oscillations $A r^\tau \cos(\theta\tau) + B r^\tau \sin(\theta\tau)$. For non-diagonalisable $\mathbf T$, a Jordan expansion instead adds polynomial-times-geometric prefactors, with exponential rate controlled by $\max_{k \ge 2} |\lambda_k|$; Theorem~\ref{thm:supp_spectral_acf}, which assumes diagonalizability, does not cover that case as stated. The dominant timescale used in the main text spectral mechanism corresponded to a real positive $\lambda_2$ on the fits of this paper.
 
-\subsection{Vendor-Stitch Sanity Check}
-\label{sec:vendor_stitch}
+\subsection{OoS Feed-Boundary Diagnostic}
+\label{sec:feed_boundary}
 
-The OoS series spans January~4, 2024 through April~20, 2026 ($573$ sessions; $T_{\text{OoS}} = 572$ within-window growth rates, with the boundary return into the first held-out session additionally used by the VaR back-tests) and is sourced from two vendors: Polygon.io via Massive (early portion) and Alpaca Markets / IEX (held-out extension). To verify that the stitch introduces no boundary artefact we compared the two vendors on every shared trading day. Of the $323$ overlap days, the per-day VWAP differential, the per-day annualised log-return differential, and a rolling 30-day excess kurtosis differential were all identically zero (mean, standard deviation, and maximum absolute value all $0.000$ to floating-point precision); the two-sample Kolmogorov-Smirnov test on the overlap returns gave $D = 0.000$ and $p = 1.00$. The two vendors were exact-match on the overlap, so the stitched OoS series is single-source-equivalent and no boundary artefact appeared at the November 19, 2025 stitch date. The diagnostic is reproducible from \texttt{runners/diagnostics/run\_vendor\_stitch\_check.jl}.
+The OoS series spans January~4, 2024 through April~20, 2026 ($573$ sessions; $T_{\text{OoS}} = 572$ within-window growth rates, with the boundary return into the first held-out session additionally used by the VaR back-tests) and is sourced from two vendors: Polygon.io consolidated aggregates via Massive through December~31, 2024, and Alpaca Markets IEX-only bars from January~3, 2025. The raw vendor files are date-disjoint, so no same-date cross-vendor sample exists and no vendor-equality check is possible from the repository data. An earlier ``vendor-stitch sanity check'' that reported exact equality over a 323-day overlap was retired as circular: it compared rows of the stitched OoS file against the same Alpaca rows from which they had been copied, so exact equality held by construction. In its place we report a descriptive comparison of the two OoS segments on either side of the feed switch (Table~\ref{tab:feed_boundary}), which characterises the boundary but, because the segments cover different calendar periods, cannot separate a feed effect from genuine time variation.
+
+\begin{table}[!ht]
+\centering
+\small
+\caption{\textbf{OoS feed-boundary diagnostic.} Per-segment annualised growth-rate summaries on either side of the January~3, 2025 feed switch, from the VWAP field used throughout the paper and from the close column as a price-field robustness check. The two-sample KS statistic compares the pre- and post-switch segments and is confounded with time variation. The final block reports the stored CHMM-N $K^\star = 3$ filter-conditional VaR breaches by segment.}
+\label{tab:feed_boundary}
+\begin{tabular}{llrrrr}
+\toprule
+Field & Segment & $n$ & mean & sd & exc.\ kurt \\
+\midrule
+VWAP  & Polygon (2024)          & 249 & $+0.228$ & $1.640$ & $+2.31$ \\
+VWAP  & Alpaca/IEX (2025--26)   & 322 & $+0.142$ & $2.215$ & $+5.24$ \\
+close & Polygon (2024)          & 249 & $+0.229$ & $2.004$ & $+1.81$ \\
+close & Alpaca/IEX (2025--26)   & 322 & $+0.141$ & $2.913$ & $+19.77$ \\
+\midrule
+\multicolumn{6}{l}{KS pre vs.\ post: VWAP $D = 0.099$ ($p = 0.13$); close $D = 0.065$ ($p = 0.59$).} \\
+\multicolumn{6}{l}{Cross-boundary return (mixed-feed endpoints): VWAP $+1.523$; close $+2.511$ (annualised).} \\
+\midrule
+\multicolumn{6}{l}{CHMM-N $K^\star{=}3$ VaR breaches --- Polygon: $n = 250$, $5\%$: $17$ ($6.80\%$, exp.\ $12.5$), $1\%$: $4$ ($1.60\%$).} \\
+\multicolumn{6}{l}{\phantom{CHMM-N $K^\star{=}3$ VaR breaches ---} Alpaca: $n = 323$, $5\%$: $19$ ($5.88\%$, exp.\ $16.2$), $1\%$: $5$ ($1.55\%$).} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The post-switch segment has a visibly larger VWAP-scale standard deviation ($2.215$ against $1.640$) and heavier sample tails; the same ordering appears in the close column, whose post-switch excess kurtosis is dominated by the early-2025 drawdown sessions. Neither KS statistic rejects at conventional levels, and per-segment VaR breach rates are similar, but these comparisons cannot identify a feed effect: the pre-period is a single calendar year and the post-period contains a distinct volatility regime. Consolidated versus IEX-only aggregation therefore remains an unresolved scope limitation of the OoS window, stated as such in the main text. The diagnostic is reproducible from \texttt{runners/diagnostics/run\_feed\_boundary\_check.jl} (artifact \path{results/diagnostics/feed_boundary_check.txt} of the companion code repository).
 
 \subsection{Variant Decision Guide}
 \label{sec:variant_decision_guide}

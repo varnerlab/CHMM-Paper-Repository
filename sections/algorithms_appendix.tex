@@ -23,7 +23,7 @@ and the closed-form M-step updates are
     T_{ij}^{\text{new}} = \frac{\sum_{t=1}^{T-1} \xi_t(i, j)}{\sum_{t=1}^{T-1} \gamma_t(i)}.
     \label{eq:mstep}
 \end{equation}
-The convergence criterion is $|\mathcal{L}^{(n)} - \mathcal{L}^{(n-1)}| < \epsilon$ with $\epsilon = 10^{-4}$, where $\mathcal{L}^{(n)} = \text{logsumexp}_k \log \alpha_T(k)$ is read from the forward pass of iteration $n$, that is, at the parameters that entered the iteration before its M-step. This is the standard Baum-Welch observed-data log-likelihood. For the exact Gaussian and Laplace conditional maximisations it is monotone across iterations; for the Student-$t$ and GED numerical block updates ascent is not guaranteed and the trace is monitored instead (see the numerical-optimisation scope paragraph of the supplementary propositions). In every family it lags the returned parameters by one M-step, so the stopping decision is unaffected. Implementation note on $\boldsymbol\pi$: the Gaussian fitter departs from Eq.~\eqref{eq:mstep} in one place, holding $\boldsymbol\pi$ fixed at its uniform initial value instead of applying $\pi_k^{\text{new}} = \gamma_1(k)$; the Student-$t$, Laplace, and GED fitters apply the $\gamma_1$ update. Parameter counts and BIC penalties for CHMM-N accordingly exclude $\boldsymbol\pi$. Simulation draws $S_1$ from the stationary distribution $\bar{\boldsymbol\pi}$ of $\hat{\mathbf T}$ and then iterates $G_t \sim \mathcal{N}(\mu_{S_t}, \sigma_{S_t}^2)$, $S_{t+1} \sim \text{Categorical}(\mathbf{T}_{S_t, \cdot})$ with no jump process.
+The convergence criterion is $|\mathcal{L}^{(n)} - \mathcal{L}^{(n-1)}| < \epsilon$ with $\epsilon = 10^{-4}$, where $\mathcal{L}^{(n)} = \text{logsumexp}_k \log \alpha_T(k)$ is the standard Baum-Welch observed-data log-likelihood of the parameters entering iteration $n$, evaluated by that iteration's forward pass \emph{before} any M-step can mutate them; the check runs before the update, so the returned parameters are always an evaluated iterate with a matching smoothed posterior, and the loop makes one final evaluation-only pass so that the last M-step update is itself scored. For the exact Gaussian and Laplace conditional maximisations the likelihood is monotone across iterations and the last evaluated iterate is returned; for the Student-$t$ and GED numerical block updates ascent is not guaranteed, the trace is monitored instead (see the numerical-optimisation scope paragraph of the supplementary propositions), and the best evaluated finite iterate $\arg\max_n \mathcal{L}^{(n)}$ is returned. Implementation note on $\boldsymbol\pi$: the Gaussian fitter departs from Eq.~\eqref{eq:mstep} in one place, holding $\boldsymbol\pi$ fixed at its uniform initial value instead of applying $\pi_k^{\text{new}} = \gamma_1(k)$; the Student-$t$, Laplace, and GED fitters apply the $\gamma_1$ update. Parameter counts and BIC penalties for CHMM-N accordingly exclude $\boldsymbol\pi$. Simulation draws $S_1$ from the stationary distribution $\bar{\boldsymbol\pi}$ of $\hat{\mathbf T}$ and then iterates $G_t \sim \mathcal{N}(\mu_{S_t}, \sigma_{S_t}^2)$, $S_{t+1} \sim \text{Categorical}(\mathbf{T}_{S_t, \cdot})$ with no jump process.
 
 \paragraph{CHMM-t M-step (per-state ECM/ECME, closed form given $u_{t,k}$).}
 For Student-t emissions $f_k(x) = t_{\nu_k}(x; \mu_k, \sigma_k)$ the ECM formulation of \citet{peel2000robust, liu1995ml} treats the latent precision as an augmented E-step quantity,
@@ -37,7 +37,7 @@ so that conditional on $\nu_k$ the location and scale admit closed-form weighted
     \left(\sigma_k^{\text{new}}\right)^2 = \frac{\sum_t \gamma_t(k)\, u_{t,k}\, (O_t - \mu_k^{\text{new}})^2}{\sum_t \gamma_t(k)}.
     \label{eq:tupdate_supp}
 \end{equation}
-The degrees-of-freedom parameter $\nu_k$ is then refined by a 40-iteration one-dimensional golden-section search on the per-state posterior-weighted objective $Q_k(\nu) = \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k)$ over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$, with the smoothed posteriors $\gamma$ held fixed. Maximising this marginal state-weighted log-likelihood for $\nu_k$, rather than the augmented-data $u$-functional, follows the spirit of the ECME construction of \citet{liu1995ml}; in their single-component i.i.d.\ setting, where all $\gamma_t(k) = 1$, that objective is the observed-data likelihood, whereas already for i.i.d.\ mixtures the posterior-weighted objective differs from the observed-data likelihood \citep{peel2000robust}, and in the HMM the observed-data likelihood also depends on $\nu_k$ through the forward recursion, so this update is a hybrid generalised block-coordinate step on a surrogate objective and does not inherit the ECME observed-data ascent guarantee. We diagnose convergence from the observed-data log-likelihood trace rather than assert monotonicity, restoring the last finite-likelihood iterate if an update degenerates.
+The degrees-of-freedom parameter $\nu_k$ is then refined by a 40-iteration one-dimensional golden-section search on the per-state posterior-weighted objective $Q_k(\nu) = \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k)$ over the bracket $(\nu_{\min}, \nu_{\max}) = (2.1, 50)$, with the smoothed posteriors $\gamma$ held fixed. Maximising this marginal state-weighted log-likelihood for $\nu_k$, rather than the augmented-data $u$-functional, follows the spirit of the ECME construction of \citet{liu1995ml}; in their single-component i.i.d.\ setting, where all $\gamma_t(k) = 1$, that objective is the observed-data likelihood, whereas already for i.i.d.\ mixtures the posterior-weighted objective differs from the observed-data likelihood \citep{peel2000robust}, and in the HMM the observed-data likelihood also depends on $\nu_k$ through the forward recursion, so this update is a hybrid generalised block-coordinate step on a surrogate objective and does not inherit the ECME observed-data ascent guarantee. We diagnose convergence from the observed-data log-likelihood trace rather than assert monotonicity, returning the best evaluated finite iterate (which is also restored if an update degenerates to a non-finite likelihood).
 We extend this M-step with an optional exponential shrinkage prior on $1/\nu_k$, corresponding to the penalised objective
 \begin{equation}
     Q_k^{\text{pen}}(\nu) \;=\; \sum_t \gamma_t(k)\, \log t_\nu(O_t; \mu_k, \sigma_k) \;-\; \lambda \, / \, \nu,
@@ -102,8 +102,8 @@ The unified EM procedure shared across all four emission families is given in Al
 \ENDFOR
 \STATE $T_{ij} \leftarrow 1/K$; \quad $\pi_k \leftarrow 1/K$; \quad $\mathcal{L}_{\text{prev}} \leftarrow -\infty$.
 
-\STATE \textbf{EM Loop.}
-\FOR{$n = 1$ to $\texttt{max\_iter}$}
+\STATE \textbf{EM Loop.} \COMMENT{one final evaluation-only pass, so every returned iterate has an evaluated likelihood.}
+\FOR{$n = 1$ to $\texttt{max\_iter} + 1$}
 
     \STATE \textbf{E-Step, per-family emission log-likelihood.} \label{line:emit}
     \STATE \textbf{switch} $F$
@@ -123,7 +123,11 @@ The unified EM procedure shared across all four emission families is given in Al
     \ENDFOR
     \STATE Compute $\gamma_t(k)$ and $\xi_t(i,j)$ from equation~\eqref{eq:gamma_xi}.
 
-    \STATE \textbf{Shared transition update.} $T_{ij} \leftarrow \sum_t \xi_t(i,j) \;/\; \sum_t \gamma_t(i)$; $\pi_k \leftarrow \gamma_1(k)$ for $F \in \{t, L, \text{GED}\}$ \COMMENT{for $F = \mathcal{N}$, $\boldsymbol\pi$ stays at its uniform initial value.}
+    \STATE \textbf{Likelihood of the current iterate.} $\mathcal{L}^{(n)} \leftarrow \underset{k}{\text{logsumexp}}(\log \alpha_T(k))$ \COMMENT{observed-data log-likelihood of the parameters entering iteration $n$, evaluated before any update; for $F \in \{t, \text{GED}\}$ record $(\text{parameters}, \mathcal{L}^{(n)}, \gamma)$ as the best checkpoint whenever $\mathcal{L}^{(n)}$ improves on it.}
+    \IF{$|\mathcal{L}^{(n)} - \mathcal{L}_{\text{prev}}| < \epsilon$ \textbf{ or } $n = \texttt{max\_iter} + 1$} \STATE \textbf{break} \COMMENT{the just-evaluated iterate is returned; no unevaluated update can escape the loop.} \ENDIF
+    \STATE $\mathcal{L}_{\text{prev}} \leftarrow \mathcal{L}^{(n)}$.
+
+    \STATE \textbf{Shared transition update.} $T_{ij} \leftarrow \sum_{t=1}^{T-1} \xi_t(i,j) \;/\; \sum_{t=1}^{T-1} \gamma_t(i)$; \quad $\pi_k \leftarrow \gamma_1(k)$ for $F \in \{t, L, \text{GED}\}$ \COMMENT{both sums run over $t = 1, \ldots, T-1$, one fewer term than the $\gamma$ sums of the emission updates below; for $F = \mathcal{N}$, $\boldsymbol\pi$ stays at its uniform initial value by documented convention.}
 
     \STATE \textbf{M-Step, per-family emission update.} \label{line:mstep}
     \STATE \textbf{switch} $F$
@@ -142,13 +146,9 @@ The unified EM procedure shared across all four emission families is given in Al
     \STATE \qquad $\mu_k \leftarrow \operatorname{GoldenSearchMin}_{\mu \in I_k} \sum_t \gamma_t(k)\, |O_t - \mu|^{p_k}$ \COMMENT{40 iterations on $I_k = [\min_t O_t, \max_t O_t]$.}
     \STATE \qquad $\alpha_k \leftarrow \max\!\Big(\big[(p_k / W_k) \sum_t \gamma_t(k)\, |O_t - \mu_k|^{p_k}\big]^{1/p_k},\; 10^{-6}\Big)$ where $W_k = \sum_t \gamma_t(k)$ \COMMENT{closed form, unique zero of $\partial Q_k / \partial \alpha$.}
     \STATE \qquad $p_k \leftarrow \operatorname{GoldenSearchMax}_{p \in [p_{\min}, p_{\max}]} \sum_t \gamma_t(k)\, \log \mathrm{GED}(O_t; \mu_k, \alpha_k, p)$ \COMMENT{40 iterations.}
-
-    \STATE \textbf{Convergence check.} $\mathcal{L}^{(n)} \leftarrow \underset{k}{\text{logsumexp}}(\log \alpha_T(k))$ \COMMENT{from the current E-step forward pass, the pre-M-step iterate; lags the returned parameters by one M-step.}
-    \IF{$|\mathcal{L}^{(n)} - \mathcal{L}_{\text{prev}}| < \epsilon$} \STATE \textbf{break} \ENDIF
-    \STATE $\mathcal{L}_{\text{prev}} \leftarrow \mathcal{L}^{(n)}$.
 \ENDFOR
 
-\RETURN $\mathbf{T}, \boldsymbol\theta_{1:K}, \boldsymbol{\pi}$ \COMMENT{$\boldsymbol\theta_k = (\mu_k, \sigma_k)$ for $F = \mathcal{N}$; $(\mu_k, \sigma_k, \nu_k)$ for $F = t$; $(\mu_k, b_k)$ for $F = L$; $(\mu_k, \alpha_k, p_k)$ for $F = \text{GED}$.}
+\RETURN $\mathbf{T}, \boldsymbol\theta_{1:K}, \boldsymbol{\pi}$ \COMMENT{$\boldsymbol\theta_k = (\mu_k, \sigma_k)$ for $F = \mathcal{N}$; $(\mu_k, \sigma_k, \nu_k)$ for $F = t$; $(\mu_k, b_k)$ for $F = L$; $(\mu_k, \alpha_k, p_k)$ for $F = \text{GED}$. For $F \in \{\mathcal{N}, L\}$ the last evaluated iterate is returned (EM ascent is exact for these families); for $F \in \{t, \text{GED}\}$, whose hybrid surrogate blocks do not guarantee observed-data ascent, the best evaluated finite checkpoint $\arg\max_n \mathcal{L}^{(n)}$ is returned, and a non-finite forward pass restores that checkpoint as well. In all cases the returned parameters carry an evaluated likelihood and a matching posterior $\gamma$.}
 \end{algorithmic}
 \end{breakablealgorithm}
 

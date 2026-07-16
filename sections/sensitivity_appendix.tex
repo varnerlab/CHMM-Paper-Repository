@@ -72,35 +72,35 @@ We expanded the sector panel to $n = 6$ per sector (60 tickers, three additional
 \subsubsection{Effective Spectral Rank of the Absolute Growth-Rate ACF}
 \label{sec:spectral_rank}
 
-The main-text spectral mechanism states the algebraic upper bound: the deflated transition matrix $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$ has rank at most $K - 1$, so the absolute growth-rate ACF identity~\eqref{eq:acf_normalised} contains at most $K - 1$ non-unit decay modes. The empirical question is how many of those modes carry non-trivial contribution to $\rho_{|G|}(\tau)$ at the relevant lags. The per-mode contribution $a_k \lambda_k^\tau$ at $\tau \in \{1, 5, 20, 50\}$ for the fitted CHMM-N at $K = 18$, $K = 3$, and $K = 2$ on SPY IS, with modes ranked by lag-$1$ contribution magnitude $|a_k \lambda_k|$, is reported in Table~\ref{tab:spectral_rank}. Per-state moments $m_k = \E[|G_t| \,|\, s_t = k]$ are estimated by $200{,}000$ draws from each emission; eigenvectors are normalised so $\mathbf w_k^\top \mathbf v_k = 1$.
+The main-text spectral mechanism states the algebraic upper bound: the deflated transition matrix $\mathbf T - \mathbf 1\bar{\boldsymbol\pi}^\top$ has rank at most $K - 1$, so the absolute growth-rate ACF identity~\eqref{eq:acf_normalised} contains at most $K - 1$ non-unit decay modes. The empirical question is how many of those modes carry non-trivial contribution to $\rho_{|G|}(\tau)$ at the relevant lags. Before ranking, complex-conjugate eigenvalue pairs are grouped into single real damped-oscillatory components (each contributing $2\,\mathrm{Re}(a_k \lambda_k^\tau)$; phase and cancellation therefore enter with their signs), so the unit of account is a real component rather than an eigenvalue, and the component count is at most $K - 1$. Shares are defined on the \emph{absolute component-magnitude budget} $B = \sum_c |\mathrm{contrib}_c(1)|$, which upper-bounds $|\rho_{|G|}(1)|$ and is not itself a percentage of $\rho_{|G|}(1)$, since signed contributions can cancel; the signed total $\rho_{|G|}(1) = \sum_c \mathrm{contrib}_c(1)$ is reported per panel. The signed per-component contributions at $\tau \in \{1, 5, 20\}$ for the fitted CHMM-N at $K = 18$, $K = 3$, and $K = 2$ on SPY IS are reported in Table~\ref{tab:spectral_rank}. Per-state moments $m_k = \E[|G_t| \,|\, s_t = k]$ are estimated by $200{,}000$ draws from each emission; eigenvectors are normalised so $\mathbf w_k^\top \mathbf v_k = 1$; as a numerical-fidelity check, the maximum absolute error of the component-sum ACF against the direct matrix formula over $\tau \le 252$ is below $10^{-13}$ in every panel.
 
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Per-mode contribution to the absolute growth-rate ACF identity}, CHMM-N at $K = 18$ (top panel; top six modes plus tail aggregate), at $K = 3$ (middle panel; full), and at $K = 2$ (bottom panel; single mode). Modes ordered by $|a_k \lambda_k|$ descending. ``cum'' is cumulative share of $\sum_k |a_k \lambda_k|$. At $K = 18$ the top mode (|$\lambda$| = $0.929$) carries $93.6\%$ of the lag-1 ACF, three modes reach $95\%$, and at lag $20$ only the dominant mode contributes non-negligibly. At $K = 3$ the dominant mode (|$\lambda$| = $0.953$) alone carries $96.8\%$ of lag-1 ACF, and at $K = 2$ the rank bound is at its tight extreme: the single non-unit eigenvalue (|$\lambda$| = $0.942$) carries $100\%$ of the lag-1 ACF. The temporal axis is therefore as well-satisfied at $K = 2$ and $K = 3$ as at $K = 18$, consistent with the main text finding that the binding constraint at low $K$ is the marginal mixture, not the eigenvalue spectrum.}
+\caption{\textbf{Per-component contribution to the absolute growth-rate ACF identity}, CHMM-N at $K = 18$ (top panel; top six grouped components plus tail aggregate, $12$ components from $17$ non-unit eigenvalues), at $K = 3$ (middle panel; full), and at $K = 2$ (bottom panel; single mode). Complex-conjugate pairs are grouped into single real components (kind ``pair''); contributions are signed reals; ``cum'' is cumulative share of the absolute budget $B = \sum_c |\mathrm{contrib}_c(1)|$. At $K = 18$ the top component ($|\lambda| = 0.929$, real) carries $93.9\%$ of $B$, two components reach $95\%$, and at lag $20$ only the dominant component contributes non-negligibly. At $K = 3$ the dominant component ($|\lambda| = 0.953$) alone carries $96.8\%$ of $B$, and at $K = 2$ the rank bound is at its tight extreme: the single non-unit eigenvalue ($|\lambda| = 0.942$) carries $100\%$. The temporal axis is therefore as well-satisfied at $K = 2$ and $K = 3$ as at $K = 18$, consistent with the main-text finding that the binding constraint at low $K$ is the marginal mixture, not the eigenvalue spectrum.}
 \label{tab:spectral_rank}
 \begin{tabular}{c c c c c c c}
 \toprule
-rank & $|\lambda_k|$ & $|a_k|$ & $|a_k \lambda_k|$ & $a_k \lambda_k^5$ & $a_k \lambda_k^{20}$ & cum \\
+rank & kind & $|\lambda|$ & $\mathrm{contrib}(1)$ & $\mathrm{contrib}(5)$ & $\mathrm{contrib}(20)$ & cum \\
 \midrule
-\multicolumn{7}{l}{\textit{$K = 18$, $\rho_{|G|}(1) = 0.301$, $\sigma^2_{|G|} = 2.555$}} \\
+\multicolumn{7}{l}{\textit{$K = 18$, $\rho_{|G|}(1) = 0.312$, $B = 0.321$, $\sigma^2_{|G|} = 2.555$}} \\
 \midrule
-1   & $0.929$ & $0.324$  & $0.301$ & $0.224$  & $0.0744$  & $0.936$ \\
-2   & $0.335$ & $0.012$  & $0.004$ & $0.0001$ & $0.0000$  & $0.948$ \\
-3   & $0.854$ & $0.003$  & $0.002$ & $-0.001$ & $-0.0001$ & $0.955$ \\
-4   & $0.231$ & $0.008$  & $0.002$ & $\approx 0$ & $\approx 0$ & $0.961$ \\
-5   & $0.231$ & $0.008$  & $0.002$ & $\approx 0$ & $\approx 0$ & $0.967$ \\
-6   & $0.203$ & $0.008$  & $0.002$ & $\approx 0$ & $\approx 0$ & $0.971$ \\
-7--17 & various & various & $\le 0.001$ each & $\approx 0$ & $\approx 0$ & $1.000$ \\
+1   & real & $0.929$ & $+0.3011$ & $+0.2243$  & $+0.0744$  & $0.939$ \\
+2   & real & $0.335$ & $+0.0039$ & $+0.0001$  & $\approx 0$ & $0.952$ \\
+3   & pair & $0.231$ & $+0.0035$ & $\approx 0$ & $\approx 0$ & $0.962$ \\
+4   & pair & $0.153$ & $+0.0025$ & $\approx 0$ & $\approx 0$ & $0.970$ \\
+5   & real & $0.854$ & $-0.0022$ & $-0.0012$  & $-0.0001$  & $0.977$ \\
+6   & pair & $0.122$ & $+0.0020$ & $\approx 0$ & $\approx 0$ & $0.983$ \\
+7--12 & various & various & $|{\cdot}| \le 0.0015$ each & $\approx 0$ & $\approx 0$ & $1.000$ \\
 \midrule
-\multicolumn{7}{l}{\textit{$K = 3$, $\rho_{|G|}(1) = 0.287$, $\sigma^2_{|G|} = 2.517$}} \\
+\multicolumn{7}{l}{\textit{$K = 3$, $\rho_{|G|}(1) = 0.287$, $B = 0.287$, $\sigma^2_{|G|} = 2.517$}} \\
 \midrule
-1 & $0.953$ & $0.292$ & $0.278$ & $0.230$ & $0.112$ & $0.968$ \\
-2 & $0.866$ & $0.011$ & $0.009$ & $0.005$ & $0.0006$ & $1.000$ \\
+1 & real & $0.953$ & $+0.2781$ & $+0.2298$ & $+0.1123$ & $0.968$ \\
+2 & real & $0.866$ & $+0.0093$ & $+0.0052$ & $+0.0006$ & $1.000$ \\
 \midrule
-\multicolumn{7}{l}{\textit{$K = 2$, $\rho_{|G|}(1) = 0.252$, $\sigma^2_{|G|} = 2.393$ (rank bound tight)}} \\
+\multicolumn{7}{l}{\textit{$K = 2$, $\rho_{|G|}(1) = 0.252$, $B = 0.252$, $\sigma^2_{|G|} = 2.393$ (rank bound tight)}} \\
 \midrule
-1 & $0.942$ & $0.267$ & $0.252$ & $0.199$ & $0.081$ & $1.000$ \\
+1 & real & $0.942$ & $+0.2519$ & $+0.1986$ & $+0.0814$ & $1.000$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -110,27 +110,27 @@ The empirical effective rank confirms the main-text framing: the ACF-MAE flatnes
 \subsubsection{Cross-Ticker Spectral Effective-Rank Diagnostic}
 \label{sec:spectral_rank_xticker}
 
-To test whether the SPY-only result of Table~\ref{tab:spectral_rank} (a single non-unit eigenvalue carries $93.6\%$ of the lag-$1$ absolute growth-rate ACF at $K = 18$) generalises across tickers, we computed the cross-ticker distribution of the dominant-mode share under the same protocol on the 30-ticker sector-balanced panel plus SPY (Table~\ref{tab:spectral_xticker}).
+To test whether the SPY-only result of Table~\ref{tab:spectral_rank} (a single grouped component carries $93.9\%$ of the lag-$1$ absolute growth-rate ACF budget at $K = 18$) generalises across tickers, we computed the cross-ticker distribution of the dominant-component share under the same grouped-component protocol on the 30-ticker sector-balanced panel plus SPY (Table~\ref{tab:spectral_xticker}).
 
 \begin{table}[H]
 \centering
 \small
-\caption{\textbf{Cross-ticker spectral effective-rank diagnostic at $K = 18$.} Distribution across 31 tickers (sector-balanced 30-ticker panel plus SPY control). ``dom share'' is the dominant non-unit eigenvalue's $|a_k \lambda_k|$ as a fraction of the sum over all non-unit eigenvalues at lag $\tau = 1$. ``$n_{95}$'' / ``$n_{99}$'' are the number of modes needed for $95\%$ / $99\%$ cumulative share. The SPY value of $0.936$ is in the right tail of the distribution; the cross-ticker median is $0.76$.}
+\caption{\textbf{Cross-ticker spectral effective-rank diagnostic at $K = 18$.} Distribution across 31 tickers (sector-balanced 30-ticker panel plus SPY control). ``dom share'' is the dominant grouped component's $|\mathrm{contrib}_c(1)|$ as a fraction of the absolute component-magnitude budget $B$ (conjugate pairs grouped; see Table~\ref{tab:spectral_rank}). ``$n_{95}$'' / ``$n_{99}$'' are the number of components needed for $95\%$ / $99\%$ cumulative share of $B$. Per-ticker ACF reconstruction errors against the direct matrix formula are all below $10^{-12}$. The SPY value of $0.939$ is in the right tail of the distribution; the cross-ticker median is $0.785$.}
 \label{tab:spectral_xticker}
 \begin{tabular}{l c c c}
 \toprule
 Statistic                            & dom share & $n_{95}$ & $n_{99}$ \\
 \midrule
-median                               & $0.756$ & $6$  & $11$ \\
-$[Q_1, Q_3]$                         & $[0.661, 0.858]$ & $[4, 7]$ & $[10, 12]$ \\
-minimum (NEM)                        & $0.326$ & $11$ & $14$ \\
-SPY (Table~\ref{tab:spectral_rank})    & $0.936$ & $2$  & $10$ \\
+median                               & $0.785$ & $4$  & $8$ \\
+$[Q_1, Q_3]$                         & $[0.666, 0.863]$ & $[3, 5]$ & $[7, 8]$ \\
+minimum (NEM)                        & $0.333$ & $7$ & $11$ \\
+SPY (Table~\ref{tab:spectral_rank})    & $0.939$ & $2$  & $8$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Reading.}
-The SPY share of $93.6\%$ sat in the right tail of the distribution; the cross-ticker median of $76\%$ was still well above the $1/(K-1) = 1/17 = 5.9\%$ uniform reference (a descriptive benchmark, not a test of whether the rank constraint binds), so the dominant-mode reading held across tickers at $K = 18$, but the gap between SPY and the median ticker is wide enough that the representative number is the cross-ticker median rather than the SPY share. Two qualifications bound what this table establishes. First, the median $n_{95} = 6$ means that at the typical ticker five further modes still carry a non-trivial cumulative share at $K = 18$, so dominance is weaker off-SPY. Second, the diagnostic was computed at $K = 18$ only: it measures modal concentration within an eighteen-state fit and cannot by itself establish that the two-mode budget of a $K = 3$ chain is slack at the typical ticker. The low-$K$ non-binding statement therefore rests on the SPY spectrum of Table~\ref{tab:spectral_rank}; rerunning this cross-ticker diagnostic at $K \in \{3, 6\}$ is the direct check and is left to the companion repository.
+The SPY share of $93.9\%$ sat in the right tail of the distribution; the cross-ticker median of $78.5\%$ was still well above the uniform reference of $1/12 \approx 8.3\%$ over the grouped components (a descriptive benchmark, not a test of whether the rank constraint binds), so the dominant-component reading held across tickers at $K = 18$, but the gap between SPY and the median ticker is wide enough that the representative number is the cross-ticker median rather than the SPY share. Two qualifications bound what this table establishes. First, the median $n_{95} = 4$ means that at the typical ticker three further components still carry a non-trivial cumulative share at $K = 18$, so dominance is weaker off-SPY. Second, the diagnostic was computed at $K = 18$ only: it measures modal concentration within an eighteen-state fit and cannot by itself establish that the two-mode budget of a $K = 3$ chain is slack at the typical ticker. The low-$K$ non-binding statement therefore rests on the SPY spectrum of Table~\ref{tab:spectral_rank}; rerunning this cross-ticker diagnostic at $K \in \{3, 6\}$ is the direct check and is left to the companion repository.
 
 \subsubsection{Ryd\'{e}n K = 2 Replication}
 \label{sec:ryden_replication}
@@ -171,25 +171,25 @@ The IS lower bound $1.92$--$2.99$ and the OoS upper bound $7.70$--$8.97$ overlap
 
 \paragraph{Bootstrap-CI placement of the penalised CHMM-t IS excess kurtosis.}
 \label{sec:kurtosis_ci_placement}
-A natural follow-up on the main text's penalised CHMM-t at $\lambda = 20$ is whether its simulated IS excess kurtosis distribution sits inside the bootstrap CI on observed: the aggregate-mean simulated IS excess kurtosis ($18.87$ at $K^\star = 3$, above the $L = 20$ CI upper bound $12.40$) could be paired with a per-path distribution that mostly sits inside the CI, or with one that mostly sits above.
+A natural follow-up on the main text's penalised CHMM-t at $\lambda = 20$ is whether its simulated IS excess kurtosis distribution sits inside the bootstrap CI on observed: the aggregate-mean simulated IS excess kurtosis ($17.67$ at $K^\star = 3$, above the $L = 20$ CI upper bound $12.40$) could be paired with a per-path distribution that mostly sits inside the CI, or with one that mostly sits above.
 
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Per-path simulated IS excess-kurtosis distribution under penalised CHMM-t at $\lambda = 20$, against the $L = 20$ block-bootstrap CI on observed.} $1{,}000$ paths per row, $T_{\text{IS}} = 2{,}516$, seed $20260420$. The CI is $[2.17, 12.40]$ at $L = 20$ from Table~\ref{tab:kurtosis_bootstrap}; the observed IS excess kurtosis is $7.68$. ``in CI \%'' is the fraction of simulated paths whose per-path excess kurtosis falls inside the CI; ``$\le$ CI\_HI \%'' is the fraction below the upper bound (the relevant one-sided test for overshoot). The agg.\ kurt column is this diagnostic's own simulation draw ($16.65$ at $K^\star = 3$, $8.94$ at $K = 18$, against $18.87$ and $8.56$ in the main-text tables): the aggregate fourth moment is draw-sensitive when a state sits at the $\nu$ bracket, as documented in the main text, and the object here is the CI placement of the per-path distribution, not the aggregate point value.}
+\caption{\textbf{Per-path simulated IS excess-kurtosis distribution under penalised CHMM-t at $\lambda = 20$, against the $L = 20$ block-bootstrap CI on observed.} $1{,}000$ paths per row, $T_{\text{IS}} = 2{,}516$, seed $20260420$. The CI is $[2.17, 12.40]$ at $L = 20$ from Table~\ref{tab:kurtosis_bootstrap}; the observed IS excess kurtosis is $7.68$. ``in CI \%'' is the fraction of simulated paths whose per-path excess kurtosis falls inside the CI; ``$\le$ CI\_HI \%'' is the fraction below the upper bound (the relevant one-sided test for overshoot). The agg.\ kurt column is this diagnostic's own simulation draw ($21.92$ at $K^\star = 3$, $9.86$ at $K = 18$, against $17.67$ and $8.56$ in the main-text tables): the aggregate fourth moment is draw-sensitive when a state sits at the $\nu$ bracket, as documented in the main text, and the object here is the CI placement of the per-path distribution, not the aggregate point value.}
 \label{tab:kurtosis_ci_placement}
 \begin{tabular}{c c c c c c c c}
 \toprule
 $K$ & agg.\ kurt & median & sd & $Q_5$ & $Q_{95}$ & $\le 12.40$ (\%) & in CI (\%) \\
 \midrule
-$3$  & $16.65$ & $7.77$ & $74.4$ & $3.75$ & $34.62$ & $76.6$ & $76.6$ \\
-$6$  & $10.13$ & $6.74$ & $13.5$ & $3.63$ & $26.30$ & $81.8$ & $81.7$ \\
-$18$ & $\phantom{0}8.94$ & $6.09$ & $16.9$ & $3.54$ & $18.11$ & $89.9$ & $89.9$ \\
+$3$  & $21.92$ & $8.52$ & $106.7$ & $3.79$ & $53.13$ & $70.6$ & $70.6$ \\
+$6$  & $10.26$ & $6.52$ & $\phantom{0}24.9$ & $3.58$ & $23.92$ & $83.4$ & $83.3$ \\
+$18$ & $\phantom{0}9.86$ & $5.99$ & $\phantom{0}32.2$ & $3.55$ & $21.59$ & $88.4$ & $88.4$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The per-path \emph{median} simulated IS excess kurtosis sat essentially at the observed value at every $K$ (Table~\ref{tab:kurtosis_ci_placement}). The medians were $7.77$ at $K^\star = 3$, $6.74$ at $K = 6$, and $6.09$ at $K = 18$, all within $\sim 1.6$ units of observed $7.68$ and well inside the bootstrap CI. The aggregate-mean simulated IS excess kurtosis sat above the CI upper bound at $K^\star = 3$ and $K = 6$ because the per-path distribution had a heavy right tail of paths at $Q_{95} \in \{18, 26, 35\}$ that dragged the mean up, but the bulk of the path-level mass (76--90\%) sat inside the bootstrap CI at every state count. The main text reports this row as a sensitivity reference whose aggregate-mean IS excess kurtosis overshoots; the per-path distribution locates that overshoot: a small number of heavy-right-tailed paths under the per-state $\nu_k$ ECM produced an aggregate-mean overshoot, but the path-level distribution was centred near observed and statistically indistinguishable from observed at $\alpha = 0.05$ on a one-sided overshoot test for the bulk of paths.
+The per-path \emph{median} simulated IS excess kurtosis sat essentially at the observed value at every $K$ (Table~\ref{tab:kurtosis_ci_placement}). The medians were $8.52$ at $K^\star = 3$, $6.52$ at $K = 6$, and $5.99$ at $K = 18$, all within $\sim 1.7$ units of observed $7.68$ and well inside the bootstrap CI. The aggregate-mean simulated IS excess kurtosis sat above the CI upper bound at $K^\star = 3$ because the per-path distribution had a heavy right tail of paths at $Q_{95} \in \{22, 24, 53\}$ that dragged the mean up, but the bulk of the path-level mass (71--88\%) sat inside the bootstrap CI at every state count. The main text reports this row as a sensitivity reference whose aggregate-mean IS excess kurtosis overshoots; the per-path distribution locates that overshoot: a small number of heavy-right-tailed paths under the per-state $\nu_k$ ECM produced an aggregate-mean overshoot, but the path-level distribution was centred near observed and statistically indistinguishable from observed at $\alpha = 0.05$ on a one-sided overshoot test for the bulk of paths.
 
 \subsubsection{\texorpdfstring{Shared-$\nu$ Student-t HMM Ablation}{Shared-nu Student-t HMM Ablation}}
 \label{sec:chmm_t_shared_nu}
@@ -199,7 +199,7 @@ A natural diagnostic for the per-state $\nu_k$ aggregate-mean overshoot is the s
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Shared-$\nu$ Student-t HMM ablation against the main text per-state $\nu_k$ row} ($1{,}000$ paths, $T_{\text{IS}} = 2{,}516$, $T_{\text{OoS}} = 572$, seed $20260420$, no $1/\nu$ penalty). Aggregate sim-kurt columns are mean-of-paths. Compare against the main text penalised CHMM-t ($\lambda = 20$): $K^\star = 3$ row $18.87$ IS / $10.61$ OoS (Table~\ref{tab:model_comparison}); $K = 18$ row $8.56$ IS / $7.07$ OoS (from the same penalised ECM run; consistent with the rate-sweep value $8.43$ at $\lambda=20$).}
+\caption{\textbf{Shared-$\nu$ Student-t HMM ablation against the main text per-state $\nu_k$ row} ($1{,}000$ paths, $T_{\text{IS}} = 2{,}516$, $T_{\text{OoS}} = 572$, seed $20260420$, no $1/\nu$ penalty). Aggregate sim-kurt columns are mean-of-paths. Compare against the main text penalised CHMM-t ($\lambda = 20$): $K^\star = 3$ row $17.67$ IS / $10.28$ OoS (Table~\ref{tab:model_comparison}); $K = 18$ row $8.56$ IS / $7.07$ OoS (from the same penalised ECM run; consistent with the rate-sweep value $8.43$ at $\lambda=20$).}
 \label{tab:chmm_t_shared_nu}
 \begin{tabular}{c c c c c c c c c}
 \toprule
@@ -207,8 +207,8 @@ A natural diagnostic for the per-state $\nu_k$ aggregate-mean overshoot is the s
 \cmidrule(lr){3-6} \cmidrule(lr){7-8}
 $K$ & $\hat\nu_{\text{shared}}$ & KS\,(\%) & sim kurt & $|G_t|$ ACF-MAE & raw ACF-MAE & KS\,(\%) & sim kurt & \\
 \midrule
-$3$  & $5.81$ & $91.9$ & $4.68$ & $0.0531$ & $0.0235$ & $82.1$ & $4.46$ & \\
-$6$  & $4.67$ & $92.7$ & $9.38$ & $0.0518$ & $0.0234$ & $82.6$ & $6.95$ & \\
+$3$  & $5.81$ & $91.9$ & $4.68$ & $0.0531$ & $0.0236$ & $82.1$ & $4.46$ & \\
+$6$  & $4.67$ & $92.7$ & $9.38$ & $0.0518$ & $0.0235$ & $82.6$ & $6.95$ & \\
 $18$ & $5.80$ & $\mathbf{95.8}$ & $\mathbf{6.25}$ & $0.0542$ & $0.0234$ & $\mathbf{88.0}$ & $\mathbf{5.00}$ & \\
 \bottomrule
 \end{tabular}
@@ -225,18 +225,18 @@ A Monte Carlo power calibration of the Christoffersen-cc joint conditional-cover
 \begin{table}[!ht]
 \centering
 \small
-\caption{\textbf{Christoffersen-cc power at $T_{\text{OoS}} = 573$.} Empirical rejection rate at nominal $\alpha = 0.05$, across alpha levels and Markov-chain second-eigenvalue $\rho$. $\rho = 0$ row is the empirical Type-I error under the i.i.d.\ null (should sit near $5\%$ if asymptotic chi-squared is well-calibrated). Critical values $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$.}
+\caption{\textbf{Christoffersen-cc power at $T_{\text{OoS}} = 573$.} Empirical rejection rate at nominal $\alpha = 0.05$, across alpha levels and Markov-chain second-eigenvalue $\rho$. $\rho = 0$ row is the empirical Type-I error under the i.i.d.\ null (should sit near $5\%$ if asymptotic chi-squared is well-calibrated). Critical values $\chi^2_1(0.05) = 3.841$, $\chi^2_2(0.05) = 5.991$. Zero-breach replicates contribute their exact Kupiec $\mathrm{LR}_{\text{uc}}$ (the $0\log 0$ terms taken at their limit) rather than being scored as $\mathrm{LR}_{\text{uc}} = 0$.}
 \label{tab:christoffersen_power}
 \begin{tabular}{c c c c c}
 \toprule
 $\alpha$ & $\rho$ & rej-UC \% & rej-IND \% & rej-CC \% \\
 \midrule
-$0.01$ & $0.00$ & $\phantom{0}5.4$ & $\phantom{0}1.8$ & $\phantom{0}3.4$ \\
-$0.01$ & $0.05$ & $\phantom{0}6.4$ & $15.3$ & $11.4$ \\
-$0.01$ & $0.10$ & $\phantom{0}7.3$ & $27.9$ & $21.1$ \\
-$0.01$ & $0.20$ & $10.4$ & $51.7$ & $42.6$ \\
-$0.01$ & $0.30$ & $14.4$ & $67.2$ & $63.1$ \\
-$0.01$ & $0.50$ & $22.3$ & $75.6$ & $82.1$ \\
+$0.01$ & $0.00$ & $\phantom{0}5.7$ & $\phantom{0}1.8$ & $\phantom{0}3.8$ \\
+$0.01$ & $0.05$ & $\phantom{0}6.9$ & $15.3$ & $11.9$ \\
+$0.01$ & $0.10$ & $\phantom{0}7.7$ & $27.9$ & $21.5$ \\
+$0.01$ & $0.20$ & $11.4$ & $51.7$ & $43.6$ \\
+$0.01$ & $0.30$ & $16.4$ & $67.2$ & $65.1$ \\
+$0.01$ & $0.50$ & $28.4$ & $75.6$ & $88.2$ \\
 \midrule
 $0.05$ & $0.00$ & $\phantom{0}5.9$ & $\phantom{0}4.7$ & $\phantom{0}4.0$ \\
 $0.05$ & $0.05$ & $\phantom{0}6.5$ & $18.5$ & $15.0$ \\
@@ -249,7 +249,7 @@ $0.05$ & $0.50$ & $27.3$ & $99.7$ & $100.0$ \\
 \end{table}
 
 \paragraph{Reading.}
-At $\rho = 0$ the empirical rejection rates sat within about one point of the nominal $5\%$ for all three statistics, confirming that the asymptotic $\chi^2$ calibration is approximately correctly sized at $T = 573$. Power was asymmetric across $\alpha$. At $\alpha = 0.05$ ($\sim 28.6$ expected breaches), Christoffersen-cc reached $80\%$ power against $\rho \ge 0.20$ ($83.8\%$) and essentially full power at $\rho = 0.50$. At $\alpha = 0.01$ ($\sim 5.7$ expected breaches) it reached $80\%$ power only at $\rho \ge 0.50$ ($82.1\%$); at $\rho = 0.20$ the rejection rate was $42.6\%$, well below conventional power thresholds.
+At $\rho = 0$ the empirical rejection rates sat within about one point of the nominal $5\%$ for all three statistics, confirming that the asymptotic $\chi^2$ calibration is approximately correctly sized at $T = 573$. Power was asymmetric across $\alpha$. At $\alpha = 0.05$ ($\sim 28.6$ expected breaches), Christoffersen-cc reached $80\%$ power against $\rho \ge 0.20$ ($83.8\%$) and essentially full power at $\rho = 0.50$. At $\alpha = 0.01$ ($\sim 5.7$ expected breaches) it reached $80\%$ power only at $\rho \ge 0.50$ ($88.2\%$); at $\rho = 0.20$ the rejection rate was $43.6\%$, well below conventional power thresholds.
 The reading for Table~\ref{tab:cond_var} is therefore tier-dependent. The uniform $\alpha = 0.05$ non-rejections carried strong power against moderate clustering ($\rho \ge 0.20$); the $\alpha = 0.01$ rows carried strong power only against severe clustering ($\rho \ge 0.50$), so the $\alpha = 0.01$ non-rejections should be read as ``not detectably worse than a strongly-clustered alternative'' rather than ``calibrated against any plausible alternative''. The regime-conditional construction therefore stands at $\alpha = 0.05$ and is power-bounded at $\alpha = 0.01$; the main-text VaR back-test should be read with this calibration in mind.
 
 \subsubsection{Engle-Manganelli Dynamic Quantile Test}
@@ -281,7 +281,10 @@ $18$ & $0.05$ & $4.54$ & $0.674$ & $\phantom{1}4.00$ & $0.676$ \\
 \end{table}
 
 \paragraph{Reading.}
-Neither conditional-coverage test rejected at $\alpha = 0.05$ at either state count (Table~\ref{tab:engle_manganelli_dq}), so the $\alpha = 0.05$ non-rejections survive the higher-power alternative. The p-values were cc $0.391$ and DQ $0.094$ at $K = 3$, and cc $0.674$ / DQ $0.676$ at $K = 18$. At $\alpha = 0.01$ the DQ test rejected conditional coverage at $K = 18$ ($p = 0.017$) where Christoffersen-cc did not ($p = 0.137$), and was borderline at $K = 3$ ($p = 0.056$). This is consistent with the power-calibration result of Table~\ref{tab:christoffersen_power}: at $\alpha = 0.01$ Christoffersen-cc has only $42.6\%$ power against moderate breach-clustering eigenvalues $\rho = 0.20$, so the higher-power DQ test detects miscalibration that Christoffersen-cc misses. The DQ result therefore reinforces the reading that $\alpha = 0.05$ is the operationally informative tier; the $\alpha = 0.01$ tier is not decided by the panel and should be read as power-limited rather than as established calibration, with the DQ rejection at $K = 18$ the concrete instance.
+Neither conditional-coverage test rejected at $\alpha = 0.05$ at either state count (Table~\ref{tab:engle_manganelli_dq}), so the $\alpha = 0.05$ non-rejections survive the higher-power alternative. The p-values were cc $0.391$ and DQ $0.094$ at $K = 3$, and cc $0.674$ / DQ $0.676$ at $K = 18$. At $\alpha = 0.01$ the DQ test rejected conditional coverage at $K = 18$ ($p = 0.017$) where Christoffersen-cc did not ($p = 0.137$), and was borderline at $K = 3$ ($p = 0.056$). This is consistent with the power-calibration result of Table~\ref{tab:christoffersen_power}: at $\alpha = 0.01$ Christoffersen-cc has only $43.6\%$ power against moderate breach-clustering eigenvalues $\rho = 0.20$, so the higher-power DQ test detects miscalibration that Christoffersen-cc misses. The DQ result therefore reinforces the reading that $\alpha = 0.05$ is the operationally informative tier; the $\alpha = 0.01$ tier is not decided by the panel and should be read as power-limited rather than as established calibration, with the DQ rejection at $K = 18$ the concrete instance.
+
+\paragraph{Finite-sample calibration of the strict-tail DQ, exact binomial coverage, and paired quantile loss.}
+The asymptotic $\chi^2_6$ reference for the DQ statistic has no finite-sample guarantee at $T = 573$ with $\approx 5.7$ expected breaches, so we calibrated it by parametric bootstrap under each fitted null (runner \texttt{run\_var\_inference\_upgrade.jl}; artifact \texttt{results/var\_inference\_upgrade/}): simulate $B = 500$ synthetic OoS paths of length $573$ from the fitted model, rerun the identical one-step-ahead VaR filter and DQ regression on each, and score the observed statistic against that null distribution. The finite-sample null is far heavier-tailed than $\chi^2_6$ (null $95\%$ quantiles $21.9$ for CHMM-N at $K^\star = 3$ and $20.3$ for MS-GARCH at $K = 4$, against the asymptotic $12.59$), so the asymptotic test is anticonservative in this design: the bootstrap $p$-values are $0.17$ (CHMM-N $K^\star = 3$, asymptotic $0.056$) and $0.09$ (MS-GARCH $K = 4$, asymptotic $0.016$), and neither model is rejected at the $5\%$ level under its finite-sample null. Every strict-tail DQ separation in the main-text table is therefore exploratory. As a distribution-free complement, exact two-sided binomial unconditional-coverage $p$-values were computed for every row of the family panel plus the MS-GARCH block: all CHMM rows are compatible with nominal coverage at both levels (smallest $p = 0.087$), while the MS-GARCH $1\%$ rows over-breach ($11$--$12$ breaches, $p_{\text{exact}} \in [0.017, 0.035]$). Finally, a paired pinball-loss comparison on the identical $573$ forecast days (HAC Newey-West on the daily loss differentials) finds no significant ranking between CHMM-N at $K^\star = 3$ and MS-GARCH at $K = 4$, the filtered bootstrap, or CAViaR at either level ($|t| \le 1.48$, $p \ge 0.14$ throughout): specification tests aside, no model in the panel demonstrably beats another on quantile forecast accuracy.
 
 
 \subsubsection{Quarterly-Refit Regime-Conditional VaR Back-Test}
@@ -506,7 +509,7 @@ CHMM-t pen.\ ($\lambda = 20$)       & $3$  & $89.1$ & $\phantom{0}5.4$ & $4.97$ 
 \multicolumn{8}{l}{\emph{Main window: 2014--2024 IS / 2024--2026 OoS (Polygon / Alpaca, Table~\ref{tab:model_comparison})}} \\
 CHMM-N ($K^\star = 3$)              & $3$  & $91.5$ & $78.0$ & $3.83$ & $3.62$ & $0.0462$ & $0.0544$ \\
 CHMM-N ($K = 18$)                   & $18$ & $94.1$ & $81.8$ & $5.04$ & $4.44$ & $0.0509$ & $\sim 0.054$ \\
-CHMM-t pen.\ ($\lambda = 20$, $K^\star = 3$)  & $3$  & $91.9$ & $81.4$ & $18.87$ & $10.61$ & $0.0533$ & $0.0498$ \\
+CHMM-t pen.\ ($\lambda = 20$, $K^\star = 3$)  & $3$  & $91.9$ & $79.7$ & $17.67$ & $10.28$ & $0.0538$ & $0.0496$ \\
 \bottomrule
 \end{tabular}
 \end{table}

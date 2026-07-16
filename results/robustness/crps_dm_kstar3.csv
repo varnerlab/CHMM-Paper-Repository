@@ -1,0 +1,11 @@
+pair,mean_diff,dm_t,p_raw,p_holm
+chmm_n_vs_chmm_t_pen,0.001125,0.5615,0.5745,1.0000
+chmm_n_vs_chmm_l,-0.003900,-1.7436,0.0812,0.7311
+chmm_n_vs_chmm_ged,-0.000440,-0.2177,0.8276,1.0000
+chmm_n_vs_chmm_t_shared_nu,-0.001258,-0.5115,0.6090,1.0000
+chmm_t_pen_vs_chmm_l,-0.005024,-2.0361,0.0417,0.4174
+chmm_t_pen_vs_chmm_ged,-0.001564,-0.6841,0.4939,1.0000
+chmm_t_pen_vs_chmm_t_shared_nu,-0.002382,-1.0337,0.3013,1.0000
+chmm_l_vs_chmm_ged,0.003460,1.7104,0.0872,0.7311
+chmm_l_vs_chmm_t_shared_nu,0.002642,1.1913,0.2335,1.0000
+chmm_ged_vs_chmm_t_shared_nu,-0.000818,-0.3670,0.7136,1.0000
