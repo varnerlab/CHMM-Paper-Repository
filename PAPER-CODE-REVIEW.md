@@ -1,194 +1,197 @@
-# Fresh Technical, Code, and Narrative Review
+# Fresh Technical, Statistical, Code, and Narrative Review
 
-## Scope and revisions reviewed
+## Scope
 
 **Manuscript:** *Continuous-Emission Hidden Markov Models for Equity Returns: Heavy-Tail Emission Families and Regime-Conditional Value-at-Risk*
 
 **Review date:** 2026-07-16
 
-**Paper repository:** `2f1c0ab` (scientific-content revision `b12bbd5`; the head commit only deletes the preceding review file)
+**Paper repository:** `99ed625`
 
-**Companion model repository:** `b281f09`
+**Companion model repository:** `8b9fe49`
 
-This is another fresh audit of the current repository heads. I checked the fourth-review response against the implementation rather than accepting the commit summary, reread the main paper and relevant appendices, traced headline values into runners and artifacts, ran the current Julia test suite and consistency gate, and compiled the paper from a clean temporary directory.
+This is a new audit of the current repository heads after the fifth-review response. I reread the main paper and the relevant appendices, traced the revised claims into their runners and artifacts, inspected the CHMM and comparator implementations, ran the full Julia test suite and the paper/artifact gate, performed fresh convergence diagnostics on the headline `K = 3` and `K = 18` Gaussian fits, and compiled the manuscript from a clean temporary copy.
 
 ## Overall assessment
 
 **Recommendation: targeted major revision before submission.**
 
-The latest response fixes most of the concrete defects from the preceding audit. The shared-`nu` fitter is now a tested library routine with a best-evaluated-iterate contract; the observed ACF band is no longer drawn through lag 252; kurtosis results no longer call `Pr(IS > OoS)` a p-value; the KS sensitivity draws two independent block resamples; CRPS language distinguishes non-rejection from equivalence; the copula comparison is now a nominal `2 x 2` design on common quarter targets; the strict-tail DQ calibration uses 2,000 replications and explicitly covers only two rows; and the provenance gate now rejects known-stale manifest statuses. The core spectral identity, transition update, forecast alignment, likelihood checkpointing, and reported numerical values remain internally coherent.
+The fifth response genuinely fixes nearly every concrete defect identified in the preceding audit. Strict common random numbers are now used in the quarter-level copula experiment; the observed ACF bootstrap band is restricted to lags 1--5; raw kurtosis bands are explicitly descriptive and winsorized kurtosis is used for inference; Hill-range overlap is described as compatibility rather than equivalence; the far-band ACF language now gives the exact worse-than-i.i.d. values; stale documentation and manifest statuses were repaired; and the `_auc` precedence bug is fixed and tested. The core finite-state CHMM likelihood recursion, transition update, simulation, spectral reconstruction, and VaR indexing remain internally coherent.
 
-The paper is therefore much closer to technically defensible than the version covered by the preceding review. The remaining problems are narrower but still touch headline claims:
+Two newly exposed problems nevertheless affect headline scientific claims:
 
-1. the cross-ticker spectral evidence does not establish that the two-mode budget at `K = 3` is non-binding outside SPY;
-2. the quarter-level copula runner claims common random numbers across families but calls the non-CRN simulation interface;
-3. the `L = 20` moving-block ACF band is still invalid or strongly attenuated near lag 20, not merely beyond it;
-4. ordinary bootstrap inference for sample kurtosis is difficult to justify when the paper's own tail estimate implies that the fourth moment may be infinite;
-5. overlapping Hill intervals are still converted into a “matched” tail claim without an equivalence test; and
-6. repository-level reproducibility documentation remains partly stale and the artifact gate is not a complete rebuild or semantic verification.
+1. The revised experiment does **not identify the decay-mode budget as non-binding**. It compares particular likelihood-fitted models on the same sample used to fit them, changes marginal and temporal capacity simultaneously, uses one deterministic initialization, and does not optimize ACF loss. More seriously, the exact `K = 18` SPY fit used by the runner is not converged at the stated 60-iteration cap.
+2. The main table's “ML HSMM-N” comparator is not maximum-likelihood for its declared truncated discrete Pareto duration model. Its duration update uses the continuous, untruncated Pareto formula, and its runner/artifacts are not correctly represented in the manifest.
 
-The main CHMM implementation is not the weak point now. The needed revision is primarily about inferential design, exact scope, and aligning the headline narrative with what the diagnostics actually identify.
+The paper's strongest defensible conclusion is narrower: **under these particular fitted CHMMs, heavy-tailed emissions improve marginal diagnostics, and increasing the Gaussian state count from 3 to 18 did not improve the in-sample ACF diagnostic.** That is useful empirical evidence, but it is not yet evidence that the attainable two-mode budget is the binding/non-binding constraint.
 
 ## Verification results
 
-- **Model tests:** `7,127 / 7,127` passed in `8m38s` under `Pkg.test()`.
-- **Optional R baseline:** the opt-in `CHMM_TEST_MSGARCH=1` reference-MSGARCH test was not run; the standard suite explicitly skips it.
-- **Paper/artifact gate:** `runners/diagnostics/run_paper_artifact_check.jl` exited successfully.
-- **Clean paper build:** `latexmk -pdf -interaction=nonstopmode -halt-on-error paper.tex` succeeded from a clean temporary copy.
-- **Build quality:** 84 pages; no unresolved citations or references; three underfull boxes in the specification-map table; no overfull boxes found.
+- **Full model test suite:** `7,140 / 7,140` tests passed in `8m49.9s` under `Pkg.test()`.
+- **Optional R baseline:** the opt-in `CHMM_TEST_MSGARCH=1` MCMC-backed reference test was not run; the default suite explicitly reports that skip.
+- **Paper/artifact gate:** `runners/diagnostics/run_paper_artifact_check.jl` passed all current manifest, substring, and keyed checks.
+- **Clean paper build:** `latexmk -C` followed by `latexmk -pdf -interaction=nonstopmode -halt-on-error paper.tex` succeeded from a clean temporary copy.
+- **Build quality:** 84 pages; no unresolved citations or references; no overfull boxes; three underfull boxes in the specification-map table.
 - **PDF metadata:** title, subject, keywords, and authors match the current manuscript.
-- **Repository hygiene:** both worktrees were clean before this review file was added; `git diff --check` passed in both repositories.
+- **Repository hygiene:** both repositories were clean before this review file was replaced; `git diff --check` passed in both.
 
-Passing these gates establishes executable consistency, not validity of every statistical conclusion. The distinctions below are important.
+These gates establish executable and typesetting consistency. They do not validate the interpretation of an experiment or the statistical assumptions behind it.
 
-## Corrections that are now technically sound
+## Corrections that are now sound
 
-- **Shared-`nu` estimation:** `src/Compute.jl` now contains `baum_welch_student_t_shared_nu`, evaluates an iterate before mutation, checkpoints the best finite evaluated likelihood, and returns the matching posterior. The two runners now call the library routine rather than carrying divergent private copies.
-- **Core EM return contract:** the Gaussian, per-state Student-t, shared-`nu` Student-t, Laplace, and GED paths have regression coverage for returned likelihood/parameter agreement.
-- **ACF horizon disclosure:** the manuscript now states directly that the CHMM advantage is at lags 1--63 and that the fitted population ACF is essentially zero at long horizons. The banded MAE table is a valid descriptive comparison.
-- **Kurtosis probability label:** `Pr(IS > OoS) = 0.756` is correctly described as a descriptive bootstrap probability, not a null-calibrated p-value.
-- **KS sensitivity construction:** each null replication now compares two independent stationary-block resamples instead of comparing a fixed observed series with one resample.
-- **CRPS inference:** all ten pairs among the five displayed CHMM rows are covered; HAC confidence intervals are reported; Holm correction is applied; and the manuscript explicitly calls the result a non-rejection rather than equivalence.
-- **Copula target pairing:** the four arms are evaluated on the same complete quarter blocks, and the five-day partial block is excluded from inference.
-- **VaR alignment and qualification:** CHMM and MS-GARCH use the same 573 forecast targets; the DQ bootstrap scope and lack of parameter re-estimation are disclosed; exact binomial values and paired pinball losses are useful additions.
-- **Provenance status gate:** known `STALE`, `UNTRACED`, `pending`, and `defect` statuses now fail the consistency runner.
+- **Strict copula CRN is real.** All four quarter arms call `simulate(model, n_days, N_PATHS, crn)` in `runners/cross_asset/run_cross_asset_rolling_copula.jl:181-188`. Separate base-normal, chi-square, and marginal-path streams are implemented in `src/CrossAsset.jl:525-602`, and the runner's call sites now have a source-level regression test.
+- **The copula artifact is synchronized.** The paper and artifact agree on Student-t `0.264 -> 0.186`, Gaussian `0.261 -> 0.179`, and family effects of `0.003--0.007`. The paper appropriately calls the nine-quarter result suggestive.
+- **The ACF band repair is correct.** `runners/headline/run_acf_horizon_diagnostics.jl:147-174` records `NaN` after lag 5, and the paper explains gradual block-boundary contamination rather than asserting a false cutoff at lag 20.
+- **Kurtosis layers are separated.** The raw fourth-moment bootstrap is labelled descriptive; the difference in winsorized kurtosis is the stated inferential target; and non-rejection is not presented as equality.
+- **Hill wording is now logically correct.** `sections/results.tex:76` explicitly says that overlapping observed and simulated ranges are different inferential objects and are not a difference interval or equivalence test.
+- **ACF horizon wording is accurate.** The paper says the CHMM beats the i.i.d. reference at lags 1--63 and is slightly worse at lags 64--252 (`0.041` versus `0.036`).
+- **Repository synchronization improved.** `README.md`, `RUNNERS.md`, `src/Types.jl`, the manifest, and the manuscript's refit medians now agree. The `_auc` empty-class condition is parenthesized and tested.
 
 ## High-priority technical findings
 
-### 1. The cross-ticker spectrum does not support the general low-`K` non-binding claim
+### 1. The “mode budget is not binding” experiment does not identify that constraint
 
-The algebraic identity in `sections/theory.tex` is correct, and `runners/spectral/spectral_common.jl` reconstructs the direct matrix ACF to numerical precision. The interpretive leap is not.
+The revised spectral runner is much better than its predecessor. It runs at both `K = 3` and `K = 18`, groups complex-conjugate modes, adds a horizon-aware contribution norm, and compares fitted population ACFs against the observed sample ACF. Its reported numbers reproduce: near-band median MAE is `0.0543` at `K = 3`, `0.0697` at `K = 18`, and `0.0901` for the zero curve; `K = 18` is better on only `1/31` series.
 
-The manuscript says that the decay-mode budget was not empirically active “at the typical ticker” and repeatedly concludes that the marginal mixture, rather than the ACF mode budget, binds at low state count. But the cross-ticker diagnostic is run only at `K = 18`. Its median dominant-component share is `0.785`, and the median number of grouped components needed for 95% of the absolute lag-1 budget is **four**. A `K = 3` chain can supply at most two non-unit modes. Thus the `K = 18` cross-section does not show that the `K = 3` budget is sufficient at the typical ticker; if anything, its median `n95 = 4` leaves that question open.
+That establishes a descriptive fact about these fitted models. It does not establish that the two-mode capacity at `K = 3` is non-binding:
 
-The artifact itself contains an older reading rule saying that a median dominant share of at least `0.90` would support generalizing the result beyond SPY. The observed `0.785` does not meet that rule. The manuscript partially acknowledges that the cross-ticker diagnostic was not rerun at `K = 3`, but the abstract, Introduction, and Conclusion still generalize the non-binding conclusion beyond the SPY instance.
+- Both models are fitted by observed-data likelihood, not by ACF loss. A higher-state likelihood optimum can improve the marginal likelihood while worsening ACF MAE. Failure of a likelihood fit to use its extra modes is not proof that extra modes cannot reduce the ACF approximation error.
+- Moving from `K = 3` to `K = 18` changes the emission mixture and transition spectrum together. The experiment therefore does not isolate marginal capacity from temporal capacity.
+- The comparison is in-sample: the sample ACF being scored is calculated from the same observations used by EM (`runners/spectral/run_spectral_rank_cross_ticker.jl:98-113`). It provides neither out-of-sample ACF evidence nor a constrained approximation benchmark.
+- The Gaussian fitter uses one deterministic quantile initialization and a uniform transition matrix (`src/Compute.jl:294-316`). No multistart or optimizer-sensitivity analysis is applied to the high-dimensional `K = 18` fits.
+- The count `1/31` includes SPY with the 30-stock panel. It is descriptive and carries no cross-sectional uncertainty analysis; the tickers also share market-wide dependence.
 
-There is a second scope issue: components are ranked by absolute contribution at **lag 1**. A component small at lag 1 can matter at later lags if it has a larger eigenvalue or a different phase. A lag-1 budget is not by itself an effective-rank diagnostic for the complete lag-1--252 curve.
+The runner itself overstates its logic when it says the binding question is “settled” (`run_spectral_rank_cross_ticker.jl:231-234`). The manuscript repeats the leap in the abstract (`paper.tex:146`), Results (`sections/results.tex:23`), sensitivity reading (`sections/sensitivity_appendix.tex:137`), and Conclusion (`sections/conclusion.tex:1`).
 
-**Required correction:** restrict the non-binding conclusion to the fitted SPY models. To generalize, rerun the grouped diagnostic at `K = 3` across tickers and summarize a horizon-aware contribution norm (for example, integrated squared or absolute contribution over the reported lag band), then show that additional modes do not improve out-of-sample ACF loss.
+**Required correction:** replace “the mode budget is not the binding constraint” with “the additional states did not improve ACF MAE for these likelihood fits.” To identify the stronger claim, use converged multistart fits and one of the following designs:
 
-### 2. The quarter-level `2 x 2` copula runner does not use strict CRN across families
+1. compare the best attainable ACF approximation under a two-mode restriction with a richer-mode restriction while holding the marginal moments fixed;
+2. add an ACF-targeted or likelihood-plus-ACF constrained fit, then test on held-out ACF loss; or
+3. show that a nested/richer fit, after optimizer sensitivity and convergence checks, cannot materially improve a pre-specified out-of-sample ACF criterion.
 
-`runners/cross_asset/run_cross_asset_rolling_copula.jl:173-181` resets the same global seed and then calls the three-argument `simulate(model, T, n_paths)` method for all four arms. That pairs the seed, but it does not produce strict common random numbers between Gaussian and Student-t copulas:
+### 2. The headline `K = 18` spectral comparator is not converged
 
-- the Gaussian sampler consumes base normal draws;
-- the Student-t sampler consumes the base normals plus a chi-square mixing stream; and
-- each method simulates the CHMM marginal paths only after those copula draws.
+The runner caps every Gaussian fit at 60 M-steps and does not report convergence or the final likelihood increment. A fresh reproduction using the identical SPY data and fitter gives:
 
-The additional Student-t draws therefore shift the random stream, so Gaussian and Student-t arms do not receive identical marginal paths. This matters most for the reported family effects, which are only `0.003`--`0.007`.
+- `K = 3`: 53 likelihood evaluations, final increment `8.56e-5`; this satisfies the fitter's `1e-4` tolerance.
+- `K = 18`: 61 likelihood evaluations (the cap plus the final evaluation), final increment `+0.58097`; this is about 5,800 times the convergence tolerance.
 
-The repository already contains the correct solution in `src/CrossAsset.jl:525-604`: the four-argument strict-CRN simulation interface gives base normals, chi-square mixing, and each asset's marginal path separate deterministic streams. The seed-uncertainty runner uses it, but the headline quarter-level `2 x 2` runner does not.
+The `K = 18` likelihood remained monotone, so this is not numerical failure; it simply had not converged. Extending the same deterministic fit to 200 M-steps still hit the cap with a final increment of `+0.0422`. On SPY the exact-moment near-band ACF MAE was fairly stable (`0.0772`, versus the stored 60-step Monte-Carlo-moment value `0.0778`), which is reassuring for that one series, but it does not validate the other 30 capped high-state fits.
 
-Within-family static-versus-rolling comparisons are much less affected because both arms call the same family sampler and consume the same number of draws. The claimed refit improvement (`0.078`--`0.082`) is also much larger than the family effect, so the qualitative ordering may survive. Nevertheless, the current family contrasts and the claim that all four arms differ only by design factor are not exact.
+This is a direct correctness problem for the experiment underpinning the abstract's primary claim: a converged low-state fit is compared with an unconverged high-state fit, while no per-ticker convergence table is retained.
 
-**Required correction:** call `simulate(model, n_days, N_PATHS, crn_seed)` in every quarter arm, regenerate the four-arm artifact, and add a test asserting that the actual headline runner uses the strict interface. Recompute the family/refit contrasts before retaining “order of magnitude.”
+**Required correction:** fit each state count to a defensible convergence rule, save `n_iter`, final likelihood increment, and best likelihood per initialization, and rerun the entire `K = 3`/`K = 18` panel. Use several starts at `K = 18`. If practical convergence cannot be reached, label the high-state result as a fixed-compute sensitivity rather than evidence about model capacity.
 
-### 3. Restricting an `L = 20` moving-block ACF band to lags `<= 20` is still too permissive
+### 3. “A different duration law, not a larger state count” is mathematically too categorical
 
-The revision correctly removes the band beyond the block length. It now says the band is valid through lag 20. At lag exactly equal to the block length, however, every resampled lag-20 pair crosses an independently concatenated block boundary; the resample contains no original lag-20 pair. At lags close to 20, only a small fraction of pairs remain inside the same source block, so dependence is strongly attenuated.
+A finite irreducible HMM has an ACF that is a finite sum of geometric, damped-oscillatory, or Jordan polynomial-times-geometric terms. It therefore cannot have an exact power-law asymptote. The paper's spectral theorem supports that statement.
 
-The issue is therefore gradual edge contamination, not a sharp validity boundary at `h = L`. A block length used to estimate uncertainty at maximum lag `h` must be materially longer than `h` and should grow with sample size under the bootstrap's asymptotics. A fixed `L = 20` band is defensible only for substantially shorter lags, not through 20.
+It does **not** follow that more states cannot improve persistence over the finite reported horizon. Increasing `K` adds eigenmodes, and transition eigenvalues can move closer to one; finite mixtures of exponentials can approximate slow or power-law-like decay over a bounded interval. Even a fixed low-state model can extend its half-life through a more persistent transition matrix. The present `K = 18` likelihood fits did not do so, but that empirical result is not a structural impossibility.
 
-**Required correction:** either display the current band only over a conservative low-lag range such as 1--5, or select a substantially longer block length and demonstrate sensitivity. If a curve-wide uncertainty statement is desired, use a method designed for dependent ACF estimates and simultaneous inference. Keep the banded MAE table as descriptive evidence.
+The abstract and Conclusion repeatedly say that escaping the lags-64--252 ceiling “requires a different duration law rather than more states” (`paper.tex:146`; `sections/conclusion.tex:1,3`). This conflates failure of the fitted models over a finite interval with the asymptotic finite-geometric limitation.
 
-### 4. The kurtosis bootstrap conflicts with the paper's own heavy-tail diagnosis
+**Required correction:** say that a different duration law or long-memory latent process is required for genuine non-geometric/power-law asymptotics, while additional states or more persistent transitions may improve a finite-horizon approximation but did not do so in the reported fits.
 
-The paper reports a Hill estimate near `3.15` and explicitly says that the population fourth moment is plausibly infinite. It then treats the ordinary stationary-block percentile bootstrap interval for sample excess kurtosis as an inferential confidence interval and uses coverage of zero by the IS-minus-OoS difference interval to support a non-rejection.
+### 4. The main table's “ML HSMM-N” is not maximum-likelihood for its declared duration PMF
 
-If the tail index is below four, population kurtosis is not finite, so there is no stable population excess-kurtosis parameter for this interval to estimate. Even when the fourth moment exists, conventional asymptotic inference for sample kurtosis generally needs stronger tail moments; a standard `n`-out-of-`n` percentile bootstrap can be unreliable in the exact heavy-tail regime emphasized by the paper. Dependence-aware blocks do not solve the non-regular tail-functional problem.
+The main generator table reports a co-main “ML HSMM-N” with IS/OoS KS `98.4% / 91.0%`, kurtosis `3.46 / 3.38`, and ACF-MAE `0.0629`. Those values trace to `results/hsmm_ml/hsmm_ml_metrics.csv` and the archived runner `_attic/runners/run_hsmm_ml.jl`.
 
-The wide interval is descriptively useful as a sensitivity display, but calling it a conventional 95% inferential interval overstates what the assumptions support.
+The runner declares the truncated discrete Pareto duration model
 
-**Required correction:** make excess kurtosis explicitly descriptive, and use a tail-robust target for inference: a trimmed/winsorized fourth-moment functional, quantile-based tail ratio, or a heavy-tail-appropriate subsampling/`m`-out-of-`n` procedure with stated assumptions. Do not use the current percentile interval to test equality of population kurtosis if the paper retains the possible-infinite-fourth-moment interpretation.
+`p_alpha(d) = d^(-(alpha+1)) / Z_D(alpha),  d = 1,...,D`.
 
-### 5. Overlapping Hill intervals do not establish that the simulated tail is “matched”
+For expected duration counts `w_d`, its Q-function score must solve
 
-`sections/results.tex` says that the shared-`nu` simulated Hill band overlaps the observed bootstrap CI, “so the simulated tail is matched.” The two ranges are not the same inferential object: one is an observed-series block-bootstrap interval and the other is an across-simulated-path distribution. Their overlap is neither a confidence interval for the difference nor an equivalence test.
+`E_w[log d] = E_alpha[log D]`,
 
-This is the same logical distinction the revised CRPS section now handles correctly. The supported statement is that the observed estimate is compatible with the simulated dispersion at the chosen top-5% threshold. It does not prove equivalence, and it is especially weak as a family discriminator because every emission family yields a similar threshold-local estimate while their far-tail behavior differs structurally.
+where the right side is computed under the normalized truncated discrete PMF and depends on both `alpha` and `D`. Instead, `_fit_pareto_alpha` returns
 
-**Required correction:** replace “matched” with “compatible at this threshold under this descriptive diagnostic,” or construct a paired/bootstrap distribution for the difference and pre-specify an equivalence margin.
+`alpha = 1 / E_w[log d]`
 
-## Additional correctness and interpretation findings
+at `_attic/runners/run_hsmm_ml.jl:79-86`. That is the continuous, untruncated Pareto result; it is not the optimizer of the discrete truncated likelihood evaluated by `_pareto_logpmf`. The M-step at lines 350--361 is therefore not an exact ML/EM duration update, and monotonic likelihood improvement is not guaranteed by the claimed argument.
 
-### 6. “At the i.i.d. floor” should be “does not beat the i.i.d. floor”
+This does not prove the stored HSMM metrics are numerically poor. It does make the “maximum-likelihood HSMM” label technically false, which matters because the abstract-level narrative uses this comparator to delimit the CHMM's raw-fit performance.
 
-For lags 64--252 the artifact reports CHMM-N MAE `0.0410` and i.i.d. MAE `0.0356`; the CHMM is about 15% worse, not equal. The figure caption and Discussion give the exact values, but the Conclusion says the model “leaves the far band at the i.i.d. floor.” Use the more exact “does not beat the i.i.d. floor” or “is slightly worse than the i.i.d. reference.”
+**Required correction:** numerically maximize the actual expected truncated-discrete duration log-likelihood for each state (or use a root solve for the correct score), add monotonicity and returned-iterate tests, rerun the HSMM artifact, and only then retain “ML HSMM-N.” Until then, call it an approximate or generalized-EM Pareto-duration HSMM.
 
-### 7. “Matches/fits the heavy-tailed marginal” remains stronger than the displayed evidence
+### 5. The ML-HSMM result is missing from the live provenance map
 
-At the recommended shared-`nu`, `K = 3` setting, simulated IS excess kurtosis is `4.68` against observed `7.68`; the KS score is a conditional descriptive pass rate under serial dependence; and the Hill comparison does not establish equivalence. The model clearly improves on CHMM-N's tail gap and produces a heavy-tailed marginal, but “matches the heavy-tailed marginal” in the abstract and Introduction is too categorical.
+The runner for the main-table ML HSMM is in `_attic/`, while the `tab:model_comparison` manifest row maps the table to `run_smchmm_baseline.jl` and omits both `_attic/runners/run_hsmm_ml.jl` and `results/hsmm_ml/`. The live `run_hsmm_gamma.jl` merely prints the old Pareto values as a hard-coded comparison reference.
 
-**Correction:** say “substantially improves marginal/tail fidelity” or identify the exact metric and tolerance being matched.
+Consequently, the passing artifact gate does not check the main table's HSMM row. A substring checker could even find the hard-coded numbers in the wrong runner without establishing provenance. This conflicts with the Data Availability statement that the manifest maps each table to its runner and artifact (`sections/conclusion.tex:12`).
 
-### 8. The block-bootstrap KS panel remains a descriptive sensitivity, not a calibrated generator test
+**Required correction:** restore the corrected ML-HSMM runner to the live runner tree, map its precise artifact in `results/artifacts_manifest.csv`, and add keyed checks for the actual CSV row. The consistency gate should verify file existence and, ideally, artifact/runner commit or content hashes.
 
-Drawing two independent block resamples is the correct repair to the earlier one-fixed/one-resampled construction. The threshold is still conditional on the empirical observed series, assumes both null series share its marginal and short-range dependence, does not refit a candidate generator, and is reused across generators with different dependence structures. It should not be read as a generic dependence-corrected goodness-of-fit test for each fitted model.
+## Additional statistical and code findings
 
-The manuscript now states that the values are descriptive, which is appropriate. Keep that qualification wherever the near-100% CHMM pass rates are summarized, and avoid treating the wider critical values as proof that the original asymptotic pass rates are universally conservative.
+### 6. Winsorization fixes the infinite-fourth-moment problem, but the bootstrap assumptions are underspecified
 
-### 9. Copula inference is appropriately labelled suggestive, but the headline wording should retain that qualifier
+Clamping at fixed interior quantiles makes the winsorized variable bounded, so the raw-tail-index objection no longer applies. The code also correctly recomputes empirical thresholds inside each resample.
 
-The paired t-statistics use only nine adjacent time blocks, and consecutive rolling fits use overlapping 252-day windows. The runner and appendix disclose that no dependence correction is used. The abstract and Conclusion state the order-of-magnitude result without the “suggestive” qualifier. Even after strict CRN is repaired, the result is one basket and nine correlated blocks, so the abstract should say “in a descriptive/suggestive `2 x 2` experiment.”
+However, “finite moments at any tail index” is not by itself enough to validate the stationary-block percentile interval. Quantile-estimated winsorized kurtosis requires regularity at the clamp quantiles (for example, continuity and positive density), nondegenerate variance, and dependence conditions strong enough for the empirical quantiles and moment functional. The paper states only that the method is standard “under mixing,” without specifying or checking those conditions. More importantly, its own walk-forward failures, regime introductions, and mixed-vendor OoS window challenge within-window stationarity.
 
-### 10. The mixed-vendor OoS window remains a binding identification limitation
+At `q = 0.01`, the 572-observation OoS window has only about six observations per tail beyond each empirical clamp, so finite-sample quantile uncertainty is substantial. Reporting `q = 0.05` and all block lengths is helpful, and every interval covers zero, but the result should be stated as conditional on stationarity/mixing and quantile regularity rather than as assumption-free inference.
 
-The manuscript now describes the Polygon-to-Alpaca/IEX switch honestly. Because the source files are date-disjoint, pre/post differences cannot separate vendor effects from calendar-regime effects. Every single-window OoS ranking crosses this switch. The limitation is disclosed but not resolved; a same-date overlap or consistent-vendor rerun is still needed for a clean headline OoS estimand.
+Also keep the estimand distinction explicit: winsorized kurtosis says nothing direct about equality of the extreme tails or the possibly undefined raw population kurtosis.
 
-## Code and reproducibility findings
+### 7. The spectral runners use an ad hoc stationary-distribution calculation
 
-### What is strong
+`runners/spectral/spectral_common.jl:32` uses `(T^2000)[1, :]`, and the ACF horizon runner uses `(T^1000)[1, :]`. This is adequate when the subdominant eigenvalue is well below one, but no residual such as `||pi' T - pi'||` is checked. A highly persistent high-state fit can remain dependent on the arbitrary starting row after a fixed number of powers.
 
-- The executable test suite is large and currently green.
-- Returned-likelihood checks, spectral reconstruction, forecast indexing, strict-CRN primitives, and artifact-shape tests cover the failures that previously mattered most.
-- The shared-`nu` implementation is no longer duplicated.
-- The manuscript commit pins the model commit, and the artifact manifest maps the principal tables to runners.
-- The headline rebuild script now says explicitly that it is not a complete-paper rebuild.
+The fresh 200-step SPY `K = 18` fit had a negligible stationary residual after 5,000 powers, so there is no demonstrated SPY error. The cross-ticker runner, however, should calculate the stationary vector by a left-eigenvector or constrained linear solve and assert normalization, non-negativity, uniqueness, and a small stationarity residual for every fit.
 
-### Remaining gaps
+### 8. The spectral moments should be analytic for Gaussian emissions
 
-1. **The model README is stale and overclaims.** It says the CHMM reproduces all three Cont facts, calls Student-t and Gaussian OoS copulas “statistically indistinguishable,” says VaR passes cleanly across families, and labels `run_full_rebuild.jl` an end-to-end rebuild of every paper artifact. Those statements conflict with the current paper and with the rebuild script's own header.
-2. **The manifest is not fully verified.** Twelve rows still carry an `unverified` status. The status gate permits this by design, so “ALL CHECKS PASS” does not mean every paper artifact has been independently checked.
-3. **Most consistency checks remain substring checks.** Only six values use keyed extraction. A number can still pass by appearing in the wrong row or surrounding prose. The gate does not validate runner commit, input hashes, output hashes, or a clean rebuild.
-4. **`RUNNERS.md` contains at least one path mismatch.** It maps `run_kurtosis_bootstrap.jl` to `results/SPY/diagnostics/kurtosis_bootstrap.txt`, while the runner writes `results/diagnostics/kurtosis_bootstrap.txt`.
-5. **The optional R baseline is outside the default verification.** That is acceptable if prominently disclosed, but the reference Bayesian rows are still printed in the main table.
-6. **A code docstring contradicts the paper's identifiability caveat.** `src/Types.jl` asserts finite GED-mixture identifiability from Yakowitz--Spragins, whereas the paper correctly says it does not prove linear independence for the varying-shape GED family. Align the code documentation with the paper.
-7. **The strict-CRN primitive is tested, but its use by the headline `2 x 2` runner is not.** The existing tests verify the four-argument simulator and artifact shape, not that the runner actually invokes that interface.
-8. **Minor utility bug:** `_auc` in `src/Metrics.jl` uses `np == 0 || nn == 0 && return 0.5`; because of short-circuit precedence, an empty positive class can fall through instead of returning. Parenthesize the condition. It does not appear to affect the paper artifacts, but it is a real library edge case.
+The cross-ticker diagnostic estimates `E|G|` and `E[G^2]` from 200,000 draws per state even though both are closed form for a Normal emission. This introduces unnecessary Monte-Carlo variation into a supposedly deterministic model-vs-sample comparison. It is unlikely to explain the median differences, but exact folded-normal moments would be faster, auditable, and eliminate one source of rerun noise.
+
+### 9. The artifact gate is improved but remains a consistency sampler, not a rebuild guarantee
+
+All 52 manifest rows now avoid known-bad statuses, and nine drift-prone values use keyed regex extraction. Most other checks still search for a numeric substring anywhere in an artifact directory and anywhere in a TeX file. The gate does not execute runners, validate input hashes, validate the pinned model commit, or prove that a number came from the intended row. “ALL CHECKS PASS” should continue to be described as a consistency gate, not a complete reproduction.
+
+### 10. The optional reference MSGARCH result remains outside the default test gate
+
+The default suite clearly discloses this and the R environment is pinned, so this is not a hidden defect. It remains important in the reproducibility statement because the reference Bayesian MSGARCH rows appear in the main generator table despite not being exercised by the reported `7,140`-test run.
 
 ## Narrative-flow review
 
 ### Improvements
 
-- The title is precise and no longer suggests continuous latent states.
-- The Results section has a coherent order: specification, single-asset generator, cross-asset composition, then VaR.
-- The paper now states non-rejection, ex-post selection, feed provenance, finite-sample DQ scope, and long-horizon ACF failure candidly.
-- The Conclusion is more synthetic and less repetitive than the preceding version.
+- The abstract now has one primary empirical story, one long-horizon boundary, and appropriately qualified copula and VaR applications.
+- The Results order is coherent: state-count/evaluation protocol, single-asset results, cross-asset composition, then VaR.
+- The manuscript is candid about ex-post selection, non-rejection versus equivalence, mixed-vendor data, stress-fold failures, the loss of serial dependence under cross-asset rank reordering, and the absence of a privacy guarantee.
+- The Hill, ACF, copula, and kurtosis caveats now appear near the claims they qualify rather than only in the supplement.
 
 ### Remaining flow problems
 
-The clean build is 84 pages: the Conclusion ends on page 22, references occupy pages 24--29, and supplementary material runs to page 84. Length alone is not an error, but the scientific through-line is still buried under audit detail.
+The paper is still written partly as an audit dossier rather than a journal narrative. The clean build is 84 pages, with the main Conclusion on page 22 and supplementary material through page 84. Several individual paragraphs carry setup, estimator details, numerical results, inference, caveats, and rebuttal history at once:
 
-- The abstract is one very long paragraph carrying model family, spectral mechanism, four evaluation settings, VaR, copula interaction, and two limitations. It should foreground one primary empirical claim and one boundary.
-- Several Results paragraphs combine setup, estimates, inference, caveats, provenance, and rebuttal history in a single block. The VaR paragraph is especially difficult to parse on first reading.
-- Main-table captions function as mini-method sections. Move estimator conventions and provenance into short notes or the metric appendix.
-- The appendices and artifacts retain “third-review,” “fourth-review,” “peer-review item,” retired-method, and response-plan language. This is useful development history but makes the public research package read like a referee dossier. Move it to a changelog.
-- The abstract and Conclusion sometimes drop qualifiers that are present in Results (“suggestive,” “descriptive,” “SPY-only”), recreating overclaim at the exact points most readers will see.
+- `sections/results.tex:23` combines stylized-fact confirmation, raw and winsorized kurtosis, four state-count-selection schemes, two spectral norms, and the bindingness conclusion.
+- `sections/results.tex:103` is an extremely long cross-asset paragraph spanning in-sample family selection, non-overlap sensitivity, seed uncertainty, the quarter experiment, and marginal failures.
+- The first Discussion and Conclusion paragraphs each restate most of the paper's quantitative results.
+
+The dominant narrative issue is not merely length; it is that the strongest causal wording appears in the abstract and Conclusion, while the limitations that make it descriptive appear later. Once the bindingness and duration-law claims are narrowed, the flow will improve automatically.
+
+Recommended structural edit:
+
+1. End the state-count subsection after selection and basic ACF horizon evidence.
+2. Put the spectral mechanism in a short separate subsection titled “What the fitted spectra do—and do not—show.”
+3. Split the cross-asset paragraph into construction, static results, and rolling `2 x 2` evidence.
+4. Reduce the Conclusion to the supported contribution, two application results, and three limitations; move numerical inventories to the Results tables.
+5. Keep development history in `CHANGELOG.md`, not in scientific prose or live-runner comments.
 
 ## Recommended revision order
 
-1. Regenerate the copula `2 x 2` experiment using the strict four-argument CRN simulator.
-2. Restrict the spectral non-binding claim to SPY, or add `K = 3` cross-ticker and horizon-aware diagnostics.
-3. Remove the ACF bootstrap band near the block boundary or rebuild it with a defensible longer/data-selected block scheme.
-4. Recast kurtosis intervals as descriptive unless a heavy-tail-valid inferential method is supplied.
-5. Replace Hill-interval-overlap “match” language with compatibility/non-rejection language.
-6. Narrow “matches the heavy-tailed marginal,” “at the i.i.d. floor,” and unqualified copula-order claims in the abstract and Conclusion.
-7. Synchronize the model README, `RUNNERS.md`, and `Types.jl` documentation with the current paper.
-8. Convert the remaining high-value artifact checks to keyed row/column checks and resolve the twelve `unverified` manifest entries.
-9. Condense the main narrative and move review-response history to a changelog or reproducibility note.
+1. Rerun the `K = 18` spectral panel to convergence with multistart diagnostics and save optimizer evidence for every ticker.
+2. Narrow the mode-budget claim unless a design that holds marginal capacity fixed and evaluates held-out ACF loss is added.
+3. Correct the finite-horizon versus asymptotic duration-law statement throughout the abstract, Discussion, and Conclusion.
+4. Replace the Pareto-duration HSMM update with the true truncated-discrete likelihood optimizer, rerun it, and restore its live provenance.
+5. State the regularity and stationarity assumptions for winsorized-kurtosis inference; otherwise present it as a robust sensitivity interval.
+6. Replace fixed matrix powers with a checked stationary-vector solver and use analytic Gaussian folded moments.
+7. Add keyed checks for the HSMM and other main-table rows, plus runner/artifact existence and hash metadata.
+8. Condense the large Results, Discussion, and Conclusion paragraphs after the scientific scope is settled.
 
 ## Bottom line
 
-The implementation is now substantially healthier than the narrative risk around it: the current Julia suite passes, the central CHMM and spectral algebra are coherent, the shared-`nu` repair is real, the VaR origins are aligned, and the paper builds cleanly. The remaining submission risk comes from drawing general or equivalence-like conclusions from diagnostics that are narrower than the prose: a SPY-only low-`K` spectral result, a nominal rather than strict-CRN copula interaction, block-bootstrap ACF and kurtosis inference at the edge of their assumptions, and interval overlap described as a match.
+The fifth response is a substantial improvement and the core CHMM implementation is in good shape: all 7,140 default tests pass, the paper builds cleanly, strict CRN is correctly implemented, the spectral identity reconstructs the direct ACF, and the earlier inferential-language defects are largely repaired.
 
-After those claims and two affected analyses are corrected, the paper would be technically credible as an empirical comparison with clearly bounded scope. In its current form, the core results are promising, but the abstract-level story is still stronger than the evidence that survives the paper's own caveats.
+The current submission risk is now concentrated rather than diffuse. The paper's primary abstract claim is stronger than the revised experiment can identify, and its high-state comparator is demonstrably unconverged. Separately, a main-table comparator is called maximum-likelihood despite using the wrong duration-parameter update for its stated PMF and lacking live provenance. Fixing those two analyses and narrowing the finite-horizon structural language would make the work technically credible as an empirical CHMM comparison with clearly bounded claims.
