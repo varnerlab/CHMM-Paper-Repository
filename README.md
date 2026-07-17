@@ -2,7 +2,7 @@
 
 LaTeX sources for the working paper
 
-> **Continuous Hidden Markov Models for Equity Returns:
+> **Continuous-Emission Hidden Markov Models for Equity Returns:
 > Heavy-Tail Emission Families and Regime-Conditional Value-at-Risk**
 > Alswaidan A, Jin C, Varner JD, Cornell University, 2026.
 
@@ -23,7 +23,7 @@ every figure and table live in the sibling repository
 
 ```bibtex
 @article{alswaidan2026chmm,
-  title   = {Continuous Hidden Markov Models for Equity Returns:
+  title   = {Continuous-Emission Hidden Markov Models for Equity Returns:
              Heavy-Tail Emission Families and Regime-Conditional
              Value-at-Risk},
   author  = {Alswaidan, Abdulrahman and Jin, Cade and Varner, Jeffrey D.},
@@ -51,7 +51,7 @@ pdflatex -interaction=nonstopmode paper.tex
 ```
 
 Produces `paper.pdf` (body, bibliography, and appendices; the page count
-moves with the draft, currently 76 pages).
+moves with the draft, currently 88 pages).
 
 `make clean` removes the usual LaTeX auxiliary files; `make distclean`
 also removes `paper.pdf`.
