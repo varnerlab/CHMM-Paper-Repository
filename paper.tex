@@ -1,11 +1,11 @@
 \documentclass[11pt]{article}
 
-% --- Encoding & fonts ---
+% == Encoding & fonts ==
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{microtype}
 
-% --- Math ---
+% == Math ==
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
@@ -13,7 +13,7 @@
 \newtheorem{remark}{Remark}
 \newtheorem{assumption}{Assumption}
 
-% --- Layout ---
+% == Layout ==
 \usepackage[margin=1in]{geometry}
 \usepackage[section]{placeins}
 \setlength{\emergencystretch}{5em}
@@ -27,7 +27,7 @@
 \let\origsubsubsection\subsubsection
 \renewcommand{\subsubsection}{\FloatBarrier\origsubsubsection}
 
-% --- Floats, tables, figures ---
+% == Floats, tables, figures ==
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{booktabs}
@@ -35,7 +35,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 
-% --- Aggressive float packing (relaxed defaults to avoid sparse pages) ---
+% == Aggressive float packing (relaxed defaults to avoid sparse pages) ==
 \renewcommand{\topfraction}{0.95}
 \renewcommand{\bottomfraction}{0.85}
 \renewcommand{\textfraction}{0.05}
@@ -46,7 +46,7 @@
 \setcounter{bottomnumber}{2}
 \setcounter{totalnumber}{5}
 
-% --- Algorithms, lists, color ---
+% == Algorithms, lists, color ==
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{enumitem}
@@ -75,21 +75,21 @@
   }
 \makeatother
 
-% --- TikZ ---
+% == TikZ ==
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,calc,decorations.pathreplacing}
 
-% --- Bibliography ---
+% == Bibliography ==
 \usepackage[numbers,sort&compress]{natbib}
 
-% --- Author block (multi-author with numbered affiliations) ---
+% == Author block (multi-author with numbered affiliations) ==
 \usepackage{authblk}
 \renewcommand\Authsep{\qquad}
 \renewcommand\Authand{\qquad}
 \renewcommand\Authands{\qquad}
 \setlength{\affilsep}{0.6em}
 
-% --- Links (load last) ---
+% == Links (load last) ==
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
@@ -105,17 +105,17 @@
 \g@addto@macro\UrlBreaks{\do\-\do\_}
 \makeatother
 
-% --- Caption style (V10/V11, 2026-04-22) ---
+% == Caption style (V10/V11, 2026-04-22) ==
 % Top-of-table labels, bold table/figure tags, small font for captions and subcaptions.
 \captionsetup{labelfont=bf, labelsep=period, font=small, justification=justified}
 \captionsetup[sub]{labelfont=bf, font=small, labelformat=parens, labelsep=space}
 
-% --- Custom commands ---
+% == Custom commands ==
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Prob}{\mathbb{P}}
 
-% --- Project-level numeric macros (V10/V11 bundle, 2026-04-22) ---
+% == Project-level numeric macros (V10/V11 bundle, 2026-04-22) ==
 % Consistent formatting for recurring numeric constructs.
 % Use in new prose and tables; legacy cells may be migrated gradually (see V16
 % siunitx migration in plan-equity-paper.md for the bulk pass).
@@ -143,7 +143,7 @@
 
 % ========================================================================================= %
 \begin{abstract}
-Low-state-count hidden Markov models with Gaussian emissions were long held to fail at reproducing the slow autocorrelation decay of absolute daily equity returns. We revisit that limitation with continuous-emission hidden Markov models that place Gaussian, Student-$t$, Laplace, and generalized-error emissions under one expectation-maximization framework with quantile-based initialization, plus a spectral identity that writes the absolute-return autocorrelation as finitely many geometric decay modes. The main finding, on SPY and a sector-balanced 30-ticker panel, separates the two failure channels: at three states the class is not what limits the fitted autocorrelation. The fitted chain reduces in-sample absolute-return autocorrelation error relative to i.i.d.\ baselines at lags $1$--$63$; valid three-state chains optimized directly on the autocorrelation track it roughly three times more closely than the likelihood fits do (median error $0.016$ against $0.050$); converged multistart fits at $K = 18$ do not materially improve the match over three states (better at $7$ of $31$ tickers in sample); and a weighted-objective frontier sweep finds three-state fits that are simultaneously near-optimal on the autocorrelation and on the marginal body (distribution-function distance better than the likelihood fit's own; marginal density within $0.011$ nats per observation) --- so the autocorrelation and the bulk marginal do not compete at three states. What the autocorrelation-competitive fits still lack is the deep tail (mixture excess kurtosis $2.3$ against the likelihood fit's $7.0$); whether one three-state chain can carry the tail and the autocorrelation together remains open, and a heavy-tailed emission family substantially improves the fitted marginal itself. The boundary is equally sharp: the fitted models do not reproduce long-horizon persistence (lags beyond roughly three months), and genuinely non-geometric asymptotics still require a different duration law or long-memory latent process. Two applications exercise the fitted model: a regime-conditional Value-at-Risk that is not rejected by joint conditional-coverage tests at the $5\%$ level on held-out data and on most walk-forward folds, and a multi-asset elliptical-copula composition in which a suggestive $2 \times 2$ experiment on identical quarter-level targets finds that quarterly refit of the dependence layer reduces out-of-sample dependence error by an order of magnitude more than the Gaussian-versus-Student-$t$ family choice. The evaluation covers daily US equities on a single out-of-sample window containing a vendor feed change; periodic refitting is recommended when regimes drift.
+Low-state-count hidden Markov models with Gaussian emissions were long held to fail at reproducing the slow autocorrelation decay of absolute daily equity returns. We revisit that limitation with continuous-emission hidden Markov models that place Gaussian, Student-$t$, Laplace, and generalized-error emissions under one expectation-maximization framework with quantile-based initialization, plus a spectral identity that writes the absolute-return autocorrelation as finitely many geometric decay modes. The main finding, on SPY and a sector-balanced 30-ticker panel, is that at three states the class is not what limits the fitted autocorrelation: valid three-state chains optimized directly on the autocorrelation track it roughly three times more closely than the published converged multistart likelihood fits do (median error $0.016$ against $0.050$), converged fits at $K = 18$ do not materially improve the match over three states (better at $7$ of $31$ tickers in sample), and a weighted-objective sweep finds valid three-state fits whose autocorrelation error is close to the best achieved in the sweep while their distribution-body fit reaches the likelihood fit's level under an in-sample distribution-function criterion, so the autocorrelation and the bulk marginal do not compete at three states under that criterion. What these autocorrelation-competitive fits still lack is the deep tail; whether one three-state chain can carry the tail and the autocorrelation together remains open, and a heavy-tailed emission family substantially improves the fitted marginal itself. The boundary is equally sharp: the fitted models do not reproduce long-horizon persistence (lags beyond roughly three months), and genuinely non-geometric asymptotics still require a different duration law or long-memory latent process. Two applications exercise the fitted model: a regime-conditional Value-at-Risk that is not rejected by joint conditional-coverage tests at the $5\%$ level on held-out data and on most walk-forward folds, and a multi-asset elliptical-copula composition in which a suggestive $2 \times 2$ experiment on identical quarter-level targets finds that quarterly refit of the dependence layer reduces out-of-sample dependence error by an order of magnitude more than the Gaussian-versus-Student-$t$ family choice. The evaluation covers daily US equities on a single out-of-sample window containing a vendor feed change; periodic refitting is recommended when regimes drift.
 \end{abstract}
 
 \noindent\textbf{Keywords:} Continuous-Emission Hidden Markov Model, Baum-Welch, Student-$t$ Emissions, Stylized Facts, Volatility Clustering, Value-at-Risk, Synthetic-Data Generator.

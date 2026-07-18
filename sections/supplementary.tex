@@ -100,8 +100,8 @@ close & Alpaca/IEX (2025--26)   & 322 & $+0.141$ & $2.913$ & $+19.77$ \\
 \multicolumn{6}{l}{KS pre vs.\ post: VWAP $D = 0.099$ ($p = 0.13$); close $D = 0.065$ ($p = 0.59$).} \\
 \multicolumn{6}{l}{Cross-boundary return (mixed-feed endpoints): VWAP $+1.523$; close $+2.511$ (annualised).} \\
 \midrule
-\multicolumn{6}{l}{CHMM-N $K^\star{=}3$ VaR breaches --- Polygon: $n = 250$, $5\%$: $17$ ($6.80\%$, exp.\ $12.5$), $1\%$: $4$ ($1.60\%$).} \\
-\multicolumn{6}{l}{\phantom{CHMM-N $K^\star{=}3$ VaR breaches ---} Alpaca: $n = 323$, $5\%$: $19$ ($5.88\%$, exp.\ $16.2$), $1\%$: $5$ ($1.55\%$).} \\
+\multicolumn{6}{l}{CHMM-N $K^\star{=}3$ VaR breaches, Polygon: $n = 250$, $5\%$: $17$ ($6.80\%$, exp.\ $12.5$), $1\%$: $4$ ($1.60\%$).} \\
+\multicolumn{6}{l}{\phantom{CHMM-N $K^\star{=}3$ VaR breaches,} Alpaca: $n = 323$, $5\%$: $19$ ($5.88\%$, exp.\ $16.2$), $1\%$: $5$ ($1.55\%$).} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -351,7 +351,7 @@ W6 & $18$ & $0.05$ & $\phantom{0}7$ & $2.79\%$ & $-2.98$ & $\phantom{0}3.06$ & $
 \end{table}
 
 \paragraph{Per-ticker $\hat\lambda^\star$ sweep.}
-A per-ticker sweep $\lambda \in \{0, 5, 10, 20, 50, 100\}$ on each of the six focal tickers (KS-degradation tolerance $\le 1.5$pp from $\lambda = 0$) gave per-ticker optima $\lambda^\star_{\text{SPY}} = 10$, $\lambda^\star_{\text{NVDA}} = 20$, $\lambda^\star_{\text{JNJ}} = 20$, $\lambda^\star_{\text{JPM}} = 10$, $\lambda^\star_{\text{AAPL}} = 10$, $\lambda^\star_{\text{QQQ}} = 0$: $\lambda = 20$ is a reasonable uniform default but per-ticker tuning is recommended whenever a ticker's residual excess kurtosis at $\lambda = 0$ is within $\sim 1$ unit of observed.
+A per-ticker sweep $\lambda \in \{0, 5, 10, 20, 50, 100\}$ on each of the six focal tickers (KS-degradation tolerance $\le 1.5$pp from $\lambda = 0$) gave per-ticker grid minimizers $\lambda^\star_{\text{SPY}} = 10$, $\lambda^\star_{\text{NVDA}} = 20$, $\lambda^\star_{\text{JNJ}} = 20$, $\lambda^\star_{\text{JPM}} = 10$, $\lambda^\star_{\text{AAPL}} = 10$, $\lambda^\star_{\text{QQQ}} = 0$: $\lambda = 20$ is a reasonable uniform default but per-ticker tuning is recommended whenever a ticker's residual excess kurtosis at $\lambda = 0$ is within $\sim 1$ unit of observed.
 
 \paragraph{Cross-asset summary.}
 The full per-construction multi-asset panel is in the cross-asset appendix; for reference, the main ordering is summarised in Table~\ref{tab:cross_asset_supp_summary}.
