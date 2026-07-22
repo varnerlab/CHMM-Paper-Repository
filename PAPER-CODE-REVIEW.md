@@ -1,227 +1,237 @@
-# Paper and Model Repository Review (Tenth Pass)
+# Paper and Model Repository Review (Eleventh Pass)
 
-**Review date:** 2026-07-18
+**Review date:** 2026-07-21
 
-**Paper commit reviewed:** `57cea34` (scientific revision in `a1267d9`)
+**Paper commit reviewed:** `40a0a84` (scientific revision in `6430ec4`)
 
-**Model commit reviewed:** `7230f71`
+**Model commit reviewed:** `4a98981`
 
-**Scope:** technical accuracy, paper-to-code consistency, reproducibility, claim calibration, and narrative flow.
+**Scope:** technical accuracy, manuscript-to-code consistency, reproducibility, statistical claim calibration, and narrative flow.
 
 ## Overall verdict
 
-The ninth-response revision resolves the substantive findings from the previous review. I found no new blocking mathematical, implementation, or paper-to-artifact contradiction. The central finite-band result is now technically defensible:
+I found **no blocking or moderate technical-correctness issue** in the current paper or companion model repository. The tenth-response revision closes the remaining substantive and engineering findings from the prior pass. The central argument is now internally consistent, appropriately scoped, and backed by valid persisted HMMs, traceable artifacts, same-ticker panel statistics, and a strong automated verification stack.
 
-- the reported ACF and frontier fits are valid stationary Gaussian HMMs, not unrestricted curve fits;
-- the frontier comparator is now the published converged multistart likelihood fit;
-- all important frontier language is framed as achieved feasible performance rather than certified optimization;
-- the same-ticker joint-regret statistic supports the body-plus-ACF claim for the typical ticker;
-- the claim is scoped to an in-sample, 500-quantile CDF criterion;
-- the unresolved deep-tail axis is stated explicitly; and
-- optimizer failures, panel dependence, held-out deterioration, and the finite-geometric-memory boundary are disclosed.
+The paper is ready for external peer review. I recommend only a final minor copy-editing pass before journal submission. The remaining observations below concern two residual phrases, optional prose compression, and code-output nomenclature; none changes a reported result or conclusion.
 
-My recommendation is **minor revision before submission**, primarily for claim precision, comparator-provenance hardening, and prose compression. The remaining items do not overturn the numerical findings.
+## What changed since the tenth review
 
-## What was checked in this pass
+The revision successfully:
 
-This review re-read the revised abstract, Introduction, Results, Discussion, Conclusion, and spectral/frontier appendix; traced the associated frontier, capacity, spectral, and artifact-check code; inspected the generated CSV/JLD2 artifacts and certificate tests; independently recomputed the reported paired counts and regret summaries; ran the paper-to-artifact gate; ran the full Julia package test suite; and rebuilt the PDF.
+- replaced categorical “do not compete” language in the abstract, main frontier result, and Conclusion with the achieved-level formulation;
+- corrected the claim that likelihood “weights” tail observations, now accurately describing the log-density penalty at observed extremes;
+- explained why `lambda=0.1` is the headline arm while reporting that the primary joint statistic is best at `lambda=0.3`;
+- added an automated check for the `lambda=0.3` median maximum regret of 1.11;
+- removed review-process language from the scientific appendix;
+- shortened the abstract from 346 to 281 words;
+- split the Results frontier discussion into joint-attainability, deep-tail, and limitations paragraphs;
+- split the appendix frontier discussion into design, comparator/rule, result, and optimizer-limit paragraphs;
+- reduced duplicated numeric detail in the Conclusion; and
+- centralized the published multistart comparator configuration and fitting call in one shared model-repository helper.
 
-The detailed frontier checks confirmed:
+These edits materially improve both scientific precision and readability.
 
-| Statement | Independent result |
+## Technical assessment
+
+### 1. The central finite-band ACF claim is technically supported
+
+The capacity experiment optimizes actual stationary Gaussian-emission HMMs:
+
+- transition rows are strictly positive and stochastic through a softmax parameterization;
+- emission scales are positive through log parameterization;
+- the stationary distribution is recomputed from every candidate transition matrix;
+- the population absolute-return ACF uses the correct stationary HMM moment identity; and
+- every reported winner is stored with parameters, target and fitted curves, optimizer diagnostics, and reconstructable metrics.
+
+Accordingly, the reported `K=3` near-band ACF MAE of 0.0162 is a valid existence/attainability certificate. The paper correctly avoids treating it as a globally optimal class error.
+
+The comparison with `K=18` is also calibrated correctly: the achieved median difference is small, but all `K=18` capacity winners reached the iteration cap and have near-degenerate stationary mass, so the manuscript calls this achieved accuracy rather than class equivalence.
+
+### 2. The body-plus-ACF frontier result is now stated at the right strength
+
+The paper reports valid achieved three-state fits under the in-sample 500-quantile CDF criterion. At `lambda=0.1`:
+
+| Quantity | Result |
 |---|---:|
-| `lambda=0.1` beats `ml_multi` on near-band ACF MAE | 31/31 tickers |
-| `lambda=0.1` beats `ml_multi` on the CDF criterion | 31/31 tickers |
-| Median per-ticker maximum regret, `lambda=0.1` | 1.1735 |
-| Both regrets at or below 1.5, `lambda=0.1` | 24/31 |
-| Both regrets at or below 1.5, `lambda=0.3` | 25/31 |
-| Both regrets at or below 1.5, `lambda=1` | 25/31 |
-| Better 1% / 5% / 95% / 99% quantile error than `ml_multi` | 5 / 21 / 21 / 6 tickers |
-| Median `lambda=0.1` / `ml_multi` marginal log density | -2.6081 / -2.5968 |
+| Median near-band ACF MAE | 0.0165 |
+| Median CDF criterion | 7.237e-6 |
+| Published likelihood comparator CDF criterion | 5.178e-5 |
+| Median marginal log density | -2.6081 |
+| Published comparator marginal log density | -2.5968 |
+| Median per-ticker maximum regret | 1.1735 |
+| Tickers within 1.5 on both axes | 24/31 |
 
-These reproduce the manuscript at its printed precision.
+The same-ticker statistic establishes that the aggregate result is not an artifact of different tickers supporting the two marginal medians. The revised wording—“no necessary trade-off between the two measured targets at the achieved levels under this in-sample criterion”—matches the evidence.
 
-## Previously raised findings now resolved
+The `lambda=0.1` choice is now transparent: it is the first jointly admissible arm and retains the closest ACF fit. The manuscript also reports the better primary-statistic arm, `lambda=0.3`, with median maximum regret 1.1097 and 25/31 tickers within threshold.
 
-### 1. The frontier uses the correct published likelihood comparator
+### 3. The deep-tail interpretation is correct and appropriately separate
 
-The runner now distinguishes:
+The paper now leads with the more defensible quantile-error evidence:
 
-- `ml_ref`: the internal single-start fit used as an optimizer seed and to define the historical balance scale; and
-- `ml_multi`: the converged multistart likelihood fit used by the published spectral panel and by all paper comparisons.
+- the `lambda=0.1` fit improves on the likelihood comparator at only 5/31 tickers at the 1% quantile and 6/31 at the 99% quantile;
+- it improves at 21/31 tickers at each central 5% and 95% quantile; and
+- its median 99% quantile error is 0.83 versus 0.23 for the likelihood fit.
 
-The multistart constants, seed schedule, data path, and fitting routine mirror the spectral runner. The complete comparator parameters and metrics are persisted in every frontier JLD2 file. Certificate tests validate stochasticity, stationarity, positive scales, reconstructed ACF/CDF metrics, and agreement of the best log-likelihood with the spectral artifact.
+Raw mixture excess kurtosis is labeled descriptive, consistent with the paper's tail-index argument that the corresponding observed population moment is unstable. The paper correctly leaves deep-tail-plus-ACF joint attainability unresolved in both directions.
 
-The manuscript now consistently says “published converged multistart likelihood fit” where the distinction matters. This fixes the former comparator mismatch.
+The revised causal sentence is accurate: ordinary likelihood does not explicitly give tail observations larger weights, but the log score strongly penalizes assigning very low density to an observed extreme relative to the equal-quantile CDF loss.
 
-### 2. Optimizer language now matches the evidence
+### 4. Long-horizon and held-out limitations remain explicit
 
-The manuscript no longer calls the weighted-sweep points optima or near-optimal class-frontier estimates. It labels them valid achieved feasible fits and explicitly reports that 29/31 `lambda=0.1` winners and 19/31 pure-marginal winners hit the 4,000-iteration cap. Objective stall is correctly distinguished from a first-order stationarity certificate.
+The manuscript separates three claims that were conflated in earlier drafts:
 
-That is the right evidentiary framing. A feasible fitted HMM is sufficient for an existence/attainability statement at its achieved error, even when it does not certify the best possible class error.
+1. a three-state HMM can attain a much better fit to the finite in-sample ACF curve;
+2. the likelihood-fitted models still fail to reproduce the far-band persistence; and
+3. a finite-state Markov chain cannot generate genuinely non-geometric asymptotic memory.
 
-### 3. The panel claim now uses a same-ticker joint statistic
+The held-out panel result is not hidden: at the median single-name ticker, the likelihood-fitted `K=3` and `K=18` models both trail the out-of-sample zero-curve reference, while SPY is an exception. This prevents the capacity result from being misread as a generalization claim.
 
-The runner persists per-ticker ACF regret, CDF regret, their maximum, and the joint threshold flag. The manuscript reports the median of the per-ticker maximum and the count satisfying both thresholds. This eliminates the earlier logical gap in which separate medians could have been supported by different tickers.
+### 5. The comparator refactor resolves the provenance weakness
 
-The reported conclusion is supported: the `lambda=0.1` arm has median maximum regret 1.17, with 24/31 tickers within 1.5 on both axes using the same chain.
+The new `runners/spectral/ml_multistart_config.jl` is consumed by both:
 
-### 4. The marginal-body claim is now scoped correctly
+- `run_spectral_rank_cross_ticker.jl`; and
+- `run_hmm_acf_frontier.jl`.
 
-The paper consistently limits the result to the in-sample empirical-quantile CDF criterion and distinguishes the distribution body from the deep tail. It no longer generalizes the finding to marginal adequacy as a whole.
+It centralizes the base seed, per-`K` start counts, iteration limit, tolerance, seed schedule, and fitting call. Both runners still construct the in-sample panel identically before invoking the shared helper.
 
-The extreme-quantile counts now lead the tail discussion. Raw excess kurtosis is retained only as descriptive evidence, consistent with the paper's own tail-index argument that the corresponding population moment is unstable.
+The certificate test now ties every stored frontier comparator to the published spectral optimizer row using:
 
-### 5. The Introduction, Discussion, Results, and Conclusion now tell the same story
+- winning start index;
+- exact winning iteration count;
+- best likelihood at artifact precision; and
+- cross-start likelihood spread at artifact precision.
 
-The former “distributional channel binds” contradiction has been replaced by a more precise result:
+This is substantially stronger than the former rounded-likelihood-only link. Because both runners now call the same helper, configuration drift is no longer a credible current failure mode.
 
-1. likelihood fits leave finite-band ACF capacity unused;
-2. the marginal body and ACF are jointly achievable at the reported levels under the in-sample CDF criterion;
-3. deep-tail-plus-ACF attainability is unresolved; and
-4. exact non-geometric long-memory behavior remains outside a finite-state Markov chain.
+The artifacts were not regenerated for this refactor, which is acceptable here: the computational call is behavior-identical, and the stored comparator diagnostics pass the enhanced identity checks across all 31 tickers.
 
-The Conclusion also separates the finite-band ACF result, the body/tail frontier, and generalization limits into distinct paragraphs.
+### 6. Broader model-repository correctness remains strong
 
-### 6. Frontier diagnostics and artifact checks are materially stronger
+The repository continues to demonstrate good research-software practice:
 
-The shared optimizer now exposes generic `objective_init`, `objective_final`, and `objective_value` fields while retaining the legacy `sse_*` aliases for capacity compatibility. Tests recompute the weighted objective from every saved winner.
+- EM routines use the best-evaluated-iterate contract rather than blindly returning the last update;
+- spectral components handle complex-conjugate pairs and stationary moments correctly;
+- HSMM terminal durations are right-censored and checked against exhaustive tiny-case enumeration;
+- VaR backtests distinguish asymptotic, exact-binomial, and finite-sample DQ evidence;
+- cross-asset family/refit effects use common targets and strict common random numbers;
+- capacity and frontier conclusions are backed by reloadable JLD2 certificates;
+- the artifact manifest maps scientific outputs to runners, seeds, and paper locations; and
+- the paper pins the exact model commit reviewed here.
 
-The paper-artifact checker now verifies the new medians, counts, cap status, and source typography. The current manifest contains 55 tracked rows with no stale, untraced, pending, or defect status.
+I found no newly introduced algebraic, indexing, seed, data-window, or artifact-selection error in the changed code.
 
-## Remaining findings
+## Remaining minor findings
 
-### Moderate 1 — “do not compete” is still slightly stronger than the optimizer evidence
+### Minor 1 — two interpretive phrases should use the achieved-level formulation
 
-**Locations:** `paper.tex:146`; `sections/results.tex:32-34`; `sections/conclusion.tex:3`.
+**Locations:** `sections/results.tex:36`; `sections/conclusion.tex:11`.
 
-The evidence proves that valid fits exist with strong absolute performance on both measured axes and that most tickers are close to the **best values achieved in this sweep**. It does not establish closeness to the unknown class-wide single-axis optima because most weighted runs hit the iteration cap, and 7/31 tickers fail the declared 1.5 joint threshold at `lambda=0.1`.
+Most of the paper now uses the correct wording, but two phrases remain slightly categorical:
 
-The Conclusion already gives the safest formulation: the result “rejects a necessary trade-off between the two measured targets at the achieved levels.” Use that formulation everywhere. In the abstract and Results, replace the categorical “the ACF and the bulk marginal do not compete at three states” with:
+- “the marginal body does not trade off against the ACF”; and
+- “the marginal body can come along at essentially no ACF cost.”
 
-> the sweep finds no necessary trade-off between the ACF and marginal-body targets at the achieved levels under this in-sample CDF criterion.
+Nearby text supplies the in-sample and optimizer caveats, so these are not materially misleading in context. For complete consistency, revise them to:
 
-This preserves the contribution without implying a globally resolved Pareto frontier.
+> the sweep finds no necessary marginal-body/ACF trade-off at the achieved levels under its in-sample criterion
 
-### Minor 2 — comparator identity is correct but maintained through duplicated configuration
+and:
 
-**Locations:** `runners/spectral/run_hmm_acf_frontier.jl:33-40,91-95,369-389`; `test/test_spectral.jl:196-270`.
+> the achieved sweep carries the marginal body with little median ACF cost under its in-sample criterion.
 
-The comparator is deterministically recomputed with the same routine, data, start count, iteration limit, tolerance, and seed schedule as the spectral runner. That is technically sound today. The regression test, however, ties it to the spectral artifact only through `ll_best` rounded to four decimals with an absolute tolerance of `1e-3`.
+### Minor 2 — the abstract may still exceed a venue-specific limit
 
-Future edits could let the two runners drift while still producing a near-equal likelihood. Prefer one of:
+The abstract is now approximately 281 words, down from 346, and its narrative is much cleaner. Many journals impose 250-word limits, although no target venue or limit is declared in the repository.
 
-- factor the multistart constants and comparator-fitting call into a shared helper used by both runners;
-- persist the exact published comparator models in the spectral run and load them in the frontier run; or
-- add a version/hash plus a stronger parameter- or full-precision-likelihood identity check.
+If a 250-word limit applies, remove roughly 30 words by:
 
-This is a reproducibility-maintenance recommendation, not evidence that the current comparator is wrong.
+- shortening the list of emission families to “four continuous emission families”;
+- compressing the optimizer/comparator clause; and
+- reducing the two application descriptions to one sentence with no design detail.
 
-### Minor 3 — the likelihood/tail causal sentence is imprecise
+This is a submission-format check, not a scientific-flow defect.
 
-**Location:** `sections/results.tex:32`.
+### Minor 3 — “Pareto frontier” remains stronger than the code's optimizer status
 
-The sentence saying the likelihood criterion “weights tail observations heavily” is not quite accurate. Ordinary maximum likelihood does not explicitly assign larger observation weights to tail points; its log score can impose a large penalty when a fitted density assigns very low density to an observed extreme. The empirical-quantile CDF loss, by contrast, gives each quantile-grid location equal weight and therefore weak leverage to the deepest tails.
+**Locations:** `runners/spectral/run_hmm_acf_frontier.jl:4,326`; generated frontier summary heading.
 
-A more precise sentence would be:
+The paper itself mostly says “frontier experiment” or “weighted-objective sweep” and clearly labels all points achieved feasible fits. The runner and generated summary still use “Pareto frontier,” which can imply a globally optimized nondominated boundary even though most weighted winners hit the iteration cap.
 
-> Relative to the unweighted quantile-grid CDF loss, the log-likelihood penalizes very low fitted density at observed extremes; the resulting likelihood fits have better extreme-tail errors but far worse ACF tracking.
+Consider renaming only the heading/comment to:
 
-### Minor 4 — explain why `lambda=0.1` is the headline arm
+> weighted-objective ACF-versus-marginal frontier sweep over achieved feasible HMMs
 
-**Locations:** `sections/results.tex:32`; `sections/sensitivity_appendix.tex:157`.
+No artifact values or scientific conclusions need to change.
 
-The primary per-ticker statistic is actually best at `lambda=0.3` (median maximum regret 1.1097, 25/31 within threshold), not `lambda=0.1` (1.1735, 24/31). The `lambda=0.1` arm is nevertheless a reasonable headline because it preserves the closest median ACF fit: 0.0165, within 1% of the best achieved ACF arm.
+## Narrative flow
 
-Add a short rationale such as “we report the first jointly admissible arm, which retains the closest ACF fit.” Otherwise a careful reader may wonder why the primary statistic's best arm is relegated to a parenthesis.
+The manuscript's evidentiary sequence is now coherent:
 
-### Minor 5 — remove review-process language from the scientific appendix
+1. select and evaluate the fitted model;
+2. describe the fitted spectral structure;
+3. demonstrate realizable finite-band ACF capacity;
+4. test joint marginal-body/ACF attainability;
+5. isolate the unresolved deep-tail axis;
+6. disclose held-out and optimizer limits; and
+7. distinguish finite-band improvement from the structural long-memory boundary.
 
-**Location:** `sections/sensitivity_appendix.tex:157`.
+The abstract now focuses on the central finding, its boundary, and the two applications. The Results split makes the frontier argument much easier to follow, and the appendix now separates design from interpretation instead of presenting a 467-word block.
 
-“The primary panel summary, added at review, is...” is revision-history language rather than scientific exposition. Delete “added at review.” The surrounding sentence already explains why the statistic is primary.
+One stylistic opportunity remains: the parenthetical explanation for the `lambda=0.1` headline in Results is important enough to be an ordinary sentence rather than a parenthesis. That change would make the result read more deliberately without adding length.
 
-## Narrative flow and presentation
+The 90-page length is driven largely by detailed appendices and reproducibility material. It is defensible for a thesis-oriented manuscript, though a journal version may need a main-paper/supplement split.
 
-The logical order is now good: fitted spectra, realizable ACF capacity, joint body/ACF attainability, deep-tail limit, held-out scope, and structural long-memory boundary. Readers can distinguish class capacity from likelihood-fit behavior.
+## Limitations correctly disclosed
 
-The remaining narrative problem is sentence and paragraph density:
+The following are limitations rather than correctness defects, and the manuscript states them:
 
-- the abstract is approximately **346 words** in one paragraph;
-- the main frontier paragraph in Results is approximately **334 words**;
-- the appendix frontier paragraph is approximately **467 words**; and
-- the compiled paper is 90 pages.
+- frontier and capacity optimization are in-sample;
+- most weighted frontier winners reach the iteration cap;
+- objective stall is not a stationarity certificate;
+- the pure-marginal transition parameters are nonidentified and that endpoint is weak;
+- cross-ticker summaries are descriptive over a dependent panel;
+- the out-of-sample window contains a vendor-feed change;
+- no formal privacy guarantee is claimed for synthetic paths;
+- exact non-geometric memory lies outside the finite-state Markov class; and
+- licensed CRSP and vendor data are not redistributed.
 
-These passages contain too many nested qualifications for one paragraph. The qualifications are necessary, but the syntax makes the contribution harder to absorb.
-
-Recommended compression:
-
-1. Reduce the abstract to the question, model, two central findings, one boundary, and one application sentence. Move the copula design detail and vendor/refit advice to the paper body.
-2. Split the Results frontier paragraph after the joint-regret statistic. Put the tail result and optimizer caveat in separate paragraphs.
-3. In the appendix, separate design, comparator/reading rule, results, and optimizer limits.
-4. Remove repeated full restatements of the frontier result across Introduction, Results, Discussion, Conclusion, and Appendix. Keep the numerical detail in Results/Appendix and use one-sentence interpretations elsewhere.
-
-The removal of em dashes is complete and machine-enforced. The resulting punctuation is grammatically valid, though some of the former em-dash sentences now rely on long colon/semicolon chains; paragraph splitting will improve readability more than further punctuation substitution.
-
-## Technical assessment of the model repository
-
-The repository is in strong research-code condition.
-
-Strengths:
-
-- the transition parameterization enforces strictly positive row-stochastic matrices;
-- stationary laws are recomputed from each candidate transition matrix;
-- positive emission scales are enforced by log parameterization;
-- the population absolute-return ACF implements the correct stationary HMM moment identity;
-- capacity and frontier claims are backed by full model certificates rather than summary CSVs alone;
-- certificate tests reconstruct reported ACF, CDF, objective, stationarity, and likelihood-comparator quantities;
-- the HSMM right-censoring and tiny-case enumeration tests remain unusually thorough;
-- artifact-to-paper checks include keyed values and aggregate minima, maxima, medians, and counts; and
-- deterministic seeds and the model commit are disclosed.
-
-Limitations that are now appropriately disclosed:
-
-- the frontier uses finite-difference Adam with no gradient-norm/stationarity certificate;
-- most weighted arms terminate at the iteration cap;
-- the marginal-only arm has nonidentified transition directions and is a weak proxy for the best stationary three-Gaussian-mixture fit;
-- frontier and capacity experiments are in-sample;
-- cross-ticker summaries are descriptive over a dependent panel; and
-- the licensed raw data are not redistributable, so exact external end-to-end reproduction requires the same data access.
-
-No code change is required for correctness based on this pass. The shared-comparator refactor above is the most useful next engineering improvement.
+The default Julia suite also excludes the opt-in R-side MSGARCH MCMC path. That is disclosed in the test output, and the verification table should not be read as covering that external optional path.
 
 ## Verification
 
 | Check | Result |
 |---|---|
-| Paper-to-artifact consistency gate | **PASS**: all substring, keyed, aggregate, manifest, and typography checks |
-| Independent frontier counts/regrets | **PASS**: all quoted values reproduced |
-| Frontier certificate tests | **PASS** as part of the package suite |
-| Full Julia package suite | **PASS**: 11,451/11,451 tests |
+| Paper-to-artifact consistency gate | **PASS**: manifest, substring, keyed, aggregate, and typography checks |
+| New `lambda=0.3` aggregate gate | **PASS**: median maximum regret 1.1097 rounds to 1.11 |
+| Independent frontier counts and regrets | **PASS**: manuscript values reproduced |
+| Shared comparator source audit | **PASS**: both runners call the same configuration/helper |
+| Comparator certificate identity checks | **PASS** as part of the Julia suite |
+| Full Julia package suite | **PASS**: 11,544/11,544 tests |
 | LaTeX rebuild | **PASS**: 90-page PDF |
 | Undefined citations/references | None |
 | Overfull boxes | None |
 | Layout warnings | Three underfull boxes in the Results table area; non-blocking |
 
-The optional R-side MSGARCH MCMC tests are not enabled by the default Julia package suite, so the test count should not be read as covering that external optional path.
+The build-generated PDF was restored after verification so the requested review file is the only workspace modification.
 
-## Prioritized action list
+## Recommended final actions
 
 ### Before submission
 
-1. Replace categorical “do not compete” wording with the achieved-level formulation already used in the Conclusion.
-2. Correct the “likelihood weights tails heavily” sentence.
-3. Explain the choice of `lambda=0.1` or headline the best primary-statistic arm.
-4. Remove “added at review” from the appendix.
-5. Compress the abstract and split the two frontier mega-paragraphs.
+1. Align the two residual trade-off phrases with the achieved-level wording.
+2. Check the target venue's abstract word limit.
+3. Move the `lambda=0.1` explanation out of parentheses.
 
-### Engineering hardening
+### Optional code/documentation polish
 
-6. Make the spectral and frontier runners consume one shared multistart comparator configuration/model.
-7. Strengthen comparator identity beyond rounded best log-likelihood.
+4. Rename the runner's “Pareto frontier” heading to “weighted-objective frontier sweep.”
+
+No further experiment, artifact regeneration, or model-code correction is required based on this review.
 
 ## Bottom line
 
-The ninth revision succeeds technically. The earlier comparator mismatch, optimizer overclaim, cross-ticker aggregation gap, body/tail scope problem, and narrative contradiction are fixed. The paper's central result is now supported by valid persisted HMMs, reproducible artifacts, same-ticker joint statistics, and a passing test/gate stack.
+The tenth-response revision succeeds. The paper's main findings are technically supportable, the narrative now matches the evidentiary strength, and the code repository provides unusually strong research-artifact traceability. The shared comparator refactor closes the last meaningful provenance weakness without changing behavior.
 
-What remains is a small calibration pass: say “no necessary trade-off at the achieved levels” consistently, tighten one causal likelihood sentence, explain the representative frontier arm, remove review-history prose, and reduce paragraph density. After those edits, I would regard the paper and companion model repository as technically coherent and ready for external peer review.
+Subject to a small wording and venue-format pass, I regard the manuscript and companion repository as technically coherent and ready for external peer review.
