@@ -58,11 +58,16 @@ The Laplace M-step carries no shape parameter, so CHMM-L is strictly cheaper per
 \paragraph{CHMM-GED M-step (three-stage ECM-style update with closed-form scale).}
 For Generalized Error Distribution emissions $f_k(x) = \mathrm{GED}(x; \mu_k, \alpha_k, p_k) = \frac{p_k}{2 \alpha_k \Gamma(1/p_k)} \exp\!\big(-(|x - \mu_k|/\alpha_k)^{p_k}\big)$ the M-step decomposes into three block updates per state. Given current $(\mu_k^{(n)}, \alpha_k^{(n)}, p_k^{(n)})$, the first block updates the location by minimising the per-state weighted $L^{p_k}$ loss,
 \begin{equation}
-    \mu_k^{(n+1)} \;=\; \operatorname{GoldenSearchMin}_{\mu \in I_k} \;\sum_t \gamma_t(k)\, \big|O_t - \mu\big|^{p_k^{(n)}},
-    \qquad I_k \;=\; \big[\min_t O_t,\, \max_t O_t\big],
+    \begin{aligned}
+    \mu_k^{(n+1)} &\;=\; \operatorname{GoldenSearchMin}_{\mu \in I_k^{(n)}}
+        \sum_t \gamma_t(k)\, \big|O_t - \mu\big|^{p_k^{(n)}},
+        \qquad I_k^{(n)} = [\ell_k^{(n)}, u_k^{(n)}],\\[-2pt]
+    \ell_k^{(n)} &\;=\; \min\!\left(\mu_k^{(n)} - 5\alpha_k^{(n)},\, \min_t O_t - 10^{-6}\right),\\[-2pt]
+    u_k^{(n)} &\;=\; \max\!\left(\mu_k^{(n)} + 5\alpha_k^{(n)},\, \max_t O_t + 10^{-6}\right).
+    \end{aligned}
     \label{eq:ged_mu}
 \end{equation}
-by a $40$-iteration golden-section search; CM-2 updates the scale in closed form given $(\mu_k^{(n+1)}, p_k^{(n)})$,
+by a $40$-iteration golden-section search over the current location-scale bracket widened to include the observed data range; CM-2 updates the scale in closed form given $(\mu_k^{(n+1)}, p_k^{(n)})$,
 \begin{equation}
     \alpha_k^{(n+1)} \;=\; \left[\frac{p_k^{(n)}}{W_k} \sum_t \gamma_t(k)\, \big|O_t - \mu_k^{(n+1)}\big|^{p_k^{(n)}}\right]^{1 / p_k^{(n)}}, \qquad W_k \;=\; \sum_t \gamma_t(k);
     \label{eq:ged_alpha}
@@ -143,7 +148,7 @@ The unified EM procedure shared across all four emission families is given in Al
     \STATE \qquad $\mu_k \leftarrow \text{WeightedMedian}(O_{1:T},\, \gamma_{1:T}(k))$ \COMMENT{first order statistic with cumulative weight $\ge W_k/2$.}
     \STATE \qquad $b_k \leftarrow \max\!\left(\sum_t \gamma_t(k)\, |O_t - \mu_k| / \sum_t \gamma_t(k),\; 10^{-6}\right)$.
     \STATE \quad $F = \text{GED}$ \COMMENT{three-stage ECM-style update: bracketed $\mu_k$, closed-form $\alpha_k$, bracketed $p_k$.}
-    \STATE \qquad $\mu_k \leftarrow \operatorname{GoldenSearchMin}_{\mu \in I_k} \sum_t \gamma_t(k)\, |O_t - \mu|^{p_k}$ \COMMENT{40 iterations on $I_k = [\min_t O_t, \max_t O_t]$.}
+    \STATE \qquad $\mu_k \leftarrow \operatorname{GoldenSearchMin}_{\mu \in I_k} \sum_t \gamma_t(k)\, |O_t - \mu|^{p_k}$ \COMMENT{40 iterations; $I_k$ is the current $(\mu_k,\alpha_k)$ bracket widened to include $[\min_t O_t,\max_t O_t]$.}
     \STATE \qquad $\alpha_k \leftarrow \max\!\Big(\big[(p_k / W_k) \sum_t \gamma_t(k)\, |O_t - \mu_k|^{p_k}\big]^{1/p_k},\; 10^{-6}\Big)$ where $W_k = \sum_t \gamma_t(k)$ \COMMENT{closed form, unique zero of $\partial Q_k / \partial \alpha$.}
     \STATE \qquad $p_k \leftarrow \operatorname{GoldenSearchMax}_{p \in [p_{\min}, p_{\max}]} \sum_t \gamma_t(k)\, \log \mathrm{GED}(O_t; \mu_k, \alpha_k, p)$ \COMMENT{40 iterations.}
 \ENDFOR

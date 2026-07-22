@@ -51,7 +51,7 @@ pdflatex -interaction=nonstopmode paper.tex
 ```
 
 Produces `paper.pdf` (body, bibliography, and appendices; the page count
-moves with the draft, currently 88 pages).
+moves with the draft, currently 90 pages).
 
 `make clean` removes the usual LaTeX auxiliary files; `make distclean`
 also removes `paper.pdf`.
